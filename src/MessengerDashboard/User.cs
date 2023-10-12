@@ -2,7 +2,7 @@ using System;
 
 namespace MessengerDashboard
 {
-    public class Class1
+    public class User
     {
     }
 }

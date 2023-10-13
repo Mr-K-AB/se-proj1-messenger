@@ -6,4 +6,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Client\" />
+    <Folder Include="Server\Summarizer\" />
+  </ItemGroup>
+
 </Project>

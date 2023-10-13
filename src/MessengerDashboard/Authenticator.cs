@@ -1,7 +1,7 @@
 ﻿/// <credits>
 /// <author>
-/// <name>Aradhya Bijalwan</name>
-/// <rollnumber>112001006</rollnumber>
+/// <name>Shubh Pareek</name>
+/// <rollnumber>112001039</rollnumber>
 /// </author>
 /// </credits>
 
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace MessengerDashboard
 {
-    public class Session
+    public class Authenticator
     {
     }
 }

@@ -8,7 +8,9 @@
 
   <ItemGroup>
     <Folder Include="Client\" />
-    <Folder Include="Server\Summarizer\" />
+    <Folder Include="Telemetry\" />
+    <Folder Include="Server\" />
+    <Folder Include="UI\VIews\" />
   </ItemGroup>
 
 </Project>

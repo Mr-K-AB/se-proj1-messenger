@@ -9,6 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessengerDashboard", "Messe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessengerContent", "MessengerContent\MessengerContent.csproj", "{EC56B51D-0F2E-4A44-B0AF-348266FDD733}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerTests", "MessengerTests\MessengerTests.csproj", "{0DCD0AD9-D698-47D2-AA14-64299AA88A1D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{189273C8-C33F-4BEB-BDDD-4A2A549E47FB} = {189273C8-C33F-4BEB-BDDD-4A2A549E47FB}
+		{D40F517D-6C46-4776-B47B-9194A02A2265} = {D40F517D-6C46-4776-B47B-9194A02A2265}
+		{EC56B51D-0F2E-4A44-B0AF-348266FDD733} = {EC56B51D-0F2E-4A44-B0AF-348266FDD733}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +34,10 @@ Global
 		{EC56B51D-0F2E-4A44-B0AF-348266FDD733}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC56B51D-0F2E-4A44-B0AF-348266FDD733}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC56B51D-0F2E-4A44-B0AF-348266FDD733}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DCD0AD9-D698-47D2-AA14-64299AA88A1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DCD0AD9-D698-47D2-AA14-64299AA88A1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DCD0AD9-D698-47D2-AA14-64299AA88A1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DCD0AD9-D698-47D2-AA14-64299AA88A1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

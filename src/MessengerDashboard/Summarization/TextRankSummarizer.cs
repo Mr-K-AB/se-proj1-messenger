@@ -26,4 +26,5 @@ namespace MessengerDashboard.Summarization
             throw new NotImplementedException();
         }
     }
+
 }

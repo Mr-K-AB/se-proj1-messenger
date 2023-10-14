@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace MessengerDashboard.Summarization
 {
     /// <summary>
-    /// Represents an interface for text summarization.
+    /// Provides an interface for text summarization.
     /// </summary>
     public interface ISummarizer
     {

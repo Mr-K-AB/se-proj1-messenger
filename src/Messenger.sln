@@ -5,9 +5,9 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessengerApp", "MessengerApp\MessengerApp.csproj", "{189273C8-C33F-4BEB-BDDD-4A2A549E47FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerDashboard", "MessengerDashboard\MessengerDashboard.csproj", "{D40F517D-6C46-4776-B47B-9194A02A2265}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessengerDashboard", "MessengerDashboard\MessengerDashboard.csproj", "{D40F517D-6C46-4776-B47B-9194A02A2265}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerContent", "MessengerContent\MessengerContent.csproj", "{EC56B51D-0F2E-4A44-B0AF-348266FDD733}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessengerContent", "MessengerContent\MessengerContent.csproj", "{EC56B51D-0F2E-4A44-B0AF-348266FDD733}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

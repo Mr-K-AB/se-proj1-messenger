@@ -16,8 +16,8 @@ namespace MessengerDashboard.Summarization
     /// <summary>
     /// Provides an interface for text summarization.
     /// </summary>
-    public interface ISummarizer
+    public interface ITextSummarizer
     {
-        string Summarize(string text);
+        TextSummary Summarize(TextSummarizationRequest request);
     }
 }

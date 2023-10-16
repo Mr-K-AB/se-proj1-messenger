@@ -8,6 +8,5 @@ namespace MessengerDashboard.Summarization
 {
     public static class TextSummarizerFactory
     {
-        public static 
     }
 }

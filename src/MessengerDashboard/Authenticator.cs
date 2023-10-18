@@ -25,14 +25,14 @@ namespace MessengerDashboard
 {
     public static class Authenticator
     {
-        private static string clientId = string.Empty;
-        private static string clientSecret = string.Empty;
-        const string authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
+        private static readonly string clientId ="868879463425-q4cjh1t232o1ssco4a5dep9fe37meah3.apps.googleusercontent.com" ;
+        private static readonly string clientSecret ="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";
+        private static readonly string AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
 
         // User Information
-        static string userName = "";
-        static string userEmail = "";
-        static string imageName = "";
+        private static string s_userName = "";
+        private static string userEmail = "";
+        private static string imageName = "";
 
         public static async Task<List<String>> Authenticate(int timeOut = 180000)
         {
@@ -42,17 +42,17 @@ namespace MessengerDashboard
 
             var Configuration = builder.Build(); */
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            IConfiguration configuration = configurationBuilder.AddUserSecrets("b12955e4-b704-420a-bb39-73fd5dd2266a").Build();
-
-            clientId = configuration.GetSection("Authentication:ClientId").Value;
-            clientSecret = configuration.GetSection("Authentication:ClientSecret").Value;
-            Debug.WriteLine(clientId + ":" + clientSecret);
+            //ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            //IConfiguration configuration = configurationBuilder.AddUserSecrets("b12955e4-b704-420a-bb39-73fd5dd2266a").Build();
+//
+            //clientId = configuration.GetSection("Authentication:ClientId").Value;
+            //clientSecret = configuration.GetSection("Authentication:ClientSecret").Value;
+            //Debug.WriteLine(clientId + ":" + clientSecret);
             
             Trace.WriteLine("[UX] Creating State and Redirecting URI on port 8080");
             // Creating state and redirect URI using port 8080 on Loopback address
-            string state = GenerateDataBase(32);
-            string code_verifier = GenerateDataBase(32);
+            string state = CryptRandomInt(32);
+            string code_verifier = CryptRandomInt(32);
             string code_challenge = EncodeInputBuffer(Sha256(code_verifier));
             const string code_challenge_method = "S256";
             string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, "8080");
@@ -68,7 +68,7 @@ namespace MessengerDashboard
             Trace.WriteLine("[UX] Sending Authorization Request");
             // Creating an authorization request for OAuth 2.0
             string authorizationRequest = string.Format("{0}?response_type=code&scope=openid%20email%20profile&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}",
-                    authorizationEndpoint,
+                    AuthorizationEndpoint,
                     Uri.EscapeDataString(redirectURI),
                     clientId,
                     state,
@@ -151,12 +151,12 @@ namespace MessengerDashboard
             Task.WaitAll(task);
 
             result.Add("true");
-            while (userName == "" || userEmail == "" || imageName == "")
+            while (s_userName == "" || userEmail == "" || imageName == "")
             {
                 // Thread sleeps until information is received
                 Thread.Sleep(100);
             }
-            result.Add(userName);
+            result.Add(s_userName);
             result.Add(userEmail);
             result.Add(imageName);
             return result;
@@ -197,7 +197,7 @@ namespace MessengerDashboard
         /// </summary>
         /// <param name="length"></param>
         /// <returns>String: Encrypted Data Base</returns>
-        public static string GenerateDataBase(uint length)
+        public static string CryptRandomInt(uint length)
         {
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             byte[] bytes = new byte[length];
@@ -211,7 +211,7 @@ namespace MessengerDashboard
         /// <param name="code"></param>
         /// <param name="code_verifier"></param>
         /// <param name="redirectURI"></param>
-        static async void GetUserData(string code, string code_verifier, string redirectURI)
+        private static async void GetUserData(string code, string code_verifier, string redirectURI)
         {
             Trace.WriteLine("[UX] Getting Data From User");
             // Building the  request
@@ -275,7 +275,7 @@ namespace MessengerDashboard
         /// This will finally enable us to use the token to extract the required information
         /// </summary>
         /// <param name="access_token"></param>
-        static async void UserInfoCall(string access_token)
+        private static async void UserInfoCall(string access_token)
         {
             // Building the  request
             string userinfoRequestURI = "https://www.googleapis.com/oauth2/v3/userinfo";
@@ -297,7 +297,7 @@ namespace MessengerDashboard
                 var json = JObject.Parse(userinfoResponseText);
 
                 // Storing Data from Json file received
-                userName = json["name"].ToString();
+                s_userName = json["name"].ToString();
                 userEmail = json["email"].ToString();
                 imageName = json["picture"].ToString();
             }

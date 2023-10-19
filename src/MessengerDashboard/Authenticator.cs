@@ -21,59 +21,72 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Net.Http;
+
 namespace MessengerDashboard
 {
+    /// <summary>
+    /// Provides authentication using Google OAuth2.
+    /// </summary>
     public static class Authenticator
     {
-        private static readonly string clientId ="868879463425-q4cjh1t232o1ssco4a5dep9fe37meah3.apps.googleusercontent.com" ;
-        private static readonly string clientSecret ="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";
-        private static readonly string AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
-
-        // User Information
+        private static readonly string s_clientId = "868879463425-q4cjh1t232o1ssco4a5dep9fe37meah3.apps.googleusercontent.com";
+        private static readonly string s_clientSecret = "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";
+        private static readonly string s_authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
+        
         private static string s_userName = "";
-        private static string userEmail = "";
-        private static string imageName = "";
+        private static string s_userEmail = "";
+        private static string s_imageName = "";
 
-        public static async Task<List<String>> Authenticate(int timeOut = 180000)
+        /// <summary>
+        /// Authenticates a user using Google OAuth2. This method initiates the OAuth2 authentication flow to obtain user credentials for accessing Google services.
+        /// </summary>
+        /// <param name="timeOut">The maximum time (in milliseconds) to wait for the authentication process to complete. The default timeout is 180,000 milliseconds (3 minutes).</param>
+        /// <returns>
+        /// A list of strings representing user-specific information. or access tokens. The specific content of the list may vary based on the authentication and authorization flow.
+        /// </returns>
+        public static async Task<List<string>> Authenticate(int timeOut = 180000)
         {
-            /*var builder = new ConfigurationBuilder()
+            /*
+            var builder = new ConfigurationBuilder()
            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory) // Set the base path
            .AddJsonFile("secrets.json", optional: false, reloadOnChange: true); // Add the JSON file
 
-            var Configuration = builder.Build(); */
+            var Configuration = builder.Build();
+            */
 
             //ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             //IConfiguration configuration = configurationBuilder.AddUserSecrets("b12955e4-b704-420a-bb39-73fd5dd2266a").Build();
-//
+            //
             //clientId = configuration.GetSection("Authentication:ClientId").Value;
             //clientSecret = configuration.GetSection("Authentication:ClientSecret").Value;
             //Debug.WriteLine(clientId + ":" + clientSecret);
-            
+
             Trace.WriteLine("[UX] Creating State and Redirecting URI on port 8080");
             // Creating state and redirect URI using port 8080 on Loopback address
             string state = CryptRandomInt(32);
-            string code_verifier = CryptRandomInt(32);
-            string code_challenge = EncodeInputBuffer(Sha256(code_verifier));
-            const string code_challenge_method = "S256";
+            string codeVerifier = CryptRandomInt(32);
+            string codeChallenge = EncodeInputBuffer(Sha256(codeVerifier));
+            const string codeChallengeMethod = "S256";
             string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, "8080");
-            List<string> result = new List<string>();
+            List<string> result = new();
 
             Trace.WriteLine("[UX] Creating HTTP Listener");
             // Creating HTTP listener
-            var http = new HttpListener();
-            http.Prefixes.Add(redirectURI);
+            HttpListener httpListener = new();
+            httpListener.Prefixes.Add(redirectURI);
             Trace.WriteLine("[UX] Listening on HTTP");
-            http.Start();
+            httpListener.Start();
 
             Trace.WriteLine("[UX] Sending Authorization Request");
             // Creating an authorization request for OAuth 2.0
             string authorizationRequest = string.Format("{0}?response_type=code&scope=openid%20email%20profile&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}",
-                    AuthorizationEndpoint,
+                    s_authorizationEndpoint,
                     Uri.EscapeDataString(redirectURI),
-                    clientId,
+                    s_clientId,
                     state,
-                    code_challenge,
-                    code_challenge_method);
+                    codeChallenge,
+                    codeChallengeMethod);
 
             // Trying to open the request in a browser  
             try
@@ -93,35 +106,35 @@ namespace MessengerDashboard
             }
 
             // Sending HTTP request to browser and displaying response
-            var taskData = http.GetContextAsync();
+            Task<HttpListenerContext> taskData = httpListener.GetContextAsync();
 
             // If no response is recorded, then we do a timeout after 3 minutes.
             // This may happen because of closing the browser
             if (await Task.WhenAny(taskData, Task.Delay(timeOut)) != taskData)
             {
                 Trace.WriteLine("[UX] Timeout occurred before getting response");
-                http.Stop();
+                httpListener.Stop();
                 result.Add("false");
                 return result;
             }
 
-            var context = taskData.Result;
-            var response = context.Response;
+            HttpListenerContext context = taskData.Result;
+            HttpListenerResponse response = context.Response;
             string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://google.com'></head><body><center><h1>Authentication is complete! You will be redirected to your app in a few seconds!</h1></center></body></html>");
-            var buffer = Encoding.UTF8.GetBytes(responseString);
+            byte[] buffer = Encoding.UTF8.GetBytes(responseString);
             response.ContentLength64 = buffer.Length;
-            var responseOutput = response.OutputStream;
+            Stream responseOutput = response.OutputStream;
             Task responseTask = responseOutput.WriteAsync(buffer, 0, buffer.Length).ContinueWith((task) =>
             {
                 responseOutput.Close();
-                http.Stop();
+                httpListener.Stop();
                 Trace.WriteLine("[UX] HTTP server stopped.");
             });
 
             // In case of errors, return to Sign In window
             if (context.Request.QueryString.Get("error") != null)
             {
-                Trace.WriteLine(String.Format("OAuth authorization error: {0}.", context.Request.QueryString.Get("error")));
+                Trace.WriteLine(string.Format("OAuth authorization error: {0}.", context.Request.QueryString.Get("error")));
                 result.Add("false");
                 return result;
             }
@@ -134,41 +147,40 @@ namespace MessengerDashboard
             }
 
             // Extracting code and state
-            var code = context.Request.QueryString.Get("code");
-            var incoming_state = context.Request.QueryString.Get("state");
+            string? code = context.Request.QueryString.Get("code");
+            string? incomingState = context.Request.QueryString.Get("state");
 
             // Comparing state to expected value
-            if (incoming_state != state)
+            if (incomingState != state)
             {
-                Trace.WriteLine(String.Format("Received request with invalid state ({0})", incoming_state));
+                Trace.WriteLine(string.Format("Received request with invalid state ({0})", incomingState));
                 result.Add("false");
                 return result;
             }
 
             Trace.WriteLine("[UX] No Errors Occurred");
             // A new thread to wait for the GetUserData to get all required information
-            Task task = Task.Factory.StartNew(() => GetUserData(code, code_verifier, redirectURI));
-            Task.WaitAll(task);
+            Task task = Task.Factory.StartNew(() => GetUserData(code, codeVerifier, redirectURI));
+            task.Wait();
 
             result.Add("true");
-            while (s_userName == "" || userEmail == "" || imageName == "")
+            while (s_userName == "" || s_userEmail == "" || s_imageName == "")
             {
                 // Thread sleeps until information is received
                 Thread.Sleep(100);
             }
             result.Add(s_userName);
-            result.Add(userEmail);
-            result.Add(imageName);
+            result.Add(s_userEmail);
+            result.Add(s_imageName);
             return result;
-                
-
         }
+
         /// <summary>
         /// Creating a non-padded base64 URL encoding
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns>String: Encoded Base 64</returns>
-        public static string EncodeInputBuffer(byte[] buffer)
+        private static string EncodeInputBuffer(byte[] buffer)
         {
             string base64 = Convert.ToBase64String(buffer);
             // Converts base64 to base64url.
@@ -176,7 +188,6 @@ namespace MessengerDashboard
             base64 = base64.Replace("/", "_");
             // Strips padding.
             base64 = base64.Replace("=", "");
-
             return base64;
         }
 
@@ -185,22 +196,22 @@ namespace MessengerDashboard
         /// </summary>
         /// <param name="inputString"></param>
         /// <returns>Byte Array: Sha256 Hashing</returns>
-        public static byte[] Sha256(string inputString)
+        private static byte[] Sha256(string inputString)
         {
             byte[] bytes = Encoding.ASCII.GetBytes(inputString);
-            SHA256Managed sha256 = new SHA256Managed();
+            using SHA256 sha256 = SHA256.Create();
             return sha256.ComputeHash(bytes);
         }
 
         /// <summary>
-        /// Generating a random cryptographic number oh length 32
+        /// Generating a random 32 bit cryptographic number.
         /// </summary>
         /// <param name="length"></param>
-        /// <returns>String: Encrypted Data Base</returns>
-        public static string CryptRandomInt(uint length)
+        /// <returns>Number in base64 representation.</returns>
+        private static string CryptRandomInt(uint length)
         {
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             byte[] bytes = new byte[length];
+            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
             rng.GetBytes(bytes);
             return EncodeInputBuffer(bytes);
         }
@@ -219,9 +230,9 @@ namespace MessengerDashboard
             string tokenRequestBody = string.Format("code={0}&redirect_uri={1}&client_id={2}&code_verifier={3}&client_secret={4}&scope=&grant_type=authorization_code",
                 code,
                 Uri.EscapeDataString(redirectURI),
-                clientId,
+                s_clientId,
                 code_verifier,
-                clientSecret
+                s_clientSecret
                 );
 
             // Sending the request
@@ -240,31 +251,26 @@ namespace MessengerDashboard
                 // Getting the response
                 WebResponse tokenResponse = await tokenRequest.GetResponseAsync();
 
-                using (StreamReader reader = new StreamReader(tokenResponse.GetResponseStream()))
-                {
-                    // Reading response body
-                    string responseText = await reader.ReadToEndAsync();
-                    Trace.WriteLine(responseText);
-                    // Converting to dictionary
-                    Dictionary<string, string> tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
-                    string access_token = tokenEndpointDecoded["access_token"];
-                    UserInfoCall(access_token);
-                }
+                using StreamReader reader = new(tokenResponse.GetResponseStream());
+                // Reading response body
+                string responseText = await reader.ReadToEndAsync();
+                Trace.WriteLine(responseText);
+                // Converting to dictionary
+                Dictionary<string, string> tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
+                string access_token = tokenEndpointDecoded["access_token"];
+                UserInfoCall(access_token);
             }
             catch (WebException ex)
             {
                 if (ex.Status == WebExceptionStatus.ProtocolError)
                 {
-                    var response = ex.Response as HttpWebResponse;
-                    if (response != null)
+                    if (ex.Response is HttpWebResponse response)
                     {
                         Trace.WriteLine("[UX] HTTP: " + response.StatusCode);
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                        {
-                            // Reading response body
-                            string responseText = await reader.ReadToEndAsync();
-                            Trace.WriteLine(responseText);
-                        }
+                        using StreamReader reader = new(response.GetResponseStream());
+                        // Reading response body
+                        string responseText = await reader.ReadToEndAsync();
+                        Trace.WriteLine(responseText);
                     }
                 }
             }
@@ -278,31 +284,25 @@ namespace MessengerDashboard
         private static async void UserInfoCall(string access_token)
         {
             // Building the  request
-            string userinfoRequestURI = "https://www.googleapis.com/oauth2/v3/userinfo";
+            string userInfoRequestURI = "https://www.googleapis.com/oauth2/v3/userinfo";
 
             // Sending the request
-            HttpWebRequest userinfoRequest = (HttpWebRequest)WebRequest.Create(userinfoRequestURI);
-            userinfoRequest.Method = "GET";
-            userinfoRequest.Headers.Add(string.Format("Authorization: Bearer {0}", access_token));
-            userinfoRequest.ContentType = "application/x-www-form-urlencoded";
-            userinfoRequest.Accept = "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+            HttpWebRequest userInfoRequest = (HttpWebRequest)WebRequest.Create(userInfoRequestURI);
+            userInfoRequest.Method = "GET";
+            userInfoRequest.Headers.Add(string.Format("Authorization: Bearer {0}", access_token));
+            userInfoRequest.ContentType = "application/x-www-form-urlencoded";
+            userInfoRequest.Accept = "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
             // Getting the response
-            WebResponse userinfoResponse = await userinfoRequest.GetResponseAsync();
-            using (StreamReader userinfoResponseReader = new StreamReader(userinfoResponse.GetResponseStream()))
-            {
-                // Reading response body
-                string userinfoResponseText = await userinfoResponseReader.ReadToEndAsync();
-                Trace.WriteLine("[UX] USER INFO:\n" + userinfoResponseText);
-                var json = JObject.Parse(userinfoResponseText);
-
-                // Storing Data from Json file received
-                s_userName = json["name"].ToString();
-                userEmail = json["email"].ToString();
-                imageName = json["picture"].ToString();
-            }
+            WebResponse userInfoResponse = await userInfoRequest.GetResponseAsync();
+            using StreamReader userInfoResponseReader = new(userInfoResponse.GetResponseStream());
+            // Reading response body
+            string userInfoResponseText = await userInfoResponseReader.ReadToEndAsync();
+            Trace.WriteLine("[UX] USER INFO:\n" + userInfoResponseText);
+            JObject json = JObject.Parse(userInfoResponseText);
+            s_userName = json["name"].ToString();
+            s_userEmail = json["email"].ToString();
+            s_imageName = json["picture"].ToString();
         }
-
-
     }
 }

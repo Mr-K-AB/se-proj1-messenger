@@ -26,6 +26,8 @@ namespace MessengerTests
                 Debug.WriteLine(result);
             }
         }
+        //[TestMethod]
+        //public void ForMessengerCloud
 
         [TestMethod]
         public void TextSummarizerFactoryTest()

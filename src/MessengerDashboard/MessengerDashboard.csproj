@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Client\" />
+    <Folder Include="Dashboard\UI\" />
+    <Folder Include="Dashboard\UI\Server\" />
     <Folder Include="Telemetry\" />
     <Folder Include="UI\VIews\" />
   </ItemGroup>

@@ -7,6 +7,12 @@ using SentimentAnalyzer;
 
 namespace MessengerDashboard.Sentiment
 {
+    /// <summary>
+    /// Represents a sentiment analyzer.
+    /// </summary>
+    /// <remarks>
+    /// Implements <see cref="ISentimentAnalyzer"/>
+    /// </remarks>
     public class SentimentAnalyzer : ISentimentAnalyzer
     {
         public SentimentResult AnalyzeSentiment(string[] chats) 

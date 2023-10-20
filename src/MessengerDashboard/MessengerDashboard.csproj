@@ -10,7 +10,6 @@
   <ItemGroup>
     <Folder Include="Client\" />
     <Folder Include="Telemetry\" />
-    <Folder Include="Server\" />
     <Folder Include="UI\VIews\" />
   </ItemGroup>
 
@@ -18,6 +17,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SentimentAnalyzer" Version="1.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MessengerNetworking\MessengerNetworking.csproj" />
   </ItemGroup>
 
 </Project>

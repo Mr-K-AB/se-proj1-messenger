@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace MessengerDashboard.Summarization
 {
+    /// <summary>
+    /// Implements the TextRank algorithm for text summarization.
+    /// </summary>
     public class TextRankSummarizer : ITextSummarizer
     {
         public TextSummary Summarize(string[] sentences, TextSummarizationOptions options)

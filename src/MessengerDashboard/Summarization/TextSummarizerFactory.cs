@@ -8,6 +8,11 @@ namespace MessengerDashboard.Summarization
 {
     public static class TextSummarizerFactory
     {
-        public static 
+        private static readonly Lazy<TextRankSummarizer> s_textRankSummarizer = new(() => new TextRankSummarizer());
+
+        public static ITextSummarizer GetTextSummarizer()
+        {
+            return s_textRankSummarizer.Value;
+        }
     }
 }

@@ -18,6 +18,6 @@ namespace MessengerDashboard.Summarization
     /// </summary>
     public interface ITextSummarizer
     {
-        TextSummary Summarize(TextSummarizationRequest request);
+        TextSummary Summarize(string[] sentences, TextSummarizationOptions options);
     }
 }

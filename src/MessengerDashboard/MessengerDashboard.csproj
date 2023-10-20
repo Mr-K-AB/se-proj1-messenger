@@ -17,7 +17,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="OpenTextSummarizer" Version="1.0.2" />
+    <PackageReference Include="SentimentAnalyzer" Version="1.2.3" />
   </ItemGroup>
 
 </Project>

@@ -13,7 +13,22 @@ namespace MessengerWhiteboard
 
         public ViewModel()
         {
-            ShapeItems = new ObservableCollection<ShapeItem>();
+            ShapeItems = new();
+
+        }
+
+        private static ViewModel? _instance;
+
+        public static ViewModel Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new ViewModel();
+                }
+                return _instance;
+            }
         }
 
         public void AddShape(ShapeItem shape)

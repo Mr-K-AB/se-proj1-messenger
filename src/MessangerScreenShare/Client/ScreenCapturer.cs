@@ -1,150 +1,99 @@
-﻿///<author>Alugonda Sathvik</author>
-///<summary> 
-///This file contains the ScreenCapturer Class that implements the
-///screen capturing functionality. It is used by ScreenshareClient. 
-///</summary>
-
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MessangerScreenShare.Client
+namespace MessangerScreenshare.Client
 {
-    /// <summary>
-    /// This class is considered as helper class for ScreenCapturer
-    /// where it is used to store image data as bytes.
-    /// </summary>
-    public class CapturedScreen
-    {
-        public byte[] ImageData { get; }
-
-        public CapturedScreen( byte[] imageData )
-        {
-            ImageData = imageData;
-        }
-    }
-
-    /// <summary>
-    /// This class is used to capture the screen 
-    /// with respect to client view i.e can able to 
-    /// start capturing screen and stop capturing screen.
-    /// </summary>
-
     public class ScreenCapturer
     {
-        private readonly Queue<CapturedScreen> _capturedFrames;
+        private const int MaxQueueLength = 20;
 
-        // Limits the number of frames in the queue
-        public const int MaxQueueLength = 50;
-
-        private bool _cancellationToken;
-
-        // _captureTask variable is used to 
-        // manage start the capturing screen task
-        private Task? _captureTask;
-
-        private readonly Screenshot _screenshot;
+        private CancellationTokenSource _cancellationTokenSource;
+        private ConcurrentQueue<Bitmap> _capturedFrameQueue;
+        private Screenshot _screenshot;
 
         public ScreenCapturer()
         {
-            _capturedFrames = new Queue<CapturedScreen>();
+            _capturedFrameQueue = new ConcurrentQueue<Bitmap>();
             _screenshot = Screenshot.Instance();
         }
 
-        /// <summary>
-        /// GetCapturedScreen gives the captured Screen 
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns> The first captured screen in the _capturedFrames queue.</returns>
-        public CapturedScreen? GetCapturedScreen( ref bool cancellationToken )
+        public async Task<Bitmap?> GetImageAsync(CancellationToken cancellationToken)
         {
             while (true)
             {
-                lock (_capturedFrames)
+                if (_capturedFrameQueue.TryDequeue(out var frame))
                 {
-                    if (_capturedFrames.Count != 0)
-                    {
-                        break;
-                    }
+                    return frame;
                 }
 
-                if (cancellationToken)
+                if (cancellationToken.IsCancellationRequested)
                 {
                     return null;
                 }
 
-                Thread.Sleep( 100 );
-            }
-
-            lock (_capturedFrames)
-            {
-                return _capturedFrames?.Dequeue();
+                await Task.Delay(100);
             }
         }
 
         public int GetCapturedFrameLength()
         {
-            lock (_capturedFrames)
-            {
-                return _capturedFrames.Count;
-            }
+            return _capturedFrameQueue.Count;
         }
 
         public void StartCapture()
         {
-            _cancellationToken = false;
-            _captureTask = new Task( () =>
+            _cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = _cancellationTokenSource.Token;
+
+            Task.Run( async () =>
             {
-                while (!_cancellationToken)
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    lock (_capturedFrames)
+                    if (_capturedFrameQueue.Count < MaxQueueLength)
                     {
-                        if (_capturedFrames.Count < MaxQueueLength)
+                        try
                         {
-                            try
+                            Bitmap img = _screenshot.MakeScreenshot();
+                            if (img != null)
                             {
-                                byte[] imageData = _screenshot.MakeScreenShot();
-                                if (imageData != null)
-                                {
-                                    Thread.Sleep( 150 );
-                                    _capturedFrames.Enqueue( new CapturedScreen( imageData ) );
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                Trace.WriteLine( $"[Screenshare] Could not capture screenshot: {e.Message}" );
+                                await Task.Delay( 150 );
+                                _capturedFrameQueue.Enqueue(img);
                             }
                         }
-                        else
+                        catch (Exception e)
                         {
-                            // Sleep for some time, if the queue is filled
-                            while (_capturedFrames.Count > MaxQueueLength / 2)
+                            Trace.WriteLine( $"[Screenshare] Could not capture screenshot: {e.Message}" );
+                        }
+                    }
+                    else
+                    {
+                        // Sleep for some time if the queue is filled
+                        while (_capturedFrameQueue.Count > MaxQueueLength / 2)
+                        {
+                            if (_capturedFrameQueue.TryDequeue( out var _ ))
                             {
-                                _capturedFrames.Dequeue();
+                                await Task.Delay( 1 ); // Let's avoid busy waiting
                             }
                         }
                     }
                 }
             } );
-
-            _captureTask.Start();
         }
 
         public void StopCapture()
         {
             try
             {
-                _cancellationToken = true;
-                _captureTask?.Wait();
+                _cancellationTokenSource?.Cancel();
             }
             catch (Exception e)
             {
                 Trace.WriteLine( Utils.GetDebugMessage( $"Unable to stop capture: {e.Message}" , withTimeStamp: true ) );
             }
-
-            _capturedFrames.Clear();
         }
     }
 }

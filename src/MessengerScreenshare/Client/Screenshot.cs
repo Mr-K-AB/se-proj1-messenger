@@ -15,7 +15,7 @@ using MapFlags = SharpDX.Direct3D11.MapFlags;
 using Resource = SharpDX.DXGI.Resource;
 
 
-namespace MessangerScreenshare.Client
+namespace MessengerScreenshare.Client
 {
     /// <summary>
     /// Class contains the necessary functions for taking the screenshot of the current screen.

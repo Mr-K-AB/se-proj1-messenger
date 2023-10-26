@@ -8,7 +8,7 @@ using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MessangerScreenshare.Client
+namespace MessengerScreenshare.Client
 {
     public class ScreenProcessor
     {

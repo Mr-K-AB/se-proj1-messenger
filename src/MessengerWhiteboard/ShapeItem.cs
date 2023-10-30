@@ -21,7 +21,7 @@ namespace MessengerWhiteboard
         // public double Width { get; set; }
         public Color color { get; set; }
         public Rect boundary { get; set; }
-        public ShapeItem(string shapeType, Geometry geometry, Rect bb, Color c, double strokeThickness)
+        public ShapeItem(string shapeType, Geometry geometry, Rect bb, Color c, double strokeThickness, int zIndex)
         {
             ShapeType = shapeType;
             Geometry = geometry;
@@ -32,6 +32,15 @@ namespace MessengerWhiteboard
             boundary = bb;
             color = c;
             StrokeThickness = strokeThickness;
+            ZIndex = zIndex;
+        }
+
+        public void EditShape(Point a, Point b)
+        {
+            Rect boundingBox = new(a, b);
+            Geometry geometry = new RectangleGeometry(boundingBox);
+            boundary = boundingBox;
+            Geometry = geometry;
         }
         //public override string ToString()
         //{

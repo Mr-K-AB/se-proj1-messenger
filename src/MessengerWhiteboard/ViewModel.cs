@@ -12,6 +12,7 @@ namespace MessengerWhiteboard
     public partial class ViewModel
     {
         public ObservableCollection<ShapeItem> ShapeItems { get; set; }
+        ShapeItem? tempShape;
 
         public string userID = "user1";
 

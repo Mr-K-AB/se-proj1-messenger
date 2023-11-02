@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.IO.Compression;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MessengerScreenshare.Client
 {
@@ -25,7 +21,7 @@ namespace MessengerScreenshare.Client
         private Bitmap _prevImage;
         private int _first_xor;
 
-        public ScreenProcessor( ScreenCapturer capturer )
+        public ScreenProcessor(ScreenCapturer capturer)
         {
             _capturer = capturer;
             _processedFrameQueue = new ConcurrentQueue<string>();
@@ -33,11 +29,11 @@ namespace MessengerScreenshare.Client
             _first_xor = 0;
         }
 
-        public async Task<string> GetFrameAsync( CancellationToken cancellationToken )
+        public async Task<string> GetFrameAsync(CancellationToken cancellationToken)
         {
             while (true)
             {
-                if (_processedFrameQueue.TryDequeue( out string? frame ))
+                if (_processedFrameQueue.TryDequeue(out string? frame))
                 {
                     return frame;
                 }
@@ -47,7 +43,7 @@ namespace MessengerScreenshare.Client
                     return "";
                 }
 
-                await Task.Delay( 100 );
+                await Task.Delay(100);
             }
         }
 
@@ -56,36 +52,38 @@ namespace MessengerScreenshare.Client
             return _processedFrameQueue.Count;
         }
 
-        public async Task StartProcessingAsync( int windowCount )
+        public async Task StartProcessingAsync(int windowCount)
         {
             _cancellationTokenSource = new CancellationTokenSource();
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
             _first_xor = 0;
-            Bitmap img = await _capturer.GetImageAsync( cancellationToken );
+            Bitmap img = await _capturer.GetImageAsync(cancellationToken);
             _capturedImageHeight = img.Height;
             _capturedImageWidth = img.Width;
             _newRes = new Resolution { Height = _capturedImageHeight / windowCount , Width = _capturedImageWidth / windowCount };
             _currentRes = _newRes;
-            _prevImage = new Bitmap( _newRes.Width , _newRes.Height );
+            _prevImage = new Bitmap(_newRes.Width, _newRes.Height);
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                Bitmap img = await _capturer.GetImageAsync( cancellationToken );
+                img = await _capturer.GetImageAsync(cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
+                {
                     break;
+                }
 
-                string serializedBuffer = Compress( img );
+                string serializedBuffer = Compress(img);
 
                 if (_processedFrameQueue.Count < MaxQueueLength)
                 {
-                    _processedFrameQueue.Enqueue( serializedBuffer );
+                    _processedFrameQueue.Enqueue(serializedBuffer);
                 }
                 else
                 {
                     while (_processedFrameQueue.Count > MaxQueueLength / 2)
                     {
-                        _processedFrameQueue.TryDequeue( out var _ );
+                        _processedFrameQueue.TryDequeue(out string _);
                         await Task.Delay( 1 ); // Avoid busy waiting
                     }
                 }
@@ -103,42 +101,39 @@ namespace MessengerScreenshare.Client
             }
             catch (Exception e)
             {
-                Trace.WriteLine( Utils.GetDebugMessage( $"Failed to cancel processor task: {e.Message}" , withTimeStamp: true ) );
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to cancel processor task: {e.Message}", withTimeStamp: true));
             }
 
             _processedFrameQueue.Clear();
         }
 
-        public void SetNewResolution( int windowCount )
+        public void SetNewResolution(int windowCount)
         {
-            Resolution res = new Resolution { Height = _capturedImageHeight / windowCount , Width = _capturedImageWidth / windowCount };
+            Resolution res = new() { Height = _capturedImageHeight / windowCount, Width = _capturedImageWidth / windowCount };
             lock (ResolutionLock)
             {
                 _newRes = res;
             }
         }
 
-        public static byte[] CompressByteArray( byte[] data )
+        public static byte[] CompressByteArray(byte[] data)
         {
-            using (MemoryStream output = new MemoryStream())
+            MemoryStream output = new();
+            using (DeflateStream dstream = new(output, CompressionLevel.Fastest))
             {
-                using (DeflateStream dstream = new DeflateStream( output , CompressionLevel.Fastest ))
-                {
-                    dstream.Write( data , 0 , data.Length );
-                }
-                return output.ToArray();
+                dstream.Write(data, 0, data.Length);
             }
+            return output.ToArray();
         }
 
-        public string Compress( Bitmap img )
+        public string Compress(Bitmap img)
         {
-            Bitmap newImg = null;
-
+            Bitmap? newImg;
             lock (ResolutionLock)
             {
                 if (_prevImage != null && _newRes == _currentRes)
                 {
-                    newImg = Process( img , _prevImage );
+                    newImg = Process(img, _prevImage);
                 }
                 else if (_newRes != _currentRes)
                 {
@@ -146,34 +141,30 @@ namespace MessengerScreenshare.Client
                 }
             }
 
-            img = new Bitmap( img , _currentRes.Width , _currentRes.Height );
+            img = new Bitmap(img, _currentRes.Width, _currentRes.Height);
             newImg = null;
 
             if (newImg == null)
             {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    img.Save( ms , ImageFormat.Jpeg );
-                    var data = CompressByteArray( ms.ToArray() );
-                    _first_xor = 0;
-                    return Convert.ToBase64String( data ) + "1";
-                }
+                MemoryStream ms = new();
+                img.Save(ms, ImageFormat.Jpeg);
+                byte[] data = CompressByteArray(ms.ToArray());
+                _first_xor = 0;
+                return Convert.ToBase64String(data) + "1";
             }
             else
             {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    newImg.Save( ms , ImageFormat.Bmp );
-                    var data = CompressByteArray( ms.ToArray() );
-                    return Convert.ToBase64String( data ) + "0";
-                }
+                MemoryStream ms = new();
+                newImg.Save(ms, ImageFormat.Bmp);
+                byte[] data = CompressByteArray(ms.ToArray());
+                return Convert.ToBase64String(data) + "0";
             }
         }
 
-        public static unsafe Bitmap? Process( Bitmap curr , Bitmap prev )
+        public static unsafe Bitmap? Process(Bitmap curr, Bitmap prev)
         {
-            BitmapData currData = curr.LockBits( new Rectangle( 0 , 0 , curr.Width , curr.Height ) , ImageLockMode.ReadWrite , curr.PixelFormat );
-            BitmapData prevData = prev.LockBits( new Rectangle( 0 , 0 , prev.Width , prev.Height ) , ImageLockMode.ReadWrite , prev.PixelFormat );
+            BitmapData currData = curr.LockBits(new Rectangle(0, 0, curr.Width, curr.Height), ImageLockMode.ReadWrite, curr.PixelFormat);
+            BitmapData prevData = prev.LockBits(new Rectangle(0, 0, prev.Width, prev.Height), ImageLockMode.ReadWrite, prev.PixelFormat);
 
             int bytesPerPixel = Bitmap.GetPixelFormatSize( curr.PixelFormat ) / 8;
             int heightInPixels = currData.Height;
@@ -182,8 +173,8 @@ namespace MessengerScreenshare.Client
             byte* currPtr = (byte*)currData.Scan0;
             byte* prevPtr = (byte*)prevData.Scan0;
 
-            Bitmap newBmp = new Bitmap( curr.Width , curr.Height );
-            BitmapData bmpData = newBmp.LockBits( new Rectangle( 0 , 0 , curr.Width , curr.Height ) , ImageLockMode.ReadWrite , curr.PixelFormat );
+            Bitmap newBmp = new(curr.Width, curr.Height);
+            BitmapData bmpData = newBmp.LockBits(new Rectangle(0, 0, curr.Width, curr.Height), ImageLockMode.ReadWrite, curr.PixelFormat);
             byte* ptr = (byte*)bmpData.Scan0;
 
             int diff = 0;
@@ -214,9 +205,9 @@ namespace MessengerScreenshare.Client
                         diff++;
                         if (diff > 500)
                         {
-                            curr.UnlockBits( currData );
-                            prev.UnlockBits( prevData );
-                            newBmp.UnlockBits( bmpData );
+                            curr.UnlockBits(currData);
+                            prev.UnlockBits(prevData);
+                            newBmp.UnlockBits(bmpData);
                             return null;
                         }
                     }
@@ -224,9 +215,9 @@ namespace MessengerScreenshare.Client
             }
 
             curr.UnlockBits(currData);
-            prev.UnlockBits( prevData);
+            prev.UnlockBits(prevData);
             newBmp.UnlockBits(bmpData);
-           
+
             return newBmp;
         }
     }

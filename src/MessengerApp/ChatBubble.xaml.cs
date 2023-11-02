@@ -24,5 +24,34 @@ namespace MessengerApp
         {
             InitializeComponent();
         }
+
+        private void ClearReplyBox(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button)
+            {
+                Button senderButton = (Button)sender;
+                ReplyTextBox.Text = null;
+            }
+        }
+
+        private void SendButtonClick(object sender, RoutedEventArgs e)
+        {
+            string msg = SendTextBox.Text;
+            msg = msg.Trim();
+            // We send a message only when the text box is not empty
+            if (!string.IsNullOrEmpty(msg))
+            {
+                // Character limit set to avoid long paragraphs
+                if (msg.Length > 300)
+                {
+                    MessageBox.Show("Too many chars, limit of 300!");
+                    return;
+                }
+
+                // Clearing the TextBoxes
+                SendTextBox.Text = string.Empty;
+                ReplyTextBox.Text = string.Empty;
+            }
+        }
     }
 }

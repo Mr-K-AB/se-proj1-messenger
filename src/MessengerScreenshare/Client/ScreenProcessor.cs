@@ -14,15 +14,15 @@ namespace MessengerScreenshare.Client
     {
         private const int MaxQueueLength = 20;
         private CancellationTokenSource _cancellationTokenSource;
-        private ConcurrentQueue<string> _processedFrameQueue;
-        private ScreenCapturer _capturer;
+        private readonly ConcurrentQueue<string> _processedFrameQueue;
+        private readonly ScreenCapturer _capturer;
         private Resolution _currentRes;
         private Resolution _newRes;
         public readonly object ResolutionLock;
         private int _capturedImageHeight;
         private int _capturedImageWidth;
-        private bool _cancellationToken;
-        private Bitmap prevImage;
+        private readonly bool _cancellationToken;
+        private Bitmap _prevImage;
         private int _first_xor;
 
         public ScreenProcessor( ScreenCapturer capturer )
@@ -37,7 +37,7 @@ namespace MessengerScreenshare.Client
         {
             while (true)
             {
-                if (_processedFrameQueue.TryDequeue( out var frame ))
+                if (_processedFrameQueue.TryDequeue( out string? frame ))
                 {
                     return frame;
                 }
@@ -59,7 +59,7 @@ namespace MessengerScreenshare.Client
         public async Task StartProcessingAsync( int windowCount )
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            var cancellationToken = _cancellationTokenSource.Token;
+            CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
             _first_xor = 0;
             Bitmap img = await _capturer.GetImageAsync( cancellationToken );
@@ -67,7 +67,7 @@ namespace MessengerScreenshare.Client
             _capturedImageWidth = img.Width;
             _newRes = new Resolution { Height = _capturedImageHeight / windowCount , Width = _capturedImageWidth / windowCount };
             _currentRes = _newRes;
-            prevImage = new Bitmap( _newRes.Width , _newRes.Height );
+            _prevImage = new Bitmap( _newRes.Width , _newRes.Height );
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -90,7 +90,7 @@ namespace MessengerScreenshare.Client
                     }
                 }
 
-                prevImage = img;
+                _prevImage = img;
             }
         }
 
@@ -136,9 +136,9 @@ namespace MessengerScreenshare.Client
 
             lock (ResolutionLock)
             {
-                if (prevImage != null && _newRes == _currentRes)
+                if (_prevImage != null && _newRes == _currentRes)
                 {
-                    newImg = Process( img , prevImage );
+                    newImg = Process( img , _prevImage );
                 }
                 else if (_newRes != _currentRes)
                 {

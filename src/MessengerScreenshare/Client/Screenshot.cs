@@ -22,24 +22,24 @@ namespace MessengerScreenshare.Client
     /// </summary>
     public class Screenshot
     {
-        private static readonly object _lock = new();
-        private static Screenshot? instance;
-        public Boolean CaptureActive { get; private set; }
+        private static readonly object s_lock = new();
+        private static Screenshot? s_instance;
+        public bool CaptureActive { get; private set; }
         private Factory1? _factory1;
         private Adapter1? _adapter1;
         private Device? _device;
         private Output? _output;
         private Output1? _output1;
-        private Int32 _width;
-        private Int32 _height;
+        private int _width;
+        private int _height;
         private Rectangle _bounds;
         private Texture2DDescription _texture2DDescription;
         private Texture2D? _texture2D;
         private OutputDuplication? _outputDuplication;
         private Bitmap? _bitmap;
 
-        private Int32 MakeScreenshot_LastDisplayIndexValue;
-        private Int32 MakeScreenshot_LastAdapterIndexValue;
+        private int _makeScreenshot_LastDisplayIndexValue;
+        private int _makeScreenshot_LastAdapterIndexValue;
 
         protected Screenshot()
         {
@@ -49,13 +49,10 @@ namespace MessengerScreenshare.Client
 
         public static Screenshot Instance()
         {
-            lock (_lock)
+            lock (s_lock)
             {
-                if (instance == null)
-                {
-                    instance = new Screenshot();
-                }
-                return instance;
+                s_instance ??= new Screenshot();
+                return s_instance;
             }
         }
 
@@ -65,54 +62,52 @@ namespace MessengerScreenshare.Client
         /// <param name="adapterIndex">Index for the display card to be used. Defaults to 0 (Primary graphics card)</param>
         /// <param name="maxTimeout">Timeout to get duplicated frame</param>
         /// <returns>The bitmap image for the screenshot</returns>
-        public Bitmap MakeScreenshot( Int32 displayIndex = 0 , Int32 adapterIndex = 0 , Int32 maxTimeout = 5000 )
+        public Bitmap MakeScreenshot(int displayIndex = 0, int adapterIndex = 0, int maxTimeout = 5000)
         {
             InitializeVariables( displayIndex , adapterIndex );
 
-            using (Resource screenResource)
+            // acquire the next frame and directly convert it into a bitmap
+            if (_outputDuplication.TryAcquireNextFrame(maxTimeout, out _, out Resource screenResource) != Result.Ok)
             {
-                // acquire the next frame and directly convert it into a bitmap
-                if (_outputDuplication.TryAcquireNextFrame( maxTimeout , out var frameInfo , out screenResource ) != Result.Ok)
-                    return null;
-
-                using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
-                {
-                    _device.ImmediateContext.CopyResource( screenTexture2D , _texture2D );
-
-                    DataBox dataBox = _device.ImmediateContext.MapSubresource( _texture2D , 0 , MapMode.Read , MapFlags.None );
-
-                    Bitmap screenshot = new Bitmap( _width , _height , PixelFormat.Format32bppRgb );
-                    BitmapData bitmapData = screenshot.LockBits( _bounds , ImageLockMode.WriteOnly , screenshot.PixelFormat );
-
-                    IntPtr dataBoxPointer = dataBox.DataPointer;
-                    IntPtr bitmapDataPointer = bitmapData.Scan0;
-
-                    for (Int32 y = 0; y < _height; y++)
-                    {
-                        Utilities.CopyMemory( bitmapDataPointer , dataBoxPointer , _width * 4 );
-                        dataBoxPointer = IntPtr.Add( dataBoxPointer , dataBox.RowPitch );
-                        bitmapDataPointer = IntPtr.Add( bitmapDataPointer , bitmapData.Stride );
-                    }
-
-                    screenshot.UnlockBits( bitmapData );
-                    _device.ImmediateContext.UnmapSubresource( _texture2D , 0 );
-
-                    // release the acquired frame
-                    _outputDuplication.ReleaseFrame();
-                    return screenshot;
-                }
+                return null;
             }
 
-            /// <summary>
-            /// Initializes the members of the class.
-            /// </summary>
-            /// <param name="displayIndex">Index for the display which is to be captured. Defaults to 0 (Primary Display)</param>
-            /// <param name="adapterIndex">Index for the display card to be used. Defaults to 0 (Primary graphics card)</param>
-            /// <param name="forcedInitialization"></param>
-            private void InitializeVariables(Int32 displayIndex, Int32 adapterIndex, Boolean forcedInitialization = false)
+            Texture2D screenTexture2D = screenResource.QueryInterface<Texture2D>();
+            _device.ImmediateContext.CopyResource(screenTexture2D, _texture2D);
+
+            DataBox dataBox = _device.ImmediateContext.MapSubresource(_texture2D, 0, MapMode.Read, MapFlags.None);
+
+            Bitmap screenshot = new(_width, _height, PixelFormat.Format32bppRgb);
+            BitmapData bitmapData = screenshot.LockBits(_bounds, ImageLockMode.WriteOnly, screenshot.PixelFormat);
+
+            IntPtr dataBoxPointer = dataBox.DataPointer;
+            IntPtr bitmapDataPointer = bitmapData.Scan0;
+
+            for (int y = 0; y < _height; y++)
+            {
+                Utilities.CopyMemory(bitmapDataPointer, dataBoxPointer, _width * 4);
+                dataBoxPointer = IntPtr.Add(dataBoxPointer, dataBox.RowPitch);
+                bitmapDataPointer = IntPtr.Add(bitmapDataPointer, bitmapData.Stride);
+            }
+
+            screenshot.UnlockBits(bitmapData);
+            _device.ImmediateContext.UnmapSubresource(_texture2D, 0);
+
+            // release the acquired frame
+            _outputDuplication.ReleaseFrame();
+            return screenshot;
+        }
+
+        /// <summary>
+        /// Initializes the members of the class.
+        /// </summary>
+        /// <param name="displayIndex">Index for the display which is to be captured. Defaults to 0 (Primary Display)</param>
+        /// <param name="adapterIndex">Index for the display card to be used. Defaults to 0 (Primary graphics card)</param>
+        /// <param name="forcedInitialization"></param>
+        private void InitializeVariables(int displayIndex, int adapterIndex, bool forcedInitialization = false)
         {
-            Boolean displayIndexChanged = MakeScreenshot_LastDisplayIndexValue != displayIndex;
-            Boolean adapterIndexChanged = MakeScreenshot_LastAdapterIndexValue != adapterIndex;
+            bool displayIndexChanged = _makeScreenshot_LastDisplayIndexValue != displayIndex;
+            bool adapterIndexChanged = _makeScreenshot_LastAdapterIndexValue != adapterIndex;
 
             // reset all values in case of change in display, adapter or forced init.
             if (displayIndexChanged || adapterIndexChanged || forcedInitialization)
@@ -144,8 +139,8 @@ namespace MessengerScreenshare.Client
                 _outputDuplication.TryAcquireNextFrame(1000, out _, out _);
                 _outputDuplication.ReleaseFrame();
                 _bitmap = new Bitmap(_width, _height, PixelFormat.Format32bppRgb);
-                MakeScreenshot_LastAdapterIndexValue = adapterIndex;
-                MakeScreenshot_LastDisplayIndexValue = displayIndex;
+                _makeScreenshot_LastAdapterIndexValue = adapterIndex;
+                _makeScreenshot_LastDisplayIndexValue = displayIndex;
             }
         }
 
@@ -162,8 +157,8 @@ namespace MessengerScreenshare.Client
             _device?.Dispose();
             _adapter1?.Dispose();
             _factory1?.Dispose();
-            MakeScreenshot_LastAdapterIndexValue = -1;
-            MakeScreenshot_LastDisplayIndexValue = -1;
+            _makeScreenshot_LastAdapterIndexValue = -1;
+            _makeScreenshot_LastDisplayIndexValue = -1;
         }
     }
 

@@ -12,8 +12,8 @@ namespace MessengerScreenshare.Client
         private const int MaxQueueLength = 20;
 
         private CancellationTokenSource _cancellationTokenSource;
-        private ConcurrentQueue<Bitmap> _capturedFrameQueue;
-        private Screenshot _screenshot;
+        private readonly ConcurrentQueue<Bitmap> _capturedFrameQueue;
+        private readonly Screenshot _screenshot;
 
         public ScreenCapturer()
         {
@@ -25,7 +25,7 @@ namespace MessengerScreenshare.Client
         {
             while (true)
             {
-                if (_capturedFrameQueue.TryDequeue(out var frame))
+                if (_capturedFrameQueue.TryDequeue(out Bitmap? frame))
                 {
                     return frame;
                 }
@@ -47,7 +47,7 @@ namespace MessengerScreenshare.Client
         public void StartCapture()
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            var cancellationToken = _cancellationTokenSource.Token;
+            CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
             Task.Run( async () =>
             {
@@ -74,7 +74,7 @@ namespace MessengerScreenshare.Client
                         // Sleep for some time if the queue is filled
                         while (_capturedFrameQueue.Count > MaxQueueLength / 2)
                         {
-                            if (_capturedFrameQueue.TryDequeue( out var _ ))
+                            if (_capturedFrameQueue.TryDequeue( out Bitmap _ ))
                             {
                                 await Task.Delay( 1 ); // Let's avoid busy waiting
                             }
@@ -92,7 +92,7 @@ namespace MessengerScreenshare.Client
             }
             catch (Exception e)
             {
-                Trace.WriteLine( Utils.GetDebugMessage( $"Unable to stop capture: {e.Message}" , withTimeStamp: true ) );
+                Trace.WriteLine(Utils.GetDebugMessage($"Unable to stop capture: {e.Message}", withTimeStamp: true));
             }
         }
     }

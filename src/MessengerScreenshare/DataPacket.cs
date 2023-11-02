@@ -1,4 +1,4 @@
-﻿/// <author>Mayank Singla</author>
+﻿/// <author>Likhith Reddy</author>
 /// <summary>
 /// Defines the class "DataPacket" which represents the data packet sent
 /// from server to client or the other way.

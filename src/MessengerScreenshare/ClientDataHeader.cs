@@ -1,4 +1,4 @@
-﻿/// <author>Mayank Singla</author>
+﻿/// <author>Likhith Reddy</author>
 /// <summary>
 /// Defines the enum "ClientDataHeader", which enumerates all the headers
 /// that could be present in the data packet sent by the client.

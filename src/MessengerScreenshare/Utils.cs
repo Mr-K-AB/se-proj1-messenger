@@ -1,4 +1,4 @@
-﻿///<author>Satyam Mishra</author>
+﻿///<author>Likhith Reddy</author>
 ///<summary>
 /// This file has Frame and the related structures which are used for storing
 /// the difference in the pixel and the resolution of image. It also has some other

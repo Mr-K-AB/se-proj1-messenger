@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MessengerNetworking.Communicator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MessengerNetworking.Test
+namespace MessengerTests.MessengerNetworking.Communicator
 {
     [TestClass]
     public class UnitTest2
@@ -30,8 +30,8 @@ namespace MessengerNetworking.Test
 
             Assert.AreEqual( messageToSend , server.latestMessage );
 
-            client.Disconnect();
-            server.Stop();
+            // client.Disconnect();
+            // server.Stop();
         }
     }
 }

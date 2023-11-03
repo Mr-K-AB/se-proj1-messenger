@@ -37,10 +37,20 @@ namespace MessengerWhiteboard
 
         public void EditShape(Point a, Point b)
         {
-            Rect boundingBox = new(a, b);
-            Geometry geometry = new RectangleGeometry(boundingBox);
-            boundary = boundingBox;
-            Geometry = geometry;
+            if(ShapeType == "Rectangle")
+            {
+                Rect boundingBox = new(a, b);
+                Geometry.SetValue(RectangleGeometry.RectProperty, boundingBox);
+                //Geometry geometry = new RectangleGeometry(boundingBox);
+                boundary = boundingBox;
+            }
+            else
+            {
+                Rect boundingBox = new(a, b);
+                Geometry geometry = new EllipseGeometry(boundingBox);
+                boundary = boundingBox;
+                Geometry = geometry;
+            }
         }
         //public override string ToString()
         //{

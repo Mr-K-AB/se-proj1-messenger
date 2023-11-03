@@ -6,7 +6,7 @@
 
 using System.Runtime.Serialization;
 
-namespace PlexShareScreenshare
+namespace MessengerScreenshare
 {
     /// <summary>
     /// Enumerates all the headers that could be present in the data packet

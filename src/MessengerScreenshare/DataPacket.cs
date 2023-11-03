@@ -6,7 +6,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace PlexShareScreenshare
+namespace MessengerScreenshare
 {
     /// <summary>
     /// Represents the data packet sent from server to client or the other way.

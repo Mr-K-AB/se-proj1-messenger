@@ -17,7 +17,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace MessangerScreenshare.Client
+namespace MessengerScreenshare.Client
 {
     public class ScreenshareClient : INotificationHandler
     {

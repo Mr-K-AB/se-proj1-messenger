@@ -7,4 +7,26 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Images\cursor.png" />
+    <None Remove="Images\pencil.png" />
+    <None Remove="Images\rectangle.png" />
+    <None Remove="Images\redo.png" />
+    <None Remove="Images\shape.png" />
+    <None Remove="Images\undo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MessengerWhiteboard\MessengerWhiteboard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\cursor.png" />
+    <Resource Include="Images\pencil.png" />
+    <Resource Include="Images\rectangle.png" />
+    <Resource Include="Images\redo.png" />
+    <Resource Include="Images\shape.png" />
+    <Resource Include="Images\undo.png" />
+  </ItemGroup>
+
 </Project>

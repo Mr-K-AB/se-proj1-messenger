@@ -13,7 +13,15 @@ namespace MessengerWhiteboard
         public ShapeItem CreateShape(string shapeType, Point start, Point end, Color color)
         {
             Rect boundingBox = new(start, end);
-            Geometry geometry = new RectangleGeometry(boundingBox);
+            Geometry geometry;
+            if (shapeType == "Rectangle")
+            {
+                geometry = new RectangleGeometry(boundingBox);
+            }
+            else
+            {
+                geometry = new EllipseGeometry(boundingBox);
+            }
             return new ShapeItem(shapeType, geometry, boundingBox, color, 1, 1);
         }
 
@@ -30,6 +38,8 @@ namespace MessengerWhiteboard
                 AddShape(tempShape);
             }
         }
+
+
 
     }
 }

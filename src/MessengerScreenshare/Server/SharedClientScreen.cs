@@ -19,8 +19,8 @@ using Timer = System.Timers.Timer;
 namespace MessengerScreenshare.Server
 {
     public class SharedClientScreen :
-        INotifyPropertyChanged, // Notifies the UX that a property value has changed.
-        IDisposable             // Handle cleanup work for the allocated resources.
+        INotifyPropertyChanged // Notifies the UX that a property value has changed.
+        //IDisposable             // Handle cleanup work for the allocated resources.
     {
         /// <summary>
         /// Object of Timer which keeps track the time of last packet
@@ -32,7 +32,7 @@ namespace MessengerScreenshare.Server
         /// <summary>
         /// The data model defining the callback for the timeout.
         /// </summary>
-        private readonly ITimerManager _server;
+        //private readonly ITimerManager _server;
 
         /// <summary>
         /// It will store the image receiving from the clients.
@@ -61,12 +61,12 @@ namespace MessengerScreenshare.Server
         /// <summary>
         /// Lock acquired while modifying "_taskId"
         /// </summary>
-        private readonly Object _taskIdLock = new();
+        private readonly object _taskIdLock = new();
 
         /// <summary>
         /// Track whether Dispose has been called.
         /// </summary>
-        private bool _disposed;
+        private readonly bool _disposed;
 
         /// <summary>
         /// Image that is currently displaying on the screen.
@@ -105,37 +105,19 @@ namespace MessengerScreenshare.Server
         /// If we are in debugging/testing mode.
         /// </param>
         /// <exception cref="Exception"></exception>
-        public SharedClientScreen(string clientId, string clientName, ITimerManager server, bool isDebugging = false)
+        public SharedClientScreen(string clientId, string clientName, bool isDebugging = false)
         {
             //Initialize all the variables
-            Initialize(clientId, clientName, server);
-
-            if (!isDebugging)
-            {
-                SetupTimer();
-            }
-
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created client with id: {this.Id} and name: {this.Name}", withTimeStamp: true));
-        }
-
-        /// <summary>
-        /// It will initialize all the required variables.
-        /// </summary>
-        /// <param name="clientId"></param>
-        /// <param name="clientName"></param>
-        /// <param name="server"></param>
-        /// <exception cref="ArgumentNullException"></exception>
-        private void Initialize(string clientId, string clientName, ITimerManager server)
-        {
-            this.Id = clientId ?? throw new ArgumentNullException(nameof(clientId));
-            this.Name = clientName ?? throw new ArgumentNullException(nameof(clientName));
-            _server = server ?? throw new ArgumentNullException(nameof(server));
+ 
+            Id = clientId ?? throw new ArgumentNullException(nameof(clientId));
+            Name = clientName ?? throw new ArgumentNullException(nameof(clientName));
+            //_server = server ?? throw new ArgumentNullException(nameof(server));
 
             // Created a new stitcher object associated to this client.
             _stitcher = new(this);
 
             // Initialize the queues to be empty.
-            _imageQueue = new();
+            _imageQueue = new ();
             _finalImageQueue = new();
 
             // Initially client is not pinned so mark it false.
@@ -147,9 +129,16 @@ namespace MessengerScreenshare.Server
 
 
             _disposed = false;
-            this.TaskId = 0;
+            TaskId = 0;
             _tileHeight = 0;
             _tileWidth = 0;
+
+            //if (!isDebugging)
+            //{
+             //   SetupTimer();
+            //}
+
+            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created client with id: {Id} and name: {Name}", withTimeStamp: true));
         }
 
         /// <summary>
@@ -157,11 +146,11 @@ namespace MessengerScreenshare.Server
         /// after a specified time interval.
         /// </summary>
         /// <exception cref="Exception"></exception>
-        private void SetupTimer()
+        /*private void SetupTimer()
         {
             try
             {
-                _timer = new Timer();
+                Timer _timer = new ();
                 _timer.Elapsed += (sender, e) => _server.OnTimeOut(sender, e, Id);
                 _timer.AutoReset = false;
                 UpdateTimer();
@@ -172,7 +161,7 @@ namespace MessengerScreenshare.Server
                 Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}" , withTimeStamp: true));
                 throw new Exception("Failed to create the timer", e);
             }
-        }
+        }*/
 
         /// <summary>
         /// Destructor for the class that will perform some cleanup tasks.
@@ -183,7 +172,7 @@ namespace MessengerScreenshare.Server
             // Do not re-create Dispose clean-up code here.
             // Calling Dispose(disposing: false) is optimal in terms of
             // readability and maintainability.
-            Dispose( disposing: false );
+            Dispose(disposing: false);
         }
 
         /// <summary>
@@ -195,9 +184,9 @@ namespace MessengerScreenshare.Server
         /// <summary>
         /// Implement IDisposable. Disposes the managed and unmanaged resources.
         /// </summary>
-        public void Dispose()
+        public void Dispose(bool disposing)
         {
-            Dispose( disposing: true );
+            Dispose(disposing: true);
 
             // This object will be cleaned up by the Dispose method.
             // Therefore, we should call GC.SuppressFinalize to
@@ -241,7 +230,7 @@ namespace MessengerScreenshare.Server
                 if (_currentImage != value)
                 {
                     _currentImage = value;
-                    this.OnPropertyChanged(nameof(CurrentImage));
+                    OnPropertyChanged(nameof(CurrentImage));
                 }
             }
         }
@@ -258,7 +247,7 @@ namespace MessengerScreenshare.Server
                 if (_pinned != value)
                 {
                     _pinned = value;
-                    this.OnPropertyChanged(nameof(Pinned));
+                    OnPropertyChanged(nameof(Pinned));
                 }
             }
         }
@@ -275,7 +264,7 @@ namespace MessengerScreenshare.Server
                 if (_tileHeight != value)
                 {
                     _tileHeight = value;
-                    this.OnPropertyChanged(nameof(TileHeight));
+                    OnPropertyChanged(nameof(TileHeight));
                 }
             }
         }
@@ -292,7 +281,7 @@ namespace MessengerScreenshare.Server
                 if (_tileWidth != value)
                 {
                     _tileWidth = value;
-                    this.OnPropertyChanged(nameof(TileWidth));
+                    OnPropertyChanged(nameof(TileWidth));
                 }
             }
         }
@@ -312,7 +301,7 @@ namespace MessengerScreenshare.Server
             lock (_imageQueue)
             {
                 // Check if the task is stopped or a new task is started.
-                if (_imageQueue == null || taskId != this.TaskId)
+                if (_imageQueue == null || taskId != TaskId)
                 {
                     return null;
                 }
@@ -324,7 +313,7 @@ namespace MessengerScreenshare.Server
                     Monitor.Wait(_imageQueue);
 
                     // After being woken up, recheck if the task is stopped or a new task is started.
-                    if (_imageQueue == null || taskId != this.TaskId)
+                    if (_imageQueue == null || taskId != TaskId)
                     {
                         return null;
                     }
@@ -360,8 +349,10 @@ namespace MessengerScreenshare.Server
             lock (_imageQueue)
             {
                 // Return if the task is stopped or a new task is started.
-                if (taskId != this.TaskId) return;
-
+                if (taskId != TaskId)
+                {
+                    return;
+                }
                 _imageQueue.Enqueue(image);
             }
         }
@@ -382,7 +373,7 @@ namespace MessengerScreenshare.Server
             lock (_finalImageQueue)
             {
                 // Check if the task is stopped or a new task is started.
-                if (_finalImageQueue == null || taskId != this.TaskId)
+                if (_finalImageQueue == null || taskId != TaskId)
                 {
                     return null;
                 }
@@ -394,7 +385,7 @@ namespace MessengerScreenshare.Server
                     Monitor.Wait(_finalImageQueue);
 
                     // After being woken up, recheck if the task is stopped or a new task is started.
-                    if (_finalImageQueue == null || taskId != this.TaskId)
+                    if (_finalImageQueue == null || taskId != TaskId)
                     {
                         return null;
                     }
@@ -430,8 +421,10 @@ namespace MessengerScreenshare.Server
             lock (_finalImageQueue)
             {
                 // Return if the task is stopped or a new task is started.
-                if (taskId != this.TaskId) return;
-
+                if (taskId != TaskId)
+                {
+                    return;
+                }
                 _finalImageQueue.Enqueue(image);
             }
         }
@@ -451,7 +444,7 @@ namespace MessengerScreenshare.Server
 
             if (_imageSendTask != null)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Trying to start an already started task for the client with Id {this.Id}", withTimeStamp: true));
+                Trace.WriteLine(Utils.GetDebugMessage($"Trying to start an already started task for the client with Id {Id}", withTimeStamp: true));
                 return;
             }
 
@@ -460,13 +453,13 @@ namespace MessengerScreenshare.Server
                 lock (_taskIdLock)
                 {
                     // Create a new task Id
-                    ++this.TaskId;
+                    ++TaskId;
 
                     // Start the stitcher.
-                    _stitcher?.StartStitching(this.TaskId);
+                    _stitcher?.StartStitching(TaskId);
 
                     // Create and start a new task.
-                    _imageSendTask = new(() => task(this.TaskId));
+                    _imageSendTask = new(() => task(TaskId));
                     _imageSendTask?.Start();
                 }
             }
@@ -476,7 +469,7 @@ namespace MessengerScreenshare.Server
                 throw new Exception("Failed to start the task", e);
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created the processing task with id {this.TaskId} for the client with id {this.Id}", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created the processing task with id {TaskId} for the client with id {Id}", withTimeStamp: true));
         }
 
         /// <summary>
@@ -495,7 +488,7 @@ namespace MessengerScreenshare.Server
             // Check if the task was started before.
             if (_imageSendTask == null)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Client with {this.Id} Id has never started their task", withTimeStamp: true));
+                Trace.WriteLine(Utils.GetDebugMessage($"Client with {Id} Id has never started their task", withTimeStamp: true));
                 return;
             }
 
@@ -507,7 +500,7 @@ namespace MessengerScreenshare.Server
                 lock (_taskIdLock)
                 {
                     // Change the task ID to denote task cancellation.
-                    ++this.TaskId;
+                    ++TaskId;
 
                     // Immediately make the task variable null.
                     previousImageSendTask = _imageSendTask;
@@ -544,7 +537,7 @@ namespace MessengerScreenshare.Server
                 throw new Exception("Failed to start the task", e);
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Task with {this.TaskId} has stopped successfully for the client with id {this.Id}", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage($"Task with {TaskId} has stopped successfully for the client with id {Id}", withTimeStamp: true));
         }
 
         /// <summary>

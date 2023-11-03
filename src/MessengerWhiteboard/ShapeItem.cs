@@ -13,8 +13,8 @@ namespace MessengerWhiteboard
     {
         public string ShapeType { get; set; }
         public Geometry Geometry { get; set; }
-        // public string Stroke { get; set; }
-        // public string Fill { get; set; } 
+        public string Stroke { get; set; }
+        public string Fill { get; set; } 
         public double StrokeThickness { get; set; }
         public int ZIndex { get; set; }
         // public double Height { get; set; }
@@ -25,8 +25,8 @@ namespace MessengerWhiteboard
         {
             ShapeType = shapeType;
             Geometry = geometry;
-            //Stroke = stroke;
-            //Fill = fill;
+            Stroke = stroke;
+            Fill = fill;
             //Height = height;
             //Width = width;
             boundary = bb;

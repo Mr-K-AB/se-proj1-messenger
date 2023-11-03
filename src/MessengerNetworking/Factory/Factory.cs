@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Security.AccessControl;
 
-namespace Factory
+namespace MessengerNetworking.Factory
 {
     /// <summary>
     /// Gives a unique instance of server to each system

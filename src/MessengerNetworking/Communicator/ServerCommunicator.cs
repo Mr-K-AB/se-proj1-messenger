@@ -12,6 +12,8 @@ namespace MessengerNetworking.Communicator
     {
         private Dictionary<string, TcpClient> clients = new Dictionary<string, TcpClient>();
         private TcpListener listener;
+        // dummy, just made for testing
+        public string latestMessage;
 
         public ServerCommunicator(int port)
         {
@@ -89,6 +91,7 @@ namespace MessengerNetworking.Communicator
                     {
                         string data = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                         Console.WriteLine($"Received data from {clientEndPoint}: {data}");
+                        latestMessage = data;
                     }
                 }
                 catch

@@ -16,9 +16,21 @@ namespace MessengerWhiteboard
 
         public string userID = "user1";
 
+        public enum WBModes
+        {
+            CreateMode,
+            ViewMode,
+            DeleteMode,
+            SelectMode
+        }
+
+        private WBModes currentMode;
+
+
         public ViewModel()
         {
             ShapeItems = new();
+            currentMode = WBModes.ViewMode;
 
         }
 
@@ -44,6 +56,12 @@ namespace MessengerWhiteboard
         public void RemoveShape(ShapeItem shape)
         {
             ShapeItems.Remove(shape);
+        }
+        
+        public void ChangeMode(WBModes mode)
+        {
+            Trace.WriteLine("Whiteboard View Model :: Active mode changed to : " + mode);
+            this.currentMode = mode; 
         }
 
     }

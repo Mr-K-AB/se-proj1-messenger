@@ -187,7 +187,7 @@ namespace MessengerNetworking.Communicator
                         {
                             if (_subscribers.ContainsKey(id))
                             {
-                            //    _subscribers[id].OnMessageReceived(message);
+                                _subscribers[id].OnDataReceived(message);
                             }
                             else
                             {

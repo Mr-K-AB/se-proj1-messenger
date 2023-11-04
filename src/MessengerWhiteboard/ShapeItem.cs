@@ -23,6 +23,7 @@ namespace MessengerWhiteboard
         // public double Width { get; set; }
         public Color color { get; set; }
         public Rect boundary { get; set; }
+        public Guid Id { get; set; }
         //public ShapeItem(string shapeType, Geometry geometry, Rect bb, Color c, double strokeThickness, int zIndex)
         //{
         //    ShapeType = shapeType;

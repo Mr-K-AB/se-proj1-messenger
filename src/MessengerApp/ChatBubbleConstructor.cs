@@ -21,7 +21,7 @@ using System.Windows.Controls;
 
 namespace MessengerApp
 {
-    class ChatBubbleConstructor : DataTemplateSelector
+    public class ChatBubbleConstructor : DataTemplateSelector
     {
         /// <summary>
         /// Data Template for sent chat bubble.

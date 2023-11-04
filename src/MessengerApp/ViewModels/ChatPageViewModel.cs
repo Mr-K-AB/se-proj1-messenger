@@ -27,6 +27,29 @@ namespace MessengerApp.ViewModels
         public IDictionary<int, int> ThreadIds;
 
         ///public SendContentData MsgToSend { get; private set; }
+        
+        /// <summary>
+        ///     Constructor for ViewModel
+        /// </summary>
+        /// <param name="production">true for production mode</param>
+        public ChatPageViewModel(bool production = true)
+        {
+            Trace.WriteLine("[ChatPageViewModel] ViewModel setup");
+            Users = new Dictionary<int, string>();
+            Messages = new Dictionary<int, string>();
+            ThreadIds = new Dictionary<int, int>();
+
+        }
+
+        /// <summary>
+        ///     Whenever a property changes, a Property Changed event is raised
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        internal void DownloadFile(string? fileName, int messageID)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

@@ -21,6 +21,8 @@ namespace MessengerWhiteboard
 
         //public string shapeMode = "Rectangle";
         public string activeTool = "Select";
+        public System.Windows.Point? lastDownPoint = null;
+
 
         public bool isEnabled;
         public enum WBModes
@@ -33,7 +35,7 @@ namespace MessengerWhiteboard
 
         public WBModes currentMode;
         //shape attributes
-        public Brush fillBrush;                                            // stores color of the object (fill colour)
+        public Brush fillBrush = Brushes.Black;                                            // stores color of the object (fill colour)
         //Brush borderBrush;                                 // stores color of the border
         int _strokeWidth;                                       // thickness of the stroke
 
@@ -75,7 +77,7 @@ namespace MessengerWhiteboard
 
         public void AddShape(ShapeItem shape)
         {
-            Debug.WriteLine("Inside AddShape");
+            //Debug.WriteLine("Inside AddShape");
             ShapeItems.Add(shape);
         }
 

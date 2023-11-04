@@ -44,9 +44,9 @@ namespace MessengerApp
 
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
+            Point p = e.GetPosition(sender as Canvas);
             if (_viewModel.currentMode == ViewModel.WBModes.CreateMode)
             {
-                Point p = e.GetPosition(sender as Canvas);
                 _viewModel.StartShape(p);
                 _buildingShape = true;
             }
@@ -57,9 +57,15 @@ namespace MessengerApp
                     return;
                 }
 
-                HitTestResult hitTestResult = VisualTreeHelper.HitTest(canvas, e.GetPosition(canvas));
+                HitTestResult hitTestResult = VisualTreeHelper.HitTest(canvas, p);
                 DependencyObject element = hitTestResult.VisualHit;
                 Debug.WriteLine(element);
+                if (element is System.Windows.Shapes.Path)
+                {
+                    _viewModel.lastDownPoint = p;
+                    Debug.WriteLine(element.GetValue(UidProperty).ToString());
+                    _viewModel.SelectShape(element.GetValue(UidProperty).ToString());
+                }
             }
         }
 
@@ -70,18 +76,25 @@ namespace MessengerApp
                 Point p = e.GetPosition(sender as Canvas);
                 _viewModel.BuildShape(p);
             }
+            else if(_viewModel.lastDownPoint != null && _viewModel.activeTool == "Select")
+            {
+                //Debug.WriteLine(_viewModel.lastDownPoint);
+                Point p = e.GetPosition(sender as Canvas);
+                _viewModel.BuildShape(p);
+            }
         }
 
         private void CanvasMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (_buildingShape)
             {
-                Debug.WriteLine("Mouse Up");
+                //Debug.WriteLine("Mouse Up");
                 Point p = e.GetPosition(sender as Canvas);
                 _viewModel.EndShape(p);
                 e.Handled = true;
                 _buildingShape = false;
             }
+            _viewModel.lastDownPoint = null;
             //Debug.WriteLine(ViewModel.ShapeItems[0].ToString());
         }
 

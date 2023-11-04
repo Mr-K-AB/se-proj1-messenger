@@ -199,23 +199,23 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Grid Grid.Row="0" Grid.Column="0">
-                                            <Button Background="White"  Height="15" Width="15" Margin="5" Name="White" ToolTip="White"/>
+                                            <Button Background="White"  Height="15" Width="15" Margin="5" Name="White" ToolTip="White" />
                                         </Grid>
                                         <Grid Grid.Row="0" Grid.Column="1">
-                                            <Button Background="Black" Height="15" Width="15" Margin="5" Name="Black" ToolTip="Black"/>
+                                            <Button Background="Black" Height="15" Width="15" Margin="5" Name="Black" ToolTip="Black" Click="ColorBlack"/>
                                         </Grid>
                                         <Grid Grid.Row="0" Grid.Column="2">
-                                            <Button Background="Red" Height="15" Width="15" Margin="5" Name="Red" ToolTip="Red"/>
+                                            <Button Background="Red" Height="15" Width="15" Margin="5" Name="Red" ToolTip="Red" Click="ColorRed"/>
                                         </Grid>
 
                                         <Grid Grid.Row="1" Grid.Column="0">
-                                            <Button Background="Green" Height="15" Width="15" Margin="5" Name="Green" ToolTip="Green"/>
+                                            <Button Background="Green" Height="15" Width="15" Margin="5" Name="Green" ToolTip="Green" Click="ColorGreen"/>
                                         </Grid>
                                         <Grid Grid.Row="1" Grid.Column="1">
-                                            <Button Background="Yellow" Height="15" Width="15" Margin="5" Name="Yellow" ToolTip="Yellow"/>
+                                            <Button Background="Yellow" Height="15" Width="15" Margin="5" Name="Yellow" ToolTip="Yellow" Click="ColorYellow"/>
                                         </Grid>
                                         <Grid Grid.Row="1" Grid.Column="2">
-                                            <Button Background="Blue" Height="15" Width="15" Margin="5" Name="Blue" ToolTip="Blue"/>
+                                            <Button Background="Blue" Height="15" Width="15" Margin="5" Name="Blue" ToolTip="Blue" Click="ColorBlue"/>
                                         </Grid>
 
                                     </Grid>
@@ -271,7 +271,7 @@
                     <StackPanel Orientation="Vertical" >
                         <StackPanel Orientation="Vertical" Background="White" Margin="10">
 
-                            <Button Name="Select" ToolTip="Select" Style="{StaticResource ButtonStyle}">
+                            <Button Name="Select" ToolTip="Select" Style="{StaticResource ButtonStyle}" Click="SelectMode">
                                 <Image Source="Images/cursor.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
@@ -309,12 +309,12 @@
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="1">
-                                            <Button Name="Rectangle" ToolTip="Rectangle" Style="{StaticResource ButtonStyle}">
+                                            <Button Name="Rectangle" ToolTip="Rectangle" Style="{StaticResource ButtonStyle}" Click="RectangleMode">
                                                 <Image Source="Images/rectangle.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="2">
-                                            <Button Name="Ellipse" ToolTip="Ellipse" Style="{StaticResource ButtonStyle}">
+                                            <Button Name="Ellipse" ToolTip="Ellipse" Style="{StaticResource ButtonStyle}" Click="EllipseMode">
                                                 <Image Source="Images/ellipse.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
@@ -391,7 +391,8 @@
                     <ItemsControl.ItemTemplate>
 
                         <DataTemplate>
-                            <Path Data="{Binding Geometry}"
+                            <Path Uid="{Binding Id}"
+                                  Data="{Binding Geometry}"
                                   Fill="{Binding Fill}"
 						          Stroke="{Binding Stroke}"
                                   StrokeThickness="{Binding StrokeThickness}"
@@ -400,8 +401,8 @@
                     </ItemsControl.ItemTemplate>
                     <ItemsControl.ItemContainerStyle>
                         <Style TargetType="ContentPresenter">
-                            <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}"/>
-                            <EventSetter Event="MouseUp" Handler="CanvasMouseUp"/>
+                                <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}"/>
+                                <EventSetter Event="MouseUp" Handler="CanvasMouseUp"/>
                         </Style>
 
                     </ItemsControl.ItemContainerStyle>

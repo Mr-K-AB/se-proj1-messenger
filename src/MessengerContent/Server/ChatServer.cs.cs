@@ -46,31 +46,31 @@ namespace MessengerContent.Server
         public ChatData? Receive(ChatData msg)
         {
             ReceiveChatData receivedMsg;
-            Trace.WriteLine("[ChatServer] Received message from ContentServer");
+            Trace.WriteLine("[ChatServer] Message received from ContentServer");
             if (msg.Event == MessageEvent.New)
             {
-                Trace.WriteLine("[ChatServer] Event is NewMessage, Adding message to existing Thread");
+                Trace.WriteLine("[ChatServer] MessageEvent is NewMessage, Adding message to existing Thread");
                 return _contentDB.MessageStore(msg);
             }
             else if (msg.Event == MessageEvent.Star)
             {
-                Trace.WriteLine("[ChatServer] Event is Star, Starring message in existing Thread");
+                Trace.WriteLine("[ChatServer] MessageEvent is Star, Starring message in existing Thread");
                 receivedMsg = StarMessage(msg.ReplyThreadID, msg.MessageID);
             }
             else if (msg.Event == MessageEvent.Edit)
             {
-                Trace.WriteLine("[ChatServer] Event is Update, Updating message in existing Thread");
+                Trace.WriteLine("[ChatServer] MessageEvent is Update, Updating message in existing Thread");
                 receivedMsg = UpdateMessage(msg.ReplyThreadID, msg.MessageID,
                     msg.Data);
             }
             else if (msg.Event == MessageEvent.Delete)
             {
-                Trace.WriteLine("[ChatServer] Event is Update, Updating message in existing Thread");
+                Trace.WriteLine("[ChatServer] MessageEvent is Update, Updating message in existing Thread");
                 receivedMsg = DeleteMessage(msg.ReplyThreadID, msg.MessageID);
             }
             else
             {
-                Trace.WriteLine($"[ChatServer] invalid event");
+                Trace.WriteLine($"[ChatServer] Invalid MessageEvent");
                 return null;
             }
             if (receivedMsg == null)
@@ -95,7 +95,7 @@ namespace MessengerContent.Server
             //if message doesn't exists in database, return null
             if (message == null)
             {
-                Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {_msgId}.");
+                Trace.WriteLine($"[ChatServer] Message not found in the given replyThreadID: {replyId}, messageId: {_msgId}.");
                 return null;
             }
 
@@ -114,7 +114,7 @@ namespace MessengerContent.Server
             //if message doesn't exists in database, return null
             if (msg == null)
             {
-                Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {_msgId}.");
+                Trace.WriteLine($"[ChatServer] Message not found in the given replyThreadID: {replyId}, messageId: {_msgId}.");
                 return null;
             }
 
@@ -133,7 +133,7 @@ namespace MessengerContent.Server
             // if Message doesn't exists in database, return null
             if (message == null)
             {
-                Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {_msgId}.");
+                Trace.WriteLine($"[ChatServer] Message not found in the given replyThreadID: {replyId}, messageId: {_msgId}.");
                 return null;
             }
 

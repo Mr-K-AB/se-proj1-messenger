@@ -69,7 +69,7 @@ namespace MessengerContent.Server
         }
 
         /// <inheritdoc />
-        public void SSendAllMessagesToClient(int userId)
+        public void SendAllMessagesToClient(int userId)
         {
             string allMessagesSerialized = _serializer.Serialize(GetAllMessages());
             Communicator.Send(allMessagesSerialized, "Content", userId.ToString());
@@ -89,12 +89,12 @@ namespace MessengerContent.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[ContentServer] Exception occured while deserialsing data. Exception: {e}");
+                Trace.WriteLine($"[ContentServer] Exception occured while deserialsing data, Exception: {e}");
                 return;
             }
 
             ChatData receivedMessageData;
-            Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
+            Trace.WriteLine("[ContentServer] Received MessageData from ContentServerNotificationHandler");
 
             // lock to prevent multiple threads from modifying the messages at once.
             lock (s_lock)
@@ -112,12 +112,12 @@ namespace MessengerContent.Server
                         break;
 
                     case MessageType.HistoryRequest:
-                        Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SSendAllMessagesToClient");
-                        SSendAllMessagesToClient(messageData.SenderID);
+                        Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SendAllMessagesToClient");
+                        SendAllMessagesToClient(messageData.SenderID);
                         return;
 
                     default:
-                        Trace.WriteLine("[ContentServer] Unknown Message Type");
+                        Trace.WriteLine("[ContentServer] MessageType is Unknown");
                         return;
                 }
             }
@@ -125,7 +125,7 @@ namespace MessengerContent.Server
             // If this is null then something went wrong, probably message was not found.
             if (receivedMessageData == null)
             {
-                Trace.WriteLine("[ContentServer] Something went wrong while handling the message.");
+                Trace.WriteLine("[ContentServer] Null Message received");
                 return;
             }
 
@@ -134,13 +134,13 @@ namespace MessengerContent.Server
                 // If Event is Download then send the file to client
                 if (messageData.Event == MessageEvent.Download)
                 {
-                    Trace.WriteLine("[ContentServer] Sending File to client");
+                    Trace.WriteLine("[ContentServer] MesseageEvent is Download, Sending File to client");
                     SendFile(receivedMessageData);
                 }
                 // Else send the message to all the receivers and notify the subscribers
                 else
                 {
-                    Trace.WriteLine("[ContentServer] Notifying subscribers");
+                    Trace.WriteLine("[ContentServer] Message received, Notifying subscribers");
                     Notify(receivedMessageData);
                     Trace.WriteLine("[ContentServer] Sending message to clients");
                     Send(receivedMessageData);
@@ -151,7 +151,7 @@ namespace MessengerContent.Server
                 Trace.WriteLine($"[ContentServer] Something went wrong while sending message. Exception {e}");
                 return;
             }
-            Trace.WriteLine("[ContentServer] Message sent");
+            Trace.WriteLine("[ContentServer] Message sent successfully");
         }
 
         /// <summary>
@@ -170,12 +170,14 @@ namespace MessengerContent.Server
             // Else send the message to the receivers in ReceiversIds.
             else
             {
-                foreach (int userId in messageData.ReceiverIDs)
+                // Send the message to receivers and back to the sender.
+                List<string> targetUserIds = new() { messageData.SenderID.ToString() };
+                targetUserIds.AddRange(messageData.ReceiverIDs.Select(userId => userId.ToString()));
+
+                foreach (string userId in targetUserIds)
                 {
-                    Communicator.Send(message, "Content", userId.ToString());
+                    Communicator.Send(message, "Content", userId);
                 }
-                // Sending the message back to the sender.
-                Communicator.Send(message, "Content", messageData.SenderID.ToString());
             }
         }
 

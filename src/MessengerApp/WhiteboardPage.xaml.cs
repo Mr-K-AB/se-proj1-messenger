@@ -9,16 +9,16 @@ namespace MessengerApp
 {
     public partial class WhiteboardPage : Page
     {
-        ViewModel ViewModel;
+        readonly ViewModel _viewModel;
         private bool _buildingShape = false;
 
         public WhiteboardPage()
         {
             InitializeComponent();
 
-            ViewModel = ViewModel.Instance;
-            ViewModel.ShapeItems = new();
-            DataContext = ViewModel;
+            _viewModel = ViewModel.Instance;
+            _viewModel.ShapeItems = new();
+            DataContext = _viewModel;
         }
 
         //private void SampleRectangleClick(object sender, RoutedEventArgs e)
@@ -44,13 +44,13 @@ namespace MessengerApp
 
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (ViewModel.currentMode == ViewModel.WBModes.CreateMode)
+            if (_viewModel.currentMode == ViewModel.WBModes.CreateMode)
             {
                 Point p = e.GetPosition(sender as Canvas);
-                ViewModel.StartShape(p);
+                _viewModel.StartShape(p);
                 _buildingShape = true;
             }
-            else if (ViewModel.currentMode == ViewModel.WBModes.SelectMode)
+            else if (_viewModel.currentMode == ViewModel.WBModes.SelectMode)
             {
                 if (sender is not Canvas canvas)
                 {
@@ -68,7 +68,7 @@ namespace MessengerApp
             if (_buildingShape)
             {
                 Point p = e.GetPosition(sender as Canvas);
-                ViewModel.BuildShape(p);
+                _viewModel.BuildShape(p);
             }
         }
 
@@ -78,7 +78,7 @@ namespace MessengerApp
             {
                 Debug.WriteLine("Mouse Up");
                 Point p = e.GetPosition(sender as Canvas);
-                ViewModel.EndShape(p);
+                _viewModel.EndShape(p);
                 e.Handled = true;
                 _buildingShape = false;
             }
@@ -87,79 +87,80 @@ namespace MessengerApp
 
         public void SelectMode(object sender, RoutedEventArgs e)
         {
-            ViewModel.ChangeMode(ViewModel.WBModes.SelectMode);
-            Trace.WriteLine("Whiteboard View Model :: Mode changed to : " + ViewModel.currentMode);
+            _viewModel.ChangeMode(ViewModel.WBModes.SelectMode);
+            _viewModel.ChangeTool("Select");
+            Trace.WriteLine("Whiteboard View Model :: Mode changed to : " + _viewModel.currentMode);
         }
         public void RectangleMode(object sender, RoutedEventArgs e)
         {
-            ViewModel.ChangeShapeMode("Rectangle");
-            ViewModel.ChangeMode(ViewModel.WBModes.CreateMode);
-            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + ViewModel.shapeMode);
+            _viewModel.ChangeTool("Rectangle");
+            _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 
         public void EllipseMode(object sender, RoutedEventArgs e)
         {
-            ViewModel.ChangeShapeMode("Ellipse");
-            ViewModel.ChangeMode(ViewModel.WBModes.CreateMode);
-            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + ViewModel.shapeMode);
+            _viewModel.ChangeTool("Ellipse");
+            _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 
 
         private void CanvasMouseEnter(object sender, MouseEventArgs e)
         {
-            if (ViewModel.activeTool != "Select")
-                viewModel.UnselectAll();
-            switch (this.activeTool)
+            //if (_viewModel.activeTool != "Select")
+            //{
+            //    _viewModel.UnselectAll();
+            //}
+
+            Cursor = _viewModel.activeTool switch
             {
-                case "Select":
-                    Cursor = Cursors.Arrow;
-                    break;
-                case "Rectangle":
-                    Cursor = Cursors.Cross;
-                    break;
-                default:
-                    Cursor = Cursors.Arrow;
-                    break;
-            }
+                "Select" => Cursors.Arrow,
+                "Rectangle" => Cursors.Cross,
+                _ => Cursors.Arrow,
+            };
         }
 
         private void CanvasMouseLeave(object sender, MouseEventArgs e)
         {
-            if (this.currentTool != "Select")
-                viewModel.UnselectAll();
+            //if (_viewModel.activeTool != "Select")
+            //{
+            //    _viewModel.UnselectAll();
+            //}
+
             Cursor = Cursors.Arrow;
 
         }
 
         private void ColorGreen(object sender, RoutedEventArgs e)
         {
-            viewModel.ChangeFillBrush(Brushes.Green);
+            _viewModel.ChangeFillBrush(Brushes.Green);
         }
 
         private void ColorRed(object sender, RoutedEventArgs e)
         {
-            viewModel.ChangeFillBrush(Brushes.Red);
+            _viewModel.ChangeFillBrush(Brushes.Red);
 
         }
 
         private void ColorYellow(object sender, RoutedEventArgs e)
         {
-            viewModel.ChangeFillBrush(Brushes.Yellow);
+            _viewModel.ChangeFillBrush(Brushes.Yellow);
         }
 
         private void ColorNull(object sender, RoutedEventArgs e)
         {
-            viewModel.ChangeFillBrush(null);
+            _viewModel.ChangeFillBrush(null);
         }
 
         private void ColorBlue(object sender, RoutedEventArgs e)
         {
-            viewModel.ChangeFillBrush(Brushes.Blue);
+            _viewModel.ChangeFillBrush(Brushes.Blue);
         }
 
         private void ColorBlack(object sender, RoutedEventArgs e)
         {
-            viewModel.ChangeFillBrush(Brushes.Black);
+            _viewModel.ChangeFillBrush(Brushes.Black);
         }
 
 

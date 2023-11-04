@@ -25,7 +25,7 @@ namespace MessengerWhiteboard
                 geometry = new EllipseGeometry(boundingBox);
             }
             Debug.WriteLine(geometry);
-            ShapeItem newShape = new ShapeItem
+            ShapeItem newShape = new()
             {
                 ShapeType = shapeType,
                 Geometry = geometry,
@@ -44,7 +44,7 @@ namespace MessengerWhiteboard
 
         public void StartShape(Point a)
         {
-            _tempShape = CreateShape(shapeMode, a, a, Colors.Black);
+            _tempShape = CreateShape(activeTool, a, a, Colors.Black);
             AddShape(_tempShape);
         }
 

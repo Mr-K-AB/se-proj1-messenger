@@ -56,10 +56,10 @@
     <Resource Include="Images\size.png" />
     <Resource Include="Images\triangle.png" />
     <Resource Include="Images\undo.png" />
-    <Folder Include="Commands\" />
-    <Folder Include="Services\" />
-    <Folder Include="Stores\" />
-    <Folder Include="ViewModels\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
   </ItemGroup>
 
 </Project>

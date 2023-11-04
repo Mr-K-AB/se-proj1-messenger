@@ -1,13 +1,13 @@
 ﻿/******************************************************************************
 * Filename    = IdGenerator.cs
 *
-* Author      = 
+* Author      = Manikanta Gudipudi
 *
 * Product     = Messenger
 * 
 * Project     = MessengerContent
 *
-* Description = 
+* Description = This Class generates unique Ids for message and chat thread and also allows resetting them.
 *****************************************************************************/
 
 using System;
@@ -20,46 +20,46 @@ namespace MessengerContent.Server
 {
     public class IdGenerator
     {
-        private static int _msgId;
-        private static int _chatContentId;
+        private static int s_msgId;
+        private static int s_chatContentId;
 
         /// <summary>
-        ///     Generates message id for the message and increment the id.
+        /// Generates message id for the message and increment the id.
         /// </summary>
         /// <returns>Returns the generated unique id.</returns>
         public static int GetMsgId()
         {
-            var id = _msgId;
-            _msgId++;
+            int id = s_msgId;
+            s_msgId++;
             return id;
         }
 
         /// <summary>
-        ///     Reset the message id to 0.
+        /// Reset the message id to 0.
         /// </summary>
         /// <returns>Returns the generated unique id.</returns>
         public static void ResetMsgId()
         {
-            _msgId = 0;
+            s_msgId = 0;
         }
 
         /// <summary>
-        ///     Generates ids for chat threads.
+        /// Generates ids for chat threads.
         /// </summary>
         /// <returns>Returns the generated id.</returns>
         public static int GetChatId()
         {
-            var id = _chatContentId;
-            _chatContentId++;
+            int id = s_chatContentId;
+            s_chatContentId++;
             return id;
         }
 
         /// <summary>
-        ///     Reset the chat thread id.
+        /// Reset the chat thread id.
         /// </summary>
         public static void ResetChatId()
         {
-            _chatContentId = 0;
+            s_chatContentId = 0;
         }
     }
 }

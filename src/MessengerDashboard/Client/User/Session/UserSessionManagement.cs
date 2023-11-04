@@ -1,5 +1,4 @@
 ﻿using System;
-using MessengerDashboard;
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,8 +6,6 @@ using System.Linq;
 using System.Threading;
 using MessengerNetworking.Communicator;
 using System.Security.RightsManagement;
-
-using MessengerDashboard.Dashboard;
 using MessengerNetworking;
 using MessengerNetworking.NotificationHandler;
 using System.Windows;
@@ -30,7 +27,7 @@ namespace MessengerDashboard.Dashboard.User.Session
         private readonly List<IUserNotification> _users;
         private readonly ICommunicator _communicator;
         //private readonly IContentUser _contentClient;
-        private readonly IDashboardSerializer _serializer;
+        private readonly Serializer _serializer;
         private readonly string _moduleIdentifier;
         private string _chatSummary;
         public SessionInfo userSessionInfo;
@@ -43,7 +40,7 @@ namespace MessengerDashboard.Dashboard.User.Session
         public UserSessionManagement()
         {
             _moduleIdentifier = "Dashboard";
-            _serializer = new DashboardSerializer();
+            _serializer = new Serializer();
             //_communicator = CommunitatorFactory.GetCommunicator();
             //_communicator.Subscribe(_moduleIdentifier, this);
             //_contentClient = ContentUserFactory.GetInstance();
@@ -58,7 +55,7 @@ namespace MessengerDashboard.Dashboard.User.Session
         public UserSessionManagement(ICommunicator communicator)
         {
             _moduleIdentifier = "Dashboard";
-            _serializer = new DashboardSerializer();
+            _serializer = new Serializer();
             _communicator = communicator;
             //_communicator.Subscribe(_moduleIdentifier, this);
             _users ??= new List<IUserNotification>();

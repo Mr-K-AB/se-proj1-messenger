@@ -25,6 +25,6 @@ namespace MessengerDashboard.Dashboard
         public Dictionary<DateTime, int> userCountVsTimeStamp;
 
         //stores the some ad hoc data about the session like the sessions score, chat count 
-        public SessionDetail sessionDetail;
+        //public SessionDetail sessionDetail;
     }
 }

@@ -1,4 +1,4 @@
-
+﻿
 /// <author>Aradhya Bijalwan</author>
 /// <summary>
 /// data class for session
@@ -9,11 +9,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace MessengerDashboard.Telemetry
 {
   public class SessionAnalytics
   {
+/*
       public Dictionary<int,int> chatCountForEachUser;
 
       //stores chat count vs user name 
@@ -28,6 +28,6 @@ namespace MessengerDashboard.Telemetry
 
         //stores the some ad hoc data about the session like the sessions score, chat count 
         public SessionSummary sessionSummary;
+*/
     }
-   
 }

@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * Filename    = UdpCommunicator.cs
  *
  * Author      = Ramaswamy Krishnan-Chittur
@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using MessengerNetworking.NotificationHandler;
 
 namespace MessengerNetworking.Communicator
 {
@@ -22,10 +23,21 @@ namespace MessengerNetworking.Communicator
     /// </summary>
     public class UdpCommunicator : ICommunicator
     {
+        private struct _queueContents
+        {
+            public string _ipAddress;
+            public int _port;
+            public string _senderId;
+            public string _message;
+            public int _priority;
+        }
         private IPEndPoint? _endPoint;
         private readonly UdpClient _listener;
+        private readonly Thread _senderThread;      // Thread that sends message using priority queue.
         private readonly Thread _listenThread;      // Thread that listens for messages on the UDP port.
-        public readonly Dictionary<string, IMessageListener> _subscribers; // List of subscribers.
+        public readonly Dictionary<string, INotificationHandler> _subscribers; // List of subscribers.
+        private readonly Queue<_queueContents> _highPriorityQueue, _lowPriorityQueue;
+        
 
         /// <summary>
         /// Creates an instance of the UDP Communicator.
@@ -33,7 +45,7 @@ namespace MessengerNetworking.Communicator
         /// <param name="listenPort">UDP port to listen on.</param>
         public UdpCommunicator(int listenPort)
         {
-            _subscribers = new Dictionary<string, IMessageListener>();
+            _subscribers = new Dictionary<string, INotificationHandler>();
 
             // Create and start the thread that listens for messages.
             ListenPort = listenPort;
@@ -42,14 +54,19 @@ namespace MessengerNetworking.Communicator
             {
                 IsBackground = true // Stop the thread when the main thread stops.
             };
+            _senderThread = new(new ThreadStart(SenderThreadProc))
+            {
+                IsBackground = true // Stop the thread when the main thread stops.
+            };
             _listenThread.Start();
+            _senderThread.Start();
         }
 
         /// <inheritdoc />
         public int ListenPort { get; private set; }
 
         /// <inheritdoc />
-        public void AddSubscriber(string id, IMessageListener subscriber)
+        public void AddSubscriber(string id, INotificationHandler subscriber)
         {
             Debug.Assert(!string.IsNullOrEmpty(id));
             Debug.Assert(subscriber != null);
@@ -82,7 +99,7 @@ namespace MessengerNetworking.Communicator
         }
 
         /// <inheritdoc/>
-        public void SendMessage(string ipAddress, int port, string senderId, string message)
+        private void SendMessageWithPriority(string ipAddress, int port, string senderId, string message)
         {
             Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             IPAddress broadcastAddress = IPAddress.Parse(ipAddress);
@@ -91,6 +108,58 @@ namespace MessengerNetworking.Communicator
             int bytesSent = socket.SendTo(sendBuffer, endPoint);
             Debug.Assert(bytesSent == sendBuffer.Length);
         }
+
+        public void SendMessage(string ipAddress, int port, string senderId, string message, int priority = 0)
+        {
+            _queueContents _content;
+            _content._ipAddress = ipAddress;
+            _content._port = port;
+            _content._senderId = senderId;
+            _content._message = message;
+            _content._priority = priority;
+            if (priority == 1)
+            {
+                _highPriorityQueue.Enqueue(_content);
+            }
+            else
+            {
+                _lowPriorityQueue.Enqueue(_content);
+            }
+        }
+
+        private void SenderThreadProc()
+        {
+            Debug.WriteLine($"Sender Thread Id = {Environment.CurrentManagedThreadId}.");
+
+            while (true)
+            {
+                try
+                {
+                    lock (this)
+                    {
+                        int count = 5;
+                        while (count > 0 && _highPriorityQueue.Count > 0)
+                        {
+                            _queueContents _front = _highPriorityQueue.Dequeue();
+                            SendMessageWithPriority(_front._ipAddress, _front._port, _front._senderId, _front._message);
+                            count--;
+                        }
+                        count = 2;
+                        while (count > 0 && _lowPriorityQueue.Count > 0)
+                        {
+                            _queueContents _front = _lowPriorityQueue.Dequeue();
+                            SendMessageWithPriority(_front._ipAddress, _front._port, _front._senderId, _front._message);
+                            count--;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                }
+            }
+        }
+
 
         /// <summary>
         /// Listens for messages on the listening port.

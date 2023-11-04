@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * Filename    = ChatMessengerUnitTests.cs
  *
  * Author      = Ramaswamy Krishnan-Chittur
@@ -13,7 +13,7 @@
 using MessengerNetworking.Communicator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
-
+using MessengerNetworking.NotificationHandler;
 
 namespace MessengerTests.MessengerNetworkingTest
 {
@@ -81,7 +81,7 @@ namespace MessengerTests.MessengerNetworkingTest
 
             Logger.LogMessage($"Validate that the messenger notifies clients upon receiving a message.");
             string testMessage = "Hello World!";
-            messenger.OnMessageReceived(testMessage);
+            messenger.OnDataReceived(testMessage);
             Assert.AreEqual(message, testMessage);
         }
         /*
@@ -96,7 +96,7 @@ namespace MessengerTests.MessengerNetworkingTest
         /// </summary>
         /// 
         public delegate void ChatMessageReceived(string message);
-        public class ChatMessenger : IMessageListener
+        public class ChatMessenger : INotificationHandler
         {
             private readonly ICommunicator _communicator;
 
@@ -132,7 +132,7 @@ namespace MessengerTests.MessengerNetworkingTest
             }
 
             /// <inheritdoc />
-            public void OnMessageReceived(string message)
+            public void OnDataReceived(string message)
             {
                 OnChatMessageReceived?.Invoke(message);
             }

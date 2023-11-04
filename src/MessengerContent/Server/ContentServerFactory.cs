@@ -1,9 +1,13 @@
 ﻿/******************************************************************************
 * Filename    = ContentServerFactory.cs
-* Author      = 
+*  
+* Author      = Manikanta Gudipudi
+* 
 * Product     = Messenger
+* 
 * Project     = MessengerContent
-* Description = 
+* 
+* Description = Factory design Pattern implementation over ContentServer.
 *****************************************************************************/
 
 using System;

@@ -1,13 +1,13 @@
 ﻿/******************************************************************************
 * Filename    = ContentServer.cs
 *
-* Author      = 
+* Author      = Manikanta Gudipudi
 *
 * Product     = Messenger
 * 
 * Project     = MessengerContent
 *
-* Description = 
+* Description = file to obtain the files and chat messages on the server and pass them along after processing.
 *****************************************************************************/
 
 using System;
@@ -31,7 +31,7 @@ namespace MessengerContent.Server
         private static readonly object s_lock = new();
         private readonly INotificationHandler _notificationHandler;
         private ChatServer _chatServer;
-        private ContentDB _contentDatabase;
+        private ContentDataBase _contentDatabase;
         private FileServer _fileServer;
         private IContentSerializer _serializer;
         private List<IMessageListener> _subscribers;
@@ -40,7 +40,7 @@ namespace MessengerContent.Server
         {
             _subscribers = new List<IMessageListener>();
             //_communicator = Factory.GetCommunicator(false);
-            _contentDatabase = new ContentDB();
+            _contentDatabase = new ContentDataBase();
             _notificationHandler = new ContentServerNotificationHandler(this);
             _fileServer = new FileServer(_contentDatabase);
             _chatServer = new ChatServer(_contentDatabase);
@@ -49,7 +49,7 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     Get and Set Communicator, Meant to be only used for testing
+        /// Get and Set Communicator, util for testing the code
         /// </summary>
         public ICommunicator Communicator { get; set; }
 
@@ -76,7 +76,7 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     Receives data from ContentServerNotificationHandler and processes it accordingly
+        /// Receives data from ContentServerNotificationHandler and processes it
         /// </summary>
         /// <param name="data"></param>
         public void Receive(string data)
@@ -155,14 +155,14 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     Sends the message to clients.
+        /// Sends the message to clients.
         /// </summary>
         /// <param name="messageData"></param>
         public void Send(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
 
-            // If length of ReceiverIds is 0 that means its a broadcast.
+            // If no ReceiverIds that means its a broadcast.
             if (messageData.ReceiverIDs.Length == 0)
             {
                 Communicator.Send(message, "Content", null);
@@ -180,7 +180,7 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     Sends the file back to the requester.
+        /// Sends the file back to the requester.
         /// </summary>
         /// <param name="messageData"></param>
         public void SendFile(ChatData messageData)
@@ -190,7 +190,7 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     Notifies all the subscribed modules.
+        /// Notifies all the subscribed modules.
         /// </summary>
         /// <param name="receiveMessageData"></param>
         public void Notify(ReceiveChatData receiveMessageData)
@@ -202,12 +202,12 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     Resets the ContentServer, Meant to be used only for Testing
+        /// Resets the ContentServer, for Testing purpose
         /// </summary>
         public void Reset()
         {
             _subscribers = new List<IMessageListener>();
-            _contentDatabase = new ContentDB();
+            _contentDatabase = new ContentDataBase();
             _fileServer = new FileServer(_contentDatabase);
             _chatServer = new ChatServer(_contentDatabase);
             _serializer = new ContentSerializer();

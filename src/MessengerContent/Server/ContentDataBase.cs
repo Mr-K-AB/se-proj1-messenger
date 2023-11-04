@@ -1,29 +1,29 @@
 ﻿/******************************************************************************
-* Filename    = ContentDB.cs
+* Filename    = ContentDataBase.cs
 *
-* Author      = 
+* Author      = Pasupuleti Likitha
 *
 * Product     = Messenger
 * 
 * Project     = MessengerContent
 *
-* Description = 
+* Description = Databse logic for the server side
 * *****************************************************************************/
 
 using MessengerContent.DataModels;
 
 namespace MessengerContent.Server
 {
-    public class ContentDB
+    public class ContentDataBase
     {
         private readonly List<ChatThread> _chatThread;
         private readonly Dictionary<int, int> _chatIdToDataMap;
         private readonly Dictionary<int, ChatData> _filesMap;
 
         /// <summary>
-        ///     Database Constructor to initialize member variables.
+        /// Database Constructor to initialize member variables.
         /// </summary>
-        public ContentDB()
+        public ContentDataBase()
         {
             _filesMap = new Dictionary<int, ChatData>();
             _chatThread = new List<ChatThread>();
@@ -33,7 +33,7 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     Fetch all the chat threads
+        /// function to fetch all the chat threads
         /// </summary>
         public List<ChatThread> GetChatThreads()
         {
@@ -41,7 +41,7 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     Function to store Messages on Database.
+        /// Function to store Messages in the Database.
         /// </summary>
         public ChatData MessageStore(ChatData msg)
         {
@@ -64,7 +64,6 @@ namespace MessengerContent.Server
                 chatThread.AddMessage(message);
 
                 _chatThread.Add(chatThread);
-                //Decrease the count by 1, because we had already incremented the count.
                 _chatIdToDataMap[chatThread.ThreadID] = _chatThread.Count - 1;
             }
 
@@ -72,9 +71,9 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     Retrieve message from the Database based on the thread ID and message ID 
+        /// funtion to retrieve message from the Database based on the thread ID and message ID 
         /// </summary>
-        public ReceiveChatData GetMessage(int threadId, int _msgId)
+        public ReceiveChatData? GetMessage(int threadId, int _msgId)
         {
             // If given ChatThread or Message doesn't exists return null
             if (!_chatIdToDataMap.ContainsKey(threadId))
@@ -96,7 +95,7 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     Function to store Files on Database.
+        /// Function to store Files on Database.
         /// </summary>
         public ChatData FileStore(ChatData msg)
         {
@@ -106,11 +105,11 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     Function to Fetch the stored file with a given id from the database.
+        /// Function to fetch the stored file from the database with a given id .
         /// </summary>
         public ChatData? FilesFetch(int _msgId)
         {
-            // If requested messageId is not in the map return null
+            // If the map does not contain requested messageId return null
             return !_filesMap.ContainsKey(_msgId) ? null : _filesMap[_msgId];
         }
     }

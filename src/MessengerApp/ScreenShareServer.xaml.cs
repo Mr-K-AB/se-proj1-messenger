@@ -24,5 +24,15 @@ namespace MessengerApp
         {
             InitializeComponent();
         }
+
+        private void PinButtonClicked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void UnpinButtonClicked(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

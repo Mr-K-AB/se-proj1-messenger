@@ -46,6 +46,8 @@
                 </Button.Resources>
             </Button>
 
+            <Separator Width="10" Background="Transparent" />
+
             <Button
                 x:Name="StopScreenShare"
                 Grid.Row="1"
@@ -63,7 +65,7 @@
                     <Style TargetType="Button">
                         <Setter Property="Background" Value="CadetBlue" />
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
+                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="False">
                                 <Setter Property="IsHitTestVisible" Value="False" />
                                 <Setter Property="Background" Value="Navy" />
                             </DataTrigger>
@@ -75,11 +77,64 @@
                     </Style>
                 </Button.Resources>
             </Button>
-
-
-
-
         </DockPanel>
 
+        <StackPanel
+            x:Name="NotSharedScreen"
+            Grid.Row="0"
+            Orientation="Vertical">
+            <Image
+                Name="Main"
+                Width="513"
+                Height="232"
+                Source="ScreenshareIcons/NotSharedScreenBackground.webp" />
+            <TextBlock
+                x:Name="MainText"
+                HorizontalAlignment="Center"
+                FontFamily="Comic Sans MS"
+                FontSize="60"
+                Foreground="IndianRed"
+                Text="You are not sharing the screen"
+                TextAlignment="Center"
+                TextWrapping="WrapWithOverflow" />
+
+            <StackPanel.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
+                            <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+
+        </StackPanel>
+
+        <StackPanel
+            x:Name="SharedScreen"
+            Grid.Row="0"
+            Orientation="Vertical">
+            <Image Height="400" Source="ScreenshareIcons/SharedScreenBackground.jpeg" />
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontFamily="Comic Sans MS"
+                FontSize="60"
+                Foreground="IndianRed"
+                Text="You are sharing your screen"
+                TextWrapping="WrapWithOverflow" />
+
+            <StackPanel.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Hidden" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+
+        </StackPanel>
     </Grid>
 </Page>

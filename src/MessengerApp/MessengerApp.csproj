@@ -19,4 +19,8 @@
 >>>>>>> 1cd53865565263a2157783ba78a3c4eda3418be5
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MessengerContent\MessengerContent.csproj" />
+  </ItemGroup>
+
 </Project>

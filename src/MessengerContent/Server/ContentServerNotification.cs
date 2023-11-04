@@ -6,7 +6,10 @@
 * Description = 
 *****************************************************************************/
 
-using MessengerNetwork;
+using System.Net.Sockets;
+using MessengerNetworking;
+using MessengerNetworking.NotificationHandler;
+
 namespace MessengerContent.Server
 {
     public class ContentServerNotificationHandler : INotificationHandler
@@ -16,6 +19,17 @@ namespace MessengerContent.Server
         {
             ContentServer = contentServer;
         }
+
+        public void OnClientJoined(TcpClient socket)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnClientLeft(string clientId)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <inheritdoc />
         public void OnDataReceived(string data)
         {

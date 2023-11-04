@@ -14,53 +14,47 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Messenger.Client;
 using MessengerContent.Client;
 using MessengerContent.DataModels;
 using MessengerContent.Enums;
-using MessengerNetwork;
-using MessengerNetwork.Communication;
-using MessengerNetwork.Serialization;
+using MessengerNetworking;
+using MessengerNetworking.Communicator;
+using MessengerNetworking.NotificationHandler;
+using MessengerNetworking.Serializer;
+//using MessengerNetworking.Factory;
 
 namespace MessengerContent.Server
 {
     public class ContentServer : IContentServer
     {
-        private static readonly object _lock = new();
+        private static readonly object s_lock = new();
         private readonly INotificationHandler _notificationHandler;
         private ChatServer _chatServer;
-        private ICommunicator _communicator;
         private ContentDB _contentDatabase;
         private FileServer _fileServer;
         private IContentSerializer _serializer;
-        private List<IContentListener> _subscribers;
+        private List<IMessageListener> _subscribers;
 
         public ContentServer()
         {
-            _subscribers = new List<IContentListener>();
-            _communicator = CommunicationFactory.GetCommunicator(false);
+            _subscribers = new List<IMessageListener>();
+            //_communicator = Factory.GetCommunicator(false);
             _contentDatabase = new ContentDB();
             _notificationHandler = new ContentServerNotificationHandler(this);
             _fileServer = new FileServer(_contentDatabase);
             _chatServer = new ChatServer(_contentDatabase);
             _serializer = new ContentSerializer();
-            _communicator.Subscribe("Content", _notificationHandler);
+            //_communicator.Subscribe("Content", _notificationHandler);
         }
 
         /// <summary>
         ///     Get and Set Communicator, Meant to be only used for testing
         /// </summary>
-        public ICommunicator Communicator
-        {
-            get => _communicator;
-            set
-            {
-                _communicator = value;
-                _communicator.Subscribe("Content", _notificationHandler);
-            }
-        }
+        public ICommunicator Communicator { get; set; }
 
         /// <inheritdoc />
-        public void ServerSubscribe(IContentListener subscriber)
+        public void ServerSubscribe(IMessageListener subscriber)
         {
             _subscribers.Add(subscriber);
         }
@@ -68,7 +62,7 @@ namespace MessengerContent.Server
         /// <inheritdoc />
         public List<ChatThread> GetAllMessages()
         {
-            lock (_lock)
+            lock (s_lock)
             {
                 return _chatServer.GetMessages();
             }
@@ -77,8 +71,8 @@ namespace MessengerContent.Server
         /// <inheritdoc />
         public void SSendAllMessagesToClient(int userId)
         {
-            var allMessagesSerialized = _serializer.Serialize(GetAllMessages());
-            _communicator.Send(allMessagesSerialized, "Content", userId.ToString());
+            string allMessagesSerialized = _serializer.Serialize(GetAllMessages());
+            Communicator.Send(allMessagesSerialized, "Content", userId.ToString());
         }
 
         /// <summary>
@@ -87,11 +81,11 @@ namespace MessengerContent.Server
         /// <param name="data"></param>
         public void Receive(string data)
         {
-            ContentData messageData;
+            ChatData messageData;
             // Try deserializing the data if error then do nothing and return.
             try
             {
-                messageData = _serializer.Deserialize<ContentData>(data);
+                messageData = _serializer.Deserialize<ChatData>(data);
             }
             catch (Exception e)
             {
@@ -99,11 +93,11 @@ namespace MessengerContent.Server
                 return;
             }
 
-            ContentData receivedMessageData;
+            ChatData receivedMessageData;
             Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
 
             // lock to prevent multiple threads from modifying the messages at once.
-            lock (_lock)
+            lock (s_lock)
             {
                 switch (messageData.Type)
                 {
@@ -164,22 +158,24 @@ namespace MessengerContent.Server
         ///     Sends the message to clients.
         /// </summary>
         /// <param name="messageData"></param>
-        public void Send(ContentData messageData)
+        public void Send(ChatData messageData)
         {
-            var message = _serializer.Serialize(messageData);
+            string message = _serializer.Serialize(messageData);
 
             // If length of ReceiverIds is 0 that means its a broadcast.
             if (messageData.ReceiverIDs.Length == 0)
             {
-                _communicator.Send(message, "Content", null);
+                Communicator.Send(message, "Content", null);
             }
             // Else send the message to the receivers in ReceiversIds.
             else
             {
-                foreach (var userId in messageData.ReceiverIDs)
-                    _communicator.Send(message, "Content", userId.ToString());
+                foreach (int userId in messageData.ReceiverIDs)
+                {
+                    Communicator.Send(message, "Content", userId.ToString());
+                }
                 // Sending the message back to the sender.
-                _communicator.Send(message, "Content", messageData.SenderID.ToString());
+                Communicator.Send(message, "Content", messageData.SenderID.ToString());
             }
         }
 
@@ -187,19 +183,22 @@ namespace MessengerContent.Server
         ///     Sends the file back to the requester.
         /// </summary>
         /// <param name="messageData"></param>
-        public void SendFile(ContentData messageData)
+        public void SendFile(ChatData messageData)
         {
-            var message = _serializer.Serialize(messageData);
-            _communicator.Send(message, "Content", messageData.SenderID.ToString());
+            string message = _serializer.Serialize(messageData);
+            Communicator.Send(message, "Content", messageData.SenderID.ToString());
         }
 
         /// <summary>
         ///     Notifies all the subscribed modules.
         /// </summary>
         /// <param name="receiveMessageData"></param>
-        public void Notify(ReceiveContentData receiveMessageData)
+        public void Notify(ReceiveChatData receiveMessageData)
         {
-            foreach (var subscriber in _subscribers) _ = Task.Run(() => { subscriber.OnMessageReceived(receiveMessageData); });
+            foreach (IMessageListener subscriber in _subscribers)
+            {
+                _ = Task.Run(() => { subscriber.OnMessageReceived(receiveMessageData); });
+            }
         }
 
         /// <summary>
@@ -207,7 +206,7 @@ namespace MessengerContent.Server
         /// </summary>
         public void Reset()
         {
-            _subscribers = new List<IContentListener>();
+            _subscribers = new List<IMessageListener>();
             _contentDatabase = new ContentDB();
             _fileServer = new FileServer(_contentDatabase);
             _chatServer = new ChatServer(_contentDatabase);

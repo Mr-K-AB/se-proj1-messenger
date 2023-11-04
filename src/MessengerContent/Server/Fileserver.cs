@@ -23,7 +23,7 @@ namespace MessengerContent.Server
 {
     public class FileServer
     {
-        private ContentDB _db;
+        private readonly ContentDB _db;
 
         /// <summary>
         ///     Constructor to initializes the content Database.
@@ -38,7 +38,7 @@ namespace MessengerContent.Server
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the new message</returns>
-        public ContentData Receive(ContentData msg)
+        public ChatData Receive(ChatData msg)
         {
             Trace.WriteLine("[FileServer] Received message from ContentServer");
             if (msg.Event == MessageEvent.New)
@@ -61,7 +61,7 @@ namespace MessengerContent.Server
         /// <summary>
         ///     This function is used to save file on Database.
         /// </summary>
-        public ContentData StoreFile(ContentData msg)
+        public ChatData StoreFile(ChatData msg)
         {
             msg = _db.FileStore(msg).Copy();
             // the object is going to be typecasted to ReceiveMessageData
@@ -74,7 +74,7 @@ namespace MessengerContent.Server
         /// <summary>
         ///     This function is used to download the file on download event.
         /// </summary>
-        public ContentData FileDownload(ContentData msg)
+        public ChatData FileDownload(ChatData msg)
         {
             var receivedMsg = _db.FilesFetch(msg.MessageID);
             // Doesn't exist on database, return null

@@ -11,27 +11,21 @@
 * *****************************************************************************/
 
 using MessengerContent.DataModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 
 namespace MessengerContent.Server
 {
     public class ContentDB
     {
-        private List<ChatThread> _chatThread;
-        private Dictionary<int, int> _chatIdToDataMap;
-        private Dictionary<int, ContentData> _filesMap;
+        private readonly List<ChatThread> _chatThread;
+        private readonly Dictionary<int, int> _chatIdToDataMap;
+        private readonly Dictionary<int, ChatData> _filesMap;
 
         /// <summary>
         ///     Database Constructor to initialize member variables.
         /// </summary>
         public ContentDB()
         {
-            _filesMap = new Dictionary<int, ContentData>();
+            _filesMap = new Dictionary<int, ChatData>();
             _chatThread = new List<ChatThread>();
             _chatIdToDataMap = new Dictionary<int, int>();
             IdGenerator.ResetChatId();
@@ -49,24 +43,24 @@ namespace MessengerContent.Server
         /// <summary>
         ///     Function to store Messages on Database.
         /// </summary>
-        public ContentData MessageStore(ContentData msg)
+        public ChatData MessageStore(ChatData msg)
         {
             msg.MessageID = IdGenerator.GetMsgId();
             // If message is a part of already existing chatThread, add to the thread
             if (_chatIdToDataMap.ContainsKey(msg.ReplyThreadID))
             {
-                var threadIndex = _chatIdToDataMap[msg.ReplyThreadID];
-                var chatThread = _chatThread[threadIndex];
-                ReceiveContentData message = msg.Copy();
+                int threadIndex = _chatIdToDataMap[msg.ReplyThreadID];
+                ChatThread chatThread = _chatThread[threadIndex];
+                ReceiveChatData message = msg.Copy();
                 chatThread.AddMessage(message);
             }
             // else create a new chatContext and add the message to it
             else
             {
                 var chatThread = new ChatThread();
-                var newThreadId = IdGenerator.GetChatId();
+                int newThreadId = IdGenerator.GetChatId();
                 msg.ReplyThreadID = newThreadId;
-                ReceiveContentData message = msg.Copy();
+                ReceiveChatData message = msg.Copy();
                 chatThread.AddMessage(message);
 
                 _chatThread.Add(chatThread);
@@ -80,7 +74,7 @@ namespace MessengerContent.Server
         /// <summary>
         ///     Retrieve message from the Database based on the thread ID and message ID 
         /// </summary>
-        public ReceiveContentData GetMessage(int threadId, int _msgId)
+        public ReceiveChatData GetMessage(int threadId, int _msgId)
         {
             // If given ChatThread or Message doesn't exists return null
             if (!_chatIdToDataMap.ContainsKey(threadId))
@@ -88,8 +82,8 @@ namespace MessengerContent.Server
                 return null;
             }
 
-            var threadIndex = _chatIdToDataMap[threadId];
-            var chat = _chatThread[threadIndex];
+            int threadIndex = _chatIdToDataMap[threadId];
+            ChatThread chat = _chatThread[threadIndex];
 
             // If given ChatContext doesn't contain the message return null
             if (!chat.ContainsMessageID(_msgId))
@@ -97,16 +91,16 @@ namespace MessengerContent.Server
                 return null;
             }
 
-            var messageIndex = chat.GetMessageIndex(_msgId);
+            int messageIndex = chat.GetMessageIndex(_msgId);
             return chat.MessageList[messageIndex];
         }
 
         /// <summary>
         ///     Function to store Files on Database.
         /// </summary>
-        public ContentData FileStore(ContentData msg)
+        public ChatData FileStore(ChatData msg)
         {
-            var message = MessageStore(msg);
+            ChatData message = MessageStore(msg);
             _filesMap[message.MessageID] = msg;
             return message;
         }
@@ -114,12 +108,10 @@ namespace MessengerContent.Server
         /// <summary>
         ///     Function to Fetch the stored file with a given id from the database.
         /// </summary>
-        public ContentData FilesFetch(int _msgId)
+        public ChatData? FilesFetch(int _msgId)
         {
             // If requested messageId is not in the map return null
-            if (!_filesMap.ContainsKey(_msgId))
-                return null;
-            return _filesMap[_msgId];
+            return !_filesMap.ContainsKey(_msgId) ? null : _filesMap[_msgId];
         }
     }
 }

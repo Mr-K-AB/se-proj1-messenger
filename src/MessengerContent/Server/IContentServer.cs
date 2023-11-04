@@ -1,15 +1,4 @@
-﻿/******************************************************************************
-* Filename    = IContentServer.cs
-*
-* Author      = Anurag Jha
-*
-* Product     = PlexShare
-* 
-* Project     = PlexShareContent
-*
-* Description =   This file provides Interface for ContentServer
-*****************************************************************************/
-
+﻿using Messenger.Client;
 using MessengerContent.Client;
 using MessengerContent.DataModels;
 using System;
@@ -26,7 +15,7 @@ namespace MessengerContent.Server
         ///     Add a new subscriber to the list of subscribers
         /// </summary>
         /// <param name="subscriber">IContentListener implementation provided by the subscriber</param>
-        void ServerSubscribe(IContentListener subscriber);
+        void ServerSubscribe(IMessageListener subscriber);
 
         /// <summary>
         ///     Get all the messages sent

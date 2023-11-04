@@ -20,7 +20,7 @@ namespace MessengerContent.Server
 {
     public class ChatServer
     {
-        private ContentDB _contentDB;
+        private readonly ContentDB _contentDB;
 
         /// <summary>
         ///     Constructor to initialize the content Database.
@@ -43,9 +43,9 @@ namespace MessengerContent.Server
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the new message</returns>
-        public ContentData Receive(ContentData msg)
+        public ChatData Receive(ChatData msg)
         {
-            ReceiveContentData receivedMsg;
+            ReceiveChatData receivedMsg;
             Trace.WriteLine("[ChatServer] Received message from ContentServer");
             if (msg.Event == MessageEvent.New)
             {
@@ -78,7 +78,7 @@ namespace MessengerContent.Server
                 return null;
             }
             //Create a MessageData object and return this notify object.
-            var notifyMsgData = new ContentData(receivedMsg)
+            var notifyMsgData = new ChatData(receivedMsg)
             {
                 Event = msg.Event
             };
@@ -88,7 +88,7 @@ namespace MessengerContent.Server
         /// <summary>
         ///     This function is used to update a message with a new updated message.
         /// </summary>
-        public ReceiveContentData UpdateMessage(int replyId, int _msgId, string updatedMsg)
+        public ReceiveChatData UpdateMessage(int replyId, int _msgId, string updatedMsg)
         {
             var message = _contentDB.GetMessage(replyId, _msgId);
 
@@ -107,7 +107,7 @@ namespace MessengerContent.Server
         /// <summary>
         ///     This function is used to star a message.
         /// </summary>
-        public ReceiveContentData StarMessage(int replyId, int _msgId)
+        public ReceiveChatData StarMessage(int replyId, int _msgId)
         {
             var msg = _contentDB.GetMessage(replyId, _msgId);
 
@@ -126,7 +126,7 @@ namespace MessengerContent.Server
         /// <summary>
         ///     This function is used to Delete a message.
         /// </summary>
-        public ReceiveContentData DeleteMessage(int replyId, int _msgId)
+        public ReceiveChatData DeleteMessage(int replyId, int _msgId)
         {
             var message = _contentDB.GetMessage(replyId, _msgId);
 

@@ -12,11 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-<<<<<<< HEAD
-    <ProjectReference Include="..\MessengerContent\MessengerContent.csproj" />
-=======
     <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
->>>>>>> 1cd53865565263a2157783ba78a3c4eda3418be5
   </ItemGroup>
 
   <ItemGroup>

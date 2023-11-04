@@ -267,6 +267,7 @@
 
 
                 <Grid Grid.Column="0" VerticalAlignment="Center">
+
                     <StackPanel Orientation="Vertical" >
                         <StackPanel Orientation="Vertical" Background="White" Margin="10">
 
@@ -368,14 +369,45 @@
 
                         </StackPanel>
                         
+
                     </StackPanel>
 
                 </Grid>
 
-                <!-- Draw Board -->
-                <DockPanel Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    
-                </DockPanel>
+                <DockPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding ShapeItems, Mode=TwoWay}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas  Name="mc2"
+						             MouseUp="CanvasMouseUp"
+                                     MouseDown="CanvasMouseDown"
+                                     MouseMove="CanvasMouseMove"
+                                     Background="White"
+								 
+                                 />
+
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+
+                        <DataTemplate>
+                            <Path Data="{Binding Geometry}"
+                                  Fill="{Binding Fill}"
+						          Stroke="{Binding Stroke}"
+                                  StrokeThickness="{Binding StrokeThickness}"
+                                  />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}"/>
+                            <EventSetter Event="MouseUp" Handler="CanvasMouseUp"/>
+                        </Style>
+
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
+
+            </DockPanel>
 
             </Grid>
 

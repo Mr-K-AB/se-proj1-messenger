@@ -9,11 +9,16 @@
 
   <ItemGroup>
     <None Remove="Images\cursor.png" />
+    <None Remove="Images\ellipse.png" />
     <None Remove="Images\pencil.png" />
     <None Remove="Images\rectangle.png" />
     <None Remove="Images\redo.png" />
     <None Remove="Images\shape.png" />
     <None Remove="Images\undo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\ellipse.png" />
   </ItemGroup>
 
   <ItemGroup>

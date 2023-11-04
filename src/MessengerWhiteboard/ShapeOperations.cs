@@ -34,7 +34,8 @@ namespace MessengerWhiteboard
                 StrokeThickness = 1,
                 ZIndex = 1,
                 Fill = Brushes.Black,
-                Stroke = Brushes.Black
+                Stroke = Brushes.Black,
+                Id = Guid.NewGuid()
             };
 
             return newShape;

@@ -8,16 +8,34 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\bucket.png" />
+    <None Remove="Images\clear.png" />
+    <None Remove="Images\color.png" />
     <None Remove="Images\cursor.png" />
+    <None Remove="Images\down-arrow.png" />
+    <None Remove="Images\download.png" />
     <None Remove="Images\ellipse.png" />
+    <None Remove="Images\eraser.png" />
+    <None Remove="Images\line.png" />
+    <None Remove="Images\minus.png" />
+    <None Remove="Images\pen.png" />
     <None Remove="Images\pencil.png" />
+    <None Remove="Images\plus.png" />
     <None Remove="Images\rectangle.png" />
     <None Remove="Images\redo.png" />
     <None Remove="Images\shape.png" />
+    <None Remove="Images\shapes.png" />
+    <None Remove="Images\size.png" />
+    <None Remove="Images\triangle.png" />
     <None Remove="Images\undo.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\bucket.png" />
+    <Resource Include="Images\clear.png" />
+    <Resource Include="Images\color.png" />
+    <Resource Include="Images\down-arrow.png" />
+    <Resource Include="Images\download.png" />
     <Resource Include="Images\ellipse.png" />
   </ItemGroup>
 
@@ -27,10 +45,16 @@
 
   <ItemGroup>
     <Resource Include="Images\cursor.png" />
-    <Resource Include="Images\pencil.png" />
+    <Resource Include="Images\eraser.png" />
+    <Resource Include="Images\line.png" />
+    <Resource Include="Images\minus.png" />
+    <Resource Include="Images\pen.png" />
+    <Resource Include="Images\plus.png" />
     <Resource Include="Images\rectangle.png" />
     <Resource Include="Images\redo.png" />
-    <Resource Include="Images\shape.png" />
+    <Resource Include="Images\shapes.png" />
+    <Resource Include="Images\size.png" />
+    <Resource Include="Images\triangle.png" />
     <Resource Include="Images\undo.png" />
   </ItemGroup>
 

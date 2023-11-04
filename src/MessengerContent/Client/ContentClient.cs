@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using Messenger.Client;
 using MessengerContent.DataModels;
 using MessengerContent.Enums;
+using MessengerNetworking.NotificationHandler;
+using MessengerNetworking.Communicator;
+
 
 namespace MessengerContent.Client
 {
-    public class ContentClient : IContentClient
     public class ContentClient : IContentClient
     {
         /// <summary>
@@ -18,17 +20,17 @@ namespace MessengerContent.Client
         /// </summary>
         private readonly INotificationHandler _notificationHandler;
         private ICommunicator _communicator;
-        private IContentSerializer _serializer;
+        private readonly IContentSerializer _serializer;
 
         /// <summary>
         /// List of subscribers
         /// </summary>
-        private List<INotificationListener> _subscribers;
+        private List<IMessageListener> _subscribers;
 
         /// <summary>
         /// Chat and File handlers
         /// </summary>
-        private readonly ChatClient _chatHandler;
+        private readonly ChatMessageClient _chatHandler;
         private readonly FileClient _fileHandler;
 
         /// <summary>
@@ -60,7 +62,7 @@ namespace MessengerContent.Client
         /// Dictionary containing mapping from type of message event
         /// to the action associtated with the message event
         /// </summary>
-        private readonly Dictionary<MessageEvent, Action<ContentData>> _messageEventHandler;
+        private readonly Dictionary<MessageEvent, Action<ChatData>> _messageEventHandler;
 
         /// <summary>
         /// Constructor that instantiates all requried parameters
@@ -69,19 +71,19 @@ namespace MessengerContent.Client
         {
             // instantiate requried network parameters
             _notificationHandler = new ContentClientNotificationHandler(this);
-            _communicator = CommunicationFactory.GetCommunicator();
+            // need to get communicator using _communicator and factory
             _serializer = new ContentSerializer();
             // subscribe to network module
             try
             {
-                _communicator.Subscribe("Content", _notificationHandler);
+                // need to subscribe to network module using _communicator
             }
             catch (Exception e)
             {
                 Trace.WriteLine($"[ContentClient] Error subscribing to networking module.\n{e.GetType().Name} : {e.Message}");
             }
             // instantiate subscribers list
-            _subscribers = new List<INotificationListener>();
+            _subscribers = new List<IMessageListener>();
             // initialize chat and file handler
             _chatHandler = new ChatMessageClient(_communicator);
             _fileHandler = new FileClient(_communicator);
@@ -92,12 +94,14 @@ namespace MessengerContent.Client
             _messageIDMap = new Dictionary<int, int>();
             _threadIDMap = new Dictionary<int, int>();
             // instantiate message event handler and add functions for each event
-            _messageEventHandler = new Dictionary<MessageEvent, Action<ContentData>>();
-            _messageEventHandler[MessageEvent.New] = NewMessageHandler;
-            _messageEventHandler[MessageEvent.Edit] = EditMessageHandler;
-            _messageEventHandler[MessageEvent.Delete] = DeleteMessageHandler;
-            _messageEventHandler[MessageEvent.Star] = StarMessageHandler;
-            _messageEventHandler[MessageEvent.Download] = DownloadMessageHandler;
+            _messageEventHandler = new Dictionary<MessageEvent, Action<ChatData>>
+            {
+                [MessageEvent.New] = NewMessageHandler,
+                [MessageEvent.Edit] = EditMessageHandler,
+                [MessageEvent.Delete] = DeleteMessageHandler,
+                [MessageEvent.Star] = StarMessageHandler,
+                [MessageEvent.Download] = DownloadMessageHandler
+            };
         }
 
         /// <summary>
@@ -111,7 +115,7 @@ namespace MessengerContent.Client
                 _communicator = value;
                 try
                 {
-                    _communicator.Subscribe("Content", _notificationHandler);
+                    //subscribing to network module using _communicator abd subscribe
                 }
                 catch (Exception e)
                 {
@@ -167,17 +171,17 @@ namespace MessengerContent.Client
         /// <param name="messageID">ID of the message</param>
         /// <returns>Message object implementing the ReceiveContentData class</returns>
         /// <exception cref="ArgumentException"></exception>
-        private ReceiveContentData GetMessage(int messageID)
+        private ReceiveChatData GetMessage(int messageID)
         {
             // return null if message ID is not present in map
             if (!_messageIDMap.ContainsKey(messageID))
             {
                 return null;
             }
-            var threadID = _messageIDMap[messageID];
-            var threadIndex = _threadIDMap[threadID];
-            var thread = AllMessages[threadIndex];
-            var messageIndex = thread.GetMessageIndex(messageID);
+            int threadID = _messageIDMap[messageID];
+            int threadIndex = _threadIDMap[threadID];
+            ChatThread thread = AllMessages[threadIndex];
+            int messageIndex = thread.GetMessageIndex(messageID);
             return thread.MessageList[messageIndex];
         }
 
@@ -205,7 +209,7 @@ namespace MessengerContent.Client
                 return previousReceiverIDs;
             }
             // get intersecting array of receiver IDs
-            var allReceivers = previousReceiverIDs.Intersect(currentReceiverIDs).ToArray();
+            int[] allReceivers = previousReceiverIDs.Intersect(currentReceiverIDs).ToArray();
             if (!(allReceivers?.Length > 0))
             {
                 throw new ArgumentException("Invalid array of receivers.");
@@ -223,8 +227,7 @@ namespace MessengerContent.Client
             try
             {
                 // check if a file can be created and delete it on close
-                using (var fs = File.Create(path, 1, FileOptions.DeleteOnClose))
-                { }
+                using FileStream fs = File.Create(path, 1, FileOptions.DeleteOnClose);
             }
             catch
             {
@@ -235,7 +238,7 @@ namespace MessengerContent.Client
         // interface functions
 
         ///<inheritdoc/>
-        public void ClientSendData(SendContentData contentData)
+        public void ClientSendData(SendChatData contentData)
         {
             // check if receiver ID list is not null
             if (contentData.ReceiverIDs is null)
@@ -255,11 +258,7 @@ namespace MessengerContent.Client
             if (contentData.ReplyMessageID != -1)
             {
                 ValidateReplyMessageID(contentData.ReplyMessageID, contentData.ReplyThreadID);
-                var existingMessage = GetMessage(contentData.ReplyMessageID);
-                if (existingMessage is null)
-                {
-                    throw new ArgumentException("Message being replied to does not exist");
-                }
+                ReceiveChatData? existingMessage = GetMessage(contentData.ReplyMessageID) ?? throw new ArgumentException("Message being replied to does not exist");
                 contentData.ReceiverIDs = AllReceivers(existingMessage.ReceiverIDs, contentData.ReceiverIDs, existingMessage.SenderID);
             }
             // otherwise, use the respective message type handlers
@@ -279,7 +278,7 @@ namespace MessengerContent.Client
         }
 
         ///<inheritdoc/>
-        public void ClientSubscribe(INotificationListener subscriber)
+        public void ClientSubscribe(IMessageListener subscriber)
         {
             if (subscriber == null)
             {
@@ -297,11 +296,7 @@ namespace MessengerContent.Client
         public void ClientEdit(int messageID, string newMessage)
         {
             // get message and check if it is empty
-            var message = GetMessage(messageID);
-            if (message is null)
-            {
-                throw new ArgumentException("Message with given message ID does not exist");
-            }
+            ReceiveChatData? message = GetMessage(messageID) ?? throw new ArgumentException("Message with given message ID does not exist");
             // check message type
             if (message.Type != MessageType.Chat)
             {
@@ -321,11 +316,7 @@ namespace MessengerContent.Client
         public void ClientDelete(int messageID)
         {
             // get message and check if it is empty
-            var message = GetMessage(messageID);
-            if (message is null)
-            {
-                throw new ArgumentException("Message being replied to does not exist");
-            }
+            ReceiveChatData message = GetMessage(messageID) ?? throw new ArgumentException("Message being replied to does not exist");
             // check message type
             if (message.Type != MessageType.Chat)
             {
@@ -345,7 +336,7 @@ namespace MessengerContent.Client
         {
             // check save path and message 
             CheckFilePath(savePath);
-            var message = GetMessage(messageID);
+            ReceiveChatData? message = GetMessage(messageID);
             if (message is null)
             {
                 Trace.WriteLine("[ContentClient] File requested for download not found");
@@ -364,11 +355,7 @@ namespace MessengerContent.Client
         public void ClientStar(int messageID)
         {
             // check if message is empty
-            var message = GetMessage(messageID);
-            if (message is null)
-            {
-                throw new ArgumentException("Message with given message ID to does not exist");
-            }
+            ReceiveChatData? message = GetMessage(messageID) ?? throw new ArgumentException("Message with given message ID to does not exist");
             // check message type
             if (message.Type != MessageType.Chat)
             {
@@ -387,7 +374,7 @@ namespace MessengerContent.Client
                 throw new ArgumentException("Thread with given thread ID does not exist");
 
             }
-            var index = _threadIDMap[threadID];
+            int index = _threadIDMap[threadID];
             Trace.WriteLine($"[ContentClient] Returning thread with ID = {threadID}");
             return AllMessages[index];
         }
@@ -405,10 +392,10 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="message">Received message object from server</param>
         /// <exception cref="ArgumentException"></exception>
-        private void Notify(ReceiveContentData message)
+        private void Notify(ReceiveChatData message)
         {
             Trace.WriteLine("[ContentClient] Notifying subscribers of new received message");
-            foreach (var subscriber in _subscribers)
+            foreach (IMessageListener subscriber in _subscribers)
             {
                 _ = Task.Run(() => { subscriber.OnMessageReceived(message); });
             }
@@ -423,19 +410,19 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="message">Received message object from server</param>
         /// <exception cref="ArgumentException"></exception>
-        private void NewMessageHandler(ContentData message)
+        private void NewMessageHandler(ChatData message)
         {
             Trace.WriteLine("[ContentClient] Received message from server");
             // ensure file data is null
             message.FileData = null;
-            ReceiveContentData receivedMessage = message;
+            ReceiveChatData receivedMessage = message;
             // check if message ID is unique 
             if (_messageIDMap.ContainsKey(receivedMessage.MessageID))
             {
                 throw new ArgumentException("Message ID is not unique");
             }
             // check if thread exists
-            var key = receivedMessage.ReplyThreadID;
+            int key = receivedMessage.ReplyThreadID;
             if (key == -1)
             {
                 throw new ArgumentException("Message has invalid reply thread ID");
@@ -453,7 +440,7 @@ namespace MessengerContent.Client
                 // add message to all messages list if message belongs to a chat thread
                 if (_threadIDMap.ContainsKey(key))
                 {
-                    var index = _threadIDMap[key];
+                    int index = _threadIDMap[key];
                     AllMessages[index].AddMessage(receivedMessage);
                 }
                 else // create new thread if the message does not belong to any thread
@@ -461,7 +448,7 @@ namespace MessengerContent.Client
                     var newThread = new ChatThread();
                     newThread.AddMessage(receivedMessage);
                     AllMessages.Add(newThread);
-                    var index = AllMessages.Count - 1;
+                    int index = AllMessages.Count - 1;
                     // add entry into the thread ID map
                     _threadIDMap.Add(key, index);
                 }
@@ -477,29 +464,29 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="message">Received message object from server</param>
         /// <exception cref="ArgumentException"></exception>
-        private void EditMessageHandler(ContentData message)
+        private void EditMessageHandler(ChatData message)
         {
             Trace.WriteLine("[ContentClient] Received edited message from server");
             // ensure file data is null
             message.FileData = null;
-            ReceiveContentData receivedMessage = message;
-            var messageID = receivedMessage.MessageID;
+            ReceiveChatData receivedMessage = message;
+            int messageID = receivedMessage.MessageID;
             // check if message ID is present 
             if (!_messageIDMap.ContainsKey(messageID))
             {
                 throw new ArgumentException("Message with message ID is not present");
             }
             // get thread index and check if thread exists
-            var threadID = _messageIDMap[messageID];
+            int threadID = _messageIDMap[messageID];
             if (!_threadIDMap.ContainsKey(threadID))
             {
                 throw new ArgumentException("No message thread with given ID exists");
             }
             // if thread exists, update message in all messages list
-            var index = _threadIDMap[threadID];
+            int index = _threadIDMap[threadID];
             lock (_lock)
             {
-                var newMessage = receivedMessage.Data;
+                string newMessage = receivedMessage.Data;
                 AllMessages[index].EditMessage(messageID, newMessage);
             }
             // notfiy subscribers of the edited message
@@ -513,26 +500,26 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="message">Received message object from server</param>
         /// <exception cref="ArgumentException"></exception>
-        private void DeleteMessageHandler(ContentData message)
+        private void DeleteMessageHandler(ChatData message)
         {
             Trace.WriteLine("[ContentClient] Received deleted message from server");
             // ensure file data is null
             message.FileData = null;
-            ReceiveContentData receivedMessage = message;
-            var messageID = receivedMessage.MessageID;
+            ReceiveChatData receivedMessage = message;
+            int messageID = receivedMessage.MessageID;
             // check if message ID is present 
             if (!_messageIDMap.ContainsKey(messageID))
             {
                 throw new ArgumentException("Message with message ID is not present");
             }
             // get thread index and check if thread exists
-            var threadID = _messageIDMap[messageID];
+            int threadID = _messageIDMap[messageID];
             if (!_threadIDMap.ContainsKey(threadID))
             {
                 throw new ArgumentException("No message thread with given ID exists");
             }
             // if thread exists, update message in all messages list
-            var index = _threadIDMap[threadID];
+            int index = _threadIDMap[threadID];
             lock (_lock)
             {
                 AllMessages[index].DeleteMessage(messageID);
@@ -548,26 +535,26 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="message">Received message object from server</param>
         /// <exception cref="ArgumentException"></exception>
-        private void StarMessageHandler(ContentData message)
+        private void StarMessageHandler(ChatData message)
         {
             Trace.WriteLine("[ContentClient] Received starred message from server");
             // ensure file data is null
             message.FileData = null;
-            ReceiveContentData receivedMessage = message;
-            var messageID = receivedMessage.MessageID;
+            ReceiveChatData receivedMessage = message;
+            int messageID = receivedMessage.MessageID;
             // check if message ID is present 
             if (!_messageIDMap.ContainsKey(messageID))
             {
                 throw new ArgumentException("Message with message ID is not present");
             }
             // get thread index and check if thread exists
-            var threadID = _messageIDMap[messageID];
+            int threadID = _messageIDMap[messageID];
             if (!_threadIDMap.ContainsKey(threadID))
             {
                 throw new ArgumentException("No message thread with given ID exists");
             }
             // if thread exists, update message in all messages list
-            var index = _threadIDMap[threadID];
+            int index = _threadIDMap[threadID];
             lock (_lock)
             {
                 AllMessages[index].StarMessage(messageID);
@@ -580,10 +567,10 @@ namespace MessengerContent.Client
         /// data and writes the data onto the file on the path
         /// </summary>
         /// <param name="message">Received message object from server</param>
-        private void DownloadMessageHandler(ContentData message)
+        private void DownloadMessageHandler(ChatData message)
         {
             Trace.WriteLine("[ContentClient] Received requested file from server");
-            var savePath = message.Data;
+            string savePath = message.Data;
             Trace.WriteLine($"[ContentClient] Saving file to path : {savePath}");
             File.WriteAllBytes(savePath, message.FileData.Data);
         }
@@ -594,7 +581,7 @@ namespace MessengerContent.Client
         public void Reset()
         {
             _userID = -1;
-            _subscribers = new List<INotificationListener>();
+            _subscribers = new List<IMessageListener>();
             lock (_lock)
             {
                 AllMessages = new List<ChatThread>();
@@ -618,10 +605,10 @@ namespace MessengerContent.Client
                 // update the internal data structures
                 for (int i = 0; i < AllMessages.Count; i++)
                 {
-                    var thread = AllMessages[i];
-                    var threadID = thread.ThreadID;
+                    ChatThread thread = AllMessages[i];
+                    int threadID = thread.ThreadID;
                     _threadIDMap.Add(threadID, i);
-                    foreach (var message in thread.MessageList)
+                    foreach (ReceiveChatData message in thread.MessageList)
                     {
                         _messageIDMap.Add(message.MessageID, threadID);
                     }
@@ -634,7 +621,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="receivedMessage">Received message object from network</param>
         /// <exception cref="ArgumentException"></exception>
-        public void OnReceive(ContentData receivedMessage)
+        public void OnReceive(ChatData receivedMessage)
         {
             if (receivedMessage is null)
             {
@@ -669,7 +656,7 @@ namespace MessengerContent.Client
         private void Notify(List<ChatThread> allMessages)
         {
             Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared");
-            foreach (var subscriber in _subscribers)
+            foreach (IMessageListener subscriber in _subscribers)
             {
                 _ = Task.Run(() => { subscriber.OnAllMessagesReceived(allMessages); });
             }
@@ -680,13 +667,15 @@ namespace MessengerContent.Client
         /// </summary>
         public void RequestMessageHistory()
         {
-            var message = new ContentData();
-            message.SenderID = UserID;
-            message.Type = MessageType.HistoryRequest;
+            ReceiveChatData? message = new ChatData
+            {
+                SenderID = UserID,
+                Type = MessageType.HistoryRequest
+            };
             try
             {
                 // serialize message and send to server via network
-                var serializedMessage = _serializer.Serialize(message);
+                string serializedMessage = _serializer.Serialize(message);
                 Trace.WriteLine($"[ContentClient] Sending request for message history to server for user ID = {UserID}");
                 _communicator.Send(serializedMessage, "Content", null);
             }

@@ -12,7 +12,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using PlexShareContent.Enums;
+using MessengerContent.Enums;
 
 namespace MessengerContent.DataModels
 {

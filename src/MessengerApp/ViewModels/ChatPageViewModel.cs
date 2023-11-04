@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Threading.Tasks;
-using System.ComponentModel;
-using MessengerContent.DataModels;
-using System.Windows.Threading;
-using System.Windows;
-using MessengerContent;
-using MessengerContentt.Client;
 using System.Diagnostics;
-using System.Collections.ObjectModel;
-using System.Windows.Documents;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Messenger.Client;
+using MessengerContent.Client;
+using MessengerContent.DataModels;
+using MessengerContent;
 
 namespace MessengerApp.ViewModels
 {
 
-    public class ChatPageViewModel : INotifyPropertyChanged, INotificationListener, IClientSessionNotifications
+    public class ChatPageViewModel : INotifyPropertyChanged, IMessageListener
     {
         /// <summary>
         ///     Content Client Data Model
@@ -45,7 +35,19 @@ namespace MessengerApp.ViewModels
         /// <summary>
         ///     Message to be sent
         /// </summary>
-        public SendContentData MsgToSend { get; private set; }
+        public SendChatData MsgToSend { get; private set; }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public void OnAllMessagesReceived(List<ChatThread> allMessages)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void OnMessageReceived(ReceiveChatData contentData)
+        {
+            throw new System.NotImplementedException();
+        }
 
         /// <summary>
         ///     Sends the message to content module. Message type is determined by messageType parameter
@@ -57,7 +59,7 @@ namespace MessengerApp.ViewModels
         {
 
             // Creating a SendContentData object
-            MsgToSend = new SendContentData();
+            MsgToSend = new SendChatData();
             // Setting message type field
             if (messageType == "File")
             {

@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace MessengerContent.Client;
+namespace MessengerContent.Client
 {
-    public class ContentClientCreator
+    public class ContentClientFactory
     {
         // initializing in a thread safe way using Lazy<>
-        private static readonly Lazy<ContentClient> _contentClient = new(() => new ContentClient());
+        private static readonly Lazy<ContentClient> s_contentClient = new(() => new ContentClient());
 
         /// <summary>
         /// Creates a client side content manager that will live until the end of the program
@@ -13,7 +13,7 @@ namespace MessengerContent.Client;
         /// <returns>ContentClient object which implements IContentClient interface</returns>
         public static IContentClient GetInstance()
         {
-            return _contentClient.Value;
+            return s_contentClient.Value;
         }
 
         /// <summary>
@@ -22,8 +22,9 @@ namespace MessengerContent.Client;
         /// <param name="userID">ID of the user</param>
         public static void SetUser(int userID)
         {
-            var instance = _contentClient.Value;
+            ContentClient instance = s_contentClient.Value;
             instance.UserID = userID;
             instance.RequestMessageHistory();
         }
     }
+}

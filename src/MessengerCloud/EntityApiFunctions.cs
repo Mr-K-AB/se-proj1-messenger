@@ -19,12 +19,13 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace ServerlessFunc
+namespace MessengerCloud
 {
     /// <summary>
     /// Custom Azure functions APIs class.
@@ -42,11 +43,12 @@ namespace ServerlessFunc
                 ILogger log)
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            Debug.WriteLine("request Body is ",requestBody);
             EntityInfoWrapper info= JsonSerializer.Deserialize<EntityInfoWrapper>(requestBody);
             Entity value = new(info);
+            Debug.WriteLine("val inside api ",value);
             await entityTable.AddAsync(value);
-
-            log.LogInformation($"New entity created Id = {value.Id}, Name = {value.Name}.");
+            log.LogInformation($"New entity created Id = {value.Id}.strings are ", value.Sentences[0]);
 
             return new OkObjectResult(value);
         }

@@ -9,14 +9,19 @@ namespace MessengerCloud
 {
     public class EntityInfoWrapper
     {
-        public EntityInfoWrapper(List<string> sentences,int positiveChatCount,int negativeChatCount, bool isOverallSentimentPositive ) { 
+        public EntityInfoWrapper(List<string> sentences,int positiveChatCount,int negativeChatCount, bool isOverallSentimentPositive ,string sessionId) { 
         
             Sentences = sentences;
             PositiveChatCount = positiveChatCount;
             NegativeChatCount = negativeChatCount;
             IsOverallSentimentPositive = isOverallSentimentPositive;
+            SessionId = sessionId;
         
         }
+        [JsonInclude]
+        [JsonPropertyName("SessionId")] //Unique id for the session conducted
+        public string SessionId { get; set; }
+
 
         [JsonInclude]
         [JsonPropertyName("Sentences")]

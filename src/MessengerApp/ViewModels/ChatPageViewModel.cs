@@ -1,14 +1,10 @@
-﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Threading.Tasks;
-using System.ComponentModel;
-using MessengerContent.DataModels;
-using System.Windows.Threading;
-using System.Windows;
-using MessengerContent;
-using MessengerContent.Client;
 using System.Diagnostics;
+using Messenger.Client;
+using MessengerContent.Client;
+using MessengerContent.DataModels;
+using MessengerContent;
 using System.Collections.ObjectModel;
 using System.Windows.Documents;
 using System.IO;
@@ -19,6 +15,7 @@ using MessengerApp.ViewModels;
 
 namespace MessengerApp.ViewModels
 {
+
 
     public class ChatPageViewModel ///: INotifyPropertyChanged, INotificationListener, IClientSessionNotifications
     {

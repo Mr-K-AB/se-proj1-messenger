@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System;
 using System.IO;
 using MessengerContent.Enums;
-using MessengerNetwork.Communication;
+using MessengerNetworking.Communicator;
 
 namespace MessengerContent.Client
 {
@@ -45,11 +45,11 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="contentData">Instance of SendContentData class</param>
         /// <param name="eventType">Type of message event as string</param>
-        private void SerializeAndSendToServer(ContentData contentData, string eventType)
+        private void SerializeAndSendToServer(ChatData contentData, string eventType)
         {
             try
             {
-                var xml = _serializer.Serialize(contentData);
+                string xml = _serializer.Serialize(contentData);
                 Trace.WriteLine($"[File Client] Setting event as '{eventType}' and sending object to server.");
                 _communicator.Send(xml, _moduleIdentifier, null);
             }
@@ -64,7 +64,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="sendContent">Instance of the SendContentData class</param>
         /// <exception cref="ArgumentException"></exception>
-        public void SendFile(SendContentData sendContent)
+        public void SendFile(SendChatData sendContent)
         {
             // check message type
             if (sendContent.Type != MessageType.File)
@@ -76,17 +76,19 @@ namespace MessengerContent.Client
             {
                 throw new FileNotFoundException($"File at {sendContent.Data} not found");
             }
-            ContentData sendData = new();
-            sendData.Type = sendContent.Type;
-            sendData.Data = sendContent.Data;
-            sendData.MessageID = -1;
-            sendData.ReceiverIDs = sendContent.ReceiverIDs;
-            sendData.ReplyThreadID = -1;
-            sendData.SenderID = UserID;
-            sendData.SentTime = DateTime.Now;
-            sendData.Starred = false;
-            sendData.Event = MessageEvent.New;
-            sendData.FileData = new SendFileData(sendContent.Data);
+            ChatData sendData = new()
+            {
+                Type = sendContent.Type,
+                Data = sendContent.Data,
+                MessageID = -1,
+                ReceiverIDs = sendContent.ReceiverIDs,
+                ReplyThreadID = -1,
+                SenderID = UserID,
+                SentTime = DateTime.Now,
+                Starred = false,
+                Event = MessageEvent.New,
+                FileData = new SendFileData(sendContent.Data)
+            };
             //sendData.ReplyMessageID = sendContent.ReplyMessageID;
             SerializeAndSendToServer(sendData, "New");
         }
@@ -103,13 +105,15 @@ namespace MessengerContent.Client
             {
                 throw new ArgumentException("Invalid save path input argument");
             }
-            ContentData sendData = new();
-            sendData.Type = MessageType.File;
-            sendData.Data = savePath;
-            sendData.MessageID = messageID;
-            sendData.SenderID = UserID;
-            sendData.Event = MessageEvent.Download;
-            sendData.FileData = null;
+            ChatData sendData = new()
+            {
+                Type = MessageType.File,
+                Data = savePath,
+                MessageID = messageID,
+                SenderID = UserID,
+                Event = MessageEvent.Download,
+                FileData = null
+            };
             SerializeAndSendToServer(sendData, "Download");
         }
     }

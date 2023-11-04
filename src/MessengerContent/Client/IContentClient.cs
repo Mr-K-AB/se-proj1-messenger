@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Messenger.Client;
 using MessengerContent.DataModels;
 
 namespace MessengerContent.Client
@@ -13,13 +9,13 @@ namespace MessengerContent.Client
         /// Sends chat or file data to clients
         /// </summary>
         /// <param name="contentData">Instance of SendContentData class</param>
-        void ClientSendData(SendContentData contentData);
+        void ClientSendData(SendChatData contentData);
 
         /// <summary>
         /// Lets client subscribe to notifications from this class
         /// </summary>
         /// <param name="subscriber">Subscriber object which is an implementation of the INotificationListener interface</param>
-        void ClientSubscribe(INotificationListener subscriber);
+        void ClientSubscribe(IMessageListener subscriber);
 
         /// <summary>
         /// Edit a previous chat message

@@ -1,51 +1,55 @@
 ﻿using MessengerContent.DataModels;
-using MessengerNetwork;
+using MessengerNetworking;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using MessengerNetworking.NotificationHandler;
+using System.Net.Sockets;
 
 namespace MessengerContent.Client
 {
     public class ContentClientNotificationHandler : INotificationHandler
     {
         private readonly IContentSerializer _serialzer;
-        private readonly ContentClient _contentHandler;
-        protected ContentData _receivedMessage;
+        private readonly ContentClient _messageHandler;
+        protected ChatData _receivedMessage;
         protected List<ChatThread> _allMessages;
 
-        /// <summary>
-        /// Constructor to create type with parameters.
-        /// </summary>
-        /// <param name="contentHandler">Object that implements IContentClient interface</param>
         public ContentClientNotificationHandler(IContentClient contentHandler)
         {
             _serialzer = new ContentSerializer();
-            _contentHandler = contentHandler as ContentClient;
+            _messageHandler = contentHandler as ContentClient;
         }
 
-        /// <summary>
-        /// Checks the type of messae object and calls the required function 
-        /// </summary>
-        /// <param name="data">String data from network</param>
+        public void OnClientJoined(TcpClient socket)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnClientLeft(string clientId)
+        {
+            throw new NotImplementedException();
+        }
+
         public void OnDataReceived(string data)
         {
             Trace.WriteLine("[ContentClientNotificationHandler] Deserializing data received from network");
             try
             {
                 // get type of serialized data
-                var deserializedType = _serialzer.GetObjType(data, "Content");
-                // if data is of ContentData type
-                if (string.Equals(deserializedType, typeof(ContentData).ToString()))
+                string deserializedType = _serialzer.GetObjType(data, "Content");
+                // if data is of ChatData type
+                if (string.Equals(deserializedType, typeof(ChatData).ToString()))
                 {
-                    _receivedMessage = _serialzer.Deserialize<ContentData>(data);
-                    _contentHandler.OnReceive(_receivedMessage);
+                    _receivedMessage = _serialzer.Deserialize<ChatData>(data);
+                    _messageHandler.OnReceive(_receivedMessage);
                     Trace.WriteLine($"[ContentClientNotificationHandler] Deserialized data and sending it to content client");
                 }
                 // if data is a List<ChatThread>
                 else if (string.Equals(deserializedType, typeof(List<ChatThread>).ToString()))
                 {
                     _allMessages = _serialzer.Deserialize<List<ChatThread>>(data);
-                    _contentHandler.OnReceive(_allMessages);
+                    _messageHandler.OnReceive(_allMessages);
                     Trace.WriteLine($"[ContentClientNotificationHandler] Deserialized data and sending it to content client");
                 }
                 else

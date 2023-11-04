@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
- * Filename    = ContentData.cs
+ * Filename    = ChatData.cs
  *
  * Author      = Manikanta
  *

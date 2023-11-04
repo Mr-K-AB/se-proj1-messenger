@@ -25,7 +25,7 @@ namespace MessengerContent
     }
     public class ContentSerializer : IContentSerializer
     {
-        private JsonSerializerSettings _jsonSerializerSettings;
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
 
         public ContentSerializer()
         {
@@ -37,7 +37,7 @@ namespace MessengerContent
         {
             try
             {
-                var json = SerializeJson(objToSerialize);
+                string json = SerializeJson(objToSerialize);
                 var obj = new MetaObject(typeof(T).ToString(), json);
                 return SerializeJson(obj);
             }
@@ -52,7 +52,7 @@ namespace MessengerContent
         public string GetObjType(string serializedString, string nameSpace)
         {
             // json string
-            var obj = DeserializeJson<MetaObject>(serializedString);
+            MetaObject obj = DeserializeJson<MetaObject>(serializedString);
             return obj.typ;
         }
 
@@ -61,7 +61,7 @@ namespace MessengerContent
         {
             try
             {
-                var obj = DeserializeJson<MetaObject>(serializedString);
+                MetaObject obj = DeserializeJson<MetaObject>(serializedString);
                 return DeserializeJson<T>(obj.data);
             }
             catch (Exception ex)

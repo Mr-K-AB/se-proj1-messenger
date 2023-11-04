@@ -30,7 +30,7 @@ namespace MessengerContent.DataModels
         /// <summary>
         /// List of all messages in the thread
         /// </summary>
-        public List<ReceiveContentData> MessageList;
+        public List<ReceiveChatData> MessageList;
 
         /// <summary>
         /// Dictionary containing mapping from message ID to index in message list
@@ -45,7 +45,7 @@ namespace MessengerContent.DataModels
             ThreadID = -1;
             CreationTime = new DateTime();
             MessageIDToIndex = new Dictionary<int, int>();
-            MessageList = new List<ReceiveContentData>();
+            MessageList = new List<ReceiveChatData>();
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace MessengerContent.DataModels
         /// </summary>
         /// <param name="message">Instance of the ReceiveContentData class</param>
         /// <exception cref="ArgumentException"></exception>
-        public void AddMessage(ReceiveContentData message)
+        public void AddMessage(ReceiveChatData message)
         {
             // check for valid message
             if (!IsValidMessage(message.Data))

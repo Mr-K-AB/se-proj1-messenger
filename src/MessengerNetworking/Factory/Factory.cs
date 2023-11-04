@@ -11,11 +11,11 @@ namespace Factory
     {
         public IPAddress _serverId {  get; private set; }
 
-        private static object _instanceLock = new object();
+        private static readonly object s_instanceLock = new();
 
         private Factory() { }
 
-        private static Factory _instance;
+        private static Factory? s_instance;
 
         /// <summary>
         /// public method which can be accessed by other modules
@@ -25,18 +25,17 @@ namespace Factory
         
         public static Factory GetInstance(IPAddress _serverId)
         {
-            if (_instance == null)
+            if (s_instance == null)
             {
-                lock (_instanceLock)
+                lock (s_instanceLock)
                 {
-                    if (_instance == null)
-                    {
-                        _instance = new Factory();
-                        _instance._serverId = _serverId;
-                    }
+                    s_instance ??= new Factory
+                        {
+                            _serverId = _serverId
+                        };
                 }
             }
-            return _instance;
+            return s_instance;
         }
     }
 }

@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using MessengerContent;
 using MessengerContent.DataModels;
 using MessengerContent.Enums;
-using MessengerNetwork.Communication;
+using MessengerNetworking.Communicator;
 using System.Runtime.CompilerServices;
 
 namespace MessengerContent.Client
 {
-    public class ChatClient
+    public class ChatMessageClient
     { 
         /// <summary>
         /// Module identifier for communicator
@@ -66,18 +66,20 @@ namespace MessengerContent.Client
         /// <param name="sendContentData">Instance of the SendContentData class</param>
         /// <param name="eventType">Type of message event</param>
         /// <returns>Instance of ContentData class</returns>
-        public ContentData ConvertSendContentData(SendContentData sendContentData, MessageEvent eventType)
+        public ChatData ConvertSendContentData(SendChatData sendContentData, MessageEvent eventType)
         {
-            ContentData convertedData = new();
-            convertedData.Type = sendContentData.Type;
-            convertedData.Data = sendContentData.Data;
-            convertedData.ReceiverIDs = sendContentData.ReceiverIDs;
-            convertedData.ReplyMessageID = sendContentData.ReplyMessageID;
-            convertedData.ReplyThreadID = sendContentData.ReplyThreadID;
-            convertedData.SenderID = UserID;
-            convertedData.SentTime = DateTime.Now;
-            convertedData.Starred = false;
-            convertedData.Event = eventType;
+            ChatData convertedData = new()
+            {
+                Type = sendContentData.Type,
+                Data = sendContentData.Data,
+                ReceiverIDs = sendContentData.ReceiverIDs,
+                ReplyMessageID = sendContentData.ReplyMessageID,
+                ReplyThreadID = sendContentData.ReplyThreadID,
+                SenderID = UserID,
+                SentTime = DateTime.Now,
+                Starred = false,
+                Event = eventType
+            };
             Trace.WriteLine("[ChatClient] Converting 'SendContentData' to 'ContentData' object");
             return convertedData;
         }
@@ -87,11 +89,11 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="contentData">Instance of SendContentData class</param>
         /// <param name="eventType">Type of message event as string</param>
-        private void SerializeAndSendToServer(ContentData contentData, string eventType)
+        private void SerializeAndSendToServer(ChatData contentData, string eventType)
         {
             try
             {
-                var serializedStr = _serializer.Serialize(contentData);
+                string serializedStr = _serializer.Serialize(contentData);
                 Trace.WriteLine($"[Chat Client] Setting event as '{eventType}' and sending object to server.");
                 _communicator.Send(serializedStr, _moduleIdentifier, null);
             }
@@ -108,13 +110,13 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="sendContent">Instance of the SendContentData class</param>
         /// <exception cref="ArgumentException"></exception>
-        public void NewChat(SendContentData sendContent)
+        public void NewChat(SendChatData sendContent)
         {
             if (IsEmptyMessage(sendContent.Data))
             {
                 throw new ArgumentException("Invalid message string.");
             }
-            ContentData convertedData = ConvertSendContentData(sendContent, MessageEvent.New);
+            ChatData convertedData = ConvertSendContentData(sendContent, MessageEvent.New);
             convertedData.MessageID = -1;
             SerializeAndSendToServer(convertedData, "New");
         }
@@ -132,13 +134,15 @@ namespace MessengerContent.Client
             {
                 throw new ArgumentException("Invalid message string.");
             }
-            ContentData sendData = new();
-            sendData.Type = MessageType.Chat;
-            sendData.Data = newMessage;
-            sendData.MessageID = messageID;
-            sendData.ReplyThreadID = replyThreadID;
-            sendData.SenderID = UserID;
-            sendData.Event = MessageEvent.Edit;
+            ChatData sendData = new()
+            {
+                Type = MessageType.Chat,
+                Data = newMessage,
+                MessageID = messageID,
+                ReplyThreadID = replyThreadID,
+                SenderID = UserID,
+                Event = MessageEvent.Edit
+            };
             SerializeAndSendToServer(sendData, "Edit");
         }
 
@@ -149,13 +153,15 @@ namespace MessengerContent.Client
         /// <param name="replyThreadID">ID of thread to which the message belongs to</param>
         public void DeleteChat(int messageID, int replyThreadID)
         {
-            ContentData sendData = new();
-            sendData.Type = MessageType.Chat;
-            sendData.Data = "Message Deleted.";
-            sendData.MessageID = messageID;
-            sendData.ReplyThreadID = replyThreadID;
-            sendData.SenderID = UserID;
-            sendData.Event = MessageEvent.Delete;
+            ChatData sendData = new()
+            {
+                Type = MessageType.Chat,
+                Data = "Message Deleted.",
+                MessageID = messageID,
+                ReplyThreadID = replyThreadID,
+                SenderID = UserID,
+                Event = MessageEvent.Delete
+            };
             SerializeAndSendToServer(sendData, "Delete");
         }
 
@@ -166,12 +172,14 @@ namespace MessengerContent.Client
         /// <param name="replyThreadID">ID of thread to which the message belongs to</param>
         public void StarChat(int messageID, int replyThreadID)
         {
-            ContentData sendData = new();
-            sendData.Type = MessageType.Chat;
-            sendData.MessageID = messageID;
-            sendData.ReplyThreadID = replyThreadID;
-            sendData.SenderID = UserID;
-            sendData.Event = MessageEvent.Star;
+            ChatData sendData = new()
+            {
+                Type = MessageType.Chat,
+                MessageID = messageID,
+                ReplyThreadID = replyThreadID,
+                SenderID = UserID,
+                Event = MessageEvent.Star
+            };
             SerializeAndSendToServer(sendData, "Star");
         }
 

@@ -1,7 +1,7 @@
 ﻿/******************************************************************************
 * Filename    = FileServer.cs
 *
-* Author      = 
+* Author      = Manikanta Gudipudi
 * 
 * Product     = Messenger
 * 
@@ -23,12 +23,12 @@ namespace MessengerContent.Server
 {
     public class FileServer
     {
-        private readonly ContentDB _db;
+        private readonly ContentDataBase _db;
 
         /// <summary>
         ///     Constructor to initializes the content Database.
         /// </summary>
-        public FileServer(ContentDB contentDB)
+        public FileServer(ContentDataBase contentDB)
         {
             _db = contentDB;
         }

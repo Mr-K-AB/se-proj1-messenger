@@ -1,13 +1,13 @@
 ﻿/******************************************************************************
  * Filename    = ChatServer.cs
  *
- * Author      = 
+ * Author      = Manikanta Gudipudi
  *
  * Product     = Messenger
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = To handle chat messages and its functionalities
  *****************************************************************************/
 
 using MessengerContent.DataModels;
@@ -20,18 +20,18 @@ namespace MessengerContent.Server
 {
     public class ChatServer
     {
-        private readonly ContentDB _contentDB;
+        private readonly ContentDataBase _contentDB;
 
         /// <summary>
-        ///     Constructor to initialize the content Database.
+        /// Constructor to initialize the content Database.
         /// </summary>
-        public ChatServer(ContentDB db)
+        public ChatServer(ContentDataBase db)
         {
             _contentDB = db;
         }
 
         /// <summary>
-        ///     This function returns all the messages stored.
+        /// This function returns all the messages stored in the content DB.
         /// </summary>
         public List<ChatThread> GetMessages()
         {
@@ -39,11 +39,11 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     This event is used to process the chat based on the type of event that occurred.
+        /// function to process the chat based on the type of event that occurred.
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the new message</returns>
-        public ChatData Receive(ChatData msg)
+        public ChatData? Receive(ChatData msg)
         {
             ReceiveChatData receivedMsg;
             Trace.WriteLine("[ChatServer] Received message from ContentServer");
@@ -77,22 +77,22 @@ namespace MessengerContent.Server
             {
                 return null;
             }
-            //Create a MessageData object and return this notify object.
-            var notifyMsgData = new ChatData(receivedMsg)
+            //Create a ChatData object and return
+            var notifyChatData = new ChatData(receivedMsg)
             {
                 Event = msg.Event
             };
-            return notifyMsgData;
+            return notifyChatData;
         }
 
         /// <summary>
-        ///     This function is used to update a message with a new updated message.
+        /// This function is used to update a message with a new message.
         /// </summary>
-        public ReceiveChatData UpdateMessage(int replyId, int _msgId, string updatedMsg)
+        public ReceiveChatData? UpdateMessage(int replyId, int _msgId, string updatedMsg)
         {
-            var message = _contentDB.GetMessage(replyId, _msgId);
+            ReceiveChatData message = _contentDB.GetMessage(replyId, _msgId);
 
-            //message doesn't exists in database, return null
+            //if message doesn't exists in database, return null
             if (message == null)
             {
                 Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {_msgId}.");
@@ -105,13 +105,13 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     This function is used to star a message.
+        /// This function is used to star a message.
         /// </summary>
-        public ReceiveChatData StarMessage(int replyId, int _msgId)
+        public ReceiveChatData? StarMessage(int replyId, int _msgId)
         {
-            var msg = _contentDB.GetMessage(replyId, _msgId);
+            ReceiveChatData msg = _contentDB.GetMessage(replyId, _msgId);
 
-            //message doesn't exists in database, return null
+            //if message doesn't exists in database, return null
             if (msg == null)
             {
                 Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {_msgId}.");
@@ -124,20 +124,20 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     This function is used to Delete a message.
+        /// This function is used to Delete an exsisting message.
         /// </summary>
-        public ReceiveChatData DeleteMessage(int replyId, int _msgId)
+        public ReceiveChatData? DeleteMessage(int replyId, int _msgId)
         {
-            var message = _contentDB.GetMessage(replyId, _msgId);
+            ReceiveChatData message = _contentDB.GetMessage(replyId, _msgId);
 
-            // Message doesn't exists in database, return null
+            // if Message doesn't exists in database, return null
             if (message == null)
             {
                 Trace.WriteLine($"[ChatServer] Message not found replyThreadID: {replyId}, messageId: {_msgId}.");
                 return null;
             }
 
-            // The data of the message now becomes "Message Deleted.".
+            // The data of the message now becomes "Message Deleted." string.
             message.Data = "Message Deleted.";
             return message;
         }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,7 +10,7 @@ namespace MessengerApp
     public partial class WhiteboardPage : Page
     {
         ViewModel ViewModel;
-        private bool buildingShape = false;
+        private bool _buildingShape = false;
 
         public WhiteboardPage()
         {
@@ -23,7 +18,7 @@ namespace MessengerApp
 
             ViewModel = ViewModel.Instance;
             ViewModel.ShapeItems = new();
-            this.DataContext = ViewModel;
+            DataContext = ViewModel;
         }
 
         //private void SampleRectangleClick(object sender, RoutedEventArgs e)
@@ -49,42 +44,43 @@ namespace MessengerApp
 
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(ViewModel.currentMode == ViewModel.WBModes.CreateMode)
+            if (ViewModel.currentMode == ViewModel.WBModes.CreateMode)
             {
-                var p = e.GetPosition(sender as Canvas);
+                Point p = e.GetPosition(sender as Canvas);
                 ViewModel.StartShape(p);
-                buildingShape = true;
+                _buildingShape = true;
             }
-            else if(ViewModel.currentMode == ViewModel.WBModes.SelectMode)
+            else if (ViewModel.currentMode == ViewModel.WBModes.SelectMode)
             {
-                var canvas = sender as Canvas;
-                if (canvas == null)
+                if (sender is not Canvas canvas)
+                {
                     return;
+                }
 
                 HitTestResult hitTestResult = VisualTreeHelper.HitTest(canvas, e.GetPosition(canvas));
-                var element = hitTestResult.VisualHit;
+                DependencyObject element = hitTestResult.VisualHit;
                 Debug.WriteLine(element);
             }
         }
 
         private void CanvasMouseMove(object sender, MouseEventArgs e)
         {
-            if(buildingShape)
+            if (_buildingShape)
             {
-                var p = e.GetPosition(sender as Canvas);
+                Point p = e.GetPosition(sender as Canvas);
                 ViewModel.BuildShape(p);
             }
         }
-        
+
         private void CanvasMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if(buildingShape)
+            if (_buildingShape)
             {
                 Debug.WriteLine("Mouse Up");
-                var p = e.GetPosition(sender as Canvas);
+                Point p = e.GetPosition(sender as Canvas);
                 ViewModel.EndShape(p);
                 e.Handled = true;
-                buildingShape = false;
+                _buildingShape = false;
             }
             //Debug.WriteLine(ViewModel.ShapeItems[0].ToString());
         }
@@ -92,20 +88,80 @@ namespace MessengerApp
         public void SelectMode(object sender, RoutedEventArgs e)
         {
             ViewModel.ChangeMode(ViewModel.WBModes.SelectMode);
-            Trace.WriteLine("Whiteboard View Model :: Mode changed to : " + this.ViewModel.currentMode);
+            Trace.WriteLine("Whiteboard View Model :: Mode changed to : " + ViewModel.currentMode);
         }
         public void RectangleMode(object sender, RoutedEventArgs e)
         {
             ViewModel.ChangeShapeMode("Rectangle");
             ViewModel.ChangeMode(ViewModel.WBModes.CreateMode);
-            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + this.ViewModel.shapeMode);
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + ViewModel.shapeMode);
         }
 
         public void EllipseMode(object sender, RoutedEventArgs e)
         {
             ViewModel.ChangeShapeMode("Ellipse");
             ViewModel.ChangeMode(ViewModel.WBModes.CreateMode);
-            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + this.ViewModel.shapeMode);
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + ViewModel.shapeMode);
         }
+
+
+        private void CanvasMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (ViewModel.activeTool != "Select")
+                viewModel.UnselectAll();
+            switch (this.activeTool)
+            {
+                case "Select":
+                    Cursor = Cursors.Arrow;
+                    break;
+                case "Rectangle":
+                    Cursor = Cursors.Cross;
+                    break;
+                default:
+                    Cursor = Cursors.Arrow;
+                    break;
+            }
+        }
+
+        private void CanvasMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (this.currentTool != "Select")
+                viewModel.UnselectAll();
+            Cursor = Cursors.Arrow;
+
+        }
+
+        private void ColorGreen(object sender, RoutedEventArgs e)
+        {
+            viewModel.ChangeFillBrush(Brushes.Green);
+        }
+
+        private void ColorRed(object sender, RoutedEventArgs e)
+        {
+            viewModel.ChangeFillBrush(Brushes.Red);
+
+        }
+
+        private void ColorYellow(object sender, RoutedEventArgs e)
+        {
+            viewModel.ChangeFillBrush(Brushes.Yellow);
+        }
+
+        private void ColorNull(object sender, RoutedEventArgs e)
+        {
+            viewModel.ChangeFillBrush(null);
+        }
+
+        private void ColorBlue(object sender, RoutedEventArgs e)
+        {
+            viewModel.ChangeFillBrush(Brushes.Blue);
+        }
+
+        private void ColorBlack(object sender, RoutedEventArgs e)
+        {
+            viewModel.ChangeFillBrush(Brushes.Black);
+        }
+
+
     }
 }

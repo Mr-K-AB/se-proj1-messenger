@@ -15,6 +15,7 @@ namespace MessengerWhiteboard
     {
         public BindingList<ShapeItem> ShapeItems { get; set; }
         ShapeItem? tempShape;
+        public string activeTool;
 
         private string userID = "tempUser";
 

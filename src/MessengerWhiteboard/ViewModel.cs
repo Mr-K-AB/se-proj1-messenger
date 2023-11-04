@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -9,12 +11,14 @@ using System.Windows;
 
 namespace MessengerWhiteboard
 {
-    public partial class ViewModel
+    public partial class ViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<ShapeItem> ShapeItems { get; set; }
+        public BindingList<ShapeItem> ShapeItems { get; set; }
         ShapeItem? tempShape;
 
         private string userID = "tempUser";
+
+        public string shapeMode = "Rectangle";
 
         public bool isEnabled;
         public enum WBModes
@@ -25,10 +29,10 @@ namespace MessengerWhiteboard
             SelectMode
         }
 
-        private WBModes currentMode;
+        public WBModes currentMode;
         //shape attributes
-        Brush fillBrush;                                            // stores color of the object (fill colour)
-        Brush borderBrush;                                 // stores color of the border
+        //Brush fillBrush;                                            // stores color of the object (fill colour)
+        //Brush borderBrush;                                 // stores color of the border
         int strokeWidth;  
         
         List<ShapeItem> selectedShapes;                                         // thickness of the stroke
@@ -42,13 +46,20 @@ namespace MessengerWhiteboard
                 this.isEnabled = false;
             }
             SetUserID();
-            this.fillBrush = null;                                            // stores color of the object (fill colour)
-            this.borderBrush = Brushes.Black;                                 // stores color of the border
+            //this.fillBrush = null;                                            // stores color of the object (fill colour)
+            //this.borderBrush = Brushes.Black;                                 // stores color of the border
             this.strokeWidth = 1;
-            this.selectedShapes = new List<ShapeItem>;
+            this.selectedShapes = new List<ShapeItem>();
         }
 
         private static ViewModel? _instance;
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public void OnPropertyChanged(string property)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
 
         public static ViewModel Instance
         {
@@ -64,6 +75,7 @@ namespace MessengerWhiteboard
 
         public void AddShape(ShapeItem shape)
         {
+            Debug.WriteLine("Inside AddShape");
             ShapeItems.Add(shape);
         }
 
@@ -76,6 +88,12 @@ namespace MessengerWhiteboard
         {
             Trace.WriteLine("Whiteboard View Model :: Active mode changed to : " + mode);
             this.currentMode = mode; 
+        }
+
+        public void ChangeShapeMode(string mode)
+        {
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + mode);
+            this.shapeMode = mode;
         }
 
         public string GetUserID()
@@ -94,51 +112,51 @@ namespace MessengerWhiteboard
         {
             this.strokeWidth = width;
             Trace.WriteLine("Whiteboard View Model :: Width changed to : " + width);
-            this.UpdateStrokeWidth();
+            //this.UpdateStrokeWidth();
         }
 
-        public void ChangeBorderBrush(string bcolour)
-        {
-            this.borderBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(bcolour));
-            Trace.WriteLine("Whiteboard View Model :: border colour changed to : " + bcolour);
-            this.UpdateBorderBrush();
-        }
+        //public void ChangeBorderBrush(string bcolour)
+        //{
+        //    this.borderBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(bcolour));
+        //    Trace.WriteLine("Whiteboard View Model :: border colour changed to : " + bcolour);
+        //    this.UpdateBorderBrush();
+        //}
 
-        public void ChangeFillBrush(string fcolour)
-        {
-            this.fillBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(fcolour));
-            Trace.WriteLine("Whiteboard View Model :: fill colour changed to : " + fcolour);
-            this.UpdateFillBrush();
-        }
+        //public void ChangeFillBrush(string fcolour)
+        //{
+        //    this.fillBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(fcolour));
+        //    Trace.WriteLine("Whiteboard View Model :: fill colour changed to : " + fcolour);
+        //    this.UpdateFillBrush();
+        //}
 
-        public void UpdateStrokeWidth()
-        {
-            for(int i = 0; i < selectedShapes.Count(); i++)
-            {
-                ShapeItem newShape = this.selectedShapes[i].DeepClone();
-                newShape.strokeThickness = this.strokeWidth;
-                this.selectedShapes[i] = newShape;
-            }
-        }
+        //public void UpdateStrokeWidth()
+        //{
+        //    for(int i = 0; i < selectedShapes.Count(); i++)
+        //    {
+        //        ShapeItem newShape = this.selectedShapes[i].DeepClone();
+        //        newShape.strokeThickness = this.strokeWidth;
+        //        this.selectedShapes[i] = newShape;
+        //    }
+        //}
 
-        public void UpdateBorderBrush(string bcolour)
-        {
-            for(int i = 0; i < selectedShapes.Count(); i++)
-            {
-                ShapeItem newShape = this.selectedShapes[i].DeepClone();
-                newShape.Stroke = this.borderBrush;
-                this.selectedShapes[i] = newShape;
-            }
-        }
+        //public void UpdateBorderBrush(string bcolour)
+        //{
+        //    for(int i = 0; i < selectedShapes.Count(); i++)
+        //    {
+        //        ShapeItem newShape = this.selectedShapes[i].DeepClone();
+        //        newShape.Stroke = this.borderBrush;
+        //        this.selectedShapes[i] = newShape;
+        //    }
+        //}
 
-        public void UpdateFillBrush(string fcolour)
-        {
-            for(int i = 0; i < selectedShapes.Count(); i++)
-            {
-                ShapeItem newShape = this.selectedShapes[i].DeepClone();
-                newShape.Fill = this.fillBrush;
-                this.selectedShapes[i] = newShape;
-            }
-        }
+        //public void UpdateFillBrush(string fcolour)
+        //{
+        //    for(int i = 0; i < selectedShapes.Count(); i++)
+        //    {
+        //        ShapeItem newShape = this.selectedShapes[i].DeepClone();
+        //        newShape.Fill = this.fillBrush;
+        //        this.selectedShapes[i] = newShape;
+        //    }
+        //}
     }
 }

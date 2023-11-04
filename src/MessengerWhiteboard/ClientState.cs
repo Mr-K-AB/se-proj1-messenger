@@ -12,16 +12,16 @@
 *               server using the methods available through the Client Communicator interface.
 ***************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Threading.Tasks;
 
-namespace MessengerWhiteboard
-{
-    public class ClientState : IShapeReceiver
-    {
+//namespace MessengerWhiteboard
+//{
+//    public class ClientState : IShapeReceiver
+//    {
 
-    }
-}
+//    }
+//}

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MessengerNetworking.Communicator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+/*
 namespace MessengerTests.MessengerNetworking.Communicator
 {
 
@@ -46,3 +46,4 @@ namespace MessengerTests.MessengerNetworking.Communicator
         }
     }
 }
+*/

@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * Filename    = ICommunicator.cs
  *
  * Author      = Ramaswamy Krishnan-Chittur
@@ -9,6 +9,8 @@
  *
  * Description = Defines the interface for a communicator.
  *****************************************************************************/
+
+using MessengerNetworking.NotificationHandler;
 
 namespace MessengerNetworking.Communicator
 {
@@ -27,7 +29,7 @@ namespace MessengerNetworking.Communicator
         /// </summary>
         /// <param name="id">Identity of the subscriber to be added</param>
         /// <param name="subscriber">The message listener instance</param>
-        void AddSubscriber(string id, IMessageListener subscriber);
+        void AddSubscriber(string id, INotificationHandler subscriber);
 
         /// <summary>
         /// Removes a subscriber
@@ -42,6 +44,6 @@ namespace MessengerNetworking.Communicator
         /// <param name="port">Port of the destination</param>
         /// <param name="senderId">Identity of the sender</param>
         /// <param name="message">Message to be sent</param>
-        void SendMessage(string ipAddress, int port, string senderId, string message);
+        void SendMessage(string ipAddress, int port, string senderId, string message, int priority = 0);
     }
 }

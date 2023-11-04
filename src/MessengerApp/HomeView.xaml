@@ -11,8 +11,8 @@
     <Grid>
         <!-- Navigation Bar -->
         <Menu>
-            <MenuItem Header="Meeting" Click="MeetingMenuItem_Click"/>
-            <MenuItem Header="Old Sessions" Click="OldSessionsMenuItem_Click"/>
+            <MenuItem Header="Meeting"/>
+            <MenuItem Header="Old Sessions"/>
             
         </Menu>
 

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-
 namespace MessengerDashboard.Telemetry
 {
     /// <summary>
     /// This class manages user data and telemetry analytics.
     /// </summary>
 
-    public class TelemetryManager
+    public class TelemetryManager : ITelemetry
     {
+        /*
         // Dependency fields
         // private readonly ITelemetrySessionManager serverSessionManager = TelemetrySessionManagerFactory.GetServerSessionManager();
         // private readonly TelemetryPersistence persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
@@ -220,6 +220,16 @@ namespace MessengerDashboard.Telemetry
                     UserExitTime[userEntry.Key] = currentTime;
                 }
             }
+        }
+    */
+        public SessionAnalytics GetTelemetryAnalytics()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SaveAnalytics()
+        {
+            throw new NotImplementedException();
         }
     }
 }

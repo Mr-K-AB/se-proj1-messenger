@@ -139,7 +139,8 @@ namespace MessengerScreenshare.Server
 
                 while (!token.IsCancellationRequested)
                 {
-                    string newFrame = _sharedClientScreen.GetImage(taskId);
+                  
+                    string? newFrame = _sharedClientScreen.GetImage(taskId);
 
                     if (newFrame == null)
                     {
@@ -147,10 +148,15 @@ namespace MessengerScreenshare.Server
                         continue;
                     }
 
-                    Bitmap stitchedImage = Stitch(_priorImage, newFrame);
-                    Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
-                    _priorImage = stitchedImage;
-                    _sharedClientScreen.PutFinalImage(stitchedImage, taskId);
+                    if (_priorImage != null)
+                    {
+                        Bitmap stitchedImage = Stitch(_priorImage, newFrame);
+                        Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
+                        _priorImage = stitchedImage;
+                        _sharedClientScreen.PutFinalImage(stitchedImage, taskId);
+
+                    }
+                    
                 }
             }, cancellationTokenSource.Token);
 
@@ -199,6 +205,7 @@ namespace MessengerScreenshare.Server
         private Bitmap Stitch(Bitmap priorImage, string newFrame)
         {
             char isCompleteFrame = newFrame[newFrame.Length - 1];
+
             newFrame = newFrame.Remove(newFrame.Length - 1);
 
             byte[] frameData = Convert.FromBase64String(newFrame);
@@ -230,8 +237,5 @@ namespace MessengerScreenshare.Server
 
             return priorImage;
         }
-
     }
-
-
 }

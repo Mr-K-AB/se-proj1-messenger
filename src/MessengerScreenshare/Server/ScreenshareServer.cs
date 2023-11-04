@@ -125,7 +125,7 @@ namespace MessengerScreenshare.Server
 
             lock (_subscribers)
             {
-                if (_subscribers.TryGetValue(clientId, out SharedClientScreen client))
+                if (_subscribers.TryGetValue(clientId, out SharedClientScreen? client))
                 {
                     _subscribers.Remove(clientId);
 
@@ -161,7 +161,7 @@ namespace MessengerScreenshare.Server
         {
             lock (_subscribers)
             {
-                if (_subscribers.TryGetValue(clientId, out SharedClientScreen client))
+                if (_subscribers.TryGetValue(clientId, out SharedClientScreen? client))
                 {
                     try
                     {
@@ -227,7 +227,7 @@ namespace MessengerScreenshare.Server
         {
             lock (_subscribers)
             {
-                if (_subscribers.TryGetValue(clientId, out SharedClientScreen client))
+                if (_subscribers.TryGetValue(clientId, out SharedClientScreen? client))
                 {
                     try
                     {

@@ -19,8 +19,8 @@ using Timer = System.Timers.Timer;
 namespace MessengerScreenshare.Server
 {
     public class SharedClientScreen :
-        INotifyPropertyChanged // Notifies the UX that a property value has changed.
-        //IDisposable             // Handle cleanup work for the allocated resources.
+        INotifyPropertyChanged, // Notifies the UX that a property value has changed.
+        IDisposable             // Handle cleanup work for the allocated resources.
     {
         /// <summary>
         /// Object of Timer which keeps track the time of last packet
@@ -32,23 +32,23 @@ namespace MessengerScreenshare.Server
         /// <summary>
         /// The data model defining the callback for the timeout.
         /// </summary>
-        //private readonly ITimerManager _server;
+        private readonly ITimer _serverTimeout;
 
         /// <summary>
         /// It will store the image receiving from the clients.
         /// </summary>
-        private readonly Queue<string> _imageQueue;
+        private readonly Queue<string> _screenImageQueue;
 
         /// <summary>
         /// The screen stitcher associated with this client.
         /// </summary>
-        private readonly ScreenStitcher _stitcher;
+        private readonly ScreenStitcher _screenStitcher;
 
         /// <summary>
         /// It store the Images which are going to display, i.e., the
         /// final image after stitching the image received from the client.
         /// </summary>
-        private readonly Queue<Bitmap> _finalImageQueue;
+        private readonly Queue<Bitmap> _finalScreenImageQueue;
 
         /// <summary>
         /// Task which will continuously pick the image from the "_finalImageQueue"
@@ -56,7 +56,7 @@ namespace MessengerScreenshare.Server
         /// image of the client. The function for this task will be provided by the
         /// view model which will also invoke "OnPropertyChanged" to notify the UX.
         /// </summary>
-        private Task? _imageSendTask;
+        private Task? _screenImageSendTask;
 
         /// <summary>
         /// Lock acquired while modifying "_taskId"
@@ -66,7 +66,7 @@ namespace MessengerScreenshare.Server
         /// <summary>
         /// Track whether Dispose has been called.
         /// </summary>
-        private readonly bool _disposed;
+        private bool _disposed;
 
         /// <summary>
         /// Image that is currently displaying on the screen.
@@ -101,42 +101,41 @@ namespace MessengerScreenshare.Server
         /// <param name="server">
         /// The timer manager implementing the callback for the timer object.
         /// </param>
-        /// <param name="isDebugging">
+        /// <param name="isDebug">
         /// If we are in debugging/testing mode.
         /// </param>
         /// <exception cref="Exception"></exception>
-        public SharedClientScreen(string clientId, string clientName, bool isDebugging = false)
+        public SharedClientScreen(string clientId, string clientName, ITimer server, bool isDebug = false)
         {
             //Initialize all the variables
  
             Id = clientId ?? throw new ArgumentNullException(nameof(clientId));
             Name = clientName ?? throw new ArgumentNullException(nameof(clientName));
-            //_server = server ?? throw new ArgumentNullException(nameof(server));
+            _serverTimeout = server ?? throw new ArgumentNullException(nameof(server));
 
             // Created a new stitcher object associated to this client.
-            _stitcher = new(this);
+            _screenStitcher = new(this);
 
             // Initialize the queues to be empty.
-            _imageQueue = new ();
-            _finalImageQueue = new();
+            _screenImageQueue = new ();
+            _finalScreenImageQueue = new();
 
             // Initially client is not pinned so mark it false.
             _pinned = false;
 
             // There variables is assigned as null.
-            _imageSendTask = null;
+            _screenImageSendTask = null;
             _currentImage = null;
-
 
             _disposed = false;
             TaskId = 0;
             _tileHeight = 0;
             _tileWidth = 0;
 
-            //if (!isDebugging)
-            //{
-             //   SetupTimer();
-            //}
+            if (!isDebug)
+            {
+               SetupTimer();
+            }
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully created client with id: {Id} and name: {Name}", withTimeStamp: true));
         }
@@ -146,12 +145,12 @@ namespace MessengerScreenshare.Server
         /// after a specified time interval.
         /// </summary>
         /// <exception cref="Exception"></exception>
-        /*private void SetupTimer()
+        private void SetupTimer()
         {
             try
             {
                 Timer _timer = new ();
-                _timer.Elapsed += (sender, e) => _server.OnTimeOut(sender, e, Id);
+                _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, e);
                 _timer.AutoReset = false;
                 UpdateTimer();
                 _timer.Enabled = true;
@@ -161,7 +160,7 @@ namespace MessengerScreenshare.Server
                 Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}" , withTimeStamp: true));
                 throw new Exception("Failed to create the timer", e);
             }
-        }*/
+        }
 
         /// <summary>
         /// Destructor for the class that will perform some cleanup tasks.
@@ -184,7 +183,7 @@ namespace MessengerScreenshare.Server
         /// <summary>
         /// Implement IDisposable. Disposes the managed and unmanaged resources.
         /// </summary>
-        public void Dispose(bool disposing)
+        public void Dispose()
         {
             Dispose(disposing: true);
 
@@ -193,7 +192,7 @@ namespace MessengerScreenshare.Server
             // take this object off the finalization queue
             // and prevent finalization code for this object
             // from executing a second time.
-            GC.SuppressFinalize( this );
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -298,32 +297,33 @@ namespace MessengerScreenshare.Server
         /// </returns>
         public string? GetImage(int taskId)
         {
-            lock (_imageQueue)
+            Debug.Assert(_screenImageQueue != null, Utils.GetDebugMessage("_imageQueue is null"));
+            lock (_screenImageQueue)
             {
                 // Check if the task is stopped or a new task is started.
-                if (_imageQueue == null || taskId != TaskId)
+                if (_screenImageQueue == null || taskId != TaskId)
                 {
                     return null;
                 }
 
                 // Use a while loop to wait until the queue is not empty.
-                while (_imageQueue.Count == 0)
+                while (_screenImageQueue.Count == 0)
                 {
                     // Release the lock and wait for a signal.
-                    Monitor.Wait(_imageQueue);
+                    Monitor.Wait(_screenImageQueue);
 
                     // After being woken up, recheck if the task is stopped or a new task is started.
-                    if (_imageQueue == null || taskId != TaskId)
+                    if (_screenImageQueue == null || taskId != TaskId)
                     {
                         return null;
                     }
                 }
 
-                Debug.Assert(_imageQueue.Count > 0, Utils.GetDebugMessage("Queue should not be empty"));
+                Debug.Assert(_screenImageQueue.Count > 0, Utils.GetDebugMessage("Queue should not be empty"));
 
                 try
                 {
-                    return _imageQueue.Dequeue();
+                    return _screenImageQueue.Dequeue();
                 }
                 catch (InvalidOperationException e)
                 {
@@ -344,16 +344,16 @@ namespace MessengerScreenshare.Server
         /// </param>
         public void PutImage(string image, int taskId)
         {
-            Debug.Assert(_imageQueue != null, Utils.GetDebugMessage("_imageQueue is found null"));
+            Debug.Assert(_screenImageQueue != null, Utils.GetDebugMessage("_imageQueue is found null"));
 
-            lock (_imageQueue)
+            lock (_screenImageQueue)
             {
                 // Return if the task is stopped or a new task is started.
                 if (taskId != TaskId)
                 {
                     return;
                 }
-                _imageQueue.Enqueue(image);
+                _screenImageQueue.Enqueue(image);
             }
         }
 
@@ -368,34 +368,34 @@ namespace MessengerScreenshare.Server
         /// </returns>
         public Bitmap? GetFinalImage(int taskId)
         {
-            Debug.Assert(_finalImageQueue != null, Utils.GetDebugMessage("_finalImageQueue is found null"));
+            Debug.Assert(_finalScreenImageQueue != null, Utils.GetDebugMessage("_finalImageQueue is found null"));
 
-            lock (_finalImageQueue)
+            lock (_finalScreenImageQueue)
             {
                 // Check if the task is stopped or a new task is started.
-                if (_finalImageQueue == null || taskId != TaskId)
+                if (_finalScreenImageQueue == null || taskId != TaskId)
                 {
                     return null;
                 }
 
                 // Use a while loop to wait until the queue is not empty.
-                while (_finalImageQueue.Count == 0)
+                while (_finalScreenImageQueue.Count == 0)
                 {
                     // Release the lock and wait for a signal.
-                    Monitor.Wait(_finalImageQueue);
+                    Monitor.Wait(_finalScreenImageQueue);
 
                     // After being woken up, recheck if the task is stopped or a new task is started.
-                    if (_finalImageQueue == null || taskId != TaskId)
+                    if (_finalScreenImageQueue == null || taskId != TaskId)
                     {
                         return null;
                     }
                 }
 
-                Debug.Assert(_finalImageQueue.Count > 0, Utils.GetDebugMessage("Queue should not be empty"));
+                Debug.Assert(_finalScreenImageQueue.Count > 0, Utils.GetDebugMessage("Queue should not be empty"));
 
                 try
                 {
-                    return _finalImageQueue.Dequeue();
+                    return _finalScreenImageQueue.Dequeue();
                 }
                 catch (InvalidOperationException e)
                 {
@@ -416,16 +416,16 @@ namespace MessengerScreenshare.Server
         /// </param>
         public void PutFinalImage(Bitmap image, int taskId)
         {
-            Debug.Assert(_finalImageQueue != null, Utils.GetDebugMessage("_finalImageQueue is found null"));
+            Debug.Assert(_finalScreenImageQueue != null, Utils.GetDebugMessage("_finalImageQueue is found null"));
 
-            lock (_finalImageQueue)
+            lock (_finalScreenImageQueue)
             {
                 // Return if the task is stopped or a new task is started.
                 if (taskId != TaskId)
                 {
                     return;
                 }
-                _finalImageQueue.Enqueue(image);
+                _finalScreenImageQueue.Enqueue(image);
             }
         }
 
@@ -440,9 +440,9 @@ namespace MessengerScreenshare.Server
         /// <exception cref="Exception"></exception>
         public void StartProcessing(Action<int> task)
         {
-            Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
+            Debug.Assert(_screenStitcher != null, Utils.GetDebugMessage("_stitcher is found null"));
 
-            if (_imageSendTask != null)
+            if (_screenImageSendTask != null)
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Trying to start an already started task for the client with Id {Id}", withTimeStamp: true));
                 return;
@@ -456,11 +456,11 @@ namespace MessengerScreenshare.Server
                     ++TaskId;
 
                     // Start the stitcher.
-                    _stitcher?.StartStitching(TaskId);
+                    _screenStitcher?.StartStitching(TaskId);
 
                     // Create and start a new task.
-                    _imageSendTask = new(() => task(TaskId));
-                    _imageSendTask?.Start();
+                    _screenImageSendTask = new(() => task(TaskId));
+                    _screenImageSendTask?.Start();
                 }
             }
             catch (Exception e)
@@ -483,10 +483,10 @@ namespace MessengerScreenshare.Server
         /// <exception cref="Exception"></exception>
         public void StopProcessing(bool stopAsync = false)
         {
-            Debug.Assert(_stitcher != null, Utils.GetDebugMessage("_stitcher is null"));
+            Debug.Assert(_screenStitcher != null, Utils.GetDebugMessage("_stitcher is null"));
 
             // Check if the task was started before.
-            if (_imageSendTask == null)
+            if (_screenImageSendTask == null)
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Client with {Id} Id has never started their task", withTimeStamp: true));
                 return;
@@ -503,31 +503,31 @@ namespace MessengerScreenshare.Server
                     ++TaskId;
 
                     // Immediately make the task variable null.
-                    previousImageSendTask = _imageSendTask;
-                    _imageSendTask = null;
+                    previousImageSendTask = _screenImageSendTask;
+                    _screenImageSendTask = null;
 
                     // Clear both the queues.
-                    lock (_imageQueue)
+                    lock (_screenImageQueue)
                     {
-                        _imageQueue.Clear();
+                        _screenImageQueue.Clear();
                     }
 
-                    lock (_finalImageQueue)
+                    lock (_finalScreenImageQueue)
                     {
-                        _finalImageQueue.Clear();
+                        _finalScreenImageQueue.Clear();
                     }
                 }
 
                 if (!stopAsync)
                 {
                     // Stop the stitcher and image sending task.
-                    _stitcher?.StopStitching();
+                    _screenStitcher?.StopStitching();
                     previousImageSendTask?.Wait();
                 }
                 else
                 {
                     // Stop the stitcher and image sending task asynchronously.
-                    Task.Run(() => _stitcher?.StopStitching());
+                    Task.Run(() => _screenStitcher?.StopStitching());
                     Task.Run(() => previousImageSendTask?.Wait());
                 }
             }
@@ -571,6 +571,43 @@ namespace MessengerScreenshare.Server
             PropertyChanged?.Invoke(this, new(property));
         }
 
-    }
+        /// <summary>
+        /// There are two ways to execute.
+        /// If disposing is false then methods which is inside
+        /// the destructor has been called by the runtime and
+        /// other objects will not be referenced. And unmanaged 
+        /// resource will be disposed.
+        /// If disposing is true then then methods has been called
+        /// by the user's code either by directly or indirectly.
+        /// And managed and unmanaged resource will be disposed.
+        /// </summary>
+        /// <param name="disposing">
+        /// Indicate whether we are disposing or not.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            /// If disposed has already been called then return;
+            if (_disposed)
+            {
+                return;
+            }
 
+            /// If disposing is true then dispose all managed
+            /// and unmanaged resource.
+            if (disposing)
+            {
+                StopProcessing();
+
+                if (_timer != null)
+                {
+                    _timer.Enabled = false;
+                    _timer.Dispose();
+                }
+            }
+
+            /// disposing done.
+            _disposed = true;
+
+        }
+    }
 }

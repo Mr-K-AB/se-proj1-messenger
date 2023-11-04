@@ -9,12 +9,13 @@ using System.Timers;
 
 namespace MessengerScreenshare.Server
 {
-    public class ScreenshareServer: ITimer
+    public class ScreenshareServer: ITimer,
        //INotificationHandler, // To receive chat messages from clients.
              // Handles client timeouts.
-       // IDisposable
+        IDisposable
     {
         private  static ScreenshareServer? s_instance;
+        private bool _disposedValue;
         private readonly IDataReceiver _receiver;   // To notify changes to the UI.
         private static readonly object s_lockObject = new ();
         private readonly Dictionary<string, SharedClientScreen> _subscribers;
@@ -33,11 +34,17 @@ namespace MessengerScreenshare.Server
             // Initialize the rest of the fields.
             _subscribers = new Dictionary<string, SharedClientScreen>();
             _receiver = listener;
-            _disposed = false;
+            _disposedValue = false;
 
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareServer", withTimeStamp: true));
         }
-        
+        ~ScreenshareServer()
+        {
+            // Do not re-create Dispose clean-up code here.
+            // Calling Dispose(disposing: false) is optimal in terms of
+            // readability and maintainability.
+            Dispose(disposing: false);
+        }
         public static ScreenshareServer GetInstance(IDataReceiver listener, bool isDebugging = false)
         {
             Debug.Assert(listener != null, Utils.GetDebugMessage("listener is found null"));
@@ -247,6 +254,49 @@ namespace MessengerScreenshare.Server
 
             DeregisterClient(clientId);
             Trace.WriteLine(Utils.GetDebugMessage($"Timeout occurred for the client with id: {clientId}", withTimeStamp: true));
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                    List<SharedClientScreen> sharedClientScreens;
+
+                    // Acquire lock because timer threads could also execute simultaneously.
+                    lock (_subscribers)
+                    {
+                        sharedClientScreens = _subscribers.Values.ToList();
+                        _subscribers.Clear();
+                    }
+
+                    // Deregister all the clients.
+                    foreach (SharedClientScreen client in sharedClientScreens)
+                    {
+                        DeregisterClient(client.Id);
+                    }
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                _disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~ScreenshareServer()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

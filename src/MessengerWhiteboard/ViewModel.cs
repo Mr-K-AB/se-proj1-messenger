@@ -14,10 +14,9 @@ namespace MessengerWhiteboard
     public partial class ViewModel : INotifyPropertyChanged
     {
         public BindingList<ShapeItem> ShapeItems { get; set; }
-        ShapeItem? tempShape;
-        public string activeTool;
+        ShapeItem? _tempShape;
 
-        private string userID = "tempUser";
+        private string _userID = "tempUser";
 
         public string shapeMode = "Rectangle";
 
@@ -34,23 +33,23 @@ namespace MessengerWhiteboard
         //shape attributes
         //Brush fillBrush;                                            // stores color of the object (fill colour)
         //Brush borderBrush;                                 // stores color of the border
-        int strokeWidth;  
+        int _strokeWidth;  
         
-        List<ShapeItem> selectedShapes;                                         // thickness of the stroke
+        List<ShapeItem> _selectedShapes;                                         // thickness of the stroke
 
         public ViewModel()
         {
             ShapeItems = new();
             this.currentMode = WBModes.ViewMode;
-            if(this.userID == "tempUser")
+            if(this._userID == "tempUser")
             {
                 this.isEnabled = false;
             }
             SetUserID();
             //this.fillBrush = null;                                            // stores color of the object (fill colour)
             //this.borderBrush = Brushes.Black;                                 // stores color of the border
-            this.strokeWidth = 1;
-            this.selectedShapes = new List<ShapeItem>();
+            this._strokeWidth = 1;
+            this._selectedShapes = new List<ShapeItem>();
         }
 
         private static ViewModel? _instance;
@@ -105,13 +104,13 @@ namespace MessengerWhiteboard
 
         public void SetUserID()
         {
-            this.userID = this.GetUserID();
+            this._userID = this.GetUserID();
             this.isEnabled = true;
         }
 
         public void ChangeStrokeWidth(int width)
         {
-            this.strokeWidth = width;
+            this._strokeWidth = width;
             Trace.WriteLine("Whiteboard View Model :: Width changed to : " + width);
             //this.UpdateStrokeWidth();
         }

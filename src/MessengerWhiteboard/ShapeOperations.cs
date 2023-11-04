@@ -44,23 +44,23 @@ namespace MessengerWhiteboard
 
         public void StartShape(Point a)
         {
-            tempShape = CreateShape(shapeMode, a, a, Colors.Black);
-            AddShape(tempShape);
+            _tempShape = CreateShape(shapeMode, a, a, Colors.Black);
+            AddShape(_tempShape);
         }
 
         public void BuildShape(Point a)
         {
-            if (tempShape != null)
+            if (_tempShape != null)
             {
-                tempShape.EditShape(tempShape.boundary.TopLeft, a);
-                ShapeItems[ShapeItems.Count - 1] = tempShape;
+                _tempShape.EditShape(_tempShape.boundary.TopLeft, a);
+                ShapeItems[ShapeItems.Count - 1] = _tempShape;
                 Debug.WriteLine(ShapeItems[ShapeItems.Count - 1].Geometry.Bounds);
             }
         }
 
         public void EndShape(Point a)
         {
-            if(tempShape != null)
+            if(_tempShape != null)
             {
                 //tempShape.EditShape(tempShape.boundary.TopLeft, a);
                 //ShapeItems[ShapeItems.Count - 1] = tempShape;

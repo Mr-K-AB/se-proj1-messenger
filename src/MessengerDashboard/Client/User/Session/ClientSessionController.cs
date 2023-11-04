@@ -22,7 +22,7 @@ namespace MessengerDashboard.Dashboard.User.Session
 
     public delegate void NotifySessionTypeChanged(string sessionMode);
 
-    public class UserSessionManagement : INotificationHandler
+    public class ClientSessionController : INotificationHandler
     {
         private readonly List<IUserNotification> _users;
         private readonly ICommunicator _communicator;
@@ -37,7 +37,7 @@ namespace MessengerDashboard.Dashboard.User.Session
         private UserInfo _user;
         private readonly bool _testmode;
 
-        public UserSessionManagement()
+        public ClientSessionController()
         {
             _moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
@@ -52,7 +52,7 @@ namespace MessengerDashboard.Dashboard.User.Session
             Trace.WriteLine("[Dashboard] Created Client Session Manager");
         }
 
-        public UserSessionManagement(ICommunicator communicator)
+        public ClientSessionController(ICommunicator communicator)
         {
             _moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
@@ -74,7 +74,7 @@ namespace MessengerDashboard.Dashboard.User.Session
 
             Trace.WriteLine("[Dashboard] Data Received from Network");
 
-            ServerToUserInfo deserializedObject = null;//_serializer.Deserialize<ServerToUserInfo>(serializedData);
+            ServerPayload deserializedObject = null;//_serializer.Deserialize<ServerToUserInfo>(serializedData);
             string eventType = "";//deserializedObject.eventType;
 
             switch (eventType)
@@ -114,12 +114,12 @@ namespace MessengerDashboard.Dashboard.User.Session
 
         private void SendDataToServer(string eventName, string username, int userID = -1, string userEmail = null, string photoUrl = null)
         {
-            UserToServerInfo userToServerInfo;
+            ClientPayload userToServerInfo;
             lock (this)
             {
-                userToServerInfo = new UserToServerInfo(eventName, username, userID, userEmail, photoUrl);
+                userToServerInfo = new ClientPayload(eventName, username, userID, userEmail, photoUrl);
                 string serializedData = _serializer.Serialize(userToServerInfo);
-                _communicator.Send(serializedData, _moduleIdentifier, null);
+                //_communicator.Send(serializedData, _moduleIdentifier, null);
             }
             Trace.WriteLine("[Dashboard] Data sent to Network module to transfer to Server");
         }
@@ -235,7 +235,7 @@ namespace MessengerDashboard.Dashboard.User.Session
             }
         }
 
-        private void SetClientID(ServerToUserInfo receivedData)
+        private void SetClientID(ServerPayload receivedData)
         {
             if (_user.userID == -1)
             {
@@ -266,7 +266,7 @@ namespace MessengerDashboard.Dashboard.User.Session
             }
         }
 
-        private void UpdateAnalytics(ServerToUserInfo receivedData)
+        private void UpdateAnalytics(ServerPayload receivedData)
         {
             _sessionAnalytics = receivedData.sessionAnalytics;
             UserInfo receiveduser = receivedData.GetUser();
@@ -274,7 +274,7 @@ namespace MessengerDashboard.Dashboard.User.Session
             AnalyticsCreated?.Invoke(_sessionAnalytics);
         }
 
-        private void UpdateSummary(ServerToUserInfo receivedData)
+        private void UpdateSummary(ServerPayload receivedData)
         {
             SummaryDetail receivedSummary = receivedData.summaryDetail;
             UserInfo receivedUser = receivedData.GetUser();
@@ -289,7 +289,7 @@ namespace MessengerDashboard.Dashboard.User.Session
             }
         }
 
-        private void UpdateClientSessionModeData(ServerToUserInfo receivedData)
+        private void UpdateClientSessionModeData(ServerPayload receivedData)
         {
             
            SessionInfo receivedSessionData = receivedData.sessionData;
@@ -301,7 +301,7 @@ namespace MessengerDashboard.Dashboard.User.Session
             NotifyUXSession();
         }
 
-        private void UpdateClientSessionData(ServerToUserInfo receivedData)
+        private void UpdateClientSessionData(ServerPayload receivedData)
         {
             
             SessionInfo? receivedSessionData = receivedData.sessionData;

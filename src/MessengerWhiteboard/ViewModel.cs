@@ -8,17 +8,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace MessengerWhiteboard
 {
     public partial class ViewModel : INotifyPropertyChanged
     {
         public BindingList<ShapeItem> ShapeItems { get; set; }
-        ShapeItem? tempShape;
+        ShapeItem? _tempShape;
 
-        private string userID = "tempUser";
+        private string _userID = "tempUser";
 
-        public string shapeMode = "Rectangle";
+        //public string shapeMode = "Rectangle";
+        public string activeTool = "Select";
 
         public bool isEnabled;
         public enum WBModes
@@ -31,28 +33,25 @@ namespace MessengerWhiteboard
 
         public WBModes currentMode;
         //shape attributes
-        //Brush fillBrush;                                            // stores color of the object (fill colour)
+        public Brush fillBrush;                                            // stores color of the object (fill colour)
         //Brush borderBrush;                                 // stores color of the border
-        int strokeWidth;  
-        
-        List<ShapeItem> selectedShapes;                                         // thickness of the stroke
+        int _strokeWidth;                                       // thickness of the stroke
 
         public ViewModel()
         {
             ShapeItems = new();
-            this.currentMode = WBModes.ViewMode;
-            if(this.userID == "tempUser")
+            currentMode = WBModes.ViewMode;
+            if(_userID == "tempUser")
             {
-                this.isEnabled = false;
+                isEnabled = false;
             }
             SetUserID();
             //this.fillBrush = null;                                            // stores color of the object (fill colour)
             //this.borderBrush = Brushes.Black;                                 // stores color of the border
-            this.strokeWidth = 1;
-            this.selectedShapes = new List<ShapeItem>();
+            _strokeWidth = 1;
         }
 
-        private static ViewModel? _instance;
+        private static ViewModel? s_instance;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public void OnPropertyChanged(string property)
@@ -65,11 +64,12 @@ namespace MessengerWhiteboard
         {
             get
             {
-                if (_instance == null)
+                if (s_instance != null)
                 {
-                    _instance = new ViewModel();
+                    return s_instance;
                 }
-                return _instance;
+                s_instance = new ViewModel();
+                return s_instance;
             }
         }
 
@@ -87,13 +87,13 @@ namespace MessengerWhiteboard
         public void ChangeMode(WBModes mode)
         {
             Trace.WriteLine("Whiteboard View Model :: Active mode changed to : " + mode);
-            this.currentMode = mode; 
+            currentMode = mode; 
         }
 
-        public void ChangeShapeMode(string mode)
+        public void ChangeTool(string tool)
         {
-            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + mode);
-            this.shapeMode = mode;
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + tool);
+            activeTool = tool;
         }
 
         public string GetUserID()
@@ -104,13 +104,13 @@ namespace MessengerWhiteboard
 
         public void SetUserID()
         {
-            this.userID = this.GetUserID();
-            this.isEnabled = true;
+            _userID = GetUserID();
+            isEnabled = true;
         }
 
         public void ChangeStrokeWidth(int width)
         {
-            this.strokeWidth = width;
+            _strokeWidth = width;
             Trace.WriteLine("Whiteboard View Model :: Width changed to : " + width);
             //this.UpdateStrokeWidth();
         }
@@ -122,12 +122,12 @@ namespace MessengerWhiteboard
         //    this.UpdateBorderBrush();
         //}
 
-        //public void ChangeFillBrush(string fcolour)
-        //{
-        //    this.fillBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(fcolour));
-        //    Trace.WriteLine("Whiteboard View Model :: fill colour changed to : " + fcolour);
-        //    this.UpdateFillBrush();
-        //}
+        public void ChangeFillBrush(Brush color)
+        {
+            fillBrush = color;
+            Trace.WriteLine("Whiteboard View Model :: fill colour changed to : " + color);
+            //this.UpdateFillBrush();
+        }
 
         //public void UpdateStrokeWidth()
         //{
@@ -151,7 +151,7 @@ namespace MessengerWhiteboard
 
         //public void UpdateFillBrush(string fcolour)
         //{
-        //    for(int i = 0; i < selectedShapes.Count(); i++)
+        //    for (int i = 0; i < selectedShapes.Count(); i++)
         //    {
         //        ShapeItem newShape = this.selectedShapes[i].DeepClone();
         //        newShape.Fill = this.fillBrush;

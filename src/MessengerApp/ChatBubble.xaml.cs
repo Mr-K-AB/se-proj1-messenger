@@ -29,7 +29,7 @@ namespace MessengerApp
         {
             if (sender is Button)
             {
-                Button senderButton = (Button)sender;
+                /// Button senderButton = (Button)sender;
                 ReplyTextBox.Text = null;
             }
         }

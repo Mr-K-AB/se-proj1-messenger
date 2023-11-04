@@ -73,7 +73,12 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
+        <local:ChatBubbleConstructor x:Key="ChatBubbleTemplateSelector" SentChatMessageTemplate="{StaticResource SentMessageTemplate}" 
+                                     ReceivedChatMessageTemplate="{StaticResource ReceivedMessageTemplate}" 
+                                     SentFileMessageTemplate="{StaticResource SentFileMessageTemplate}" 
+                                     ReceivedFileMessageTemplate="{StaticResource ReceivedFileMessageTemplate}" />
+
     </UserControl.Resources>
 
     <Grid>

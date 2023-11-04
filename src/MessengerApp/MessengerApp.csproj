@@ -15,4 +15,8 @@
     <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MessengerContent\MessengerContent.csproj" />
+  </ItemGroup>
+
 </Project>

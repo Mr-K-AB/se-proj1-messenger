@@ -7,7 +7,7 @@
 * 
 * Project     = MessengerContent
 *
-* Description = 
+* Description = This class handles various functionalities associated with the files.
 *****************************************************************************/
 
 using MessengerContent.DataModels;
@@ -26,7 +26,7 @@ namespace MessengerContent.Server
         private readonly ContentDataBase _db;
 
         /// <summary>
-        ///     Constructor to initializes the content Database.
+        /// Constructor to initializes the content Database.
         /// </summary>
         public FileServer(ContentDataBase contentDB)
         {
@@ -34,11 +34,11 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     This function is used to preocess the file based on the type of event occured.
+        /// This function is used to preocess the file based on the type of event occured.
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the new message</returns>
-        public ChatData Receive(ChatData msg)
+        public ChatData? Receive(ChatData msg)
         {
             Trace.WriteLine("[FileServer] Received message from ContentServer");
             if (msg.Event == MessageEvent.New)
@@ -59,12 +59,12 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     This function is used to save file on Database.
+        /// function to save file on Database.
         /// </summary>
         public ChatData StoreFile(ChatData msg)
         {
             msg = _db.FileStore(msg).Copy();
-            // the object is going to be typecasted to ReceiveMessageData
+            // the object is going to be typecasted to ReceiveChatData
             // to be sent to clients, so make filedata null because the filedata
             // will continue to be in memory despite the typecasting
             msg.FileData = null;
@@ -72,19 +72,19 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        ///     This function is used to download the file on download event.
+        /// This function is used to download the file on download event.
         /// </summary>
-        public ChatData FileDownload(ChatData msg)
+        public ChatData? FileDownload(ChatData msg)
         {
-            var receivedMsg = _db.FilesFetch(msg.MessageID);
-            // Doesn't exist on database, return null
+            ChatData? receivedMsg = _db.FilesFetch(msg.MessageID);
+            // if doesn't exist on database, return null
             if (receivedMsg == null)
             {
                 Trace.WriteLine($"[FileServer] File not found messageId: {msg.MessageID}.");
                 return null;
             }
             // Clone the object and add the required fields
-            var downloadedFile = receivedMsg.Copy();
+            ChatData downloadedFile = receivedMsg.Copy();
             // store file path on which the file will be downloaded on the client's system
             downloadedFile.Data = msg.Data;
             downloadedFile.Event = MessageEvent.Download;

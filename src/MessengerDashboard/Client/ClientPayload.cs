@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessengerDashboard.Dashboard
 {
-    public class UserToServerInfo
+    public class ClientPayload
     {
 
         public string eventType;
@@ -16,7 +16,7 @@ namespace MessengerDashboard.Dashboard
         public string photoUrl;
 
         //parametrized constructor 
-        public UserToServerInfo(string eventName, string clientName, int clientID = -1, string clientEmail = null, string clientPhotoUrl = null)
+        public ClientPayload(string eventName, string clientName, int clientID = -1, string clientEmail = null, string clientPhotoUrl = null)
         {
             eventType = eventName;
             username = clientName;
@@ -26,7 +26,7 @@ namespace MessengerDashboard.Dashboard
         }
 
         //default constructor for serialization
-        public UserToServerInfo()
+        public ClientPayload()
         {
 
         }

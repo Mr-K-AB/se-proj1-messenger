@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Xml.Serialization;
 using MessengerDashboard.Summarization;
-
-
 using MessengerDashboard;
 using MessengerDashboard.Sentiment;
 
@@ -14,17 +12,14 @@ namespace MessengerTests
         [TestMethod]
         public void AuthenticationTest()
         {
-            Task<List<string>> task =Authenticator.Authenticate();
+            Task<AuthenticationResult> task = Authenticator.Authenticate();
             task.Wait();
-            List<string> result = task.Result;
-            if (result[0] == "false" ) { 
-
-                Debug.WriteLine("not working ");
-                Assert.Fail("this is the reason "); }
-            else
+            AuthenticationResult result = task.Result;
+            if (!result.IsAuthenticated)
             {
-                Debug.WriteLine(result);
+                Assert.Fail("Authentication Failed");
             }
+
         }
         //[TestMethod]
         //public void ForMessengerCloud
@@ -33,7 +28,7 @@ namespace MessengerTests
         public void TextSummarizerFactoryTest()
         {
             ITextSummarizer summarizer = TextSummarizerFactory.GetTextSummarizer();
-            if(summarizer is null)
+            if (summarizer is null)
             {
                 Assert.Fail();
             }
@@ -43,7 +38,7 @@ namespace MessengerTests
                 {
                     MaxSummaryPercentage = 100
                 };
-                TextSummary summary = summarizer.Summarize(new string[] {"America is a country", "I am OK", "India is a country",}, request);
+                TextSummary summary = summarizer.Summarize(new string[] { "America is a country", "I am OK", "India is a country", }, request);
                 if (summary is null || summary.Sentences[2] != "I am OK")
                 {
                     Assert.Fail();
@@ -55,7 +50,7 @@ namespace MessengerTests
         public void SentimentAnalyzerTest()
         {
             ISentimentAnalyzer sentimentAnalyzer = SentimentAnalyzerFactory.GetSentimentAnalyzer();
-            if(sentimentAnalyzer is null)
+            if (sentimentAnalyzer is null)
             {
                 Assert.Fail();
             }

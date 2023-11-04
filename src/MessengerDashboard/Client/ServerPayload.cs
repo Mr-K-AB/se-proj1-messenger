@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessengerDashboard.Dashboard
 {
-    public class ServerToUserInfo
+    public class ServerPayload
     {
         public UserInfo _user;
         public string eventType;
@@ -15,7 +15,7 @@ namespace MessengerDashboard.Dashboard
         public SummaryDetail summaryDetail;
 
         //     Parametric constructor to initialize the fields
-        public ServerToUserInfo(string eventName, SessionInfo sessionDataToSend, SummaryDetail summaryDataToSend,
+        public ServerPayload(string eventName, SessionInfo sessionDataToSend, SummaryDetail summaryDataToSend,
             SessionAnalytics sessionAnalyticsToSend, UserInfo user)
         {
             // SessionAnalytics sessionAnalyticsToSend
@@ -27,7 +27,7 @@ namespace MessengerDashboard.Dashboard
         }
 
         //     Default constructor for serialization
-        public ServerToUserInfo()
+        public ServerPayload()
         {
         }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessengerDashboard.Dashboard.User.Session
 {
-    public interface IUXUserSessionManager
+    public interface IClientSessionController
     {
 
         bool AddUser();

@@ -56,6 +56,7 @@
     <Resource Include="Images\size.png" />
     <Resource Include="Images\triangle.png" />
     <Resource Include="Images\undo.png" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>

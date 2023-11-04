@@ -11,7 +11,7 @@ namespace MessengerWhiteboard
     {
         public SerializableShapeItem SerializeShape(ShapeItem shape)
         {
-            SerializableShapeItem serializableShape = new SerializableShapeItem
+            SerializableShapeItem serializableShape = new()
             {
                 GeometryString = shape.Geometry.ToString(),
                 Fill = shape.Fill,
@@ -26,7 +26,7 @@ namespace MessengerWhiteboard
 
         public ShapeItem DeserializeShape(SerializableShapeItem serializableShape)
         {
-            ShapeItem shape = new ShapeItem
+            ShapeItem shape = new()
             {
                 Geometry = Geometry.Parse(serializableShape.GeometryString),
                 Fill = serializableShape.Fill,

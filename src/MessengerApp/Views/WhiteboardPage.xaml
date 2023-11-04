@@ -271,7 +271,7 @@
                     <StackPanel Orientation="Vertical" >
                         <StackPanel Orientation="Vertical" Background="White" Margin="10">
 
-                            <Button Name="Cursor" ToolTip="Cursor" Style="{StaticResource ButtonStyle}">
+                            <Button Name="Select" ToolTip="Select" Style="{StaticResource ButtonStyle}">
                                 <Image Source="Images/cursor.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 

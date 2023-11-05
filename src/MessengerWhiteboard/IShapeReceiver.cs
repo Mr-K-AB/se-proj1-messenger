@@ -14,13 +14,9 @@
 
 namespace MessengerWhiteboard
 {
-    /// <summary>
-    ///     Implements all the functions required for a machine.
-    /// </summary>
     public interface IShapeReceiver
     {
         void OnShapeReceived(ShapeItem shapeItem, Operation operation);
-        void setUserId(int userId);
-
+        void setUserId(string userId);
     }
 }

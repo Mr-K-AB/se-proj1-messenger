@@ -9,14 +9,14 @@ namespace MessengerDashboard.Dashboard
     public class ClientPayload
     {
 
-        public string eventType;
+        public Operation eventType;
         public int userID;
         public string username;
         public string userEmail;
         public string photoUrl;
 
         //parametrized constructor 
-        public ClientPayload(string eventName, string clientName, int clientID = -1, string clientEmail = null, string clientPhotoUrl = null)
+        public ClientPayload(Operation eventName, string clientName, int clientID = -1, string clientEmail = null, string clientPhotoUrl = null)
         {
             eventType = eventName;
             username = clientName;

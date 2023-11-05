@@ -16,19 +16,21 @@ namespace MessengerDashboard.Dashboard
 {
     public class SessionInfo
     {
-        public int sessionId;
-        public string sessionType;
-        public List<UserInfo> users;
+        public int SessionID { get; set; }
+        public SessionMode SessionMode { get; set; }
+
+        public List<UserInfo> Users { get; set; }
+
         public SessionInfo()
         {
-            users ??= new List<UserInfo>();
-            sessionType = "LabMode";
-            sessionId = new Random().Next();
+            Users ??= new List<UserInfo>();
+            SessionMode = SessionMode.Lab;
+            SessionID = new Random().Next();
         }
 
         public void AddUser(UserInfo client)
         {
-            users.Add(client);
+            Users.Add(client);
         }
     }
 }

@@ -4,13 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessengerDashboard.Server
+namespace MessengerDashboard.Client.User.Session
 {
-    /// <summary>
-    /// A server operation.
-    /// </summary>
-    public enum Operation
+    public class ClientSessionChangedEventArgs
     {
-        End,
     }
 }

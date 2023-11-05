@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MessengerDashboard.Telemetry;
 
-namespace MessengerDashboard.Dashboard
+namespace MessengerDashboard
 {
     public class SessionAnalytics
     {

@@ -1,5 +1,4 @@
 ﻿using System;
-
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,58 +10,53 @@ using MessengerNetworking.NotificationHandler;
 using System.Windows;
 using System.Net.Sockets;
 using MessengerDashboard.Telemetry;
+using MessengerDashboard.Client.User.Session;
+using MessengerDashboard.Summarization;
 
 namespace MessengerDashboard.Dashboard.User.Session
 {
-    public delegate void NotifyEndMeet();
-
-    public delegate void NotifyAnalyticsCreated(SessionAnalytics analytics);
-
-    public delegate void NotifySummaryCreated(string summary);
-
-    public delegate void NotifySessionTypeChanged(string sessionMode);
-
     public class ClientSessionController : INotificationHandler
     {
         private readonly List<IUserNotification> _users;
         private readonly ICommunicator _communicator;
+        private readonly Serializer _serializer = new();
+        private readonly string _moduleIdentifier = "Dashboard";
+        private UserInfo? _user;
+        private readonly SessionMode _sessionMode;
         //private readonly IContentUser _contentClient;
-        private readonly Serializer _serializer;
-        private readonly string _moduleIdentifier;
-        private string _chatSummary;
-        public SessionInfo userSessionInfo;
-
         //private readonly ScreenSharingUser _screenshareClient;
-        private SessionAnalytics _sessionAnalytics;
-        private UserInfo _user;
-        private readonly bool _testmode;
 
         public ClientSessionController()
         {
-            _moduleIdentifier = "Dashboard";
-            _serializer = new Serializer();
+            // TODO: Get Communicatior
             //_communicator = CommunitatorFactory.GetCommunicator();
-            //_communicator.Subscribe(_moduleIdentifier, this);
+            
+            // TODO: Get Content
             //_contentClient = ContentUserFactory.GetInstance();
+
+            _communicator.AddSubscriber(_moduleIdentifier, this);
             _users ??= new List<IUserNotification>();
-            userSessionInfo = new SessionInfo();
-            _user = null;
-            _chatSummary = null;
+            // TODO: Add Screen share client
             //_screenshareClient = null;
             Trace.WriteLine("[Dashboard] Created Client Session Manager");
         }
 
         public ClientSessionController(ICommunicator communicator)
         {
-            _moduleIdentifier = "Dashboard";
-            _serializer = new Serializer();
             _communicator = communicator;
-            //_communicator.Subscribe(_moduleIdentifier, this);
+            _communicator.AddSubscriber(_moduleIdentifier, this);
             _users ??= new List<IUserNotification>();
-            userSessionInfo = new SessionInfo();
-            _chatSummary = null;
-            _testmode = true;
+            _sessionMode = SessionMode.Test;
         }
+
+        public TextSummary? ChatSummary { get; private set; }
+
+        public SessionInfo SessionInfo { get; private set; } = new SessionInfo();
+
+        public SessionAnalytics SessionAnalytics { get; private set; }
+
+
+        public event EventHandler<ClientSessionChangedEventArgs> ClientSessionChanged;
 
         public void OnDataReceived(string serializedData)
         {
@@ -74,37 +68,37 @@ namespace MessengerDashboard.Dashboard.User.Session
 
             Trace.WriteLine("[Dashboard] Data Received from Network");
 
-            ServerPayload deserializedObject = null;//_serializer.Deserialize<ServerToUserInfo>(serializedData);
-            string eventType = "";//deserializedObject.eventType;
+            ServerPayload serverPayload = _serializer.Deserialize<ServerPayload>(serializedData);
+            Operation operationType = serverPayload.eventType;
 
-            switch (eventType)
+            switch (operationType)
             {
-                case "toggleSessionMode":
-                    UpdateClientSessionModeData(deserializedObject);
+                case Operation.ToggleSessionMode:
+                    UpdateClientSessionModeData(serverPayload);
                     return;
 
-                case "addClient":
-                    UpdateClientSessionData(deserializedObject);
+                case Operation.AddClient:
+                    UpdateClientSessionData(serverPayload);
                     return;
 
-                case "getSummary":
-                    UpdateSummary(deserializedObject);
+                case Operation.GetSummary:
+                    UpdateSummary(serverPayload);
                     return;
 
-                case "getAnalytics":
-                    UpdateAnalytics(deserializedObject);
+                case Operation.GetAnalytics:
+                    UpdateAnalytics(serverPayload);
                     return;
 
-                case "removeClient":
-                    UpdateClientSessionData(deserializedObject);
+                case Operation.RemoveClient:
+                    UpdateClientSessionData(serverPayload);
                     return;
 
-                case "endMeet":
+                case Operation.EndSession:
                     CloseProgram();
                     return;
 
-                case "newID":
-                    SetClientID(deserializedObject);
+                case Operation.ID:
+                    SetClientID(serverPayload);
                     return;
 
                 default:
@@ -112,13 +106,13 @@ namespace MessengerDashboard.Dashboard.User.Session
             }
         }
 
-        private void SendDataToServer(string eventName, string username, int userID = -1, string userEmail = null, string photoUrl = null)
+        private void SendDataToServer(Operation operation, string username, int userID = -1, string userEmail = null, string photoUrl = null)
         {
-            ClientPayload userToServerInfo;
+            ClientPayload clientPayload;
             lock (this)
             {
-                userToServerInfo = new ClientPayload(eventName, username, userID, userEmail, photoUrl);
-                string serializedData = _serializer.Serialize(userToServerInfo);
+                clientPayload = new ClientPayload(operation, username, userID, userEmail, photoUrl);
+                string serializedData = _serializer.Serialize(clientPayload);
                 //_communicator.Send(serializedData, _moduleIdentifier, null);
             }
             Trace.WriteLine("[Dashboard] Data sent to Network module to transfer to Server");
@@ -155,19 +149,19 @@ namespace MessengerDashboard.Dashboard.User.Session
         public void EndMeet()
         {
             Trace.WriteLine("[Dashboard] End Meet is called from Dashboard UX. Sending to Server to End Meet");
-            SendDataToServer("endMeet", _user.userName, _user.userID);
+            SendDataToServer(Operation.EndSession, _user.userName, _user.userID);
         }
 
         public void GetAnalytics()
         {
             Trace.WriteLine("[Dashboard] GetAnalytics() is called from Dashboard UX");
-            SendDataToServer("getAnalytics", _user.userName, _user.userID);
+            SendDataToServer(Operation.GetAnalytics, _user.userName, _user.userID);
         }
 
         public void GetSummary()
         {
             Trace.WriteLine("[Dashboard] GetSummary() is called from Dashboard UX");
-            SendDataToServer("getSummary", _user.userName, _user.userID);
+            SendDataToServer(Operation.GetSummary, _user.userName, _user.userID);
         }
 
         public UserInfo GetUser()
@@ -179,16 +173,16 @@ namespace MessengerDashboard.Dashboard.User.Session
         public void ToggleSessionMode()
         {
             Trace.WriteLine("[Dashboard] ToggleSessionMode() is Called from Dashboard UX");
-            SendDataToServer("toggleSession", _user.userName, _user.userID);
+            SendDataToServer(Operation.ToggleSessionMode, _user.userName, _user.userID);
         }
 
         public void RemoveClient()
         {
-            SendDataToServer("removeClient", _user.userName, _user.userID);
+            SendDataToServer(Operation.RemoveClient, _user.userName, _user.userID);
             Thread.Sleep(2000);
           //  _communicator.Stop();
-            MeetingEnded?.Invoke();
-            if (_testmode == false)
+            SessionEnded?.Invoke(this, EventArgs.Empty);
+            if (_sessionMode == SessionMode.Lab)
             {
                 CloseProgram();
             }
@@ -202,38 +196,10 @@ namespace MessengerDashboard.Dashboard.User.Session
             }
         }
 
-        public event NotifyEndMeet MeetingEnded;
-        public event NotifySummaryCreated SummaryCreated;
-        public event NotifyAnalyticsCreated AnalyticsCreated;
-        public event NotifySessionTypeChanged SessionModeChanged;
-
-        public SessionInfo GetSessionData()
-        {
-            Trace.WriteLine("[Dashboard] Sending Session Data to Caller");
-            return userSessionInfo;
-        }
-
-        public SessionAnalytics GetStoredAnalytics()
-        {
-            return _sessionAnalytics;
-        }
-
-        public string GetStoredSummary()
-        {
-            return _chatSummary;
-        }
-
-        public void NotifyUXSession()
-        {
-            for (int i = 0; i < _users.Count; ++i)
-            {
-                lock (this)
-                {
-                    Trace.WriteLine("[Dashboard] Notifying subscribed UX about the session change");
-                    _users[i].OnUserSessionChange(userSessionInfo);
-                }
-            }
-        }
+        public event EventHandler SessionEnded;
+        public event EventHandler<SummaryChangedEventArgs> SummaryChanged;
+        public event EventHandler<AnalyticsChangedEventArgs> AnalyticsChanged;
+        public event EventHandler<SessionModeChangedEventArgs> SessionModeChanged;
 
         private void SetClientID(ServerPayload receivedData)
         {
@@ -242,8 +208,8 @@ namespace MessengerDashboard.Dashboard.User.Session
                 lock (this)
                 {
                     _user.userID = receivedData._user.userID;
-                    SendDataToServer("addClient", _user.userName, _user.userID, _user.userEmail, _user.userPhotoUrl);
-                    if (_testmode == false)
+                    SendDataToServer(Operation.AddClient, _user.userName, _user.userID, _user.userEmail, _user.userPhotoUrl);
+                    if (_sessionMode == SessionMode.Lab)
                     {
                         // ScreenShare's user ID and username set.
                         // _screenshareClient.SetUser(_user.userID.ToString(), _user.userName);
@@ -262,16 +228,19 @@ namespace MessengerDashboard.Dashboard.User.Session
         {
             for (int i = 0; i < users.Count; ++i)
             {
-                userSessionInfo.AddUser(users[i]);
+                SessionInfo.AddUser(users[i]);
             }
         }
 
         private void UpdateAnalytics(ServerPayload receivedData)
         {
-            _sessionAnalytics = receivedData.sessionAnalytics;
+            SessionAnalytics = receivedData.sessionAnalytics;
             UserInfo receiveduser = receivedData.GetUser();
             Trace.WriteLine("Notifying UX about the Analytics");
-            AnalyticsCreated?.Invoke(_sessionAnalytics);
+            AnalyticsChanged?.Invoke(this, new AnalyticsChangedEventArgs() 
+            { 
+                SessionAnalytics = SessionAnalytics
+            });
         }
 
         private void UpdateSummary(ServerPayload receivedData)
@@ -282,9 +251,12 @@ namespace MessengerDashboard.Dashboard.User.Session
             {
                 lock (this)
                 {
-                    _chatSummary = receivedSummary.detail;
+                    ChatSummary = null;//receivedSummary.detail;
                     Trace.WriteLine("Notifying UX about the summary");
-                    SummaryCreated?.Invoke(_chatSummary);
+                    SummaryChanged?.Invoke(this, new SummaryChangedEventArgs()
+                    {
+                        Summary = null
+                    });
                 }
             }
         }
@@ -295,10 +267,10 @@ namespace MessengerDashboard.Dashboard.User.Session
            SessionInfo receivedSessionData = receivedData.sessionData;
             lock (this)
             {
-                userSessionInfo = receivedSessionData;
+                SessionInfo = receivedSessionData;
             }
-            SessionModeChanged?.Invoke(userSessionInfo.sessionType);
-            NotifyUXSession();
+            SessionModeChanged?.Invoke(this, new SessionModeChangedEventArgs());
+            ClientSessionChanged?.Invoke(this, new ClientSessionChangedEventArgs());
         }
 
         private void UpdateClientSessionData(ServerPayload receivedData)
@@ -306,7 +278,7 @@ namespace MessengerDashboard.Dashboard.User.Session
             
             SessionInfo? receivedSessionData = receivedData.sessionData;
             UserInfo user = receivedData.GetUser();
-            if (receivedSessionData != null && userSessionInfo != null && receivedSessionData.users.Equals(userSessionInfo.users))
+            if (receivedSessionData != null && SessionInfo != null && receivedSessionData.Users.Equals(SessionInfo.Users))
             {
                 return;
             }
@@ -315,7 +287,7 @@ namespace MessengerDashboard.Dashboard.User.Session
             {
                 _user = user;
             }
-            else if (_user.Equals(user) && receivedData.eventType == "removeClient")
+            else if (_user.Equals(user) && receivedData.eventType == Operation.RemoveClient)
             {
                 _user = null;
                 receivedSessionData = null;
@@ -323,25 +295,27 @@ namespace MessengerDashboard.Dashboard.User.Session
 
             lock (this)
             {
-                userSessionInfo = receivedSessionData;
+                SessionInfo = receivedSessionData;
             }
             
-            NotifyUXSession();
+            ClientSessionChanged?.Invoke(this, new ClientSessionChangedEventArgs());
         }
 
         public void CloseProgram()
         {
             Trace.WriteLine("[Dashboard] Calling Network to Stop listening");
-         //   _communicator.Stop();
-            MeetingEnded?.Invoke();
+            //   _communicator.Stop();
+
+            SessionEnded?.Invoke(this, EventArgs.Empty);
+
             Trace.WriteLine("[Dashboard] Shutdown Application");
 
-            if (_testmode == false)
+            if (_sessionMode == SessionMode.Lab)
             {
                 Application.Current.Dispatcher.Invoke((Action)delegate
                 {
                     Application.Current.Shutdown();
-                    System.Environment.Exit(0);
+                    Environment.Exit(0);
                 });
             }
         }

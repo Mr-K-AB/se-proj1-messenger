@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 
@@ -41,7 +36,7 @@ namespace MessengerWhiteboard
         public void EditShape(Point a, Point b)
         {
             Debug.WriteLine(ShapeType);
-            if(ShapeType == "Rectangle")
+            if (ShapeType == "Rectangle")
             {
                 Rect boundingBox = new(a, b);
                 Geometry.SetValue(RectangleGeometry.RectProperty, boundingBox);
@@ -55,6 +50,29 @@ namespace MessengerWhiteboard
                 Geometry geometry = new EllipseGeometry(boundingBox);
                 boundary = boundingBox;
                 Geometry = geometry;
+            }
+        }
+
+        public void MoveShape(Point a, Point b)
+        {
+            Debug.WriteLine(ShapeType);
+            if (ShapeType == "Rectangle")
+            {
+                Rect boundingBox = new(a, b);
+                Geometry.SetValue(RectangleGeometry.RectProperty, boundingBox);
+                //Geometry geometry = new RectangleGeometry(boundingBox);
+                boundary = boundingBox;
+            }
+            else
+            {
+                Rect boundingBox = new(a, b);
+                double dX = boundingBox.X - boundary.X;
+                double dY = boundingBox.Y - boundary.Y;
+                Point newC = new((Geometry as EllipseGeometry).Center.X + dX, (Geometry as EllipseGeometry).Center.Y + dY);
+                Geometry.SetValue(EllipseGeometry.CenterProperty, newC);
+                //Geometry geometry = new EllipseGeometry(boundingBox);
+                boundary = boundingBox;
+                //Geometry = geometry;
             }
         }
         public override string ToString()

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using System.Diagnostics;
 using System.Windows;
-using System.Diagnostics;
+using System.Windows.Media;
 
 namespace MessengerWhiteboard
 {
@@ -58,7 +53,7 @@ namespace MessengerWhiteboard
                     _tempShape = shape;
                 }
             }
-            
+
         }
 
         public void BuildShape(Point a)
@@ -66,14 +61,14 @@ namespace MessengerWhiteboard
             if (_tempShape != null)
             {
                 //Debug.WriteLine(activeTool);
-                if(activeTool == "Select")
+                if (activeTool == "Select")
                 {
-                    if(lastDownPoint != null)
+                    if (lastDownPoint != null)
                     {
                         Point x = lastDownPoint.Value;
                         double dX = a.X - x.X;
                         double dY = a.Y - x.Y;
-                        _tempShape.MoveShape(new Point(_tempShape.boundary.TopLeft.X + dX, _tempShape.boundary.TopLeft.Y + dY), 
+                        _tempShape.MoveShape(new Point(_tempShape.boundary.TopLeft.X + dX, _tempShape.boundary.TopLeft.Y + dY),
                                new Point(_tempShape.boundary.BottomRight.X + dX, _tempShape.boundary.BottomRight.Y + dY));
                         Debug.WriteLine(_tempShape.boundary);
                         lastDownPoint = a;
@@ -91,7 +86,7 @@ namespace MessengerWhiteboard
 
         public void EndShape(Point a)
         {
-            if(_tempShape != null)
+            if (_tempShape != null)
             {
                 //tempShape.EditShape(tempShape.boundary.TopLeft, a);
                 //ShapeItems[ShapeItems.Count - 1] = tempShape;

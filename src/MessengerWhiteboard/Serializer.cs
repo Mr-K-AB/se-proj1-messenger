@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Newtonsoft.Json;
 
 namespace MessengerWhiteboard
 {
@@ -24,6 +25,26 @@ namespace MessengerWhiteboard
             return serializableShape;
         }
 
+        public List<SerializableShapeItem> SerializeShapes(List<ShapeItem> shapes)
+        {
+            List<SerializableShapeItem> serializableShapes = new();
+            foreach (ShapeItem shape in shapes)
+            {
+                serializableShapes.Add(SerializeShape(shape));
+            }
+            return serializableShapes;
+        }
+
+        public string SerializeWBShape(WBShape shape)
+        {
+            return JsonConvert.SerializeObject(shape);
+        }
+
+        public WBShape DeserializeWBShape(string jsonString)
+        {
+            return JsonConvert.DeserializeObject<WBShape>(jsonString);
+        }
+
         public ShapeItem DeserializeShape(SerializableShapeItem serializableShape)
         {
             ShapeItem shape = new()
@@ -37,6 +58,16 @@ namespace MessengerWhiteboard
                 ZIndex = serializableShape.ZIndex
             };
             return shape;
+        }
+
+        public List<ShapeItem> DeserializeShapes(List<SerializableShapeItem> serializableShapes)
+        {
+            List<ShapeItem> shapes = new();
+            foreach (SerializableShapeItem serializableShape in serializableShapes)
+            {
+                shapes.Add(DeserializeShape(serializableShape));
+            }
+            return shapes;
         }
     }
 }

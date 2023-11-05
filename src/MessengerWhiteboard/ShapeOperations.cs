@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using System.Diagnostics;
 using System.Windows;
-using System.Diagnostics;
+using System.Windows.Media;
 
 namespace MessengerWhiteboard
 {
     public partial class ViewModel
     {
-        public ShapeItem CreateShape(string shapeType, Point start, Point end, Color color)
+        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, float strokeThickness)
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;
@@ -21,20 +16,19 @@ namespace MessengerWhiteboard
             }
             else
             {
-                Debug.WriteLine("inside createshape Ellipse");
+                //Debug.WriteLine("inside createshape Ellipse");
                 geometry = new EllipseGeometry(boundingBox);
             }
-            Debug.WriteLine(geometry);
+            //Debug.WriteLine(geometry);
             ShapeItem newShape = new()
             {
                 ShapeType = shapeType,
                 Geometry = geometry,
                 boundary = boundingBox,
-                color = color,
-                StrokeThickness = 1,
+                StrokeThickness = strokeThickness,
                 ZIndex = 1,
-                Fill = Brushes.Black,
-                Stroke = Brushes.Black,
+                Fill = fillBrush,
+                Stroke = borderBrush,
                 Id = Guid.NewGuid()
             };
 
@@ -44,23 +38,55 @@ namespace MessengerWhiteboard
 
         public void StartShape(Point a)
         {
-            _tempShape = CreateShape(activeTool, a, a, Colors.Black);
+            //Debug.WriteLine((fillBrush as SolidColorBrush).Color.ToString());
+            _tempShape = CreateShape(activeTool, a, a, fillBrush);
             AddShape(_tempShape);
+        }
+
+        public void SelectShape(string uid)
+        {
+            foreach (ShapeItem shape in ShapeItems)
+            {
+                //Debug.WriteLine(shape.Id.ToString());
+                if (shape.Id.ToString() == uid)
+                {
+                    _tempShape = shape;
+                }
+            }
+
         }
 
         public void BuildShape(Point a)
         {
             if (_tempShape != null)
             {
-                _tempShape.EditShape(_tempShape.boundary.TopLeft, a);
-                ShapeItems[ShapeItems.Count - 1] = _tempShape;
-                Debug.WriteLine(ShapeItems[ShapeItems.Count - 1].Geometry.Bounds);
+                //Debug.WriteLine(activeTool);
+                if (activeTool == "Select")
+                {
+                    if (lastDownPoint != null)
+                    {
+                        Point x = lastDownPoint.Value;
+                        double dX = a.X - x.X;
+                        double dY = a.Y - x.Y;
+                        _tempShape.MoveShape(new Point(_tempShape.boundary.TopLeft.X + dX, _tempShape.boundary.TopLeft.Y + dY),
+                               new Point(_tempShape.boundary.BottomRight.X + dX, _tempShape.boundary.BottomRight.Y + dY));
+                        Debug.WriteLine(_tempShape.boundary);
+                        lastDownPoint = a;
+                    }
+
+                }
+                else
+                {
+                    _tempShape.EditShape(_tempShape.boundary.TopLeft, a);
+                    ShapeItems[ShapeItems.Count - 1] = _tempShape;
+                    //Debug.WriteLine(ShapeItems[ShapeItems.Count - 1].Geometry.Bounds);
+                }
             }
         }
 
         public void EndShape(Point a)
         {
-            if(_tempShape != null)
+            if (_tempShape != null)
             {
                 //tempShape.EditShape(tempShape.boundary.TopLeft, a);
                 //ShapeItems[ShapeItems.Count - 1] = tempShape;

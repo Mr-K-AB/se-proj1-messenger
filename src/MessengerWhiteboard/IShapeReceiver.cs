@@ -12,21 +12,11 @@
 *               by both machines.
 ***************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace MessengerWhiteboard
 {
-    /// <summary>
-    ///     Implements all the functions required for a machine.
-    /// </summary>
     public interface IShapeReceiver
     {
-        void OnShapeReceived(ShapeItem newShape);
-        void setUserId(int userId);
-
+        void OnShapeReceived(ShapeItem shapeItem, Operation operation);
+        void SetUserId(string userId);
     }
 }

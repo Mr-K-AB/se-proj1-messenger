@@ -8,10 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Dashboard\UI\" />
-    <Folder Include="Dashboard\UI\Server\" />
-    <Folder Include="Telemetry\" />
-    <Folder Include="UI\VIews\" />
+    <Compile Remove="UI\**" />
+    <EmbeddedResource Remove="UI\**" />
+    <None Remove="UI\**" />
+    <Page Remove="UI\**" />
   </ItemGroup>
 
   <ItemGroup>

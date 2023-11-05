@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using ITableEntity = Azure.Data.Tables.ITableEntity;
 
-namespace ServerlessFunc
+namespace MessengerCloud
 {
     /// <summary>
     /// Custom Azure Table Entity.
@@ -28,14 +28,24 @@ namespace ServerlessFunc
 
         public Entity(EntityInfoWrapper info)
         {
+            if(info == null){return; }
             PartitionKey = PartitionKeyName;
-            RowKey = Guid.NewGuid().ToString();
+            RowKey = info.SessionId;
             Id = RowKey;
-
+            SessionId = info.SessionId;
             Timestamp = DateTime.Now;
+            PositiveChatCount = info.PositiveChatCount;
+            NegativeChatCount = info.NegativeChatCount;
+            IsOverallSentimentPositive = info.IsOverallSentimentPositive;
+            Sentences = info.Sentences;
         }
 
-        public Entity() : this(null) { }
+        public Entity()   { }
+
+        [JsonInclude]
+        [JsonPropertyName("SessionId")] //Unique id for the session conducted
+        public string SessionId { get; set; }
+
 
         [JsonInclude]
         [JsonPropertyName("Sentences")]
@@ -54,10 +64,6 @@ namespace ServerlessFunc
         [JsonInclude]
         [JsonPropertyName("Id")]
         public string Id { get; set; }
-
-        [JsonInclude]
-        [JsonPropertyName("Name")]
-        public string Name { get; set; }
 
         [JsonInclude]
         [JsonPropertyName("PartitionKey")]

@@ -28,9 +28,8 @@ namespace MessengerNetworking.Factory
         /// <returns> instance of server </returns>
         ///     
         
-        public static ICommunicator GetInstance(IPAddress _serverId)
+        public static ICommunicator GetInstance()
         {
-            
             return s_communicator;
         }
     }

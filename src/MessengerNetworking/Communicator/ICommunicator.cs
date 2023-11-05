@@ -1,16 +1,4 @@
-﻿/******************************************************************************
- * Filename    = ICommunicator.cs
- *
- * Author      = Ramaswamy Krishnan-Chittur
- *
- * Product     = GuiAndDistributedDemo
- * 
- * Project     = Networking
- *
- * Description = Defines the interface for a communicator.
- *****************************************************************************/
-
-using MessengerNetworking.NotificationHandler;
+﻿using MessengerNetworking.NotificationHandler;
 
 namespace MessengerNetworking.Communicator
 {

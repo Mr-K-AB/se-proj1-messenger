@@ -20,8 +20,4 @@
     <PackageReference Include="SentimentAnalyzer" Version="1.2.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MessengerNetworking\MessengerNetworking.csproj" />
-  </ItemGroup>
-
 </Project>

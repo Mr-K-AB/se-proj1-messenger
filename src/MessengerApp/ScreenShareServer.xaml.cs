@@ -15,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MessengerScreenshare;
+using MessengerScreenshare.Server;
 
 namespace MessengerApp
 {
@@ -27,7 +29,7 @@ namespace MessengerApp
         {
             InitializeComponent();
             ScreenshareServerViewModel viewModel = ScreenshareServerViewModel.GetInstance();
-            this.DataContext = viewModel;
+            DataContext = viewModel;
 
             Trace.WriteLine(Utils.GetDebugMessage("Created the ScreenshareServerView Component", withTimeStamp: true));
 
@@ -38,7 +40,7 @@ namespace MessengerApp
         {
             if (sender is Button pinButton)
             {
-                ScreenshareServerViewModel? viewModel = this.DataContext as ScreenshareServerViewModel;
+                ScreenshareServerViewModel? viewModel = DataContext as ScreenshareServerViewModel;
 
                 Debug.Assert(pinButton != null, Utils.GetDebugMessage("Pin Button is not created properly"));
                 Debug.Assert(pinButton.CommandParameter != null, "ClientId received to pin does not exist");
@@ -54,7 +56,7 @@ namespace MessengerApp
         {
             if (sender is Button someButton)
             {
-                ScreenshareServerViewModel? viewModel = this.DataContext as ScreenshareServerViewModel;
+                ScreenshareServerViewModel? viewModel = DataContext as ScreenshareServerViewModel;
 
                 Debug.Assert(someButton != null, Utils.GetDebugMessage("Unpin Button is not created properly"));
                 Debug.Assert(someButton.CommandParameter != null, "ClientId received to unpin does not exist");
@@ -65,6 +67,5 @@ namespace MessengerApp
 
             Trace.WriteLine(Utils.GetDebugMessage("Unpin Button Clicked", withTimeStamp: true));
         }
-    }
     }
 }

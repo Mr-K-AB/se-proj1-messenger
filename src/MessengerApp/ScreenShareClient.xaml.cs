@@ -29,12 +29,12 @@ namespace MessengerApp
         {
             InitializeComponent();
             ScreenshareClientViewModel viewModel = new();
-            this.DataContext = viewModel;
+            DataContext = viewModel;
         }
    
         private void StartScreenShare_Click( object sender , RoutedEventArgs e )
         {
-            if (this.DataContext is ScreenshareClientViewModel viewModel)
+            if (DataContext is ScreenshareClientViewModel viewModel)
             {
                 viewModel.SharingScreen = true;
             }
@@ -44,7 +44,7 @@ namespace MessengerApp
 
         private void StopScreenShare_Click( object sender , RoutedEventArgs e )
         {
-            if (this.DataContext is ScreenshareClientViewModel viewModel)
+            if (DataContext is ScreenshareClientViewModel viewModel)
             {
                 viewModel.SharingScreen = false;
             }

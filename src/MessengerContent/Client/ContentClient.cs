@@ -171,18 +171,23 @@ namespace MessengerContent.Client
         /// <param name="messageID">ID of the message</param>
         /// <returns>Message object implementing the ReceiveContentData class</returns>
         /// <exception cref="ArgumentException"></exception>
-        private ReceiveChatData GetMessage(int messageID)
+        private ReceiveChatData? GetMessage(int messageID)
         {
             // return null if message ID is not present in map
-            if (!_messageIDMap.ContainsKey(messageID))
+            if (_messageIDMap.TryGetValue(messageID, out int threadID) &&
+        _threadIDMap.TryGetValue(threadID, out int threadIndex) &&
+        threadIndex >= 0 && threadIndex < AllMessages.Count)
             {
-                return null;
+                ChatThread thread = AllMessages[threadIndex];
+                int messageIndex = thread.GetMessageIndex(messageID);
+
+                if (messageIndex >= 0 && messageIndex < thread.MessageList.Count)
+                {
+                    return thread.MessageList[messageIndex];
+                }
             }
-            int threadID = _messageIDMap[messageID];
-            int threadIndex = _threadIDMap[threadID];
-            ChatThread thread = AllMessages[threadIndex];
-            int messageIndex = thread.GetMessageIndex(messageID);
-            return thread.MessageList[messageIndex];
+
+            return null;
         }
 
         /// <summary>
@@ -210,7 +215,7 @@ namespace MessengerContent.Client
             }
             // get intersecting array of receiver IDs
             int[] allReceivers = previousReceiverIDs.Intersect(currentReceiverIDs).ToArray();
-            if (!(allReceivers?.Length > 0))
+            if (allReceivers.Length == 0)
             {
                 throw new ArgumentException("Invalid array of receivers.");
             }
@@ -240,7 +245,7 @@ namespace MessengerContent.Client
         ///<inheritdoc/>
         public void ClientSendData(SendChatData contentData)
         {
-            // check if receiver ID list is not null
+            // Ensure the receiver ID list is not null
             if (contentData.ReceiverIDs is null)
             {
                 throw new ArgumentException("List of receiver IDs given is null");
@@ -438,9 +443,8 @@ namespace MessengerContent.Client
                 // add message ID to message ID map
                 _messageIDMap.Add(receivedMessage.MessageID, key);
                 // add message to all messages list if message belongs to a chat thread
-                if (_threadIDMap.ContainsKey(key))
+                if (_threadIDMap.TryGetValue(key, out int index))
                 {
-                    int index = _threadIDMap[key];
                     AllMessages[index].AddMessage(receivedMessage);
                 }
                 else // create new thread if the message does not belong to any thread
@@ -448,9 +452,8 @@ namespace MessengerContent.Client
                     var newThread = new ChatThread();
                     newThread.AddMessage(receivedMessage);
                     AllMessages.Add(newThread);
-                    int index = AllMessages.Count - 1;
                     // add entry into the thread ID map
-                    _threadIDMap.Add(key, index);
+                    _threadIDMap.Add(key, AllMessages.Count - 1);
                 }
             }
             // notfiy subscribers of the new message
@@ -472,18 +475,15 @@ namespace MessengerContent.Client
             ReceiveChatData receivedMessage = message;
             int messageID = receivedMessage.MessageID;
             // check if message ID is present 
-            if (!_messageIDMap.ContainsKey(messageID))
+            if (!_messageIDMap.TryGetValue(messageID, out int threadID))
             {
                 throw new ArgumentException("Message with message ID is not present");
             }
-            // get thread index and check if thread exists
-            int threadID = _messageIDMap[messageID];
-            if (!_threadIDMap.ContainsKey(threadID))
+            // check if thread exists with the threadId extracted
+            if (!_threadIDMap.TryGetValue(threadID, out int index))
             {
                 throw new ArgumentException("No message thread with given ID exists");
             }
-            // if thread exists, update message in all messages list
-            int index = _threadIDMap[threadID];
             lock (_lock)
             {
                 string newMessage = receivedMessage.Data;
@@ -508,18 +508,16 @@ namespace MessengerContent.Client
             ReceiveChatData receivedMessage = message;
             int messageID = receivedMessage.MessageID;
             // check if message ID is present 
-            if (!_messageIDMap.ContainsKey(messageID))
+            if (!_messageIDMap.TryGetValue(messageID, out int threadID))
             {
                 throw new ArgumentException("Message with message ID is not present");
             }
-            // get thread index and check if thread exists
-            int threadID = _messageIDMap[messageID];
-            if (!_threadIDMap.ContainsKey(threadID))
+            // check if thread exists with the threadId extracted
+            if (!_threadIDMap.TryGetValue(threadID, out int index))
             {
                 throw new ArgumentException("No message thread with given ID exists");
             }
-            // if thread exists, update message in all messages list
-            int index = _threadIDMap[threadID];
+            
             lock (_lock)
             {
                 AllMessages[index].DeleteMessage(messageID);
@@ -543,18 +541,16 @@ namespace MessengerContent.Client
             ReceiveChatData receivedMessage = message;
             int messageID = receivedMessage.MessageID;
             // check if message ID is present 
-            if (!_messageIDMap.ContainsKey(messageID))
+            if (!_messageIDMap.TryGetValue(messageID, out int threadID))
             {
                 throw new ArgumentException("Message with message ID is not present");
             }
-            // get thread index and check if thread exists
-            int threadID = _messageIDMap[messageID];
-            if (!_threadIDMap.ContainsKey(threadID))
+            // check if thread exists with the threadId extracted
+            if (!_threadIDMap.TryGetValue(threadID, out int index))
             {
                 throw new ArgumentException("No message thread with given ID exists");
             }
-            // if thread exists, update message in all messages list
-            int index = _threadIDMap[threadID];
+            
             lock (_lock)
             {
                 AllMessages[index].StarMessage(messageID);

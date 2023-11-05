@@ -10,7 +10,7 @@ namespace MessengerScreenshare.Client
     public class ScreenProcessor
     {
         private const int MaxQueueLength = 20;
-        private CancellationTokenSource _cancellationTokenSource;
+        private CancellationTokenSource? _cancellationTokenSource;
         private readonly ConcurrentQueue<string> _processedFrameQueue;
         private readonly ScreenCapturer _capturer;
         private Resolution _currentRes;
@@ -19,7 +19,7 @@ namespace MessengerScreenshare.Client
         private int _capturedImageHeight;
         private int _capturedImageWidth;
         private readonly bool _cancellationToken;
-        private Bitmap _prevImage;
+        private Bitmap? _prevImage;
         private int _first_xor;
 
         public ScreenProcessor(ScreenCapturer capturer)
@@ -59,8 +59,8 @@ namespace MessengerScreenshare.Client
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
             _first_xor = 0;
-            Bitmap img = await _capturer.GetImageAsync(cancellationToken);
-            _capturedImageHeight = img.Height;
+            Bitmap? img = await _capturer.GetImageAsync(cancellationToken);
+            _capturedImageHeight = img!.Height;
             _capturedImageWidth = img.Width;
             _newRes = new Resolution { Height = _capturedImageHeight / windowCount , Width = _capturedImageWidth / windowCount };
             _currentRes = _newRes;
@@ -74,7 +74,7 @@ namespace MessengerScreenshare.Client
                     break;
                 }
 
-                string serializedBuffer = Compress(img);
+                string serializedBuffer = Compress(img!);
 
                 if (_processedFrameQueue.Count < MaxQueueLength)
                 {
@@ -84,8 +84,8 @@ namespace MessengerScreenshare.Client
                 {
                     while (_processedFrameQueue.Count > MaxQueueLength / 2)
                     {
-                        _processedFrameQueue.TryDequeue(out string _);
-                        await Task.Delay( 1 ); // Avoid busy waiting
+                        _processedFrameQueue.TryDequeue(out string? _);
+                        await Task.Delay(1); // Avoid busy waiting
                     }
                 }
 

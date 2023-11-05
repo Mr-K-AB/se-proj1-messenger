@@ -12,13 +12,6 @@
 *               messages from the ViewModel and send them to the Server.
 ***************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Documents.Serialization;
-
 namespace MessengerWhiteboard
 {
     public class ClientState : IShapeReceiver
@@ -28,7 +21,7 @@ namespace MessengerWhiteboard
         readonly Serializer _serializer;
         private static ClientState? s_instance;
 
-        /// <summary
+        /// <summary>
         ///     Making sure there is a single instance of the client on a particular machine.
         /// </summary>
         public static ClientState Instance
@@ -62,8 +55,8 @@ namespace MessengerWhiteboard
         ///     shape are transferred from the View Model to the ClientSide.
         ///     This function is responsible for transmitting the ShapeItem and Operation to the server.
         /// </summary>
-        /// <param name="newShape">The ShapeItem to be sent to the server.</param>
-        /// <param name="op">The Operation to be sent to the server.</param>
+        /// <param name="shapeItem,">The ShapeItem to be sent to the server.</param>
+        /// <param name="operation">The Operation to be sent to the server.</param>
         public void OnShapeReceived(ShapeItem shapeItem, Operation operation)
         {
             List<ShapeItem> shapeItems = new()

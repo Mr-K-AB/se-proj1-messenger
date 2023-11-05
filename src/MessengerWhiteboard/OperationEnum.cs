@@ -22,9 +22,9 @@ namespace MessengerWhiteboard
         Creation,
         Deletion,
         ModifyShape,
+        Clear,
         NewUser,
         CreateSnapshot,
-        RestoreSnapshot,
-        Clear
+        RestoreSnapshot
     }
 }

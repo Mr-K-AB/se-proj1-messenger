@@ -6,7 +6,7 @@ namespace MessengerWhiteboard
 {
     public partial class ViewModel
     {
-        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush brush)
+        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, float strokeThickness)
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;
@@ -25,10 +25,10 @@ namespace MessengerWhiteboard
                 ShapeType = shapeType,
                 Geometry = geometry,
                 boundary = boundingBox,
-                StrokeThickness = 1,
+                StrokeThickness = strokeThickness,
                 ZIndex = 1,
-                Fill = brush,
-                Stroke = Brushes.Black,
+                Fill = fillBrush,
+                Stroke = borderBrush,
                 Id = Guid.NewGuid()
             };
 

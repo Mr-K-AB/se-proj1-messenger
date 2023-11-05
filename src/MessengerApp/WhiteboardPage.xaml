@@ -359,11 +359,11 @@
 
                         <StackPanel Orientation="Vertical" Background="White" Margin="10">
 
-                            <Button Name="Undo" ToolTip="Undo" Style="{StaticResource ButtonStyle}">
+                            <Button Name="Undo" ToolTip="Undo" Click="UndoMode" Style="{StaticResource ButtonStyle}">
                                 <Image Source="Images/undo.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
-                            <Button Name="Redo" ToolTip="Redo" Style="{StaticResource ButtonStyle}">
+                            <Button Name="Redo" ToolTip="Redo" Click="RedoMode" Style="{StaticResource ButtonStyle}">
                                 <Image Source="Images/redo.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 

@@ -1,42 +1,37 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Security.AccessControl;
+using MessengerNetworking.Communicator;
 
 namespace MessengerNetworking.Factory
 {
     /// <summary>
     /// Gives a unique instance of server to each system
     /// </summary>
-    public class Factory
+    public static class Factory
     {
-        public IPAddress _serverId {  get; private set; }
+        // public IPAddress _serverId {  get; private set; }
 
-        private static object _instanceLock = new object();
+        // private static object _instanceLock = new object();
 
-        private Factory() { }
+        public static UdpCommunicator s_communicator = new(); 
 
-        private static Factory _instance;
+        
+        // private Factory() { }
+
+        // private static Factory _instance;
 
         /// <summary>
         /// public method which can be accessed by other modules
         /// </summary>
         /// <param name="_serverId"> unique for each system like IP </param>
         /// <returns> instance of server </returns>
+        ///     
         
-        public static Factory GetInstance(IPAddress _serverId)
+        public static ICommunicator GetInstance(IPAddress _serverId)
         {
-            if (_instance == null)
-            {
-                lock (_instanceLock)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new Factory();
-                        _instance._serverId = _serverId;
-                    }
-                }
-            }
-            return _instance;
+            
+            return s_communicator;
         }
     }
 }

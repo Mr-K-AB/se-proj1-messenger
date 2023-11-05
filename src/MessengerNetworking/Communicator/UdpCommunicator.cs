@@ -1,16 +1,4 @@
-﻿/******************************************************************************
- * Filename    = UdpCommunicator.cs
- *
- * Author      = Ramaswamy Krishnan-Chittur
- *
- * Product     = GuiAndDistributedDemo
- * 
- * Project     = Networking
- *
- * Description = Defines a UDP communicator.
- *****************************************************************************/
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -31,21 +19,25 @@ namespace MessengerNetworking.Communicator
             public string _message;
             public int _priority;
         }
+
         private IPEndPoint? _endPoint;
+        private readonly HashSet<Tuple<string, int>> _clients;
         private readonly UdpClient _listener;
         private readonly Thread _senderThread;      // Thread that sends message using priority queue.
         private readonly Thread _listenThread;      // Thread that listens for messages on the UDP port.
         public readonly Dictionary<string, INotificationHandler> _subscribers; // List of subscribers.
         private readonly Queue<_queueContents> _highPriorityQueue, _lowPriorityQueue;
-        
 
+        
         /// <summary>
         /// Creates an instance of the UDP Communicator.
         /// </summary>
         /// <param name="listenPort">UDP port to listen on.</param>
-        public UdpCommunicator(int listenPort)
+        public UdpCommunicator()
         {
+            int listenPort = FindFreePort();
             _subscribers = new Dictionary<string, INotificationHandler>();
+            _clients = new HashSet<Tuple<string, int>>();
 
             // Create and start the thread that listens for messages.
             ListenPort = listenPort;
@@ -83,6 +75,35 @@ namespace MessengerNetworking.Communicator
                 }
             }
         }
+
+        public void AddClient(string ipAddress, int port)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(ipAddress));
+            Debug.Assert(port != 0);
+
+            // Assert valid Ip address
+            _clients.Add(new Tuple<string, int>(ipAddress, port));
+        }
+
+        public void RemoveClient(string ipAddress, int port)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(ipAddress));
+            Debug.Assert(port != 0);
+
+            _clients.Remove(new Tuple<string, int>(ipAddress, port));
+        }
+
+        private static int FindFreePort()
+        {
+            TcpListener tcpListener = new(IPAddress.Loopback, 0);
+            tcpListener.Start();
+
+            int port =
+                ((IPEndPoint)tcpListener.LocalEndpoint).Port;
+                tcpListener.Stop();
+            return port;
+        }
+
 
         /// <inheritdoc />
         public void RemoveSubscriber(string id)
@@ -124,6 +145,15 @@ namespace MessengerNetworking.Communicator
             else
             {
                 _lowPriorityQueue.Enqueue(_content);
+            }
+        }
+
+
+        public void Broadcast(string senderId, string message, int priority = 0)
+        {
+            foreach (Tuple<string, int> client in _clients)
+            {
+                SendMessage(client.Item1, client.Item2, senderId, message, priority);
             }
         }
 

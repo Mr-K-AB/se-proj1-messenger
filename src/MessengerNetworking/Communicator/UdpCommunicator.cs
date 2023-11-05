@@ -31,7 +31,9 @@ namespace MessengerNetworking.Communicator
             public string _message;
             public int _priority;
         }
+
         private IPEndPoint? _endPoint;
+        private readonly HashSet<Tuple<string, int>> _clients;
         private readonly UdpClient _listener;
         private readonly Thread _senderThread;      // Thread that sends message using priority queue.
         private readonly Thread _listenThread;      // Thread that listens for messages on the UDP port.
@@ -45,7 +47,9 @@ namespace MessengerNetworking.Communicator
         /// <param name="listenPort">UDP port to listen on.</param>
         public UdpCommunicator(int listenPort)
         {
+
             _subscribers = new Dictionary<string, INotificationHandler>();
+            _clients = new HashSet<Tuple<string, int>>();
 
             // Create and start the thread that listens for messages.
             ListenPort = listenPort;
@@ -82,6 +86,23 @@ namespace MessengerNetworking.Communicator
                     _subscribers.Add(id, subscriber);
                 }
             }
+        }
+
+        public void AddClient(string ipAddress, int port)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(ipAddress));
+            Debug.Assert(port != 0);
+
+            // Assert valid Ip address
+            _clients.Add(new Tuple<string, int>(ipAddress, port));
+        }
+
+        public void RemoveClient(string ipAddress, int port)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(ipAddress));
+            Debug.Assert(port != 0);
+
+            _clients.Remove(new Tuple<string, int>(ipAddress, port));
         }
 
         /// <inheritdoc />
@@ -124,6 +145,15 @@ namespace MessengerNetworking.Communicator
             else
             {
                 _lowPriorityQueue.Enqueue(_content);
+            }
+        }
+
+
+        public void Broadcast(string senderId, string message, int priority = 0)
+        {
+            foreach (Tuple<string, int> client in _clients)
+            {
+                SendMessage(client.Item1, client.Item2, senderId, message, priority);
             }
         }
 

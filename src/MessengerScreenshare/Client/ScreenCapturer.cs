@@ -8,7 +8,7 @@ namespace MessengerScreenshare.Client
     {
         private const int MaxQueueLength = 20;
 
-        private CancellationTokenSource _cancellationTokenSource;
+        private CancellationTokenSource? _cancellationTokenSource;
         private readonly ConcurrentQueue<Bitmap> _capturedFrameQueue;
         private readonly Screenshot _screenshot;
 
@@ -46,7 +46,7 @@ namespace MessengerScreenshare.Client
             _cancellationTokenSource = new CancellationTokenSource();
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
-            Task.Run( async () =>
+            Task.Run(async () =>
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
@@ -57,13 +57,13 @@ namespace MessengerScreenshare.Client
                             Bitmap img = _screenshot.MakeScreenshot();
                             if (img != null)
                             {
-                                await Task.Delay( 150 );
+                                await Task.Delay(150);
                                 _capturedFrameQueue.Enqueue(img);
                             }
                         }
                         catch (Exception e)
                         {
-                            Trace.WriteLine( $"[Screenshare] Could not capture screenshot: {e.Message}" );
+                            Trace.WriteLine($"[Screenshare] Could not capture screenshot: {e.Message}");
                         }
                     }
                     else
@@ -71,14 +71,14 @@ namespace MessengerScreenshare.Client
                         // Sleep for some time if the queue is filled
                         while (_capturedFrameQueue.Count > MaxQueueLength / 2)
                         {
-                            if (_capturedFrameQueue.TryDequeue( out Bitmap _ ))
+                            if (_capturedFrameQueue.TryDequeue(out Bitmap? _))
                             {
-                                await Task.Delay( 1 ); // Let's avoid busy waiting
+                                await Task.Delay(1); // Let's avoid busy waiting
                             }
                         }
                     }
                 }
-            } );
+            });
         }
 
         public void StopCapture()

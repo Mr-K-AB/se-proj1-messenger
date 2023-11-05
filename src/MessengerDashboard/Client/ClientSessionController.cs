@@ -10,10 +10,10 @@ using MessengerNetworking.NotificationHandler;
 using System.Windows;
 using System.Net.Sockets;
 using MessengerDashboard.Telemetry;
-using MessengerDashboard.Client.User.Session;
 using MessengerDashboard.Summarization;
+using MessengerDashboard.Dashboard;
 
-namespace MessengerDashboard.Dashboard.User.Session
+namespace MessengerDashboard.Client
 {
     public class ClientSessionController : INotificationHandler
     {
@@ -30,7 +30,7 @@ namespace MessengerDashboard.Dashboard.User.Session
         {
             // TODO: Get Communicatior
             //_communicator = CommunitatorFactory.GetCommunicator();
-            
+
             // TODO: Get Content
             //_contentClient = ContentUserFactory.GetInstance();
 
@@ -127,7 +127,7 @@ namespace MessengerDashboard.Dashboard.User.Session
                 return false;
             }
 
-           // ipAddress = ipAddress.Trim();
+            // ipAddress = ipAddress.Trim();
 
             lock (this)
             {
@@ -180,7 +180,7 @@ namespace MessengerDashboard.Dashboard.User.Session
         {
             SendDataToServer(Operation.RemoveClient, _user.userName, _user.userID);
             Thread.Sleep(2000);
-          //  _communicator.Stop();
+            //  _communicator.Stop();
             SessionEnded?.Invoke(this, EventArgs.Empty);
             if (_sessionMode == SessionMode.Lab)
             {
@@ -237,8 +237,8 @@ namespace MessengerDashboard.Dashboard.User.Session
             SessionAnalytics = receivedData.sessionAnalytics;
             UserInfo receiveduser = receivedData.GetUser();
             Trace.WriteLine("Notifying UX about the Analytics");
-            AnalyticsChanged?.Invoke(this, new AnalyticsChangedEventArgs() 
-            { 
+            AnalyticsChanged?.Invoke(this, new AnalyticsChangedEventArgs()
+            {
                 SessionAnalytics = SessionAnalytics
             });
         }
@@ -263,8 +263,8 @@ namespace MessengerDashboard.Dashboard.User.Session
 
         private void UpdateClientSessionModeData(ServerPayload receivedData)
         {
-            
-           SessionInfo receivedSessionData = receivedData.sessionData;
+
+            SessionInfo receivedSessionData = receivedData.sessionData;
             lock (this)
             {
                 SessionInfo = receivedSessionData;
@@ -275,7 +275,7 @@ namespace MessengerDashboard.Dashboard.User.Session
 
         private void UpdateClientSessionData(ServerPayload receivedData)
         {
-            
+
             SessionInfo? receivedSessionData = receivedData.sessionData;
             UserInfo user = receivedData.GetUser();
             if (receivedSessionData != null && SessionInfo != null && receivedSessionData.Users.Equals(SessionInfo.Users))
@@ -297,7 +297,7 @@ namespace MessengerDashboard.Dashboard.User.Session
             {
                 SessionInfo = receivedSessionData;
             }
-            
+
             ClientSessionChanged?.Invoke(this, new ClientSessionChangedEventArgs());
         }
 
@@ -312,7 +312,7 @@ namespace MessengerDashboard.Dashboard.User.Session
 
             if (_sessionMode == SessionMode.Lab)
             {
-                Application.Current.Dispatcher.Invoke((Action)delegate
+                Application.Current.Dispatcher.Invoke(delegate
                 {
                     Application.Current.Shutdown();
                     Environment.Exit(0);

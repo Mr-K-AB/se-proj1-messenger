@@ -1,5 +1,8 @@
-﻿using System;
+﻿/// <author> Harsh Kanani </author>
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MessengerScreenshare;
+using MessengerScreenshare.Client;
 
 namespace MessengerApp
 {
@@ -23,16 +28,28 @@ namespace MessengerApp
         public ScreenShareClient()
         {
             InitializeComponent();
+            ScreenshareClientViewModel viewModel = new();
+            this.DataContext = viewModel;
         }
-
+   
         private void StartScreenShare_Click( object sender , RoutedEventArgs e )
         {
+            if (this.DataContext is ScreenshareClientViewModel viewModel)
+            {
+                viewModel.SharingScreen = true;
+            }
 
+            Trace.WriteLine(Utils.GetDebugMessage("Start Share Button Clicked", withTimeStamp: true));
         }
 
         private void StopScreenShare_Click( object sender , RoutedEventArgs e )
         {
+            if (this.DataContext is ScreenshareClientViewModel viewModel)
+            {
+                viewModel.SharingScreen = false;
+            }
 
+            Trace.WriteLine(Utils.GetDebugMessage("Stop Share Button Clicked", withTimeStamp: true));
         }
     }
 }

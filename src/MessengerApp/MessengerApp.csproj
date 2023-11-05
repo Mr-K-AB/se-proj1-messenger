@@ -54,6 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MessengerScreenshare\MessengerScreenshare.csproj" />
     <ProjectReference Include="..\MessengerWhiteboard\MessengerWhiteboard.csproj" />
   </ItemGroup>
 

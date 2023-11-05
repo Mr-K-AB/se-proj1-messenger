@@ -25,8 +25,8 @@ namespace MessengerWhiteboard
     {
         // Using ClientCommunicator to send shape/message to Server
         IClientCommunicator _communicator;
-        Serializer _serializer;
-        private static ClientState _instance;
+        readonly Serializer _serializer;
+        private static ClientState? s_instance;
 
         /// <summary
         ///     Making sure there is a single instance of the client on a particular machine.
@@ -35,9 +35,9 @@ namespace MessengerWhiteboard
         {
             get
             {
-                _instance ??= new ClientState ();
+                s_instance ??= new ClientState ();
 
-                return _instance;
+                return s_instance;
             }
         }
 
@@ -52,7 +52,7 @@ namespace MessengerWhiteboard
         string _userID;
 
         // Sets the User ID
-        public void SetUserID(string userID)
+        public void SetUserId(string userID)
         {
             userID = userID;
         }

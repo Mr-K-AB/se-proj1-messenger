@@ -17,6 +17,6 @@ namespace MessengerWhiteboard
     public interface IShapeReceiver
     {
         void OnShapeReceived(ShapeItem shapeItem, Operation operation);
-        void setUserId(string userId);
+        void SetUserId(string userId);
     }
 }

@@ -60,20 +60,20 @@ namespace MessengerScreenshare.Client
         /// <param name="adapterIndex">Index for the display card to be used. Defaults to 0 (Primary graphics card)</param>
         /// <param name="maxTimeout">Timeout to get duplicated frame</param>
         /// <returns>The bitmap image for the screenshot</returns>
-        public Bitmap MakeScreenshot(int displayIndex = 0, int adapterIndex = 0, int maxTimeout = 5000)
+        public Bitmap? MakeScreenshot(int displayIndex = 0, int adapterIndex = 0, int maxTimeout = 5000)
         {
             InitializeVariables( displayIndex , adapterIndex );
 
             // acquire the next frame and directly convert it into a bitmap
-            if (_outputDuplication.TryAcquireNextFrame(maxTimeout, out _, out Resource screenResource) != Result.Ok)
+            if (_outputDuplication?.TryAcquireNextFrame(maxTimeout, out _, out Resource screenResource) != Result.Ok)
             {
                 return null;
             }
 
             Texture2D screenTexture2D = screenResource.QueryInterface<Texture2D>();
-            _device.ImmediateContext.CopyResource(screenTexture2D, _texture2D);
+            _device?.ImmediateContext.CopyResource(screenTexture2D, _texture2D);
 
-            DataBox dataBox = _device.ImmediateContext.MapSubresource(_texture2D, 0, MapMode.Read, MapFlags.None);
+            DataBox dataBox = _device!.ImmediateContext.MapSubresource(_texture2D, 0, MapMode.Read, MapFlags.None);
 
             Bitmap screenshot = new(_width, _height, PixelFormat.Format32bppRgb);
             BitmapData bitmapData = screenshot.LockBits(_bounds, ImageLockMode.WriteOnly, screenshot.PixelFormat);

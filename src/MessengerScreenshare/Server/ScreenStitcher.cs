@@ -47,11 +47,11 @@ namespace MessengerScreenshare.Server
         /// Constructor for ScreenSticher.
         /// </summary>
         /// <param name="_sharedClientScreen"></param>
-        public ScreenStitcher( SharedClientScreen _sharedClientScreen )
+        public ScreenStitcher(SharedClientScreen _sharedClientScreen)
         {
-            this._priorImage = null;
-            this._stitchTask = null;
-            this._resolution = null;
+            _priorImage = null;
+            _stitchTask = null;
+            _resolution = null;
             this._sharedClientScreen = _sharedClientScreen;
         }
 
@@ -71,7 +71,7 @@ namespace MessengerScreenshare.Server
             int width = currData.Width;
             int height = currData.Height;
 
-            Bitmap newBitmap = new Bitmap(width, height, curr.PixelFormat);
+            Bitmap newBitmap = new(width, height, curr.PixelFormat);
             BitmapData newData = newBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, curr.PixelFormat);
 
             byte* currPtr = (byte*)currData.Scan0;
@@ -103,17 +103,16 @@ namespace MessengerScreenshare.Server
         /// </summary>
         /// <param name="data">Byte array compressed using GZipStream</param>
         /// <returns>Decompressed byte array</returns>
-        public static byte[] DecompressByteArray( byte[] data )
+        public static byte[] DecompressByteArray(byte[] data)
         {
-            using (MemoryStream input = new MemoryStream( data ))
-            using (MemoryStream output = new MemoryStream())
-            using (GZipStream gzipStream = new GZipStream( input , CompressionMode.Decompress ))
+            using MemoryStream input = new(data);
+            using MemoryStream output = new();
+            using GZipStream gzipStream = new(input, CompressionMode.Decompress);
             {
-                gzipStream.CopyTo( output );
+                gzipStream.CopyTo(output);
                 return output.ToArray();
             }
         }
-
 
         /// <summary>
         /// It will create the task if not exist and start it.
@@ -130,7 +129,7 @@ namespace MessengerScreenshare.Server
                 return;
             }
 
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            CancellationTokenSource cancellationTokenSource = new();
 
             _stitchTask = Task.Run(() =>
             {
@@ -140,7 +139,8 @@ namespace MessengerScreenshare.Server
 
                 while (!token.IsCancellationRequested)
                 {
-                    string newFrame = _sharedClientScreen.GetImage(taskId);
+                  
+                    string? newFrame = _sharedClientScreen.GetImage(taskId);
 
                     if (newFrame == null)
                     {
@@ -148,10 +148,15 @@ namespace MessengerScreenshare.Server
                         continue;
                     }
 
-                    Bitmap stitchedImage = Stitch(_priorImage, newFrame);
-                    Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
-                    _oldImage = stitchedImage;
-                    _sharedClientScreen.PutFinalImage(stitchedImage, taskId);
+                    if (_priorImage != null)
+                    {
+                        Bitmap stitchedImage = Stitch(_priorImage, newFrame);
+                        Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
+                        _priorImage = stitchedImage;
+                        _sharedClientScreen.PutFinalImage(stitchedImage, taskId);
+
+                    }
+                    
                 }
             }, cancellationTokenSource.Token);
 
@@ -168,8 +173,8 @@ namespace MessengerScreenshare.Server
                 return;
             }
 
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-            CancellationToken token = cancellationTokenSource.Token;
+            CancellationTokenSource cancellationTokenSource = new();
+            _ = cancellationTokenSource.Token;
 
             cancellationTokenSource.Cancel();
 
@@ -185,52 +190,52 @@ namespace MessengerScreenshare.Server
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully stopped the processing task for the client with id {_sharedClientScreen.Id}", withTimeStamp: true));
 
         }
-    }
 
-    /// <summary>
-    /// Stitch new frame over prior image is implemented. Data received
-    /// from client has '1' in front then new image has arrived hence 
-    /// the stitching will not happen. And if it is '0' then client has
-    /// sent the 'diff' part only so stitching will happen (basically 
-    /// calls the process function) and find out the current image.
-    /// </summary>
-    /// <param name="oldImage"></param>
-    /// <param name="newFrame"></param>
-    /// <returns>New image after stitching</returns>
-    private Bitmap Stitch(Bitmap oldImage, string newFrame)
-    {
-        char isCompleteFrame = newFrame[newFrame.Length - 1];
-        newFrame = newFrame.Remove(newFrame.Length - 1);
 
-        byte[] frameData = Convert.FromBase64String(newFrame);
-        frameData = DecompressByteArray(frameData);
-
-        using (MemoryStream frameStream = new MemoryStream(frameData))
-        using (Bitmap xorBitmap = new Bitmap(frameStream))
+        /// <summary>
+        /// Stitch new frame over prior image is implemented. Data received
+        /// from client has '1' in front then new image has arrived hence 
+        /// the stitching will not happen. And if it is '0' then client has
+        /// sent the 'diff' part only so stitching will happen (basically 
+        /// calls the process function) and find out the current image.
+        /// </summary>
+        /// <param name="priorImage"></param>
+        /// <param name="newFrame"></param>
+        /// <returns>New image after stitching</returns>
+        private Bitmap Stitch(Bitmap priorImage, string newFrame)
         {
-            var newResolution = new Resolution() {Height = xorBitmap.Height, Width = xorBitmap.Width};
+            char isCompleteFrame = newFrame[newFrame.Length - 1];
 
-            if (oldImage == null || newResolution != _resolution)
+            newFrame = newFrame.Remove(newFrame.Length - 1);
+
+            byte[] frameData = Convert.FromBase64String(newFrame);
+            frameData = DecompressByteArray(frameData);
+
+            using (MemoryStream frameStream = new(frameData))
+            using (Bitmap xorBitmap = new(frameStream))
             {
-                oldImage?.Dispose();  
-                oldImage = new Bitmap(newResolution.Width , newResolution.Height);
+                var newResolution = new Resolution() { Height = xorBitmap.Height, Width = xorBitmap.Width };
+
+                if (priorImage == null || newResolution != _resolution)
+                {
+                    priorImage?.Dispose();
+                    priorImage = new Bitmap(newResolution.Width, newResolution.Height);
+                }
+
+                if (isCompleteFrame == '1')
+                {
+                    priorImage.Dispose();
+                    priorImage = xorBitmap;
+                }
+                else
+                {
+                    priorImage = Process(xorBitmap, priorImage);
+                }
+
+                _resolution = newResolution;
             }
 
-            if (isCompleteFrame == '1')
-            {
-                oldImage.Dispose();  
-                oldImage = xorBitmap;
-            }
-            else
-            {
-                oldImage = Process(xorBitmap, oldImage);
-            }
-
-            _resolution = newResolution;
+            return priorImage;
         }
-
-        return oldImage;
     }
-
-
 }

@@ -5,8 +5,8 @@
 /// are implemented
 ///</summary>
 ///
-using MessengerNetworking.Communicator;
-using MessengerNetworking.NotificationHandler;
+//using MessengerNetworking.Communicator;
+//using MessengerNetworking.NotificationHandler;
 using MessengerScreenshare.Client;
 using MessengerScreenshare;
 using System;
@@ -20,7 +20,7 @@ using System.Xml.Linq;
 
 namespace MessengerScreenshare.Client
 {
-    public class ScreenshareClient : INotificationHandler
+    public class ScreenshareClient
     {
 
         // ScreenshareClient Object
@@ -28,7 +28,7 @@ namespace MessengerScreenshare.Client
 
         // Object of networking module through which
         // we will be communicating to the server
-        private readonly ICommunicator _communicator;
+        //private readonly ICommunicator _communicator;
 
         // Threads for sending images and the confirmation packet
         private Task? _sendImageTask, _sendConfirmationTask;
@@ -43,7 +43,7 @@ namespace MessengerScreenshare.Client
 
         // Tokens added to be able to stop the thread execution
         private bool _confirmationCancellationToken;
-        private readonly CancellationTokenSource _imageCancellation;
+        private readonly CancellationTokenSource? _imageCancellation;
 
         /// <summary>
         /// Setting up the ScreenCapturer and ScreenProcessor Class
@@ -84,9 +84,9 @@ namespace MessengerScreenshare.Client
             Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null"));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null"));
 
-            DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "");
-            string serializedData = JsonSerializer.Serialize(dataPacket);
-            _communicator.Send(serializedData, Utils.ModuleIdentifier, null);
+            //DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "");
+            //string serializedData = JsonSerializer.Serialize(dataPacket);
+            //_communicator.Send(serializedData, Utils.ModuleIdentifier, null);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent REGISTER packet to server", withTimeStamp: true));
 
             await SendConfirmationPacketAsync();
@@ -116,7 +116,7 @@ namespace MessengerScreenshare.Client
                 Trace.WriteLine(Utils.GetDebugMessage("Got SEND packet from server", withTimeStamp: true));
 
                 // Starting capturer, processor and Image Sending
-                StartImageSendingAsync();
+                Task.Run(async () => await StartImageSendingAsync());
 
                 int windowCount = int.Parse(dataPacket.Data);
                 _processor.SetNewResolution(windowCount);
@@ -149,7 +149,7 @@ namespace MessengerScreenshare.Client
         private async Task ImageSendingAsync()
         {
             int cnt = 0;
-            CancellationToken _imageCancellationToken = _imageCancellation.Token;
+            CancellationToken _imageCancellationToken = _imageCancellation!.Token;
             while (!_imageCancellationToken.IsCancellationRequested)
             {
                 string serializedImg = await _processor.GetFrameAsync(_imageCancellationToken);
@@ -158,11 +158,11 @@ namespace MessengerScreenshare.Client
                     break;
                 }
 
-                DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
+                DataPacket dataPacket = new(_id!, _name!, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = JsonSerializer.Serialize(dataPacket);
 
                 Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} of size {serializedData.Length}", withTimeStamp: true));
-                _communicator.Send(serializedData, Utils.ModuleIdentifier, null);
+                //_communicator.Send(serializedData, Utils.ModuleIdentifier, null);
                 cnt++;
                 await Task.Delay(1); // Introduce a small delay for asynchronous behavior
             }
@@ -191,13 +191,13 @@ namespace MessengerScreenshare.Client
         {
             Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null", withTimeStamp: true));
-            DataPacket deregisterPacket = new(_id, _name, ClientDataHeader.Deregister.ToString(), "");
-            string serializedDeregisterPacket = JsonSerializer.Serialize(deregisterPacket);
+            //DataPacket deregisterPacket = new(_id, _name, ClientDataHeader.Deregister.ToString(), "");
+            //string serializedDeregisterPacket = JsonSerializer.Serialize(deregisterPacket);
 
             StopImageSending();
             StopConfirmationSendingAsync().Wait(); // Synchronously wait here for demonstration purposes
 
-            _communicator.Send(serializedDeregisterPacket, Utils.ModuleIdentifier, null);
+            //_communicator.Send(serializedDeregisterPacket, Utils.ModuleIdentifier, null);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
         }
 
@@ -266,7 +266,7 @@ namespace MessengerScreenshare.Client
             {
                 while (!_confirmationCancellationToken)
                 {
-                    _communicator.Send(serializedConfirmationPacket, Utils.ModuleIdentifier, null);
+                    //_communicator.Send(serializedConfirmationPacket, Utils.ModuleIdentifier, null);
                     await Task.Delay(5000);
                 }
             });

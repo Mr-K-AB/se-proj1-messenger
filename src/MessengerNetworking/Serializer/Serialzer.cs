@@ -43,10 +43,11 @@ namespace MessengerNetworking.Serializer
             }
         }
     }
+    public class SerializationException : Exception
+    {
+        public SerializationException(string message, Exception innerException) : base(message, innerException) { }
     }
+
 }
 
-public class SerializationException : Exception
-{
-    public SerializationException( string message , Exception innerException ) : base( message , innerException ) { }
-}
+

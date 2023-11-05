@@ -16,7 +16,7 @@ namespace MessengerApp.ViewModels
     internal partial class AuthenticationViewModel
     {
         [ObservableProperty]
-        private bool? isButtonEnabled = true;
+        private bool? _isButtonEnabled = true;
 
         [RelayCommand]
         public async Task AuthenticateButton_Click(CancellationToken token)
@@ -34,10 +34,9 @@ namespace MessengerApp.ViewModels
             };
             newWindow.Show();
 
-            if (Application.Current.MainWindow != null)
-            {
-                Application.Current.MainWindow.Close();
-            }
+
+            //used null propogation
+            Application.Current.MainWindow?.Close();
         }
     }
 }

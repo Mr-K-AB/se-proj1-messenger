@@ -1,16 +1,4 @@
-﻿/******************************************************************************
- * Filename    = ICommunicator.cs
- *
- * Author      = Ramaswamy Krishnan-Chittur
- *
- * Product     = GuiAndDistributedDemo
- * 
- * Project     = Networking
- *
- * Description = Defines the interface for a communicator.
- *****************************************************************************/
-
-using MessengerNetworking.NotificationHandler;
+﻿using MessengerNetworking.NotificationHandler;
 
 namespace MessengerNetworking.Communicator
 {
@@ -37,6 +25,10 @@ namespace MessengerNetworking.Communicator
         /// <param name="id">Identity of the subscriber to be removed</param>
         void RemoveSubscriber(string id);
 
+        void AddClient(string ipAddress, int port);
+
+        void RemoveClient(string ipAddress, int port);
+
         /// <summary>
         /// Sends the given message to the given ip and port.
         /// </summary>
@@ -45,5 +37,7 @@ namespace MessengerNetworking.Communicator
         /// <param name="senderId">Identity of the sender</param>
         /// <param name="message">Message to be sent</param>
         void SendMessage(string ipAddress, int port, string senderId, string message, int priority = 0);
+
+        void Broadcast(string senderId, string message, int priority = 0);
     }
 }

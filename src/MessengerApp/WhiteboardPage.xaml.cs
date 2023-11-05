@@ -102,7 +102,6 @@ namespace MessengerApp
         {
             _viewModel.ChangeMode(ViewModel.WBModes.SelectMode);
             _viewModel.ChangeTool("Select");
-            Trace.WriteLine("Whiteboard View Model :: Mode changed to : " + _viewModel.currentMode);
         }
         public void RectangleMode(object sender, RoutedEventArgs e)
         {
@@ -115,6 +114,20 @@ namespace MessengerApp
         {
             _viewModel.ChangeTool("Ellipse");
             _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
+        }
+
+        public void UndoMode(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ChangeTool("Undo");
+            _viewModel.ChangeMode(ViewModel.WBModes.UndoMode);
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
+        }
+
+        public void RedoMode(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ChangeTool("Redo");
+            _viewModel.ChangeMode(ViewModel.WBModes.RedoMode);
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 

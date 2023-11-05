@@ -1,16 +1,4 @@
-﻿/******************************************************************************
- * Filename    = UdpCommunicator.cs
- *
- * Author      = Ramaswamy Krishnan-Chittur
- *
- * Product     = GuiAndDistributedDemo
- * 
- * Project     = Networking
- *
- * Description = Defines a UDP communicator.
- *****************************************************************************/
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -39,15 +27,15 @@ namespace MessengerNetworking.Communicator
         private readonly Thread _listenThread;      // Thread that listens for messages on the UDP port.
         public readonly Dictionary<string, INotificationHandler> _subscribers; // List of subscribers.
         private readonly Queue<_queueContents> _highPriorityQueue, _lowPriorityQueue;
-        
 
+        
         /// <summary>
         /// Creates an instance of the UDP Communicator.
         /// </summary>
         /// <param name="listenPort">UDP port to listen on.</param>
-        public UdpCommunicator(int listenPort)
+        public UdpCommunicator()
         {
-
+            int listenPort = FindFreePort();
             _subscribers = new Dictionary<string, INotificationHandler>();
             _clients = new HashSet<Tuple<string, int>>();
 
@@ -104,6 +92,18 @@ namespace MessengerNetworking.Communicator
 
             _clients.Remove(new Tuple<string, int>(ipAddress, port));
         }
+
+        private static int FindFreePort()
+        {
+            TcpListener tcpListener = new(IPAddress.Loopback, 0);
+            tcpListener.Start();
+
+            int port =
+                ((IPEndPoint)tcpListener.LocalEndpoint).Port;
+                tcpListener.Stop();
+            return port;
+        }
+
 
         /// <inheritdoc />
         public void RemoveSubscriber(string id)

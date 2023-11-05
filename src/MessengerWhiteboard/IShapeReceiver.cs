@@ -25,7 +25,7 @@ namespace MessengerWhiteboard
     /// </summary>
     public interface IShapeReceiver
     {
-        void OnShapeReceived(ShapeItem newShape);
+        void OnShapeReceived(ShapeItem shapeItem, Operation operation);
         void setUserId(int userId);
 
     }

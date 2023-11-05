@@ -35,7 +35,8 @@ namespace MessengerNetworking.Serializer
                 var serializer = new XmlSerializer( typeof( type ) );
                 using var stringReader = new StringReader( serializedData );
                 using var xmlReader = XmlReader.Create( stringReader );
-                return (type)serializer.Deserialize( xmlReader );
+                type? deserialized = (type)serializer.Deserialize(xmlReader);
+                return deserialized;
             }
             catch (Exception ex)
             {
@@ -43,10 +44,12 @@ namespace MessengerNetworking.Serializer
             }
         }
     }
+
+    public class SerializationException : Exception
+    {
+        public SerializationException(string message, Exception innerException) : base(message, innerException) { }
     }
 }
 
-public class SerializationException : Exception
-{
-    public SerializationException( string message , Exception innerException ) : base( message , innerException ) { }
-}
+
+

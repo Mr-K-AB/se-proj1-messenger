@@ -49,6 +49,8 @@ namespace MessengerNetworking.Communicator
 
             // Create and start the thread that listens for messages.
             ListenPort = listenPort;
+            _highPriorityQueue = new Queue<_queueContents>();
+            _lowPriorityQueue = new Queue<_queueContents>();
             _listener = new(ListenPort);
             _listenThread = new(new ThreadStart(ListenerThreadProc))
             {
@@ -187,7 +189,7 @@ namespace MessengerNetworking.Communicator
                         {
                             if (_subscribers.ContainsKey(id))
                             {
-                            //    _subscribers[id].OnMessageReceived(message);
+                                _subscribers[id].OnDataReceived(message);
                             }
                             else
                             {

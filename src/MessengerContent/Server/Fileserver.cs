@@ -40,20 +40,20 @@ namespace MessengerContent.Server
         /// <returns>Returns the new message</returns>
         public ChatData? Receive(ChatData msg)
         {
-            Trace.WriteLine("[FileServer] Received message from ContentServer");
+            Trace.WriteLine("[FileServer] Message received from ContentServer");
             if (msg.Event == MessageEvent.New)
             {
-                Trace.WriteLine("[FileServer] Event is New, Saving File");
+                Trace.WriteLine("[FileServer] MessageEvent is New, Saving File");
                 return StoreFile(msg);
             }
             else if (msg.Event == MessageEvent.Download)
             {
-                Trace.WriteLine("[FileServer] Event is Download, Proceeding to download");
+                Trace.WriteLine("[FileServer] MessageEvent is Download, Proceeding to download");
                 return FileDownload(msg);
             }
             else
             {
-                Trace.WriteLine($"[ChatServer] invalid event");
+                Trace.WriteLine($"[ChatServer] Invalid MessageEvent");
                 return null;
             }
         }
@@ -80,7 +80,7 @@ namespace MessengerContent.Server
             // if doesn't exist on database, return null
             if (receivedMsg == null)
             {
-                Trace.WriteLine($"[FileServer] File not found messageId: {msg.MessageID}.");
+                Trace.WriteLine($"[FileServer] No File found with given messageId: {msg.MessageID}.");
                 return null;
             }
             // Clone the object and add the required fields

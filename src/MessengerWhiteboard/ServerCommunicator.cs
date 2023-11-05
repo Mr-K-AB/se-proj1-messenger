@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessengerNetworking.Communicator;
+﻿using MessengerNetworking.Communicator;
 
 namespace MessengerWhiteboard
 {
@@ -11,13 +6,13 @@ namespace MessengerWhiteboard
     {
         private static ServerCommunicator s_instance;
         private static Serializer s_serializer;
-        private static ICommunicator s_communicator;
+        //private static ICommunicator s_communicator;
 
         public static ServerCommunicator Instance
         {
             get
             {
-                if(s_instance == null)
+                if (s_instance == null)
                 {
                     s_instance = new ServerCommunicator();
                     s_serializer = new Serializer();
@@ -31,9 +26,46 @@ namespace MessengerWhiteboard
         {
             try
             {
-                var serializedShape = s_serializer.SerializeShape(wBShape);
+                string serializedShape = s_serializer.SerializeWBShape(wBShape);
+                //s_communicator.Send(serializedShape);
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
+
+        public void Broadcast(List<ShapeItem> shapes, Operation op)
+        {
+            try
+            {
+                List<SerializableShapeItem> serializedShapes = s_serializer.SerializeShapes(shapes);
+                WBShape wBShape = new(serializedShapes, op);
+                Broadcast(wBShape);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public void Broadcast(ShapeItem shape, Operation op)
+        {
+            try
+            {
+                List<ShapeItem> shapes = new()
+                {
+                    shape
+                };
+                Broadcast(shapes, op);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
 
     }
 }

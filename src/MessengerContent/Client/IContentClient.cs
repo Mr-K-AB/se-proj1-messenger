@@ -8,8 +8,8 @@ namespace MessengerContent.Client
         /// <summary>
         /// Sends chat or file data to clients
         /// </summary>
-        /// <param name="contentData">Instance of SendContentData class</param>
-        void ClientSendData(SendChatData contentData);
+        /// <param name="chatData">Instance of SendChatData class</param>
+        void ClientSendData(SendChatData chatData);
 
         /// <summary>
         /// Lets client subscribe to notifications from this class

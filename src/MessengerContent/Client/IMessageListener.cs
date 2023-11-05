@@ -9,8 +9,8 @@ namespace Messenger.Client
         /// <summary>
         /// Handles the reception of a message.
         /// </summary>
-        /// <param name="contentData">Instance of ReceiveContentData class</param>
-        void OnMessageReceived(ReceiveChatData contentData);
+        /// <param name="chatData">Instance of ReceiveChatData class</param>
+        void OnMessageReceived(ReceiveChatData chatData);
 
         /// <summary>
         /// Handles event of all messages sent to / received from client at once

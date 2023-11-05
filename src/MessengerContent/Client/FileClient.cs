@@ -41,15 +41,16 @@ namespace MessengerContent.Client
         public int UserID { get; set; }
 
         /// <summary>
-        /// Serializes the ContentData object and send it to the server via networking module. 
+        /// Serializes the ChatData object and send it to the server via networking module. 
         /// </summary>
-        /// <param name="contentData">Instance of SendContentData class</param>
+        /// <param name="
+        /// ">Instance of SendChatData class</param>
         /// <param name="eventType">Type of message event as string</param>
-        private void SerializeAndSendToServer(ChatData contentData, string eventType)
+        private void SerializeAndSendToServer(ChatData chatData, string eventType)
         {
             try
             {
-                string xml = _serializer.Serialize(contentData);
+                string xml = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[File Client] Setting event as '{eventType}' and sending object to server.");
                 _communicator.Send(xml, _moduleIdentifier, null);
             }
@@ -60,9 +61,9 @@ namespace MessengerContent.Client
         }
 
         /// <summary>
-        /// Converts the input SendContentData object, sets the event type as New, serializes and send it to server.
+        /// Converts the input SendChatData object, sets the event type as New, serializes and send it to server.
         /// </summary>
-        /// <param name="sendContent">Instance of the SendContentData class</param>
+        /// <param name="sendContent">Instance of the SendChatData class</param>
         /// <exception cref="ArgumentException"></exception>
         public void SendFile(SendChatData sendContent)
         {
@@ -94,7 +95,7 @@ namespace MessengerContent.Client
         }
 
         /// <summary>
-        /// Creates ContentData object, sets the event type as Download, serializes and sends it to server.
+        /// Creates ChatData object, sets the event type as Download, serializes and sends it to server.
         /// </summary>
         /// <param name="messageID">ID of the message</param>
         /// <param name="savePath">Path to which the file will be downloaded</param>

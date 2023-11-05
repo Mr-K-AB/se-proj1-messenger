@@ -115,7 +115,7 @@ namespace MessengerContent.Client
                 _communicator = value;
                 try
                 {
-                    //subscribing to network module using _communicator abd subscribe
+                    //subscribing to network module using _communicator and subscribe
                 }
                 catch (Exception e)
                 {
@@ -169,9 +169,9 @@ namespace MessengerContent.Client
         /// Gets message from data structures using message ID
         /// </summary>
         /// <param name="messageID">ID of the message</param>
-        /// <returns>Message object implementing the ReceiveContentData class</returns>
+        /// <returns>Message object implementing the ReceiveChatData class</returns>
         /// <exception cref="ArgumentException"></exception>
-        private ReceiveChatData GetMessage(int messageID)
+        private ReceiveChatData? GetMessage(int messageID)
         {
             // return null if message ID is not present in map
             if (!_messageIDMap.ContainsKey(messageID))
@@ -238,42 +238,42 @@ namespace MessengerContent.Client
         // interface functions
 
         ///<inheritdoc/>
-        public void ClientSendData(SendChatData contentData)
+        public void ClientSendData(SendChatData chatData)
         {
             // check if receiver ID list is not null
-            if (contentData.ReceiverIDs is null)
+            if (chatData.ReceiverIDs is null)
             {
                 throw new ArgumentException("List of receiver IDs given is null");
             }
             // check if message is part of thread
-            if (contentData.ReplyThreadID != -1)
+            if (chatData.ReplyThreadID != -1)
             {
                 // make sure that thread exists
-                if (!_threadIDMap.ContainsKey(contentData.ReplyThreadID))
+                if (!_threadIDMap.ContainsKey(chatData.ReplyThreadID))
                 {
-                    throw new ArgumentException($"Thread with given reply thread ID ({contentData.ReplyThreadID}) does not exist");
+                    throw new ArgumentException($"Thread with given reply thread ID ({chatData.ReplyThreadID}) does not exist");
                 }
             }
             // if message is a reply to an existing message
-            if (contentData.ReplyMessageID != -1)
+            if (chatData.ReplyMessageID != -1)
             {
-                ValidateReplyMessageID(contentData.ReplyMessageID, contentData.ReplyThreadID);
-                ReceiveChatData? existingMessage = GetMessage(contentData.ReplyMessageID) ?? throw new ArgumentException("Message being replied to does not exist");
-                contentData.ReceiverIDs = AllReceivers(existingMessage.ReceiverIDs, contentData.ReceiverIDs, existingMessage.SenderID);
+                ValidateReplyMessageID(chatData.ReplyMessageID, chatData.ReplyThreadID);
+                ReceiveChatData? existingMessage = GetMessage(chatData.ReplyMessageID) ?? throw new ArgumentException("Message being replied to does not exist");
+                chatData.ReceiverIDs = AllReceivers(existingMessage.ReceiverIDs, chatData.ReceiverIDs, existingMessage.SenderID);
             }
             // otherwise, use the respective message type handlers
-            switch (contentData.Type)
+            switch (chatData.Type)
             {
                 case MessageType.Chat:
                     Trace.WriteLine("[ContentClient] Using chat handler to send event to server");
-                    _chatHandler.NewChat(contentData);
+                    _chatHandler.NewChat(chatData);
                     break;
                 case MessageType.File:
                     Trace.WriteLine("[ContentClient] Using file handler to send event to server");
-                    _fileHandler.SendFile(contentData);
+                    _fileHandler.SendFile(chatData);
                     break;
                 default:
-                    throw new ArgumentException($"Invalid Message Field Type : {contentData.Type}");
+                    throw new ArgumentException($"Invalid Message Field Type : {chatData.Type}");
             }
         }
 

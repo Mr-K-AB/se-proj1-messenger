@@ -1,4 +1,16 @@
-﻿using System;
+﻿/******************************************************************************
+ * Filename    = ChatServer.cs
+ *
+ * Author      = Rapeti Siddhu Neehal
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerContent
+ *
+ * Description = Class handling the sending of data to server based on 
+ *               the type of chat events - New, Edit, Delete, Star. 
+ *****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -47,53 +59,39 @@ namespace MessengerContent.Client
         // helper functions
 
         /// <summary>
-        /// Check if message is empty
+        /// Converts 'SendChatData' object to 'ChatData' object. 
         /// </summary>
-        /// <param name="message">Message string</param>
-        /// <returns>True if empty, false otherwise</returns>
-        private bool IsEmptyMessage(string message)
-        {
-            if (message == null || message == "")
-            {
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Converts 'SendContentData' object to 'ContentData' object. 
-        /// </summary>
-        /// <param name="sendContentData">Instance of the SendContentData class</param>
+        /// <param name="sendChatData">Instance of the SendChatData class</param>
         /// <param name="eventType">Type of message event</param>
-        /// <returns>Instance of ContentData class</returns>
-        public ChatData ConvertSendContentData(SendChatData sendContentData, MessageEvent eventType)
+        /// <returns>Instance of ChatData class</returns>
+        public ChatData ChatDataFromSendData(SendChatData sendChatData, MessageEvent eventType)
         {
             ChatData convertedData = new()
             {
-                Type = sendContentData.Type,
-                Data = sendContentData.Data,
-                ReceiverIDs = sendContentData.ReceiverIDs,
-                ReplyMessageID = sendContentData.ReplyMessageID,
-                ReplyThreadID = sendContentData.ReplyThreadID,
+                Type = sendChatData.Type,
+                Data = sendChatData.Data,
+                ReceiverIDs = sendChatData.ReceiverIDs,
+                ReplyMessageID = sendChatData.ReplyMessageID,
+                ReplyThreadID = sendChatData.ReplyThreadID,
                 SenderID = UserID,
                 SentTime = DateTime.Now,
                 Starred = false,
                 Event = eventType
             };
-            Trace.WriteLine("[ChatClient] Converting 'SendContentData' to 'ContentData' object");
+            Trace.WriteLine("[ChatClient] Converting 'SendChatData' to 'ChatData' object");
             return convertedData;
         }
 
         /// <summary>
-        /// Serializes the ContentData object and sends it to the server via networking module. 
+        /// Serializes the ChatData object and sends it to the server via networking module. 
         /// </summary>
-        /// <param name="contentData">Instance of SendContentData class</param>
+        /// <param name="chatData">Instance of SendChatData class</param>
         /// <param name="eventType">Type of message event as string</param>
-        private void SerializeAndSendToServer(ChatData contentData, string eventType)
+        private void SerializeAndSendToServer(ChatData chatData, string eventType)
         {
             try
             {
-                string serializedStr = _serializer.Serialize(contentData);
+                string serializedStr = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[Chat Client] Setting event as '{eventType}' and sending object to server.");
                 _communicator.Send(serializedStr, _moduleIdentifier, null);
             }
@@ -106,23 +104,23 @@ namespace MessengerContent.Client
         // chat client functions
 
         /// <summary>
-        /// Converts the input SendContentData object, sets the event type as New, serializes and sends it to server.
+        /// Converts the input SendChatData object, sets the event type as New, serializes and sends it to server.
         /// </summary>
-        /// <param name="sendContent">Instance of the SendContentData class</param>
+        /// <param name="sendContent">Instance of the SendChatData class</param>
         /// <exception cref="ArgumentException"></exception>
         public void NewChat(SendChatData sendContent)
         {
-            if (IsEmptyMessage(sendContent.Data))
+            if (string.IsNullOrEmpty(sendContent.Data))
             {
                 throw new ArgumentException("Invalid message string.");
             }
-            ChatData convertedData = ConvertSendContentData(sendContent, MessageEvent.New);
+            ChatData convertedData = ChatDataFromSendData(sendContent, MessageEvent.New);
             convertedData.MessageID = -1;
             SerializeAndSendToServer(convertedData, "New");
         }
 
         /// <summary>
-        /// Creates ContentData object, sets the event type as Edit, serializes and sends it to server.
+        /// Creates ChatData object, sets the event type as Edit, serializes and sends it to server.
         /// </summary>
         /// <param name="messageID">ID of the message</param>
         /// <param name="newMessage">Edited message string</param>
@@ -130,7 +128,7 @@ namespace MessengerContent.Client
         /// <exception cref="ArgumentException"></exception>
         public void EditChat(int messageID, string newMessage, int replyThreadID)
         {
-            if (IsEmptyMessage(newMessage))
+            if (string.IsNullOrEmpty(newMessage))
             {
                 throw new ArgumentException("Invalid message string.");
             }
@@ -147,7 +145,7 @@ namespace MessengerContent.Client
         }
 
         /// <summary>
-        /// Creates ContentData object, sets the event type as Delete, serializes and sends it to server.
+        /// Creates ChatData object, sets the event type as Delete, serializes and sends it to server.
         /// </summary>
         /// <param name="messageID">ID of the message</param>
         /// <param name="replyThreadID">ID of thread to which the message belongs to</param>
@@ -166,7 +164,7 @@ namespace MessengerContent.Client
         }
 
         /// <summary>
-        /// Creates ContentData object, sets the event type as Star, serializes and sends it to server.
+        /// Creates ChatData object, sets the event type as Star, serializes and sends it to server.
         /// </summary>
         /// <param name="messageID">ID of the message</param>
         /// <param name="replyThreadID">ID of thread to which the message belongs to</param>

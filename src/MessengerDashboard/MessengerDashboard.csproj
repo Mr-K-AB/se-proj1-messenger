@@ -1,9 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <UserSecretsId>b12955e4-b704-420a-bb39-73fd5dd2266a</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Dashboard\UI\" />
+    <Folder Include="Dashboard\UI\Server\" />
+    <Folder Include="Telemetry\" />
+    <Folder Include="UI\VIews\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SentimentAnalyzer" Version="1.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MessengerNetworking\MessengerNetworking.csproj" />
+  </ItemGroup>
 
 </Project>

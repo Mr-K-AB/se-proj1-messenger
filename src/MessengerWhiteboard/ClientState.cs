@@ -49,12 +49,12 @@ namespace MessengerWhiteboard
             InitializeUser();
         }
 
-        string _userID;
+        public string _userID;
 
         // Sets the User ID
         public void SetUserId(string userID)
         {
-            userID = userID;
+            _userID = userID;
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace MessengerWhiteboard
                 shapeItem
             };
 
-            var serializedShapes = _serializer.SerializeShapes(shapeItems);
+            List<SerializableShapeItem> serializedShapes = _serializer.SerializeShapes(shapeItems);
             WBShape wBShape = new(serializedShapes, operation);
             _communicator.SendToServer(wBShape);
         }

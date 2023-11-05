@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 
 namespace MessengerWhiteboard
@@ -38,16 +30,16 @@ namespace MessengerWhiteboard
         public Brush fillBrush = Brushes.Black;                                            // stores color of the object (fill colour)
         //Brush borderBrush;                                 // stores color of the border
         int _strokeWidth;                                       // thickness of the stroke
+        public IShapeReceiver machine;
 
         public ViewModel()
         {
             ShapeItems = new();
             currentMode = WBModes.ViewMode;
-            if(_userID == "tempUser")
+            if (_userID == "tempUser")
             {
                 isEnabled = false;
             }
-            SetUserID();
             //this.fillBrush = null;                                            // stores color of the object (fill colour)
             //this.borderBrush = Brushes.Black;                                 // stores color of the border
             _strokeWidth = 1;
@@ -85,11 +77,11 @@ namespace MessengerWhiteboard
         {
             ShapeItems.Remove(shape);
         }
-        
+
         public void ChangeMode(WBModes mode)
         {
             Trace.WriteLine("Whiteboard View Model :: Active mode changed to : " + mode);
-            currentMode = mode; 
+            currentMode = mode;
         }
 
         public void ChangeTool(string tool)
@@ -104,10 +96,11 @@ namespace MessengerWhiteboard
             return "user1";
         }
 
-        public void SetUserID()
+        public void SetUserID(int _userid)
         {
-            _userID = GetUserID();
-            isEnabled = true;
+            _userID = _userid.ToString();
+            //_userID = GetUserID();
+            machine.SetUserId(_userID);
         }
 
         public void ChangeStrokeWidth(int width)

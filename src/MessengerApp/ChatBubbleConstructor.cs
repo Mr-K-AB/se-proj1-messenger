@@ -52,7 +52,6 @@ namespace MessengerApp
         public override DataTemplate? SelectTemplate(object item, DependencyObject container)
         {
             var message = item as ChatMessage;
-            Trace.WriteLine("[ChatBubbleConstructor] Chatbubble for the message created.");
             if (message.isCurrentUser == true)
             {
                 return message.MessageType ? SentChatMessageTemplate : SentFileMessageTemplate;

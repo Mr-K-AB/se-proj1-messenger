@@ -13,6 +13,12 @@ namespace MessengerNetworking.Communicator
         int ListenPort { get; }
 
         /// <summary>
+        /// Returns IPv4 address of local machine
+        /// </summary>
+        /// <returns></returns>
+        string IpAddress { get; }
+
+        /// <summary>
         /// Adds a subscriber.
         /// </summary>
         /// <param name="id">Identity of the subscriber to be added</param>

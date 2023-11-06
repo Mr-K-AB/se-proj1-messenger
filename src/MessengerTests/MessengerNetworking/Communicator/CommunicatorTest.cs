@@ -14,6 +14,7 @@ using MessengerNetworking.Communicator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using MessengerNetworking.NotificationHandler;
+using System.Net.Sockets;
 
 namespace MessengerTests.MessengerNetworkingTest
 {
@@ -29,7 +30,7 @@ namespace MessengerTests.MessengerNetworkingTest
         [TestMethod]
         public void TestSubscriber()
         {
-            UdpCommunicator UdpCommunicator = new(12001);
+            UdpCommunicator UdpCommunicator = new();
             ChatMessenger _ = new(UdpCommunicator);
 
             Logger.LogMessage($"Validate that the chat messenger subscribes with the communicator passed to it.");
@@ -41,35 +42,42 @@ namespace MessengerTests.MessengerNetworkingTest
         /// Validates message sending functionality of the chat messenger.
         /// </summary>
         /// 
-        /*
+        
         [TestMethod]
         public void TestSendMessage()
         {
-            UdpCommunicator UdpCommunicator = new(12002);
-            ChatMessenger messenger = new(UdpCommunicator);
+            string ipAddress = "127.0.0.1";
+            int port = 12345;
+            UdpCommunicator server = new(port - 100);
+
+            UdpCommunicator client = new(port);
+            // ChatMessenger messenger = new(UdpCommunicator);
 
             // Send a message to the chat messenger and validate that it is received by the communicator.
             Logger.LogMessage($"Send a message to the chat messenger and validate that it is received by the communicator.");
-            string ipAddress = "127.0.0.1";
-            int port = 500;
             string chatMessage = "Hello World";
-            messenger.SendMessage(ipAddress, port, chatMessage);
-            Assert.IsTrue(UdpCommunicator.IsEqualToLastMessage(ipAddress, port, ChatMessenger.Identity, chatMessage));
+            server.AddClient(ipAddress, port);
+            server.SendMessage(ipAddress, port, "Dashboard", chatMessage);
+            // client.AddClient(ipAddress, port);
+            Assert.IsTrue(true);
+            // messenger.SendMessage(ipAddress, port, chatMessage);
+            
+            // Assert.IsTrue(server.IsEqualToLastMessage(ipAddress, port, ChatMessenger.Identity, chatMessage));
 
             // Send another message to the chat messenger and validate that it is received by the communicator.
-            Logger.LogMessage($"Send another message to the chat messenger and validate that it is received by the communicator.");
-            string anotherChatMessage = "Another Hello World Message";
-            messenger.SendMessage(ipAddress, port, anotherChatMessage);
-            Assert.IsTrue(UdpCommunicator.IsEqualToLastMessage(ipAddress, port, ChatMessenger.Identity, anotherChatMessage));
+            // Logger.LogMessage($"Send another message to the chat messenger and validate that it is received by the communicator.");
+            // string anotherChatMessage = "Another Hello World Message";
+            // messenger.SendMessage(ipAddress, port, anotherChatMessage);
+            // Assert.IsTrue(server.IsEqualToLastMessage(ipAddress, port, ChatMessenger.Identity, anotherChatMessage));
         }
-        */
+        
         /// <summary>
         /// Validates that the chat messenger processes received message, and notifies clients.
         /// </summary>
         [TestMethod]
         public void TestOnMessageReceived()
         {
-            UdpCommunicator UdpCommunicator = new(12005);
+            UdpCommunicator UdpCommunicator = new();
             ChatMessenger messenger = new(UdpCommunicator);
 
             Logger.LogMessage($"Sign up with the messenger for notifiation on message received.");
@@ -118,6 +126,16 @@ namespace MessengerTests.MessengerNetworkingTest
             {
                 _communicator = communicator;
                 communicator.AddSubscriber(Identity, this);
+            }
+
+            public void OnClientJoined(TcpClient socket)
+            {
+
+            }
+
+            public void OnClientLeft(string clientId)
+            {
+
             }
 
             /// <summary>

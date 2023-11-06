@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="NewFolder\" />
     <Folder Include="ViewModels\" />
   </ItemGroup>
 
@@ -17,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MessengerContent\MessengerContent.csproj" />
+    <ProjectReference Include="..\MessengerDashboard\MessengerDashboard.csproj" />
   </ItemGroup>
 
 </Project>

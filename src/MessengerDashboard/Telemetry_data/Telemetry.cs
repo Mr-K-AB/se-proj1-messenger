@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessengerDashboard.Telemetry
 {    
+    /*
     /// <summary>
     /// Represents a request for text summarization.
     /// </summary>
@@ -17,4 +18,5 @@ namespace MessengerDashboard.Telemetry
     {
 
     }
+    */
 }

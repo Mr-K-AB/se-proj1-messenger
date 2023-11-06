@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using MessengerNetworking.Communicator;
+using MessengerNetworking.Factory;
 
 namespace MessengerWhiteboard
 {
@@ -6,7 +8,8 @@ namespace MessengerWhiteboard
     {
         private static ClientCommunicator s_instance;
         private static Serializer s_serializer;
-        //private static ICommunicator s_communicator;
+        private static ICommunicator s_communicator;
+        private static readonly string s_moduleID = "whiteboard";
 
         public static ClientCommunicator Instance
         {
@@ -16,7 +19,8 @@ namespace MessengerWhiteboard
                 {
                     s_instance = new ClientCommunicator();
                     s_serializer = new Serializer();
-                    //s_communicator = Communicator.Instance;
+                    s_communicator = Factory.GetInstance();
+                    s_communicator.AddSubscriber(s_moduleID, ViewModel.Instance);
                 }
                 return s_instance;
             }
@@ -27,7 +31,8 @@ namespace MessengerWhiteboard
             try
             {
                 string serializedShape = s_serializer.SerializeWBShape(shape);
-                //s_communicator.Send(serializedShape);
+                Debug.Print("ClientCommunicator.SendToServer: {0}", serializedShape);
+                s_communicator.Broadcast(s_moduleID, serializedShape);
             }
             catch (Exception e)
             {

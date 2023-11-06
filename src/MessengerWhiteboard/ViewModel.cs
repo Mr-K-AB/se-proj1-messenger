@@ -1,13 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 
 namespace MessengerWhiteboard
@@ -15,15 +7,12 @@ namespace MessengerWhiteboard
     public partial class ViewModel : INotifyPropertyChanged
     {
         public BindingList<ShapeItem> ShapeItems { get; set; }
-
-        // stores selected shapes
         ShapeItem? _tempShape;
-        // public List<string> selectedShapes;                   
 
         private string _userID = "tempUser";
 
         //public string shapeMode = "Rectangle";
-        public string activeTool;
+        public string activeTool = "Select";
         public System.Windows.Point? lastDownPoint = null;
 
 
@@ -34,34 +23,30 @@ namespace MessengerWhiteboard
             ViewMode,
             DeleteMode,
             SelectMode,
-            UndoMode, 
+            UndoMode,
             RedoMode
         }
 
         public WBModes currentMode;
-        
         //shape attributes
-        public Brush _fillBrush;                                  // stores color of the object (fill colour)
-        public Brush _borderBrush;                                // stores color of the border
-        int _strokeWidth;                                        // thickness of the stroke
+        public Brush fillBrush = Brushes.Transparent;
+        public Brush strokeBrush = Brushes.Black;
+        public float StrokeThickness = 1;
+        //Brush borderBrush;                                 // stores color of the border
+        int _strokeWidth;                                       // thickness of the stroke
+        public IShapeReceiver machine;
 
         public ViewModel()
         {
             ShapeItems = new();
-            this.currentMode = WBModes.ViewMode;
-            this.activeTool = "Select";
-           
-            if(_userID == "tempUser")
+            currentMode = WBModes.ViewMode;
+            if (_userID == "tempUser")
             {
                 isEnabled = false;
             }
-            
-            SetUserID();
-
-            this._strokeWidth = 1;
-            this._borderBrush = Brushes.Black;
-            this._fillBrush = null;
-            // this.selectedShapes = new List<string>();
+            //this.fillBrush = null;                                            // stores color of the object (fill colour)
+            //this.borderBrush = Brushes.Black;                                 // stores color of the border
+            _strokeWidth = 1;
         }
 
         private static ViewModel? s_instance;
@@ -97,36 +82,15 @@ namespace MessengerWhiteboard
             ShapeItems.Remove(shape);
         }
 
-        //public void SelectShape(string shUID)
-        //{
-            
-        //    // This is valid only for single shape selection
-        //    if (selectedShapes.Count() > 0)
-        //    {
-        //        if (selectedShapes.Contains(shUID))
-        //        {
-        //            selectedShapes.Remove(shUID);
-        //        }
-        //        else
-        //        {
-        //            selectedShapes.Add(shUID);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        selectedShapes.Add(shUID);
-        //    }
-        //}
-        
         public void ChangeMode(WBModes mode)
         {
             Trace.WriteLine("Whiteboard View Model :: Active mode changed to : " + mode);
-            currentMode = mode; 
+            currentMode = mode;
         }
 
         public void ChangeTool(string tool)
         {
-            Trace.WriteLine("Whiteboard View Model :: Active tool changed to : " + tool);
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + tool);
             activeTool = tool;
         }
 
@@ -136,65 +100,63 @@ namespace MessengerWhiteboard
             return "user1";
         }
 
-        public void SetUserID()
+        public void SetUserID(int _userid)
         {
-            _userID = GetUserID();
-            isEnabled = true;
+            _userID = _userid.ToString();
+            //_userID = GetUserID();
+            machine = ClientState.Instance;
+            machine.SetUserId(_userID);
         }
 
         public void ChangeStrokeWidth(int width)
         {
             _strokeWidth = width;
             Trace.WriteLine("Whiteboard View Model :: Width changed to : " + width);
-            this.UpdateShape("Stroke");
+            //this.UpdateStrokeWidth();
         }
 
-        public void ChangeBorderBrush(Brush color)
-        {
-            _borderBrush = color;
-            Trace.WriteLine("Whiteboard View Model :: border colour changed to : " + color);
-            this.UpdateShape("StrokeThickness");
-        }
+        //public void ChangeBorderBrush(string bcolour)
+        //{
+        //    this.borderBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(bcolour));
+        //    Trace.WriteLine("Whiteboard View Model :: border colour changed to : " + bcolour);
+        //    this.UpdateBorderBrush();
+        //}
 
         public void ChangeFillBrush(Brush color)
         {
-            _fillBrush = color;
+            fillBrush = color;
             Trace.WriteLine("Whiteboard View Model :: fill colour changed to : " + color);
-            this.UpdateShape("Fill");
+            //this.UpdateFillBrush();
         }
 
-        public void UpdateShape(string property)
-        {
-            // This will work in case of single shape only 
-            string shUID = (string)_tempShape.Id;
+        //public void UpdateStrokeWidth()
+        //{
+        //    for(int i = 0; i < selectedShapes.Count(); i++)
+        //    {
+        //        ShapeItem newShape = this.selectedShapes[i].DeepClone();
+        //        newShape.strokeThickness = this.strokeWidth;
+        //        this.selectedShapes[i] = newShape;
+        //    }
+        //}
 
-            for (int i = 0; i < ShapeItems.Count(); i++)
-            {
-                if (shUID == ((string)ShapeItems[i].Id))
-                {
-                    ShapeItem newShape = ShapeItems[i].DeepClone();
-                    // ShapeItem newShape = CreateShape()
+        //public void UpdateBorderBrush(string bcolour)
+        //{
+        //    for(int i = 0; i < selectedShapes.Count(); i++)
+        //    {
+        //        ShapeItem newShape = this.selectedShapes[i].DeepClone();
+        //        newShape.Stroke = this.borderBrush;
+        //        this.selectedShapes[i] = newShape;
+        //    }
+        //}
 
-                    switch (property)
-                    {
-                        case "Stroke":
-                            newShape.Stroke = this._borderBrush;
-                            break;
-                        case "StrokeThickness":
-                            newShape.StrokeThickness = this._strokeWidth;
-                            break;
-                        case "Fill":
-                            newShape.Fill = this._fillBrush; 
-                            break;
-                    }
-                    
-                    ShapeItems[i] = newShape;
-
-                    // TODO: Call render shape to render the updated shape
-                }
-            }
-        }
-
-  
+        //public void UpdateFillBrush(string fcolour)
+        //{
+        //    for (int i = 0; i < selectedShapes.Count(); i++)
+        //    {
+        //        ShapeItem newShape = this.selectedShapes[i].DeepClone();
+        //        newShape.Fill = this.fillBrush;
+        //        this.selectedShapes[i] = newShape;
+        //    }
+        //}
     }
 }

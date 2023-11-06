@@ -12,6 +12,8 @@
 *               messages from the ViewModel and send them to the Server.
 ***************************/
 
+using System.Diagnostics;
+
 namespace MessengerWhiteboard
 {
     public class ClientState : IShapeReceiver
@@ -66,6 +68,7 @@ namespace MessengerWhiteboard
 
             List<SerializableShapeItem> serializedShapes = _serializer.SerializeShapes(shapeItems);
             WBShape wBShape = new(serializedShapes, operation);
+            Debug.Print("OnShapeReceived: {0}", shapeItem.ShapeType);
             _communicator.SendToServer(wBShape);
         }
 

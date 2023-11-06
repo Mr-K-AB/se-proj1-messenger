@@ -14,10 +14,18 @@ namespace MessengerWhiteboard
             {
                 geometry = new RectangleGeometry(boundingBox);
             }
-            else
+            else if(shapeType == "Ellipse")
             {
                 //Debug.WriteLine("inside createshape Ellipse");
                 geometry = new EllipseGeometry(boundingBox);
+            }
+            else if(shapeType == "Curve")
+            {
+                geometry = new PathGeometry();
+            }
+            else
+            {
+                geometry = new LineGeometry(start, end);
             }
             //Debug.WriteLine(geometry);
             ShapeItem newShape = new()
@@ -29,7 +37,8 @@ namespace MessengerWhiteboard
                 ZIndex = 1,
                 Fill = fillBrush,
                 Stroke = borderBrush,
-                Id = Guid.NewGuid()
+                Id = Guid.NewGuid(),
+                points = new List<Point>{start}
             };
 
             return newShape;
@@ -39,7 +48,7 @@ namespace MessengerWhiteboard
         public void StartShape(Point a)
         {
             //Debug.WriteLine((fillBrush as SolidColorBrush).Color.ToString());
-            _tempShape = CreateShape(activeTool, a, a, fillBrush);
+            _tempShape = CreateShape(activeTool, a, a, fillBrush, strokeBrush, StrokeThickness);
             AddShape(_tempShape);
         }
 
@@ -70,7 +79,7 @@ namespace MessengerWhiteboard
                         double dY = a.Y - x.Y;
                         _tempShape.MoveShape(new Point(_tempShape.boundary.TopLeft.X + dX, _tempShape.boundary.TopLeft.Y + dY),
                                new Point(_tempShape.boundary.BottomRight.X + dX, _tempShape.boundary.BottomRight.Y + dY));
-                        Debug.WriteLine(_tempShape.boundary);
+                        //Debug.WriteLine(_tempShape.boundary);
                         lastDownPoint = a;
                     }
 
@@ -88,6 +97,7 @@ namespace MessengerWhiteboard
         {
             if (_tempShape != null)
             {
+                machine.OnShapeReceived(_tempShape, Operation.Creation);
                 //tempShape.EditShape(tempShape.boundary.TopLeft, a);
                 //ShapeItems[ShapeItems.Count - 1] = tempShape;
             }

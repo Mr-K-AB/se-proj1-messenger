@@ -12,13 +12,14 @@ namespace MessengerApp
         readonly ViewModel _viewModel;
         private bool _buildingShape = false;
 
-        public WhiteboardPage()
+        public WhiteboardPage(int serverID)
         {
             InitializeComponent();
 
             _viewModel = ViewModel.Instance;
             _viewModel.ShapeItems = new();
             DataContext = _viewModel;
+            _viewModel.SetUserID(serverID);
         }
 
         //private void SampleRectangleClick(object sender, RoutedEventArgs e)
@@ -59,11 +60,11 @@ namespace MessengerApp
 
                 HitTestResult hitTestResult = VisualTreeHelper.HitTest(canvas, p);
                 DependencyObject element = hitTestResult.VisualHit;
-                Debug.WriteLine(element);
+                //Debug.WriteLine(element);
                 if (element is System.Windows.Shapes.Path)
                 {
                     _viewModel.lastDownPoint = p;
-                    Debug.WriteLine(element.GetValue(UidProperty).ToString());
+                    //Debug.WriteLine(element.GetValue(UidProperty).ToString());
                     _viewModel.SelectShape(element.GetValue(UidProperty).ToString());
                 }
             }
@@ -128,6 +129,13 @@ namespace MessengerApp
         {
             _viewModel.ChangeTool("Redo");
             _viewModel.ChangeMode(ViewModel.WBModes.RedoMode);
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
+        }
+
+        public void CurveMode(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ChangeTool("Curve");
+            _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 

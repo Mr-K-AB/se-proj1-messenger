@@ -19,9 +19,9 @@ namespace MessengerWhiteboard
 {
     public class ServerState : IShapeReceiver
     {
-        private static IServerCommunicator _communicator;
-        private Serializer _serializer;
-        private static ServerState _instance;
+        private static readonly IServerCommunicator s_communicator;
+        private readonly Serializer _serializer;
+        private static ServerState s_instance;
 
         /// <summary>
         ///     Making sure there is a single instance of the server on a particular machine.
@@ -30,9 +30,9 @@ namespace MessengerWhiteboard
         {
             get
             {
-                _instance ??= new ServerState();
+                s_instance ??= new ServerState();
 
-                return _instance;
+                return s_instance;
             }
         }
 
@@ -172,13 +172,13 @@ namespace MessengerWhiteboard
         // Function for broadcasting single shape to clients
         public void BroadcastToClients(ShapeItem shapeItem, Operation operation)
         {
-            _communicator.Broadcast(shapeItem, operation);
+            s_communicator.Broadcast(shapeItem, operation);
         }
 
         // Function for broadcasting List of Shapes to clients
         public void BroadcastToClients(List<ShapeItem> shapeItems, Operation operation)
         {
-            _communicator.Broadcast(shapeItems, operation);
+            s_communicator.Broadcast(shapeItems, operation);
         }
 
 
@@ -192,9 +192,9 @@ namespace MessengerWhiteboard
         public void InitializeUser(WBShape deserializedObject)
         {
             List<ShapeItem> shapeItems = _mapping.Values.ToList();
-            List<SerializableShapeItem> serializableShapeItems = _serializer.SerializeShape(shapeItems);
+            List<SerializableShapeItem> serializableShapeItems = _serializer.SerializeShapes(shapeItems);
             WBShape wBShape = new(serializableShapeItems, Operation.NewUser, deserializedObject.UserId);
-            _communicator.Broadcast(wBShape, deserializedObject.UserId)
+            s_communicator.Broadcast(wBShape, deserializedObject.UserId);
         }
 
     }

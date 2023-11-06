@@ -28,11 +28,34 @@ namespace MessengerNetworking.Communicator
         public readonly Dictionary<string, INotificationHandler> _subscribers; // List of subscribers.
         private readonly Queue<_queueContents> _highPriorityQueue, _lowPriorityQueue;
 
-        
+
+
         /// <summary>
         /// Creates an instance of the UDP Communicator.
         /// </summary>
         /// <param name="listenPort">UDP port to listen on.</param>
+        /// 
+        public UdpCommunicator(int listenPort)
+        {
+            _subscribers = new Dictionary<string, INotificationHandler>();
+            _clients = new HashSet<Tuple<string, int>>();
+
+            // Create and start the thread that listens for messages.
+            ListenPort = listenPort;
+            _highPriorityQueue = new Queue<_queueContents>();
+            _lowPriorityQueue = new Queue<_queueContents>();
+            _listener = new(ListenPort);
+            _listenThread = new(new ThreadStart(ListenerThreadProc))
+            {
+                IsBackground = true // Stop the thread when the main thread stops.
+            };
+            _senderThread = new(new ThreadStart(SenderThreadProc))
+            {
+                IsBackground = true // Stop the thread when the main thread stops.
+            };
+            _listenThread.Start();
+            _senderThread.Start();
+        }
         public UdpCommunicator()
         {
             int listenPort = FindFreePort();
@@ -41,6 +64,8 @@ namespace MessengerNetworking.Communicator
 
             // Create and start the thread that listens for messages.
             ListenPort = listenPort;
+            _highPriorityQueue = new Queue<_queueContents>();
+            _lowPriorityQueue = new Queue<_queueContents>();
             _listener = new(ListenPort);
             _listenThread = new(new ThreadStart(ListenerThreadProc))
             {
@@ -165,8 +190,9 @@ namespace MessengerNetworking.Communicator
             {
                 try
                 {
-                    lock (this)
+                    // lock (this)
                     {
+                        // Object reference not set to an instance of an object.
                         int count = 5;
                         while (count > 0 && _highPriorityQueue.Count > 0)
                         {
@@ -213,8 +239,9 @@ namespace MessengerNetworking.Communicator
                     {
                         string id = tokens[0];
                         string message = tokens[1];
-                        lock (this)
+                        // lock (this)
                         {
+                            Console.WriteLine("[" +  id + "] : " + message);
                             if (_subscribers.ContainsKey(id))
                             {
                                 _subscribers[id].OnDataReceived(message);

@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
- * Filename    = ChatServer.cs
+ * Filename    = ChatMessageClient.cs
  *
  * Author      = Rapeti Siddhu Neehal
  *

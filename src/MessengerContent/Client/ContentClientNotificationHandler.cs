@@ -1,4 +1,15 @@
-﻿using MessengerContent.DataModels;
+﻿/******************************************************************************
+ * Filename    = ContentClientNotificationHandler.cs
+ *
+ * Author      = Rapeti Siddhu Neehal
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerContent
+ *
+ * Description = 
+ *****************************************************************************/
+using MessengerContent.DataModels;
 using MessengerNetworking;
 using System;
 using System.Collections.Generic;

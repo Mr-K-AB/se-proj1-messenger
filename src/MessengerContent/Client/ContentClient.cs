@@ -1,4 +1,15 @@
-﻿using System;
+﻿/******************************************************************************
+ * Filename    = ContentClient.cs
+ *
+ * Author      = Rapeti Siddhu Neehal
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerContent
+ *
+ * Description = 
+ *****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;

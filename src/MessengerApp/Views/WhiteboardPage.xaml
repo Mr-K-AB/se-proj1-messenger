@@ -96,7 +96,7 @@
                             Padding="10,0,0,0"
                             Text="Whiteboard |"/>
                         <Button Name="Download" ToolTip="Download" Style="{StaticResource ButtonStyle}">
-                            <Image Source="Images/download.png" Style="{StaticResource ImageStyle}" />
+                            <Image Source="../Images/download.png" Style="{StaticResource ImageStyle}" />
                         </Button>
 
                     </StackPanel>
@@ -109,7 +109,7 @@
                         <StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" >
 
                             <ToggleButton Name="Size" ToolTip="Size" Style="{StaticResource ToggleButtonStyle}">
-                                <Image Source="Images/size.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="../Images/size.png" Style="{StaticResource ImageStyle}" />
                             </ToggleButton>
                             <Popup IsOpen="{Binding IsChecked, ElementName=Size}" 
                                    StaysOpen="False" Placement="Bottom" AllowsTransparency="True" 
@@ -180,7 +180,7 @@
                                 Text="|"/>
 
                             <ToggleButton Name="Color" ToolTip="Color" Style="{StaticResource ToggleButtonStyle}">
-                                <Image Source="Images/color.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="../Images/color.png" Style="{StaticResource ImageStyle}" />
                             </ToggleButton>
                             <Popup IsOpen="{Binding IsChecked, ElementName=Color}" 
                                    StaysOpen="False" Placement="Bottom" AllowsTransparency="True" 
@@ -238,7 +238,7 @@
                         <StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" >
 
                             <Button Name="Plus" ToolTip="Zoom In" Style="{StaticResource ButtonStyle}">
-                                <Image Source="Images/plus.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="../Images/plus.png" Style="{StaticResource ImageStyle}" />
                             </Button>
                             <TextBlock 
                                 FontSize="20"
@@ -246,7 +246,7 @@
                                 Text="|"/>
 
                             <Button Name="Minus" ToolTip="Zoom Out" Style="{StaticResource ButtonStyle}">
-                                <Image Source="Images/minus.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="../Images/minus.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
                         </StackPanel>
@@ -272,23 +272,23 @@
                         <StackPanel Orientation="Vertical" Background="White" Margin="10">
 
                             <Button Name="Select" ToolTip="Select" Style="{StaticResource ButtonStyle}" Click="SelectMode">
-                                <Image Source="Images/cursor.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="../Images/cursor.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
-                            <Button Name="Pen" ToolTip="Pen" Style="{StaticResource ButtonStyle}">
-                                <Image Source="Images/pen.png" Style="{StaticResource ImageStyle}" />
+                            <Button Name="Pen" ToolTip="Pen" Style="{StaticResource ButtonStyle}" Click="CurveMode">
+                                <Image Source="../Images/pen.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
                             <Button Name="Eraser" ToolTip="Eraser" Style="{StaticResource ButtonStyle}">
-                                <Image Source="Images/eraser.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="../Images/eraser.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
                             <Button Name="Text" ToolTip="Text" Style="{StaticResource ButtonStyle}">
-                                <Image Source="Images/text.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="../Images/text.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
                             <ToggleButton Name="ShapesButton" ToolTip="Shapes" Style="{StaticResource ToggleButtonStyle}">
-                                <Image Source="Images/shapes.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="../Images/shapes.png" Style="{StaticResource ImageStyle}" />
                             </ToggleButton>
                             <Popup IsOpen="{Binding IsChecked, ElementName=ShapesButton}" 
                                    StaysOpen="False" Placement="Right" AllowsTransparency="True" 
@@ -305,22 +305,22 @@
 
                                         <Grid Grid.Row="0">
                                             <Button Name="Line" ToolTip="Line" Style="{StaticResource ButtonStyle}">
-                                                <Image Source="Images/line.png" Style="{StaticResource ImageStyle}" />
+                                                <Image Source="../Images/line.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="1">
                                             <Button Name="Rectangle" ToolTip="Rectangle" Style="{StaticResource ButtonStyle}" Click="RectangleMode">
-                                                <Image Source="Images/rectangle.png" Style="{StaticResource ImageStyle}" />
+                                                <Image Source="../Images/rectangle.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="2">
                                             <Button Name="Ellipse" ToolTip="Ellipse" Style="{StaticResource ButtonStyle}" Click="EllipseMode">
-                                                <Image Source="Images/ellipse.png" Style="{StaticResource ImageStyle}" />
+                                                <Image Source="../Images/ellipse.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="3">
                                             <Button Name="Triangle" ToolTip="Triangle" Style="{StaticResource ButtonStyle}">
-                                                <Image Source="Images/triangle.png" Style="{StaticResource ImageStyle}" />
+                                                <Image Source="../Images/triangle.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
                                     </Grid>
@@ -328,7 +328,7 @@
                             </Popup>
 
                             <ToggleButton Name="MoreTools" ToolTip="More Tools" Style="{StaticResource ToggleButtonStyle}">
-                                <Image Source="Images/down-arrow.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="../Images/down-arrow.png" Style="{StaticResource ImageStyle}" />
                             </ToggleButton>
                             <Popup IsOpen="{Binding IsChecked, ElementName=MoreTools}" 
                                    StaysOpen="False" Placement="Right" AllowsTransparency="True" 
@@ -343,12 +343,12 @@
 
                                         <Grid Grid.Row="0">
                                             <Button Name="Fill" ToolTip="Fill Color" Style="{StaticResource ButtonStyle}">
-                                                <Image Source="Images/bucket.png" Style="{StaticResource ImageStyle}" />
+                                                <Image Source="../Images/bucket.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="1">
                                             <Button Name="Clear" ToolTip="Clear Page" Style="{StaticResource ButtonStyle}">
-                                                <Image Source="Images/clear.png" Style="{StaticResource ImageStyle}" />
+                                                <Image Source="../Images/clear.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
                                     </Grid>
@@ -360,11 +360,11 @@
                         <StackPanel Orientation="Vertical" Background="White" Margin="10">
 
                             <Button Name="Undo" ToolTip="Undo" Click="UndoMode" Style="{StaticResource ButtonStyle}">
-                                <Image Source="Images/undo.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="../Images/undo.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
                             <Button Name="Redo" ToolTip="Redo" Click="RedoMode" Style="{StaticResource ButtonStyle}">
-                                <Image Source="Images/redo.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="../Images/redo.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
                         </StackPanel>

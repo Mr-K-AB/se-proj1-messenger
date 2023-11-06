@@ -163,6 +163,7 @@ namespace MessengerNetworking.Communicator
             _content._senderId = senderId;
             _content._message = message;
             _content._priority = priority;
+            Debug.Print("UdpCommunicator.SendMessage: {0}", message);
             if (priority == 1)
             {
                 _highPriorityQueue.Enqueue(_content);

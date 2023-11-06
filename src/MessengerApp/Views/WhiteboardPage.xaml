@@ -283,9 +283,49 @@
                                 <Image Source="../Images/eraser.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
-                            <Button Name="Text" ToolTip="Text" Style="{StaticResource ButtonStyle}">
-                                <Image Source="../Images/text.png" Style="{StaticResource ImageStyle}" />
-                            </Button>
+                            <ToggleButton Name="Fill" ToolTip="Fill Color" Style="{StaticResource ToggleButtonStyle}">
+                                <Image Source="../Images/bucket.png" Style="{StaticResource ImageStyle}" />
+                            </ToggleButton>
+                            <Popup IsOpen="{Binding IsChecked, ElementName=Fill}" 
+                                   StaysOpen="False" Placement="Right" AllowsTransparency="True" 
+                                   HorizontalOffset="5"
+                                   VerticalOffset="80">
+                                <Border Background="White" Height="auto" Width="auto">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Grid Grid.Row="0" Grid.Column="0">
+                                            <Button Background="White"  Height="15" Width="15" Margin="5" Name="FillWhite" ToolTip="White"/>
+                                        </Grid>
+                                        <Grid Grid.Row="0" Grid.Column="1">
+                                            <Button Background="Black" Height="15" Width="15" Margin="5" Name="FillBlack" ToolTip="Black"/>
+                                        </Grid>
+                                        <Grid Grid.Row="1" Grid.Column="0">
+                                            <Button Background="Red" Height="15" Width="15" Margin="5" Name="FillRed" ToolTip="Red"/>
+                                        </Grid>
+
+                                        <Grid Grid.Row="1" Grid.Column="1">
+                                            <Button Background="Green" Height="15" Width="15" Margin="5" Name="FillGreen" ToolTip="Green"/>
+                                        </Grid>
+                                        <Grid Grid.Row="2" Grid.Column="0">
+                                            <Button Background="Yellow" Height="15" Width="15" Margin="5" Name="FillYellow" ToolTip="Yellow"/>
+                                        </Grid>
+                                        <Grid Grid.Row="2" Grid.Column="1">
+                                            <Button Background="Blue" Height="15" Width="15" Margin="5" Name="FillBlue" ToolTip="Blue"/>
+                                        </Grid>
+
+                                    </Grid>
+                                </Border>
+                            </Popup>
+
 
                             <ToggleButton Name="ShapesButton" ToolTip="Shapes" Style="{StaticResource ToggleButtonStyle}">
                                 <Image Source="../Images/shapes.png" Style="{StaticResource ImageStyle}" />
@@ -309,13 +349,15 @@
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="1">
-                                            <Button Name="Rectangle" ToolTip="Rectangle" Style="{StaticResource ButtonStyle}" Click="RectangleMode">
+
+                                            <Button Name="Rectangle" ToolTip="Rectangle" Style="{StaticResource ButtonStyle}">
                                                 <Image Source="../Images/rectangle.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="2">
-                                            <Button Name="Ellipse" ToolTip="Ellipse" Style="{StaticResource ButtonStyle}" Click="EllipseMode">
+                                            <Button Name="Ellipse" ToolTip="Ellipse" Style="{StaticResource ButtonStyle}">
                                                 <Image Source="../Images/ellipse.png" Style="{StaticResource ImageStyle}" />
+
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="3">
@@ -342,8 +384,9 @@
                                         </Grid.RowDefinitions>
 
                                         <Grid Grid.Row="0">
-                                            <Button Name="Fill" ToolTip="Fill Color" Style="{StaticResource ButtonStyle}">
-                                                <Image Source="../Images/bucket.png" Style="{StaticResource ImageStyle}" />
+
+                                            <Button Name="Text" ToolTip="Text" Style="{StaticResource ButtonStyle}">
+
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="1">
@@ -359,16 +402,17 @@
 
                         <StackPanel Orientation="Vertical" Background="White" Margin="10">
 
+
                             <Button Name="Undo" ToolTip="Undo" Click="UndoMode" Style="{StaticResource ButtonStyle}">
                                 <Image Source="../Images/undo.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
                             <Button Name="Redo" ToolTip="Redo" Click="RedoMode" Style="{StaticResource ButtonStyle}">
                                 <Image Source="../Images/redo.png" Style="{StaticResource ImageStyle}" />
+
                             </Button>
 
                         </StackPanel>
-                        
 
                     </StackPanel>
 

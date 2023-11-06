@@ -22,13 +22,13 @@ namespace MessengerNetworking.NotificationHandler
         /// Server will call function when new client connects
         /// </summary>
         /// <param name="socket"></param>
-        public void OnClientJoined(TcpClient socket);
+        public void OnClientJoined(string ipAddress, int port);
 
         /// <summary>
         /// Server will call function when a client disconnects
         /// </summary>
         /// <param name="clientId"></param>
-        public void OnClientLeft(string clientId);
+        public void OnClientLeft(string ipAddress, int port);
     
     }
 }

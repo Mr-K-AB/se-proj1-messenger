@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using Messenger.Client;
@@ -12,108 +12,147 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MessengerApp.ViewModels;
+using System;
+using System.Windows.Threading;
+using MessengerDashboard;
+using MessengerDashboard.Dashboard;
+using MessengerDashboard.Dashboard.User.Session;
+using System.Windows;
 
 namespace MessengerApp.ViewModels
 {
 
 
-    public class ChatPageViewModel ///: INotifyPropertyChanged, INotificationListener, IClientSessionNotifications
+    public class ChatPageViewModel : IMessageListener, INotifyPropertyChanged, IUserNotification
     {
-        public IDictionary<int, string> Users;
-        public IDictionary<int, string> Messages;
-        public IDictionary<int, int> ThreadIds;
+        //Data Models
+        private readonly IContentClient _model;
 
-        ///public SendContentData MsgToSend { get; private set; }
-        
+        private readonly IUXUserSessionManager _modelDb;
+
+        public IDictionary<int, string> Users; // Mapping User IDS to their names
+
+        public IDictionary<int, string> Messages; // Mapping Message IDs to their context
+
+        public IDictionary<int, int> ThreadIds; // Mapping Message IDs to their ThreadIDs
+
         /// <summary>
         ///     Constructor for ViewModel
         /// </summary>
-        /// <param name="production">true for production mode</param>
-        public ChatPageViewModel(bool production = true)
+        public ChatPageViewModel()
         {
-            Trace.WriteLine("[ChatPageViewModel] ViewModel setup");
             Users = new Dictionary<int, string>();
             Messages = new Dictionary<int, string>();
             ThreadIds = new Dictionary<int, int>();
 
+            _model = ContentClientFactory.GetInstance();
+            _model.ClientSubscribe(this);
+
         }
 
         /// <summary>
-        ///     Whenever a property changes, a Property Changed event is raised
+        ///     The current user id
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public static int UserId { get; private set; }
+        
+        /// <summary>
+        ///     The received message
+        /// </summary>
+        public ChatMessage ReceivedMsg { get; private set; }
 
-        internal void DownloadFile(string? fileName, int messageID)
+        /// <summary>
+        ///     Message to be sent
+        /// </summary>
+        public SendChatData MsgToSend { get; private set; }
+
+
+        /// <summary>
+        ///     A PropertyChangedEvent is raised whenever a property is changed
+        /// </summary>
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
+        ///     Handling the raised PropertyChangedEvent
+        /// </summary>
+        /// <param name="property"> </param>
+        public void OnPropertyChanged(string property)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
+        /// <summary>
+        ///     Sends the message to content module
+        /// </summary>
+        /// <param name="message"> </param>
+        /// <param name="replyMsgId">  </param>
+        /// <param name="messageType">  </param>
+        public void SendMessage(string message, int replyMsgId, string messageType)
+        {
+            MsgToSend = new SendChatData();
+            
+            if (messageType == "File")
+            {
+                MsgToSend.Type = MessageType.File;
+            }
+            else if (messageType == "Chat")
+            {
+                MsgToSend.Type = MessageType.Chat;
+            }
+
+            MsgToSend.ReplyMessageID = replyMsgId;
+            MsgToSend.Data = message;
+            MsgToSend.ReplyThreadID = -1;
+            if (replyMsgId != -1) // If the message is a reply to some other msg
+            {
+                MsgToSend.ReplyThreadID = ThreadIds[replyMsgId];
+            }
+
+            MsgToSend.ReceiverIDs = new int[] { }; // Empty list denotes it's broadcast message
+
+            _model.ClientSendData(MsgToSend);
+        }
+
+        /// <summary>
+        ///     Download a file at the required location in the client's machine using Path
+        /// </summary>
+        /// <param name="savePath"> </param>
+        /// <param name="msgId">  </param>
+        public void DownloadFile(string savePath, int msgId)
+        {
+            _model.ClientDownload(msgId, savePath);
+        }
+
+        /// <summary>
+        ///     Updating the message Data of Message ID with the New Message
+        /// </summary>
+        /// <param name="msgID"> Message ID </param>
+        /// <param name="newMsg"> The updated Chat Message  </param>
+        public void EditChatMsg(int msgID, string newMsg)
+        {
+            _model.ClientEdit(msgID, newMsg);
+        }
+
+        /// <summary>
+        ///     Delete Messages using msgID
+        /// </summary>
+        /// <param name="msgID"> </param>
+        public void DeleteChatMsg(int msgID)
+        {
+            _model.ClientDelete(msgID);
+        }
+
+        /// <summary>
+        ///     Star Messages
+        /// </summary>
+        /// <param name="msgId"> </param>
+        public void StarChatMsg(int msgId)
+        {
+            _model.ClientStar(msgId);
+        }
+
+        public void OnUserSessionChange(SessionInfo session)
         {
             throw new NotImplementedException();
         }
     }
 }
-
-
-/*
-/// <summary>
-        ///     Content Client Data Model
-        /// </summary>
-        private readonly IContentClient _model;
-
-/// <summary>
-///     Dictionary mapping Messages IDs to their ThreadIds
-/// </summary>
-public IDictionary<int, int> ThreadIds;
-
-
-/// <summary>
-///     Constructor for ViewModel
-/// </summary>
-/// <param name="production">true for production mode</param>
-public ChatPageViewModel()
-{
-    Trace.WriteLine("[ChatPageViewModel] ViewModel setup");
-    ThreadIds = new Dictionary<int, int>();
-}
-
-/// <summary>
-///     Message to be sent
-/// </summary>
-public SendContentData MsgToSend { get; private set; }
-
-/// <summary>
-///     Sends the message to content module. Message type is determined by messageType parameter
-/// </summary>
-/// <param name="message"> The string containing the file path </param>
-/// <param name="replyMsgId"> Either the reply ID of the mesage being replied to or -1 denoting its not a reply message </param>
-/// <param name="messageType"> File or Chat </param>
-public void SendMessage(string message, int replyMsgId, string messageType)
-{
-
-    // Creating a SendContentData object
-    MsgToSend = new SendContentData();
-    // Setting message type field
-    if (messageType == "File")
-    {
-        MsgToSend.Type = MessageType.File;
-    }
-    else if (messageType == "Chat")
-    {
-        MsgToSend.Type = MessageType.Chat;
-    }
-
-    // Setting the remaining fields of the SendContentData object
-    MsgToSend.ReplyMessageID = replyMsgId;
-    MsgToSend.Data = message;
-    MsgToSend.ReplyThreadID = replyMsgId != -1 ? ThreadIds[replyMsgId] : -1;
-
-    // Empty list denotes it's broadcast message
-    MsgToSend.ReceiverIDs = new int[] { };
-
-    if (messageType == "File")
-    {
-        Trace.WriteLine("[ChatPageViewModel] I am Sending a File Message");
-    }
-    else if (messageType == "Chat")
-    {
-        Trace.WriteLine("[ChatPageViewModel] I am Sending a Chat Message");
-    }
-    _model.ClientSendData(MsgToSend); 
-        }*/

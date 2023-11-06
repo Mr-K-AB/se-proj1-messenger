@@ -95,7 +95,7 @@ namespace MessengerContent.DataModels
         /// <summary>
         /// Add message to the present chat context.
         /// </summary>
-        /// <param name="message">Instance of the ReceiveContentData class</param>
+        /// <param name="message">Instance of the ReceiveChatData class</param>
         /// <exception cref="ArgumentException"></exception>
         public void AddMessage(ReceiveChatData message)
         {

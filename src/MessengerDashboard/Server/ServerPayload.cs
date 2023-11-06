@@ -3,17 +3,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MessengerDashboard.Telemetry;
+using MessengerDashboard.Summarization;
+using MessengerDashboard.Client;
 
 namespace MessengerDashboard.Server
 {
-    /// <summary>
-    /// Represents a server payload.
-    /// </summary>
     public class ServerPayload
     {
-        /// <summary>
-        /// Gets or sets the operation to be performed by the server.
-        /// </summary>
-        public Operation Operation { get; set; }
+        public UserInfo _user;
+        public Operation eventType;
+        public SessionAnalytics sessionAnalytics;
+        public SessionInfo sessionData;
+        public TextSummary summaryDetail;
+
+        //     Parametric constructor to initialize the fields
+        public ServerPayload(Operation eventName, SessionInfo sessionDataToSend, TextSummary summaryDataToSend,
+            SessionAnalytics sessionAnalyticsToSend, UserInfo user)
+        {
+            // SessionAnalytics sessionAnalyticsToSend
+            eventType = eventName;
+            _user = user;
+            sessionData = sessionDataToSend;
+            summaryDetail = summaryDataToSend;
+            sessionAnalytics = sessionAnalyticsToSend;
+        }
+
+        //     Default constructor for serialization
+        public ServerPayload()
+        {
+        }
+
+        //     Method to access the UserData object
+        public UserInfo GetUser()
+        {
+            return _user;
+        }
     }
 }

@@ -45,7 +45,7 @@ namespace MessengerDashboard
         /// <returns>
         /// A list of strings representing user-specific information. or access tokens. The specific content of the list may vary based on the authentication and authorization flow.
         /// </returns>
-        public static async Task<List<string>> Authenticate(int timeOut = 180000)
+        public static async Task<AuthenticationResult> Authenticate(int timeOut = 180000)
         {
             /*
             var builder = new ConfigurationBuilder()
@@ -69,7 +69,7 @@ namespace MessengerDashboard
             string codeChallenge = EncodeInputBuffer(Sha256(codeVerifier));
             const string codeChallengeMethod = "S256";
             string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, "8080");
-            List<string> result = new();
+            AuthenticationResult result = new();
 
             Trace.WriteLine("[UX] Creating HTTP Listener");
             // Creating HTTP listener
@@ -114,13 +114,13 @@ namespace MessengerDashboard
             {
                 Trace.WriteLine("[UX] Timeout occurred before getting response");
                 httpListener.Stop();
-                result.Add("false");
+                result.IsAuthenticated = false;
                 return result;
             }
 
             HttpListenerContext context = taskData.Result;
             HttpListenerResponse response = context.Response;
-            string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://google.com'></head><body><center><h1>Authentication is complete! You will be redirected to your app in a few seconds!</h1></center></body></html>");
+            string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://google.com'></head><body><center><h1>Authentication is completed!</h1></center></body></html>");
             byte[] buffer = Encoding.UTF8.GetBytes(responseString);
             response.ContentLength64 = buffer.Length;
             Stream responseOutput = response.OutputStream;
@@ -135,14 +135,14 @@ namespace MessengerDashboard
             if (context.Request.QueryString.Get("error") != null)
             {
                 Trace.WriteLine(string.Format("OAuth authorization error: {0}.", context.Request.QueryString.Get("error")));
-                result.Add("false");
+                result.IsAuthenticated = false;
                 return result;
             }
 
             if (context.Request.QueryString.Get("code") == null || context.Request.QueryString.Get("state") == null)
             {
                 Trace.WriteLine("[UX] Malformed authorization response. " + context.Request.QueryString);
-                result.Add("false");
+                result.IsAuthenticated = false;
                 return result;
             }
 
@@ -154,7 +154,7 @@ namespace MessengerDashboard
             if (incomingState != state)
             {
                 Trace.WriteLine(string.Format("Received request with invalid state ({0})", incomingState));
-                result.Add("false");
+                result.IsAuthenticated = false;
                 return result;
             }
 
@@ -163,15 +163,15 @@ namespace MessengerDashboard
             Task task = Task.Factory.StartNew(() => GetUserData(code, codeVerifier, redirectURI));
             task.Wait();
 
-            result.Add("true");
+            result.IsAuthenticated = true;
             while (s_userName == "" || s_userEmail == "" || s_imageName == "")
             {
                 // Thread sleeps until information is received
                 Thread.Sleep(100);
             }
-            result.Add(s_userName);
-            result.Add(s_userEmail);
-            result.Add(s_imageName);
+            result.UserName = s_userName;
+            result.UserEmail = s_userEmail;
+            result.UserImage = s_imageName;
             return result;
         }
 

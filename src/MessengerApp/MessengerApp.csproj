@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -8,8 +8,91 @@
   </PropertyGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
     <Folder Include="NewFolder\" />
+||||||| 83f4887
+=======
+    <None Remove="ScreenshareIcons\NextPageButton.png" />
+    <None Remove="ScreenshareIcons\NoClient.gif" />
+    <None Remove="ScreenshareIcons\NotSharedScreenBackground.webp" />
+    <None Remove="ScreenshareIcons\PinButton.png" />
+    <None Remove="ScreenshareIcons\PreviousPageButton.png" />
+    <None Remove="ScreenshareIcons\SharedScreenBackground.jpeg" />
+    <None Remove="ScreenshareIcons\StartScreenShare.png" />
+    <None Remove="ScreenshareIcons\StartShare.png" />
+    <None Remove="ScreenshareIcons\StopShare.png" />
+    <None Remove="ScreenshareIcons\UnpinButton.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+>>>>>>> 85f2d20db3a42c7c657ae28f3277d8c45ac73d8f
     <Folder Include="ViewModels\" />
+    <None Remove="Images\bucket.png" />
+    <None Remove="Images\clear.png" />
+    <None Remove="Images\color.png" />
+    <None Remove="Images\cursor.png" />
+    <None Remove="Images\down-arrow.png" />
+    <None Remove="Images\download.png" />
+    <None Remove="Images\ellipse.png" />
+    <None Remove="Images\eraser.png" />
+    <None Remove="Images\line.png" />
+    <None Remove="Images\minus.png" />
+    <None Remove="Images\pen.png" />
+    <None Remove="Images\pencil.png" />
+    <None Remove="Images\plus.png" />
+    <None Remove="Images\rectangle.png" />
+    <None Remove="Images\redo.png" />
+    <None Remove="Images\shape.png" />
+    <None Remove="Images\shapes.png" />
+    <None Remove="Images\size.png" />
+    <None Remove="Images\triangle.png" />
+    <None Remove="Images\undo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\bucket.png" />
+    <Resource Include="Images\clear.png" />
+    <Resource Include="Images\color.png" />
+    <Resource Include="Images\down-arrow.png" />
+    <Resource Include="Images\download.png" />
+    <Resource Include="Images\ellipse.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MessengerScreenshare\MessengerScreenshare.csproj" />
+    <ProjectReference Include="..\MessengerWhiteboard\MessengerWhiteboard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\cursor.png" />
+    <Resource Include="Images\eraser.png" />
+    <Resource Include="Images\line.png" />
+    <Resource Include="Images\minus.png" />
+    <Resource Include="Images\pen.png" />
+    <Resource Include="Images\plus.png" />
+    <Resource Include="Images\rectangle.png" />
+    <Resource Include="Images\redo.png" />
+    <Resource Include="Images\shapes.png" />
+    <Resource Include="Images\size.png" />
+    <Resource Include="Images\triangle.png" />
+    <Resource Include="Images\undo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ScreenshareIcons\NextPageButton.png" />
+    <Resource Include="ScreenshareIcons\NoClient.gif" />
+    <Resource Include="ScreenshareIcons\NotSharedScreenBackground.webp" />
+    <Resource Include="ScreenshareIcons\PinButton.png" />
+    <Resource Include="ScreenshareIcons\PreviousPageButton.png" />
+    <Resource Include="ScreenshareIcons\SharedScreenBackground.jpeg" />
+    <Resource Include="ScreenshareIcons\StartScreenShare.png" />
+    <Resource Include="ScreenshareIcons\StartShare.png" />
+    <Resource Include="ScreenshareIcons\StopShare.png" />
+    <Resource Include="ScreenshareIcons\UnpinButton.png" />
   </ItemGroup>
 
   <ItemGroup>

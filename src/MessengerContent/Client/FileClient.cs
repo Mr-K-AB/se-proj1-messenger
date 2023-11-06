@@ -40,7 +40,7 @@ namespace MessengerContent.Client
         /// <summary>
         /// Communicator setter function
         /// </summary>
-        public ICommunicator Communicator
+          public ICommunicator Communicator
         {
             set => _communicator = value;
         }

@@ -4,28 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessengerDashboard.Dashboard
+namespace MessengerDashboard.Client
 {
     public class ClientPayload
     {
+        public Operation Operation { get; set; }
+        public int UserID { get; set; }
+        public string UserName { get; set; }
+        public string UserEmail { get; set; }
+        public string UserPhotoURL { get; set; }
 
-        public Operation eventType;
-        public int userID;
-        public string username;
-        public string userEmail;
-        public string photoUrl;
+        public string IpAddress { get; set; } = string.Empty;
 
-        //parametrized constructor 
-        public ClientPayload(Operation eventName, string clientName, int clientID = -1, string clientEmail = null, string clientPhotoUrl = null)
+        public int Port { get; set; } = -1;
+        public ClientPayload(Operation eventName, string clientName, string ipAddress, int port, int clientID = -1, string clientEmail = null, string clientPhotoUrl = null)
         {
-            eventType = eventName;
-            username = clientName;
-            userID = clientID;
-            userEmail = clientEmail;
-            photoUrl = clientPhotoUrl;
+            Operation = eventName;
+            UserName = clientName;
+            UserID = clientID;
+            UserEmail = clientEmail;
+            UserPhotoURL = clientPhotoUrl;
+            IpAddress = ipAddress;
+            Port = port;
         }
 
-        //default constructor for serialization
         public ClientPayload()
         {
 

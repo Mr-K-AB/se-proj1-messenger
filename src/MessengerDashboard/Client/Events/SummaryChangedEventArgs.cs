@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MessengerDashboard.Summarization;
 
-namespace MessengerDashboard.Client
+namespace MessengerDashboard.Client.Events
 {
     public class SummaryChangedEventArgs
     {

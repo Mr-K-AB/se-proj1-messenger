@@ -14,6 +14,7 @@ namespace MessengerDashboard
         GetSummary,
         GetAnalytics,
         RemoveClient,
-        ID
+        ID,
+        AddClientACK
     }
 }

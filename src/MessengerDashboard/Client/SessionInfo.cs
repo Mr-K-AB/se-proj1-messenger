@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace MessengerDashboard.Dashboard
+namespace MessengerDashboard.Client
 {
     public class SessionInfo
     {

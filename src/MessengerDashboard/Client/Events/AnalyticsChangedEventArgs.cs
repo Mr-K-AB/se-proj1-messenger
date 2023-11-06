@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MessengerDashboard.Dashboard;
+using MessengerDashboard.Telemetry;
 
-namespace MessengerDashboard.Client
+namespace MessengerDashboard.Client.Events
 {
     public class AnalyticsChangedEventArgs
     {

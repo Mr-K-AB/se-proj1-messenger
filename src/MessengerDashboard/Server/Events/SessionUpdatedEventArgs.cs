@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MessengerDashboard.Client;
 
-namespace MessengerDashboard.Server
+namespace MessengerDashboard.Server.Events
 {
     public class SessionUpdatedEventArgs
     {
-        public object Session { get; set; }
+        public SessionInfo Session { get; set; }
     }
 }

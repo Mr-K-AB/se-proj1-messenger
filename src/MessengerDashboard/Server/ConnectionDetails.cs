@@ -9,9 +9,14 @@ namespace MessengerDashboard.Server
 {
     public class ConnectionDetails
     {
-        public int PortNumber { get; set; }
+        public int Port { get; init; }
 
-        public string IPAddress { get; set; }
+        public string IpAddress { get; init; }
 
+        public ConnectionDetails(string ipAddress, int port)
+        {
+            Port = port;
+            IpAddress = ipAddress;
+        }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MessengerDashboard.Dashboard;
 
 namespace MessengerDashboard.Client
 {
@@ -11,6 +10,7 @@ namespace MessengerDashboard.Client
     {
 
         bool AddUser();
+
         void ToggleSessionType();
 
         void RemoveUser();
@@ -19,15 +19,11 @@ namespace MessengerDashboard.Client
 
         void GetSummary();
 
-
-        void SubscribeSession(IUserNotification listener);
-
         void GetAnalytics();
 
         UserInfo GetUser();
 
         SessionInfo GetSessionInfo();
-
 
     }
 }

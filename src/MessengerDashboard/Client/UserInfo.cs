@@ -7,47 +7,39 @@
 
 using System;
 
-namespace MessengerDashboard.Dashboard
+namespace MessengerDashboard.Client
 {
     public class UserInfo
     {
-        public string userName;
-        public int userID;
-        public string? userEmail;
-        public string? userGender;
-        public string? userStatus;
-        public string? userPhotoUrl;
+        public string? UserName { get; set; }
+        public int UserID { get; set; }
+        public string? UserEmail { get; set; }
+        public string? UserPhotoUrl { get; set; }
 
         public UserInfo()
         {
 
         }
 
-        public UserInfo( string clientName , int clientID , string? clientEmail = null , string? clientGender = null , string? clientStatus = null , string? clientPhotoUrl = null )
+        public UserInfo(string clientName, int clientID, string? clientEmail = null, string? clientGender = null, string? clientStatus = null, string? clientPhotoUrl = null)
         {
-            userID = clientID;
-            userName = clientName;
-            userEmail = clientEmail;
-            userGender = clientGender;
-            userStatus = clientStatus;
-            userPhotoUrl = clientPhotoUrl;
+            UserID = clientID;
+            UserName = clientName;
+            UserEmail = clientEmail;
+            UserPhotoUrl = clientPhotoUrl;
         }
 
-        public bool Equals( Userinfo client )
+        public bool Equals(UserInfo client)
         {
             if (client == null)
             {
                 return false;
             }
 
-            return userID.Equals( client.userID ) &&
-                   (
-                       ReferenceEquals( userName , client.userName ) ||
-                       userName != null &&
-                       userName.Equals( client.userName )
-                   );
+            return UserID.Equals(client.UserID) &&
+                   (ReferenceEquals(UserName, client.UserName) ||
+                    UserName != null && UserName.Equals(client.UserName));
         }
     }
-
-
 }
+

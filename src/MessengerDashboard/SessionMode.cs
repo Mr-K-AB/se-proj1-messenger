@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessengerDashboard.Server
+namespace MessengerDashboard
 {
-    /// <summary>
-    /// A server operation.
-    /// </summary>
-    public enum Operation
+    public enum SessionMode
     {
-        End,
+        Test,
+        Lab
     }
 }

@@ -17,10 +17,13 @@ using System.Threading;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using MessengerNetworking.Communicator;
+using MessengerNetworking.Factory;
+using MessengerNetworking.NotificationHandler;
 
 namespace MessengerScreenshare.Client
 {
-    public class ScreenshareClient : IScreenshareClient
+    public class ScreenshareClient : IScreenshareClient, INotificationHandler
     {
 
         // ScreenshareClient Object
@@ -28,7 +31,7 @@ namespace MessengerScreenshare.Client
 
         // Object of networking module through which
         // we will be communicating to the server
-        //private readonly ICommunicator _communicator;
+        private readonly ICommunicator _communicator;
 
         // Threads for sending images and the confirmation packet
         private Task? _sendImageTask, _sendConfirmationTask;
@@ -40,10 +43,22 @@ namespace MessengerScreenshare.Client
         // Name and Id of the current client user
         private string? _name;
         private string? _id;
-
+        private string _serverIP;
+        private int _serverPortNumber;
+        private bool _isExam;
+        private readonly string _myIP;
+        private readonly int _myPort;
         // Tokens added to be able to stop the thread execution
         private bool _confirmationCancellationToken;
         private readonly CancellationTokenSource? _imageCancellation;
+
+        public bool IsExam { get => _isExam;
+            set {
+                if(_isExam != value)
+                {
+                    _isExam = value;
+                }
+            } }
 
         /// <summary>
         /// Setting up the ScreenCapturer and ScreenProcessor Class
@@ -56,10 +71,11 @@ namespace MessengerScreenshare.Client
             _processor = new ScreenProcessor(_capturer);
             if (!isDebugging)
             {
-                //_communicator = Factory.GetCommunicator();
-                //_communicator.Subscribe(Utils.ModuleIdentifier, this, true);
+                _communicator = Factory.GetInstance();
+                _communicator.AddSubscriber(Utils.ModuleIdentifier, this);
+                _myPort = _communicator.ListenPort;
+                _myIP = _communicator.IpAddress;
             }
-
             Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped image processing", withTimeStamp: true));
         }
 
@@ -84,9 +100,16 @@ namespace MessengerScreenshare.Client
             Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null"));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null"));
 
-            //DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "");
-            //string serializedData = JsonSerializer.Serialize(dataPacket);
-            //_communicator.Send(serializedData, Utils.ModuleIdentifier, null);
+            DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "", _myPort, _myIP);
+            string serializedData = JsonSerializer.Serialize(dataPacket);
+            if (_isExam)
+            {
+                _communicator.SendMessage(_serverIP, _serverPortNumber, Utils.ModuleIdentifier, serializedData, 1);
+            }
+            else
+            {
+                _communicator.Broadcast(Utils.ModuleIdentifier, serializedData);
+            }
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent REGISTER packet to server", withTimeStamp: true));
 
             await SendConfirmationPacketAsync();
@@ -158,11 +181,18 @@ namespace MessengerScreenshare.Client
                     break;
                 }
 
-                DataPacket dataPacket = new(_id!, _name!, ClientDataHeader.Image.ToString(), serializedImg);
+                DataPacket dataPacket = new(_id!, _name!, ClientDataHeader.Image.ToString(), serializedImg, _myPort, _myIP);
                 string serializedData = JsonSerializer.Serialize(dataPacket);
 
                 Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} of size {serializedData.Length}", withTimeStamp: true));
-                //_communicator.Send(serializedData, Utils.ModuleIdentifier, null);
+                if (_isExam)
+                {
+                    _communicator.SendMessage(_serverIP, _serverPortNumber, Utils.ModuleIdentifier, serializedData, 1);
+                }
+                else
+                {
+                    _communicator.Broadcast(Utils.ModuleIdentifier, serializedData);
+                }
                 cnt++;
                 await Task.Delay(1); // Introduce a small delay for asynchronous behavior
             }
@@ -191,13 +221,19 @@ namespace MessengerScreenshare.Client
         {
             Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null", withTimeStamp: true));
-            //DataPacket deregisterPacket = new(_id, _name, ClientDataHeader.Deregister.ToString(), "");
-            //string serializedDeregisterPacket = JsonSerializer.Serialize(deregisterPacket);
+            DataPacket deregisterPacket = new(_id, _name, ClientDataHeader.Deregister.ToString(), "", _myPort, _myIP);
+            string serializedDeregisterPacket = JsonSerializer.Serialize(deregisterPacket);
 
             StopImageSending();
             StopConfirmationSendingAsync().Wait(); // Synchronously wait here for demonstration purposes
-
-            //_communicator.Send(serializedDeregisterPacket, Utils.ModuleIdentifier, null);
+            if (_isExam)
+            {
+                _communicator.SendMessage(_serverIP, _serverPortNumber, Utils.ModuleIdentifier, serializedDeregisterPacket, 1);
+            }
+            else
+            {
+                _communicator.Broadcast(Utils.ModuleIdentifier, serializedDeregisterPacket);
+            }
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
         }
 
@@ -259,14 +295,21 @@ namespace MessengerScreenshare.Client
             _confirmationCancellationToken = false;
             Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null", withTimeStamp: true));
-            DataPacket confirmationPacket = new(_id, _name, ClientDataHeader.Confirmation.ToString(), "");
+            DataPacket confirmationPacket = new(_id, _name, ClientDataHeader.Confirmation.ToString(), "", _myPort, _myIP);
             string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
 
             _sendConfirmationTask = Task.Run(async () =>
             {
                 while (!_confirmationCancellationToken)
                 {
-                    //_communicator.Send(serializedConfirmationPacket, Utils.ModuleIdentifier, null);
+                    if (_isExam)
+                    {
+                        _communicator.SendMessage(_serverIP, _serverPortNumber, Utils.ModuleIdentifier, serializedConfirmationPacket, 1);
+                    }
+                    else
+                    {
+                        _communicator.Broadcast(Utils.ModuleIdentifier, serializedConfirmationPacket);
+                    }
                     await Task.Delay(5000);
                 }
             });
@@ -280,19 +323,20 @@ namespace MessengerScreenshare.Client
         /// </summary>
         /// <param name="id">ID of the client</param>
         /// <param name="name">Name of the client</param>
-        public void SetUser(string id, string name)
+        public void SetUser(string id, string name, int serverPortNumber, string serverIP)
         {
             _id = id;
             _name = name;
+            _serverPortNumber = serverPortNumber;
+            _serverIP = serverIP;
             Trace.WriteLine(Utils.GetDebugMessage("Successfully set client name and id"));
         }
-
-        public void OnClientJoined(TcpClient socket)
+        public void OnClientJoined(string ipAddress, int port)
         {
             throw new NotImplementedException();
         }
 
-        public void OnClientLeft(string clientId)
+        public void OnClientLeft(string ipAddress, int port)
         {
             throw new NotImplementedException();
         }

@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
+    <Folder Include="NewFolder\" />
+||||||| 83f4887
+=======
     <None Remove="ScreenshareIcons\NextPageButton.png" />
     <None Remove="ScreenshareIcons\NoClient.gif" />
     <None Remove="ScreenshareIcons\NotSharedScreenBackground.webp" />
@@ -21,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+>>>>>>> 85f2d20db3a42c7c657ae28f3277d8c45ac73d8f
     <Folder Include="ViewModels\" />
     <None Remove="Images\bucket.png" />
     <None Remove="Images\clear.png" />
@@ -90,6 +95,15 @@
     <Resource Include="ScreenshareIcons\StartShare.png" />
     <Resource Include="ScreenshareIcons\StopShare.png" />
     <Resource Include="ScreenshareIcons\UnpinButton.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MessengerContent\MessengerContent.csproj" />
+    <ProjectReference Include="..\MessengerDashboard\MessengerDashboard.csproj" />
   </ItemGroup>
 
 </Project>

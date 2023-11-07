@@ -1,0 +1,542 @@
+﻿<UserControl x:Class="MessengerApp.ChatBubble"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
+             xmlns:local="clr-namespace:MessengerApp"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        
+        <!--Color Brushes used-->
+        <SolidColorBrush x:Key="ClearTextPaint" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="WindowBackGround" Color="Transparent" />
+        <SolidColorBrush x:Key="ReplyBoxPaint" Color="#071e1e" />
+        <SolidColorBrush x:Key="SentMsgPaint" Color="Teal" />
+        <SolidColorBrush x:Key="SentFilePaint" Color="#075e54" />
+        <SolidColorBrush x:Key="ReceiveMsgPaint" Color="DimGray" />
+        <SolidColorBrush x:Key="ReceiveFilePaint" Color="DarkSlateGray" />
+        <SolidColorBrush x:Key="TextBoxPaint" Color="#0f3d3e" />
+        <SolidColorBrush x:Key="ReplyTextPaint" Color="#596e5c" />
+
+        <!--Chat TextBox-->
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <!--The line which blinks when we are on the text box, to show where we are at, is the CaretBrush-->
+                    <Setter Property="CaretBrush">
+                        <Setter.Value>
+                            <SolidColorBrush Color="White" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+            </Style.Triggers>
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="8" />
+                </Style>
+            </Style.Resources>
+        </Style>
+
+        <!--Buttons-->
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Width" Value="90" />
+            <Setter Property="Margin" Value="10" />
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect ShadowDepth="0" Color="White" Opacity="10" BlurRadius="20" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--StarButton-->
+        <ControlTemplate x:Key="StarToggleButton" TargetType="{x:Type ToggleButton}">
+            <Canvas Width="12" Height="12" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
+                <Path
+            x:Name="ButtonPath"
+            Width="12"
+            Height="12"
+            Data="F1 M 17.416,32.25L 32.910,32.25L 38,18L 43.089,32.25L 58.583,32.25L 45.679,41.494L 51.458,56L 38,48.083L 26.125,56L 30.597,41.710L 17.416,32.25 Z "
+            Fill="Transparent"
+            Stroke="{DynamicResource ClearTextPaint}"
+            StrokeThickness="1"
+            Stretch="Fill" />
+            </Canvas>
+            <!--When the star button is checked, fill with yellow color, else white-->
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="true">
+                    <Setter TargetName="ButtonPath" Property="Fill" Value="Yellow" />
+                </Trigger>
+                <Trigger Property="IsChecked" Value="false">
+                    <Setter TargetName="ButtonPath" Property="Fill" Value="transparent" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <!--Template for the msg bubble sent by current user-->
+        <DataTemplate x:Key="MsgFromUserTemplate">
+            <Grid>
+                <Grid x:Name="ToBubble" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+                    <Grid Margin="0" Background="{DynamicResource SentMsgPaint}" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" HorizontalAlignment="Left">
+                            <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource SentMsgPaint}"
+                            BorderThickness="5" Background="{DynamicResource SentFilePaint}" Opacity="0.5">
+                                <TextBlock 
+                                   Foreground="{DynamicResource ClearTextPaint}" Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}"
+                                   TextWrapping="Wrap" Width="250" FontSize="14" Padding="8,5,8,5" FontStyle="Italic"/>
+                            </Border>
+                        </Grid>
+
+                        <Grid Grid.Row="1" HorizontalAlignment="Left">
+                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
+                           Width="250" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" FontWeight="Bold" />
+                        </Grid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <emoji:TextBlock Foreground="{DynamicResource ClearTextPaint}" Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}"
+                               x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
+                               Padding="8,5,8,5" Grid.Column="0" />
+
+                            <!--buttons-->
+                            <StackPanel Orientation="Horizontal" Grid.Column="1">
+                                <!--reply button-->
+                                <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                            Width="30" Height="20" Margin="0,0,0,0" Click="ReplyHandler" ToolTip="Reply">
+                                </Button>
+                                <!--undo reply-->
+                                <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                            Width="30" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
+                                </Button>
+                                <!--edit button-->
+                                <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                            Width="30" Height="20" Margin="0,0,0,0" Click="EditButtonClick" ToolTip="Edit">
+                                </Button>
+                                <!--delete button-->
+                                <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                            Width="30" Height="20" Margin="0,0,0,0" Click="DeleteHandler" ToolTip="Delete">
+                                </Button>
+                            </StackPanel>
+
+                        </Grid>
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <!--time and star button-->
+                            <TextBlock Opacity="0.8" Foreground="{DynamicResource ClearTextPaint}"
+                               Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+                               Grid.Row="0" Padding="8" Grid.Column="0" />
+                            <RadioButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                                 Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+                            <TextBlock Opacity="0.8" Foreground="{DynamicResource ClearTextPaint}" Text="Sent"
+                               x:Name="status" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                               Grid.Column="2" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Grid>
+
+                    <!--getting the triangle shape at the bottom for every bubble-->
+                    <Path Grid.Row="1" Data="M404,136 L404,149.5 L387.5,134.5 z"
+                  Fill="{DynamicResource SentMsgPaint}" HorizontalAlignment="Right" Height="20"
+                  Stretch="Fill" UseLayoutRounding="False" Width="20" Margin="0,-5,10,0" />
+
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+        <!--Template for the File message bubble sent by the current user-->
+        <DataTemplate x:Key="FileFromUserTemplate">
+            <Grid>
+                <Grid x:Name="ToBubble" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+                    <Grid Margin="0" Background="{DynamicResource SentMsgPaint}" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource SentMsgPaint}"
+                            BorderThickness="5" Background="{DynamicResource SentFilePaint}" Opacity="0.5">
+                                <TextBlock 
+                                   Foreground="{DynamicResource ClearTextPaint}" Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}"
+                                   TextWrapping="Wrap" Width="250" FontSize="14" Padding="8,5,8,5" FontStyle="Italic"/>
+                            </Border>
+                        </Grid>
+                        <Grid Grid.Row="1" HorizontalAlignment="Left">
+                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
+                           Width="250" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" FontWeight="Bold" />
+                        </Grid>
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource SentMsgPaint}"
+                            BorderThickness="5" Background="{DynamicResource SentFilePaint}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Source="Icons/file.png" Width="25" Height="25" />
+                                    <emoji:TextBlock Grid.Column="1" Foreground="{DynamicResource ClearTextPaint}"
+                                       Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
+                                       Width="150" FontSize="16" Padding="8,5,8,5" />
+                                    <!-- buttons-->
+                                    <StackPanel Grid.Column="2">
+                                        <!--download-->
+                                        <Button Background="Transparent" BorderBrush="Transparent"
+                                    HorizontalAlignment="Right" Width="40" Margin="0,0,0,0"
+                                    Click="DownloadHandler">
+                                        </Button>
+                                        <!--reply-->
+                                        <Button Background="Transparent" BorderBrush="Transparent" ToolTip="Reply"
+                            HorizontalAlignment="Right" Width="30" Margin="0,0,0,0" Click="ReplyHandler">
+                                        </Button>
+                                        <!--clear reply-->
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                            Width="30" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Opacity="0.8" Foreground="{DynamicResource ClearTextPaint}"
+                               Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+                               Grid.Row="0" Padding="8" Grid.Column="0" />
+                            <TextBlock Opacity="0.8" Foreground="{DynamicResource ClearTextPaint}" Text="Sent"
+                               x:Name="status" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                               Grid.Column="2" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Grid>
+                    <Path Grid.Row="1" Data="M404,136 L404,149.5 L387.5,134.5 z"
+                  Fill="{DynamicResource SentMsgPaint}" HorizontalAlignment="Right" Height="20"
+                  Stretch="Fill" UseLayoutRounding="False" Width="20" Margin="0,-5,10,0" />
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+        <!--Template for chat message received by the User-->
+        <DataTemplate x:Key="MsgToUserTemplate">
+            <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="20" />
+                </Grid.RowDefinitions>
+                <Path Grid.Row="1" Data="M404,136 L404,149.5 L387.5,134.5 z" Fill="{DynamicResource ReceiveMsgPaint}"
+              HorizontalAlignment="Left" Height="20" Stretch="Fill" UseLayoutRounding="False" Width="20"
+              Margin="10,-2,10,0" RenderTransformOrigin="0.5,0.5">
+                    <Path.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="-95" />
+                        </TransformGroup>
+                    </Path.RenderTransform>
+                </Path>
+                <Grid Margin="0" Background="{DynamicResource ReceiveMsgPaint}" Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource ReceiveMsgPaint}"
+                        BorderThickness="5" Background="{DynamicResource ReceiveFilePaint}" Opacity="0.5">
+                            <TextBlock  Foreground="{DynamicResource ReplyTextPaint}"
+                               Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Width="250" FontSize="14"
+                               Padding="8,5,8,5" />
+                        </Border>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <TextBlock Foreground="White" Text="{Binding Sender, UpdateSourceTrigger=PropertyChanged}" x:Name="SenderName" TextWrapping="Wrap"
+                           Width="250" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" />
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <emoji:TextBlock Foreground="{DynamicResource ClearTextPaint}" Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}"
+                           x:Name="MainText" TextWrapping="Wrap" Grid.Row="0" Width="250" FontSize="16"
+                           Padding="8,5,8,5" Grid.Column="0"/>
+                        <!--Buttons-->
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <!--Reply Button-->
+                            <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                            Width="30" Height="20" Margin="0,0,0,0" Click="ReplyHandler" ToolTip="Reply">
+                            </Button>
+                            <!--Clear Button-->
+                            <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                            Width="30" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <!--time-->
+                        <TextBlock Opacity="0.8" Foreground="{DynamicResource ClearTextPaint}" Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}"
+                           x:Name="timeText" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                           Grid.Column="0" />
+                        <!--star button-->
+                        <RadioButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                             Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+        <!--Template for file msg received-->
+        <DataTemplate x:Key="FileToUserTemplate">
+            <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="20" />
+                </Grid.RowDefinitions>
+
+                <Path Grid.Row="1" Data="M404,136 L404,149.5 L387.5,134.5 z" Fill="{DynamicResource ReceiveMsgPaint}"
+              HorizontalAlignment="Left" Height="20" Stretch="Fill" UseLayoutRounding="False" Width="20"
+              Margin="10,-2,10,0" RenderTransformOrigin="0.5,0.5">
+                    <Path.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="-95" />
+                        </TransformGroup>
+                    </Path.RenderTransform>
+                </Path>
+                <Grid Margin="0" Background="{DynamicResource ReceiveMsgPaint}" Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource ReceiveMsgPaint}"
+                        BorderThickness="5" Background="{DynamicResource ReceiveFilePaint}" Opacity="0.5">
+                            <TextBlock  Foreground="{DynamicResource ReplyTextPaint}"
+                               Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Width="250" FontSize="14"
+                               Padding="8,5,8,5" />
+                        </Border>
+                    </Grid>
+                    <Grid Grid.Row="1" >
+                        <emoji:TextBlock Foreground="White" Text="{Binding Sender, UpdateSourceTrigger=PropertyChanged}" x:Name="SenderName" TextWrapping="Wrap"
+                           Width="250" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" />
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource ReceiveMsgPaint}"
+                        BorderThickness="5" Background="{DynamicResource ReceiveFilePaint}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Image Grid.Column="0" Source="Icons/file.png" Width="25" Height="25" />
+                                <emoji:TextBlock Grid.Column="1" Foreground="{DynamicResource ReplyTextPaint}"
+                                   Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
+                                   Width="150" FontSize="16" Padding="8,5,8,5" />
+                                <!--buttons-->
+                                <StackPanel Grid.Column="2">
+                                    <!--download button-->
+                                    <Button Background="Transparent" BorderBrush="Transparent"
+                                    HorizontalAlignment="Right" Width="40" Margin="0,0,0,0"
+                                    Click="DownloadHandler">
+                                    </Button>
+                                    <!--reply button-->
+                                    <Button Background="Transparent" BorderBrush="Transparent" ToolTip="Reply"
+                                        HorizontalAlignment="Right" Width="30" Margin="0,0,0,0" Click="ReplyHandler">
+                                    </Button>
+                                    <!--clear button-->
+                                    <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                        Width="30" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <!--time-->
+                        <TextBlock Opacity="0.8" Foreground="{DynamicResource ClearTextPaint}" Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}"
+                           x:Name="timeText" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                           Grid.Column="0" />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="temp">
+            <Border BorderThickness="2" BorderBrush="Black">
+                <TextBox Text="SentChatMessageTemplate" />
+            </Border>
+        </DataTemplate>
+
+        <!--Setting up the templates for constructing chat bubbles-->
+        <!--Note: Since, all the messages are not available in _msgCollection currently, This Template Selector can't run-->
+        <local:ChatBubbleConstructor x:Key="TemplateSelector" SentChatMessageTemplate="{StaticResource temp}"
+                          SentFileMessageTemplate="{StaticResource temp}"
+                          ReceivedChatMessageTemplate="{StaticResource temp}"
+                          ReceivedFileMessageTemplate="{StaticResource temp}" />
+        </UserControl.Resources>
+
+
+        <!--Grid layout for chat window-->
+        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+            <Grid >
+                <Border CornerRadius="10" Background="{DynamicResource WindowBackGround}">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" Opacity="0.2" />
+                    </Border.Effect>
+                </Border>
+                <StackPanel>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="6*"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+
+                        <!--ListBox, for the Chat History-->
+                        <Border BorderBrush="Black" BorderThickness="2" Margin="5,5,5,5" CornerRadius="10">
+
+                        <Grid Grid.Row="0" Margin="5,5,5,0" Grid.ColumnSpan="2">
+                            <TextBox Text="This is for Received Messages!" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <!--Using Dynamic Template Selector, dynamically changes the template based on the Message received by the current User or the other user -->
+                                <ListBox Background="{DynamicResource WindowBackGround}" HorizontalAlignment="Stretch"
+                     BorderBrush="{DynamicResource WindowBackGround}" VerticalAlignment="Stretch"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="MainChat" ScrollViewer.CanContentScroll="False"
+                     ItemTemplateSelector="{StaticResource TemplateSelector}" MinHeight="350" MaxHeight="450">
+                                    <!--Items style-->
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                        <Border Background="{TemplateBinding Background}">
+                                                            <ContentPresenter
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch" ClipToBounds="True" SnapsToDevicePixels="True" />
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+
+                                </ListBox>
+
+                            </Grid>
+
+                        </Border>
+
+                        <!--TextBox, for the current message to be sent-->
+                        <Grid Grid.Row="1" Height="70"  VerticalAlignment="Bottom" Margin="0,0,0,10" Grid.ColumnSpan="2" RenderOptions.EdgeMode="Aliased">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="6*" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" CornerRadius="8" Background="{DynamicResource TextBoxPaint}"
+                    BorderBrush="{DynamicResource TextBoxPaint}" BorderThickness="2" Margin="7,0,0,0">
+                                <Grid VerticalAlignment="Bottom">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid Grid.Row="0">
+                                            <Border CornerRadius="8" BorderBrush="{DynamicResource TextBoxPaint}"
+                                    BorderThickness="1" Background="{DynamicResource ReplyBoxPaint}"
+                                    Opacity="0.5">
+                                                <!--Reply text block-->
+                                                <TextBlock Name="ReplyTextBox" 
+                                           Foreground="{DynamicResource ClearTextPaint}" Background="{DynamicResource TextBoxPaint}"
+                                           Width="425" MaxHeight="40" FontSize="16" Padding="8,5,8,5" />
+                                            </Border>
+                                        </Grid>
+                                        <!--message text box-->
+                                        <TextBox Grid.Row="1" Name="SendTextBox" Foreground="White" SpellCheck.IsEnabled="True" Background="Transparent"
+                                 BorderThickness="0" Height="30" FontSize="15" VerticalAlignment="Bottom" CaretBrush="White" TextWrapping="Wrap" AcceptsReturn="True" />
+                                    </Grid>
+                                </Grid>
+                            </Border>
+
+                            <!--Upload File Button-->
+                            <Border Grid.Column="1" CornerRadius="10" Background="White"
+                    BorderBrush="Black" BorderThickness="2" Height="30" Width="70 "
+                    Margin="0,0,0,0" VerticalAlignment="Top">
+                                <Button Background="Transparent" HorizontalAlignment="Center" Width="70" Margin="3,3,3,3"
+                            Click="UploadHandler" VerticalAlignment="Center" ToolTip="Upload">
+                                    upload
+                                </Button>
+                            </Border>
+
+                            <!--Send Message Button-->
+                            <Border Grid.Column="1" CornerRadius="10" Background="White"
+                    BorderBrush="Black" BorderThickness="2" Height="30" Width="70"
+                    Margin="0,0,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                <Button  Background="Transparent" Width="70" Margin="3,3,3,3"
+                        Click="SendHandler" ToolTip="Send" HorizontalAlignment="Center" Height="24" VerticalAlignment="Top">
+                                    send
+                                </Button>
+                            </Border>
+
+                        </Grid>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+</UserControl>

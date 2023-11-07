@@ -20,7 +20,7 @@ using System.Xml.Linq;
 
 namespace MessengerScreenshare.Client
 {
-    public class ScreenshareClient
+    public class ScreenshareClient : IScreenshareClient
     {
 
         // ScreenshareClient Object
@@ -50,7 +50,7 @@ namespace MessengerScreenshare.Client
         /// Taking instance of communicator from communicator factory
         /// and subscribing to it.
         /// </summary>
-        private ScreenshareClient(bool isDebugging)
+        public ScreenshareClient(bool isDebugging)
         {
             _capturer = new ScreenCapturer();
             _processor = new ScreenProcessor(_capturer);

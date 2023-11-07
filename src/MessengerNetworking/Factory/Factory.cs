@@ -15,11 +15,12 @@ namespace MessengerNetworking.Factory
         // private static object _instanceLock = new object();
 
         public static UdpCommunicator s_communicator = new(); 
-
         
+
         // private Factory() { }
 
         // private static Factory _instance;
+
 
         /// <summary>
         /// public method which can be accessed by other modules
@@ -30,6 +31,7 @@ namespace MessengerNetworking.Factory
         
         public static ICommunicator GetInstance()
         {
+
             return s_communicator;
         }
     }

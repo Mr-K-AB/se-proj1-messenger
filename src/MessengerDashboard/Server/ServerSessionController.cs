@@ -34,6 +34,7 @@ namespace MessengerDashboard.Server
         public ServerSessionController(ICommunicator communicator)
         {
             _communicator = communicator;
+            _communicator.AddSubscriber(_moduleIdentifier, this);
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
         }
         
@@ -51,12 +52,13 @@ namespace MessengerDashboard.Server
         private readonly ISentimentAnalyzer _sentimentAnalyzer = SentimentAnalyzerFactory.GetSentimentAnalyzer();
         private readonly Serializer _serializer = new();
         private int _clientCount = 0;
-        public SessionInfo _sessionInfo;
+        public SessionInfo _sessionInfo = new SessionInfo();
         private readonly SessionMode _sessionMode;
         private TextSummary? _chatSummary;
         public event EventHandler<SessionUpdatedEventArgs> SessionUpdated;
         private readonly string _moduleIdentifier = "Dashboard";
         public SessionAnalytics _sessionAnalytics;
+        
 
         /// <summary>
         /// Safely ends the meeting.

@@ -55,6 +55,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MessengerDashboard\MessengerDashboard.csproj" />
     <ProjectReference Include="..\MessengerScreenshare\MessengerScreenshare.csproj" />
     <ProjectReference Include="..\MessengerWhiteboard\MessengerWhiteboard.csproj" />
   </ItemGroup>
@@ -77,6 +78,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="LiveCharts.Wpf.Core" Version="0.9.8" />
   </ItemGroup>
 
   <ItemGroup>
@@ -90,6 +92,15 @@
     <Resource Include="ScreenshareIcons\StartShare.png" />
     <Resource Include="ScreenshareIcons\StopShare.png" />
     <Resource Include="ScreenshareIcons\UnpinButton.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MessengerContent\MessengerContent.csproj" />
+    <ProjectReference Include="..\MessengerDashboard\MessengerDashboard.csproj" />
   </ItemGroup>
 
 </Project>

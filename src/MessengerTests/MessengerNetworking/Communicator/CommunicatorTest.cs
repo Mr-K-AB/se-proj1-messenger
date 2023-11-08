@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using MessengerNetworking.NotificationHandler;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 namespace MessengerTests.MessengerNetworkingTest
 {
@@ -91,6 +92,16 @@ namespace MessengerTests.MessengerNetworkingTest
             string testMessage = "Hello World!";
             messenger.OnDataReceived(testMessage);
             Assert.AreEqual(message, testMessage);
+        }
+
+        [TestMethod]
+        public void TestGetIPAddress()
+        {
+            UdpCommunicator communicator = new();
+            string ipAddress = "10.32.4.116";
+            string communicatorIPAddress = communicator.IpAddress;
+            Debug.WriteLine("Communicator IP Address" + communicatorIPAddress);
+            Assert.IsTrue(communicatorIPAddress == ipAddress);
         }
         /*
 

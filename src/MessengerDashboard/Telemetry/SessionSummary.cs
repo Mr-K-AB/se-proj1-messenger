@@ -4,11 +4,9 @@ namespace MessengerDashboard.Telemetry
 {
     public class SessionSummary
     {
-            public int chatCount;
-
-            public int score;
-
-            public int userCount;
+        public int ChatCount { get; set; }
+        public int Score { get; set; }
+        public int UserCount { get; set; }
     }
 }
 

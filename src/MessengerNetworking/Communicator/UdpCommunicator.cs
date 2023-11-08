@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -42,6 +43,7 @@ namespace MessengerNetworking.Communicator
 
             // Create and start the thread that listens for messages.
             ListenPort = listenPort;
+            IpAddress = getIPAddress();
             _highPriorityQueue = new Queue<_queueContents>();
             _lowPriorityQueue = new Queue<_queueContents>();
             _listener = new(ListenPort);
@@ -64,6 +66,7 @@ namespace MessengerNetworking.Communicator
 
             // Create and start the thread that listens for messages.
             ListenPort = listenPort;
+            IpAddress = getIPAddress();
             _highPriorityQueue = new Queue<_queueContents>();
             _lowPriorityQueue = new Queue<_queueContents>();
             _listener = new(ListenPort);
@@ -81,6 +84,23 @@ namespace MessengerNetworking.Communicator
 
         /// <inheritdoc />
         public int ListenPort { get; private set; }
+
+        public string IpAddress { get; private set; }
+
+
+        private string getIPAddress()
+        {
+            string hostName = Dns.GetHostName();
+            IPHostEntry hostEntry = Dns.GetHostEntry(hostName);
+            foreach (IPAddress address in hostEntry.AddressList)
+            {
+                if (address.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return address.ToString();
+                }
+            }
+            return "127.0.0.1";
+        }
 
         /// <inheritdoc />
         public void AddSubscriber(string id, INotificationHandler subscriber)

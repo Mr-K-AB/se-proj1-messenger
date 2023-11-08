@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MessengerApp
+namespace MessengerApp.Views
 {
     /// <summary>
     /// Interaction logic for MeetingView.xaml

@@ -10,8 +10,8 @@
     <Grid>
         <!-- Navigation Bar -->
         <Menu>
-            <MenuItem Header="Meeting"/>
-            <MenuItem Header="Old Sessions"/>
+            <MenuItem Header="Meeting" Click="Meeting_Click"/>
+            <MenuItem Header="Old Sessions" Click="Session_Click"/>
             
         </Menu>
 
@@ -21,7 +21,7 @@
 Source="{Binding UserImage}"/>
 
         <!-- Content Control for Dynamic Content -->
-        <ContentControl x:Name="MainContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <ContentControl x:Name="MainContent" Margin="0,21,0,0"/>
 
     </Grid>
     <!---MainFrame.Navigate( new HomeView() ); -->

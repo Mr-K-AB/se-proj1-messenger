@@ -25,6 +25,15 @@ namespace MessengerApp.Views
             InitializeComponent();
         }
 
+        private void Meeting_Click(object sender, RoutedEventArgs e)
+        {
+            MeetingView meetingView = new();
+            MainContent.Content = meetingView;
+        }
 
+        private void Session_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

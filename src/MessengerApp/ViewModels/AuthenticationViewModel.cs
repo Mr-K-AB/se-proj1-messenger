@@ -23,7 +23,7 @@ namespace MessengerApp.ViewModels
         public async Task AuthenticateButton_Click(CancellationToken token)
         {
             IsButtonEnabled = false;
-            await Task.Delay(3000);
+            //await Task.Delay(3000);
             IsButtonEnabled = true;
 
             AuthenticationResult authResult = await Authenticator.Authenticate();

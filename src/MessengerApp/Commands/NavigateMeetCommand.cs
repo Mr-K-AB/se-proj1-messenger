@@ -19,7 +19,7 @@ namespace MessengerApp.Commands
         }
         public override async void Execute(object parameter)
         {
-            _navigationStore.CurrentViewModel = new HomeViewModel(_navigationStore);
+            _navigationStore.CurrentViewModel = new MeetViewModel(_navigationStore);
         }
     }
 }

@@ -21,10 +21,10 @@ namespace MessengerApp.Views
     /// </summary>
     public partial class AuthenticationView : Window
     {
-        AuthenticationViewModel authViewModel = new();
+        readonly AuthenticationViewModel _authViewModel = new();
         public AuthenticationView()
         {
-            DataContext = authViewModel;
+            DataContext = _authViewModel;
             InitializeComponent();
         }
     }

@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="MessengerApp.MeetingView"
+﻿<UserControl x:Class="MessengerApp.Views.MeetingView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MessengerApp"
+             xmlns:local="clr-namespace:MessengerApp.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -12,7 +12,7 @@
                 <Grid Background="#FFE5E5E5">
                     <TextBox HorizontalAlignment="Center" Margin="0,-100,0,0" TextWrapping="Wrap" Text="Enter meeting IP" VerticalAlignment="Center" Width="150"/>
                     <TextBox HorizontalAlignment="Center" TextWrapping="Wrap" Text="Meeting Port" VerticalAlignment="Center" Margin="0,-30,0,0" Width="150"/>
-                    <Button Content="Start Meeting" HorizontalAlignment="Center" Margin="0,30,0,0" VerticalAlignment="Center" Width="Auto"/>
+                    <Button Content="Start Meeting" Command="{Binding NavigateMeetCommand}" HorizontalAlignment="Center" Margin="0,30,0,0" VerticalAlignment="Center" Width="Auto"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Join meeting">

@@ -7,7 +7,22 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="352,0,0,0" TextWrapping="Wrap" Text="MeetingView" VerticalAlignment="Center"/>
+        <TabControl TabStripPlacement="Left">
+            <TabItem Header="Start meeting" IsSelected="True">
+                <Grid Background="#FFE5E5E5">
+                    <TextBox HorizontalAlignment="Center" Margin="0,-100,0,0" TextWrapping="Wrap" Text="Enter meeting IP" VerticalAlignment="Center" Width="150"/>
+                    <TextBox HorizontalAlignment="Center" TextWrapping="Wrap" Text="Meeting Port" VerticalAlignment="Center" Margin="0,-30,0,0" Width="150"/>
+                    <Button Content="Start Meeting" HorizontalAlignment="Center" Margin="0,30,0,0" VerticalAlignment="Center" Width="Auto"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Join meeting">
+                <Grid Background="#FFE5E5E5">
+                    <TextBox HorizontalAlignment="Center" Margin="0,-100,0,0" TextWrapping="Wrap" Text="Enter meeting IP" VerticalAlignment="Center" Width="150"/>
+                    <TextBox HorizontalAlignment="Center" TextWrapping="Wrap" Text="Meeting Port" VerticalAlignment="Center" Margin="0,-30,0,0" Width="150"/>
+                    <Button Content="Join Meeting" HorizontalAlignment="Center" Margin="0,30,0,0" VerticalAlignment="Center" Width="Auto"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
 
     </Grid>
 </UserControl>

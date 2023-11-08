@@ -20,6 +20,7 @@ namespace MessengerWhiteboard
         public Rect boundary { get; set; }
         public Guid Id { get; set; }
         public List<Point> points { get; set; }
+        public string TextString { get; set; }
         //public ShapeItem(string shapeType, Geometry geometry, Rect bb, Color c, double strokeThickness, int zIndex)
         //{
         //    ShapeType = shapeType;
@@ -61,42 +62,16 @@ namespace MessengerWhiteboard
 
         public void MoveShape(Point a, Point b)
         {
-            //Debug.WriteLine(ShapeType);
-            if (ShapeType == "Rectangle")
+            Rect boundingBox = new(a, b);
+            double dX = boundingBox.X - boundary.X;
+            double dY = boundingBox.Y - boundary.Y;
+            if(Geometry.Transform is TranslateTransform)
             {
-                Rect boundingBox = new(a, b);
-                Geometry.SetValue(RectangleGeometry.RectProperty, boundingBox);
-                //Geometry geometry = new RectangleGeometry(boundingBox);
-                boundary = boundingBox;
+                dX = (Geometry.Transform as TranslateTransform).X + boundingBox.X - boundary.X;
+                dY = (Geometry.Transform as TranslateTransform).Y + boundingBox.Y - boundary.Y;
             }
-            else if(ShapeType == "Ellipse")
-            {
-                Rect boundingBox = new(a, b);
-                double dX = boundingBox.X - boundary.X;
-                double dY = boundingBox.Y - boundary.Y;
-                Point newC = new((Geometry as EllipseGeometry).Center.X + dX, (Geometry as EllipseGeometry).Center.Y + dY);
-                Geometry.SetValue(EllipseGeometry.CenterProperty, newC);
-                //Geometry geometry = new EllipseGeometry(boundingBox);
-                boundary = boundingBox;
-                //Geometry = geometry;
-            }
-            else if(ShapeType == "Curve")
-            {
-                Rect boundingBox = new(a, b);
-                double dX = boundingBox.X - boundary.X;
-                double dY = boundingBox.Y - boundary.Y;
-                //Debug.WriteLine(Geometry.Transform);
-                if(Geometry.Transform is TranslateTransform)
-                {
-                    dX = (Geometry.Transform as TranslateTransform).X + boundingBox.X - boundary.X;
-                    dY = (Geometry.Transform as TranslateTransform).Y + boundingBox.Y - boundary.Y;
-                }
-                //Geometry.SetValue(PathGeometry.)
-                Geometry.Transform = new TranslateTransform(dX, dY);
-                //Geometry geometry = new EllipseGeometry(boundingBox);
-                boundary = boundingBox;
-                //Geometry = geometry;
-            }
+            Geometry.Transform = new TranslateTransform(dX, dY);
+            boundary = boundingBox;
         }
         public override string ToString()
         {

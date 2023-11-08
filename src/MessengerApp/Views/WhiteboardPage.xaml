@@ -199,23 +199,23 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Grid Grid.Row="0" Grid.Column="0">
-                                            <Button Background="White"  Height="15" Width="15" Margin="5" Name="White" ToolTip="White" />
+                                            <Button Background="White"  Height="15" Width="15" Margin="5" Name="White" ToolTip="White" Click="ChangeStrokeColor"/>
                                         </Grid>
                                         <Grid Grid.Row="0" Grid.Column="1">
-                                            <Button Background="Black" Height="15" Width="15" Margin="5" Name="Black" ToolTip="Black" Click="ColorBlack"/>
+                                            <Button Background="Black" Height="15" Width="15" Margin="5" Name="Black" ToolTip="Black" Click="ChangeStrokeColor"/>
                                         </Grid>
                                         <Grid Grid.Row="0" Grid.Column="2">
-                                            <Button Background="Red" Height="15" Width="15" Margin="5" Name="Red" ToolTip="Red" Click="ColorRed"/>
+                                            <Button Background="Red" Height="15" Width="15" Margin="5" Name="Red" ToolTip="Red" Click="ChangeStrokeColor"/>
                                         </Grid>
 
                                         <Grid Grid.Row="1" Grid.Column="0">
-                                            <Button Background="Green" Height="15" Width="15" Margin="5" Name="Green" ToolTip="Green" Click="ColorGreen"/>
+                                            <Button Background="Green" Height="15" Width="15" Margin="5" Name="Green" ToolTip="Green" Click="ChangeStrokeColor"/>
                                         </Grid>
                                         <Grid Grid.Row="1" Grid.Column="1">
-                                            <Button Background="Yellow" Height="15" Width="15" Margin="5" Name="Yellow" ToolTip="Yellow" Click="ColorYellow"/>
+                                            <Button Background="Yellow" Height="15" Width="15" Margin="5" Name="Yellow" ToolTip="Yellow" Click="ChangeStrokeColor"/>
                                         </Grid>
                                         <Grid Grid.Row="1" Grid.Column="2">
-                                            <Button Background="Blue" Height="15" Width="15" Margin="5" Name="Blue" ToolTip="Blue" Click="ColorBlue"/>
+                                            <Button Background="Blue" Height="15" Width="15" Margin="5" Name="Blue" ToolTip="Blue" Click="ChangeStrokeColor"/>
                                         </Grid>
 
                                     </Grid>
@@ -279,7 +279,7 @@
                                 <Image Source="../Images/pen.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
-                            <Button Name="Eraser" ToolTip="Eraser" Style="{StaticResource ButtonStyle}">
+                            <Button Name="Eraser" ToolTip="Eraser" Style="{StaticResource ButtonStyle}" Click="DeleteMode">
                                 <Image Source="../Images/eraser.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
@@ -303,23 +303,23 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Grid Grid.Row="0" Grid.Column="0">
-                                            <Button Background="White"  Height="15" Width="15" Margin="5" Name="FillWhite" ToolTip="White"/>
+                                            <Button Background="Transparent"  Height="15" Width="15" Margin="5" Name="FillTransparent" ToolTip="Transparent" Click="ChangeFillColor"/>
                                         </Grid>
                                         <Grid Grid.Row="0" Grid.Column="1">
-                                            <Button Background="Black" Height="15" Width="15" Margin="5" Name="FillBlack" ToolTip="Black"/>
+                                            <Button Background="Black" Height="15" Width="15" Margin="5" Name="FillBlack" ToolTip="Black" Click="ChangeFillColor"/>
                                         </Grid>
                                         <Grid Grid.Row="1" Grid.Column="0">
-                                            <Button Background="Red" Height="15" Width="15" Margin="5" Name="FillRed" ToolTip="Red"/>
+                                            <Button Background="Red" Height="15" Width="15" Margin="5" Name="FillRed" ToolTip="Red" Click="ChangeFillColor"/>
                                         </Grid>
 
                                         <Grid Grid.Row="1" Grid.Column="1">
-                                            <Button Background="Green" Height="15" Width="15" Margin="5" Name="FillGreen" ToolTip="Green"/>
+                                            <Button Background="Green" Height="15" Width="15" Margin="5" Name="FillGreen" ToolTip="Green" Click="ChangeFillColor"/>
                                         </Grid>
                                         <Grid Grid.Row="2" Grid.Column="0">
-                                            <Button Background="Yellow" Height="15" Width="15" Margin="5" Name="FillYellow" ToolTip="Yellow"/>
+                                            <Button Background="Yellow" Height="15" Width="15" Margin="5" Name="FillYellow" ToolTip="Yellow" Click="ChangeFillColor"/>
                                         </Grid>
                                         <Grid Grid.Row="2" Grid.Column="1">
-                                            <Button Background="Blue" Height="15" Width="15" Margin="5" Name="FillBlue" ToolTip="Blue"/>
+                                            <Button Background="Blue" Height="15" Width="15" Margin="5" Name="FillBlue" ToolTip="Blue" Click="ChangeFillColor"/>
                                         </Grid>
 
                                     </Grid>
@@ -350,12 +350,12 @@
                                         </Grid>
                                         <Grid Grid.Row="1">
 
-                                            <Button Name="Rectangle" ToolTip="Rectangle" Style="{StaticResource ButtonStyle}">
+                                            <Button Name="Rectangle" ToolTip="Rectangle" Style="{StaticResource ButtonStyle}" Click="RectangleMode">
                                                 <Image Source="../Images/rectangle.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="2">
-                                            <Button Name="Ellipse" ToolTip="Ellipse" Style="{StaticResource ButtonStyle}">
+                                            <Button Name="Ellipse" ToolTip="Ellipse" Style="{StaticResource ButtonStyle}" Click="EllipseMode">
                                                 <Image Source="../Images/ellipse.png" Style="{StaticResource ImageStyle}" />
 
                                             </Button>
@@ -385,8 +385,8 @@
 
                                         <Grid Grid.Row="0">
 
-                                            <Button Name="Text" ToolTip="Text" Style="{StaticResource ButtonStyle}">
-
+                                            <Button Name="Text" ToolTip="Text" Style="{StaticResource ButtonStyle}" Click="TextMode">
+                                                <Image Source="/Images/text.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
                                         <Grid Grid.Row="1">
@@ -439,7 +439,7 @@
                                   Data="{Binding Geometry}"
                                   Fill="{Binding Fill}"
 						          Stroke="{Binding Stroke}"
-                                  StrokeThickness="{Binding StrokeThickness}"
+                                  StrokeThickness="{Binding StrokeThickness}" ClipToBounds="True"
                                   />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

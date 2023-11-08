@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 
@@ -6,7 +7,7 @@ namespace MessengerWhiteboard
 {
     public partial class ViewModel
     {
-        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, float strokeThickness)
+        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, float strokeThickness, string textData = "Text")
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;
@@ -23,9 +24,23 @@ namespace MessengerWhiteboard
             {
                 geometry = new PathGeometry();
             }
-            else
+            else if(shapeType == "Line")
             {
                 geometry = new LineGeometry(start, end);
+            }
+            else
+            {
+                FormattedText formattedText = new(
+                    textData,
+                    CultureInfo.GetCultureInfo("en-us"),
+                    FlowDirection.LeftToRight,
+                    new Typeface("Verdana"),
+                    16,
+                    strokeBrush,
+                    1.0
+                    );
+
+                geometry = formattedText.BuildGeometry(start);
             }
             //Debug.WriteLine(geometry);
             ShapeItem newShape = new()
@@ -38,7 +53,8 @@ namespace MessengerWhiteboard
                 Fill = fillBrush,
                 Stroke = borderBrush,
                 Id = Guid.NewGuid(),
-                points = new List<Point>{start}
+                points = new List<Point>{start},
+                TextString = textData
             };
 
             return newShape;
@@ -62,7 +78,6 @@ namespace MessengerWhiteboard
                     _tempShape = shape;
                 }
             }
-
         }
 
         public void BuildShape(Point a)
@@ -84,6 +99,15 @@ namespace MessengerWhiteboard
                     }
 
                 }
+                else if(activeTool == "Delete")
+                {
+                    if(_tempShape != null)
+                    {
+                        machine.OnShapeReceived(_tempShape, Operation.Deletion);
+                        ShapeItems.Remove(_tempShape);
+                        _tempShape = null;
+                    }
+                }
                 else
                 {
                     _tempShape.EditShape(_tempShape.boundary.TopLeft, a);
@@ -101,6 +125,7 @@ namespace MessengerWhiteboard
                 //tempShape.EditShape(tempShape.boundary.TopLeft, a);
                 //ShapeItems[ShapeItems.Count - 1] = tempShape;
             }
+            _tempShape = null;
         }
 
 

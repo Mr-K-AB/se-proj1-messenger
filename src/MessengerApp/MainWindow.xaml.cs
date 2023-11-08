@@ -12,10 +12,6 @@ namespace MessengerApp
         public MainWindow()
         {
             InitializeComponent();
-
-            WhiteboardPage whiteboardPage = new();
-            Content = whiteboardPage;
-
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using MessengerDashboard;
 
 namespace MessengerApp.ViewModels
 {
@@ -25,9 +26,14 @@ namespace MessengerApp.ViewModels
             await Task.Delay(3000);
             IsButtonEnabled = true;
 
+            AuthenticationResult authResult = await Authenticator.Authenticate();
 
-            NavigationStore navigationStore = new();
+            NavigationStore navigationStore = new()
+            {
+                AuthResult = authResult
+            };
             navigationStore.CurrentViewModel = new HomeViewModel(navigationStore);
+            
             var newWindow = new MainWindow
             {
                 DataContext = new MainViewModel(navigationStore)

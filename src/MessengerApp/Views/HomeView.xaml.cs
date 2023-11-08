@@ -13,30 +13,18 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MessengerApp
+namespace MessengerApp.Views
 {
     /// <summary>
     /// Interaction logic for HomeView.xaml
     /// </summary>
-    public partial class HomeView : Page
+    public partial class HomeView : UserControl
     {
         public HomeView()
         {
             InitializeComponent();
         }
-        private void MeetingMenuItem_Click( object sender , RoutedEventArgs e )
-        {
-            // Create an instance of the MeetingView or load the content you want to display for meetings.
-            MeetingView meetingView = new MeetingView();
-            MainContent.Content = meetingView;
-        }
 
-        private void OldSessionsMenuItem_Click( object sender , RoutedEventArgs e )
-        {
-            // Create an instance of the OldSessionsView or load the content for old sessions.
-            OldSessionsView oldSessionsView = new OldSessionsView();
-            MainContent.Content = oldSessionsView;
-        }
 
     }
 }

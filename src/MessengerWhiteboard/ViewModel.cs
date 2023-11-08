@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Windows.Media;
 
 namespace MessengerWhiteboard
@@ -7,7 +8,7 @@ namespace MessengerWhiteboard
     public partial class ViewModel : INotifyPropertyChanged
     {
         public BindingList<ShapeItem> ShapeItems { get; set; }
-        ShapeItem? _tempShape;
+        public ShapeItem? _tempShape;
 
         private string _userID = "tempUser";
 
@@ -115,17 +116,17 @@ namespace MessengerWhiteboard
             //this.UpdateStrokeWidth();
         }
 
-        //public void ChangeBorderBrush(string bcolour)
-        //{
-        //    this.borderBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(bcolour));
-        //    Trace.WriteLine("Whiteboard View Model :: border colour changed to : " + bcolour);
-        //    this.UpdateBorderBrush();
-        //}
-
-        public void ChangeFillBrush(Brush color)
+        public void ChangeStrokeBrush(string bcolour)
         {
-            fillBrush = color;
-            Trace.WriteLine("Whiteboard View Model :: fill colour changed to : " + color);
+            strokeBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(bcolour));
+            Trace.WriteLine("Whiteboard View Model :: border colour changed to : " + bcolour);
+            //this.UpdateBorderBrush();
+        }
+
+        public void ChangeFillBrush(string fcolour)
+        {
+            fillBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(fcolour)); ;
+            Trace.WriteLine("Whiteboard View Model :: fill colour changed to : " + fcolour);
             //this.UpdateFillBrush();
         }
 
@@ -141,7 +142,7 @@ namespace MessengerWhiteboard
 
         //public void UpdateBorderBrush(string bcolour)
         //{
-        //    for(int i = 0; i < selectedShapes.Count(); i++)
+        //    for (int i = 0; i < selectedShapes.Count(); i++)
         //    {
         //        ShapeItem newShape = this.selectedShapes[i].DeepClone();
         //        newShape.Stroke = this.borderBrush;

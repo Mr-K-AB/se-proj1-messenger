@@ -19,12 +19,12 @@ namespace MessengerWhiteboard
             throw new NotImplementedException();
         }
 
-        public void OnClientJoined(TcpClient socket)
+        public void OnClientJoined(string ipAddr, int port)
         {
             throw new NotImplementedException();
         }
 
-        public void OnClientLeft(string clientId)
+        public void OnClientLeft(string ipAddr, int port)
         {
             throw new NotImplementedException();
         }

@@ -68,6 +68,25 @@ namespace MessengerApp
                     _viewModel.SelectShape(element.GetValue(UidProperty).ToString());
                 }
             }
+            else if(_viewModel.currentMode == ViewModel.WBModes.DeleteMode)
+            {
+                if (sender is not Canvas canvas)
+                {
+                    return;
+                }
+                _viewModel.lastDownPoint = p;
+
+
+                HitTestResult hitTestResult = VisualTreeHelper.HitTest(canvas, p);
+                DependencyObject element = hitTestResult.VisualHit;
+                //Debug.WriteLine(element);
+                if (element is System.Windows.Shapes.Path)
+                {
+                    _viewModel.lastDownPoint = p;
+                    //Debug.WriteLine(element.GetValue(UidProperty).ToString());
+                    _viewModel.SelectShape(element.GetValue(UidProperty).ToString());
+                }
+            }
         }
 
         private void CanvasMouseMove(object sender, MouseEventArgs e)
@@ -82,6 +101,32 @@ namespace MessengerApp
                 //Debug.WriteLine(_viewModel.lastDownPoint);
                 Point p = e.GetPosition(sender as Canvas);
                 _viewModel.BuildShape(p);
+            }
+            else if(_viewModel.lastDownPoint != null && _viewModel.activeTool == "Delete")
+            {
+                Point p = e.GetPosition(sender as Canvas);
+
+                if (_viewModel._tempShape == null)
+                {
+                    if (sender is not Canvas canvas)
+                    {
+                        return;
+                    }
+
+                    HitTestResult hitTestResult = VisualTreeHelper.HitTest(canvas, p);
+                    DependencyObject element = hitTestResult.VisualHit;
+                    //Debug.WriteLine(element);
+                    if (element is System.Windows.Shapes.Path)
+                    {
+                        _viewModel.lastDownPoint = p;
+                        //Debug.WriteLine(element.GetValue(UidProperty).ToString());
+                        _viewModel.SelectShape(element.GetValue(UidProperty).ToString());
+                    }
+                }
+                else
+                {
+                    _viewModel.BuildShape(p);
+                }
             }
         }
 
@@ -118,6 +163,13 @@ namespace MessengerApp
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 
+        public void TextMode(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ChangeTool("Text");
+            _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
+        }
+
         public void UndoMode(object sender, RoutedEventArgs e)
         {
             _viewModel.ChangeTool("Undo");
@@ -136,6 +188,13 @@ namespace MessengerApp
         {
             _viewModel.ChangeTool("Curve");
             _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
+        }
+
+        public void DeleteMode(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ChangeTool("Delete");
+            _viewModel.ChangeMode(ViewModel.WBModes.DeleteMode);
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 
@@ -166,35 +225,18 @@ namespace MessengerApp
 
         }
 
-        private void ColorGreen(object sender, RoutedEventArgs e)
+        private void ChangeStrokeColor(object sender, RoutedEventArgs e)
         {
-            _viewModel.ChangeFillBrush(Brushes.Green);
+            Debug.Print((e.Source as Button).Name);
+            string bcolor = (e.Source as Button).Name;
+            _viewModel.ChangeStrokeBrush(bcolor);
         }
 
-        private void ColorRed(object sender, RoutedEventArgs e)
+        private void ChangeFillColor(object sender, RoutedEventArgs e)
         {
-            _viewModel.ChangeFillBrush(Brushes.Red);
-
-        }
-
-        private void ColorYellow(object sender, RoutedEventArgs e)
-        {
-            _viewModel.ChangeFillBrush(Brushes.Yellow);
-        }
-
-        private void ColorNull(object sender, RoutedEventArgs e)
-        {
-            _viewModel.ChangeFillBrush(null);
-        }
-
-        private void ColorBlue(object sender, RoutedEventArgs e)
-        {
-            _viewModel.ChangeFillBrush(Brushes.Blue);
-        }
-
-        private void ColorBlack(object sender, RoutedEventArgs e)
-        {
-            _viewModel.ChangeFillBrush(Brushes.Black);
+            //Debug.Print((e.Source as Button).ToolTip);
+            string bcolor = (e.Source as Button).ToolTip.ToString();
+            _viewModel.ChangeFillBrush(bcolor);
         }
 
 

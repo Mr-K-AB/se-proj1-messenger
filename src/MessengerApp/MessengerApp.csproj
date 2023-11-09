@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -8,10 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-<<<<<<< HEAD
-    <Folder Include="NewFolder\" />
-||||||| 83f4887
-=======
+    <None Remove="Images\text.png" />
     <None Remove="ScreenshareIcons\NextPageButton.png" />
     <None Remove="ScreenshareIcons\NoClient.gif" />
     <None Remove="ScreenshareIcons\NotSharedScreenBackground.webp" />
@@ -25,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
->>>>>>> 85f2d20db3a42c7c657ae28f3277d8c45ac73d8f
     <Folder Include="ViewModels\" />
     <None Remove="Images\bucket.png" />
     <None Remove="Images\clear.png" />
@@ -59,6 +55,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MessengerDashboard\MessengerDashboard.csproj" />
     <ProjectReference Include="..\MessengerScreenshare\MessengerScreenshare.csproj" />
     <ProjectReference Include="..\MessengerWhiteboard\MessengerWhiteboard.csproj" />
   </ItemGroup>
@@ -74,12 +71,14 @@
     <Resource Include="Images\redo.png" />
     <Resource Include="Images\shapes.png" />
     <Resource Include="Images\size.png" />
+    <Resource Include="Images\text.png" />
     <Resource Include="Images\triangle.png" />
     <Resource Include="Images\undo.png" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="LiveCharts.Wpf.Core" Version="0.9.8" />
   </ItemGroup>
 
   <ItemGroup>

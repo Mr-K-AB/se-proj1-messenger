@@ -9,6 +9,11 @@ namespace MessengerDashboard.Client.Events
 {
     public class AnalyticsChangedEventArgs
     {
-        public SessionAnalytics? SessionAnalytics { get; set; }
+        public Analysis? AnalysisResults { get; set; }
+
+        public AnalyticsChangedEventArgs(Analysis? analysisResults)
+        {
+            AnalysisResults = analysisResults;
+        }
     }
 }

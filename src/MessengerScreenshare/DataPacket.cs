@@ -19,12 +19,10 @@ namespace MessengerScreenshare
         /// </summary>
         public DataPacket()
         {
-            Id = "";
+            Id = 0;
             Name = "";
             Header = "";
             Data = "";
-            MyPort = 0;
-            MyIP = "";
         }
 
         /// <summary>
@@ -45,20 +43,18 @@ namespace MessengerScreenshare
         /// Data contained in the packet.
         /// </param>
         [JsonConstructor]
-        public DataPacket(string id, string name, string header, string data, int port, string ip)
+        public DataPacket(int id, string name, string header, string data)
         {
             Id = id;
             Name = name;
             Header = header;
             Data = data;
-            MyPort = port;
-            MyIP = ip;
         }
 
         /// <summary>
         /// Gets the id field of the packet.
         /// </summary>
-        public string Id { get; private set; }
+        public int Id { get; private set; }
 
         /// <summary>
         /// Gets the name field of the packet.
@@ -85,7 +81,5 @@ namespace MessengerScreenshare
         ///     - Confirmation: Empty
         /// </summary>
         public string Data { get; private set; }
-        public int MyPort { get; private set;}
-        public string MyIP { get; private set;}
     }
 }

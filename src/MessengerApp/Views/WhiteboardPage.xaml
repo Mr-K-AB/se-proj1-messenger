@@ -90,7 +90,7 @@
                 <Grid Grid.Column="0">
                     <StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" HorizontalAlignment="Left">
                         <Button Name="Whiteboard" ToolTip="Whiteboard" Style="{StaticResource ButtonStyle}">
-                            <Image Source="../Images/whiteboard.png" Style="{StaticResource ImageStyle}" />
+                            <Image Source="/Images/whiteboard.png" Style="{StaticResource ImageStyle}" />
                         </Button>
                         <TextBlock 
                         FontSize="25"
@@ -109,11 +109,11 @@
                         <StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" >
 
                             <Button Name="Save" ToolTip="Save Session" Style="{StaticResource ButtonStyle}">
-                                <Image Source="../Images/save.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="/Images/save.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
                             <ToggleButton Name="Restore" ToolTip="Restore Session" Style="{StaticResource ToggleButtonStyle}">
-                                <Image Source="../Images/restore.png" Style="{StaticResource ImageStyle}" />
+                                <Image Source="/Images/restore.png" Style="{StaticResource ImageStyle}" />
                             </ToggleButton>
                             <Popup IsOpen="{Binding IsChecked, ElementName=Restore}" 
                                 PlacementTarget="{Binding ElementName=Restore}"

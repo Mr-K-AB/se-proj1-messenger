@@ -25,24 +25,24 @@ namespace MessnegerTests.ContentTests
         public void ConvertSendChatData_ValidInput_ReturnsValidChatData()
         {
             var utility = new MockHelper();
-            SendChatData sendContentData = utility.GenerateSendChatData(MessageType.Chat, "This is a message string");
+            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, "This is a message string");
             var chatClient = new ChatMessageClient(utility.GetMockCommunicator());
 
-            ChatData contentData = chatClient.ChatDataFromSendData(sendContentData, MessageEvent.New);
+            ChatData chatData = chatClient.ChatDataFromSendData(sendChatData, MessageEvent.New);
 
-            Assert.AreEqual(sendContentData.Type, contentData.Type);
-            Assert.AreEqual(sendContentData.Data, contentData.Data);
-            Assert.AreEqual(sendContentData.ReplyThreadID, contentData.ReplyThreadID);
-            Assert.AreEqual(MessageEvent.New, contentData.Event);
-            Assert.IsFalse(contentData.Starred);
-            Assert.IsNull(contentData.FileData);
+            Assert.AreEqual(sendChatData.Type, chatData.Type);
+            Assert.AreEqual(sendChatData.Data, chatData.Data);
+            Assert.AreEqual(sendChatData.ReplyThreadID, chatData.ReplyThreadID);
+            Assert.AreEqual(MessageEvent.New, chatData.Event);
+            Assert.IsFalse(chatData.Starred);
+            Assert.IsNull(chatData.FileData);
         }
 
         [TestMethod]
         public void NewChat_ValidInput_ReturnsValidChatData()
         {
             var utility = new MockHelper();
-            SendChatData sendContentData = utility.GenerateSendChatData(MessageType.Chat, "This is a message string");
+            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, "This is a message string");
             MockCommunicator mockCommunicator = utility.GetMockCommunicator();
             var serializer = new ContentSerializer();
             int userID = 5;
@@ -51,20 +51,143 @@ namespace MessnegerTests.ContentTests
                 UserID = userID,
                 Communicator = mockCommunicator
             };
-            ChatData contentData = chatClient.ChatDataFromSendData(sendContentData, MessageEvent.New);
+            ChatData chatData = chatClient.ChatDataFromSendData(sendChatData, MessageEvent.New);
 
-            chatClient.NewChat(sendContentData);
+            chatClient.NewChat(sendChatData);
             string serializedData = mockCommunicator.GetSendData();
             ChatData deserializedData = serializer.Deserialize<ChatData>(serializedData);
 
             //Assert.isType<ChatData>(deserializedData);
-            Assert.AreEqual(contentData.Type, deserializedData.Type);  
-            Assert.AreEqual(contentData.Data, deserializedData.Data);
-            Assert.AreEqual(contentData.ReplyThreadID, deserializedData.ReplyThreadID);
-            Assert.AreEqual(contentData.FileData, deserializedData.FileData);
-            Assert.AreEqual(contentData.SenderID, deserializedData.SenderID);
-            Assert.AreEqual(contentData.Starred, deserializedData.Starred);
-            Assert.AreEqual(contentData.Event, deserializedData.Event);
+            Assert.AreEqual(chatData.Type, deserializedData.Type);  
+            Assert.AreEqual(chatData.Data, deserializedData.Data);
+            Assert.AreEqual(chatData.ReplyThreadID, deserializedData.ReplyThreadID);
+            Assert.AreEqual(chatData.FileData, deserializedData.FileData);
+            Assert.AreEqual(chatData.SenderID, deserializedData.SenderID);
+            Assert.AreEqual(chatData.Starred, deserializedData.Starred);
+            Assert.AreEqual(chatData.Event, deserializedData.Event);
+        }
+        [TestMethod]
+        public void NewChat_EmptyMessageString_ReturnsArgumentException()
+        {
+            var utility = new MockHelper();
+            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, "");
+            MockCommunicator mockCommunicator = utility.GetMockCommunicator();
+            var serializer = new ContentSerializer();
+            int userID = 5;
+            var chatClient = new ChatMessageClient(mockCommunicator)
+            {
+                UserID = userID,
+                Communicator = mockCommunicator
+            };
+
+            Assert.ThrowsException<ArgumentException>(() => chatClient.NewChat(sendChatData));
+        }
+        [TestMethod]
+        public void NewChat_NullMessageString_ReturnsArgumentException()
+        {
+            var utility = new MockHelper();
+            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, null);
+            MockCommunicator mockCommunicator = utility.GetMockCommunicator();
+            var serializer = new ContentSerializer();
+            int userID = 5;
+            var chatClient = new ChatMessageClient(mockCommunicator)
+            {
+                UserID = userID,
+                Communicator = mockCommunicator
+            };
+
+            Assert.ThrowsException<ArgumentException>(() => chatClient.NewChat(sendChatData));
+        }
+        [TestMethod]
+        public void EditChat_ValidInput_ReturnsValidContentData()
+        {
+            var utility = new MockHelper();
+            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, "This is an edited message");
+            MockCommunicator mockCommunicator = utility.GetMockCommunicator();
+            var serializer = new ContentSerializer();
+            int userID = 5;
+            int messageID = 6;
+            int threadID = 7;
+            var chatClient = new ChatMessageClient(mockCommunicator)
+            {
+                UserID = userID,
+                Communicator = mockCommunicator
+            };
+            ChatData chatData = chatClient.ChatDataFromSendData(sendChatData, MessageEvent.Edit);
+
+            chatClient.EditChat(messageID, "This is an edited message", threadID);
+            string serializedData = mockCommunicator.GetSendData();
+            ChatData deserializedData = serializer.Deserialize<ChatData>(serializedData);
+
+            Assert.AreEqual(chatData.Type, deserializedData.Type);
+            Assert.AreEqual(chatData.Data, deserializedData.Data);
+            Assert.AreEqual(messageID, deserializedData.MessageID);
+            Assert.AreEqual(threadID, deserializedData.ReplyThreadID);
+            Assert.AreEqual(chatData.FileData, deserializedData.FileData);
+            Assert.AreEqual(chatData.SenderID, deserializedData.SenderID);
+            Assert.AreEqual(chatData.Starred, deserializedData.Starred);
+            Assert.AreEqual(chatData.Event, deserializedData.Event);
+        }
+
+        [TestMethod]
+        public void DeleteChat_ValidInput_ReturnsValidContentData()
+        {
+            var utility = new MockHelper();
+            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, "Message Deleted.");
+            MockCommunicator mockCommunicator = utility.GetMockCommunicator();
+            var serializer = new ContentSerializer();
+            var userID = 5;
+            var messageID = 6;
+            var threadID = 7;
+            var chatClient = new ChatMessageClient(mockCommunicator)
+            {
+                UserID = userID,
+                Communicator = mockCommunicator
+            };
+            ChatData chatData = chatClient.ChatDataFromSendData(sendChatData, MessageEvent.Delete);
+
+            chatClient.DeleteChat(messageID, threadID);
+            string serializedData = mockCommunicator.GetSendData();
+            ChatData deserializedData = serializer.Deserialize<ChatData>(serializedData);
+
+            Assert.AreEqual(chatData.Type, deserializedData.Type);
+            Assert.AreEqual(chatData.Data, deserializedData.Data);
+            Assert.AreEqual(messageID, deserializedData.MessageID);
+            Assert.AreEqual(threadID, deserializedData.ReplyThreadID);
+            Assert.AreEqual(chatData.FileData, deserializedData.FileData);
+            Assert.AreEqual(chatData.SenderID, deserializedData.SenderID);
+            Assert.AreEqual(chatData.Starred, deserializedData.Starred);
+            Assert.AreEqual(chatData.Event, deserializedData.Event);
+        }
+
+        [TestMethod]
+        public void StarChat_ValidInput_ReturnsValidContentData()
+        {
+            var utility = new MockHelper();
+            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, null);
+            MockCommunicator mockCommunicator = utility.GetMockCommunicator();
+            var serializer = new ContentSerializer();
+            int userID = 5;
+            int messageID = 6;
+            int threadID = 7;
+            var chatClient = new ChatMessageClient(mockCommunicator)
+            {
+                UserID = userID,
+                Communicator = mockCommunicator
+            };
+            ChatData chatData = chatClient.ChatDataFromSendData(sendChatData, MessageEvent.Star);
+
+            chatClient.StarChat(messageID, threadID);
+            string serializedData = mockCommunicator.GetSendData();
+            ChatData deserializedData = serializer.Deserialize<ChatData>(serializedData);
+
+            Assert.AreEqual(chatData.Type, deserializedData.Type);
+            Assert.AreEqual(chatData.Data, deserializedData.Data);
+            Assert.AreEqual(messageID, deserializedData.MessageID);
+            Assert.AreEqual(threadID, deserializedData.ReplyThreadID);
+            Assert.AreEqual(chatData.FileData, deserializedData.FileData);
+            Assert.AreEqual(chatData.SenderID, deserializedData.SenderID);
+            Assert.AreEqual(chatData.Event, deserializedData.Event);
         }
     }
 }

@@ -13,8 +13,12 @@
             <DataTemplate DataType="{x:Type viewmodels:HomeViewModel}">
                 <views:HomeView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type viewmodels:MeetViewModel}">
-                <views:MeetingView />
+            <DataTemplate DataType="{x:Type viewmodels:ServerMeetViewModel}">
+                <views:HostMeetingView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewmodels:ClientMeetViewModel}">
+                <views:ClientMeetingView/>
             </DataTemplate>
 
         </Grid.Resources>

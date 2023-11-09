@@ -27,10 +27,5 @@ namespace MessengerDashboard.Client
             SessionMode = SessionMode.Lab;
             SessionID = new Random().Next();
         }
-
-        public void AddUser(UserInfo client)
-        {
-            Users.Add(client);
-        }
     }
 }

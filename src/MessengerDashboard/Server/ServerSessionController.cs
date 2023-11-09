@@ -52,12 +52,12 @@ namespace MessengerDashboard.Server
         private readonly ISentimentAnalyzer _sentimentAnalyzer = SentimentAnalyzerFactory.GetSentimentAnalyzer();
         private readonly Serializer _serializer = new();
         private int _clientCount = 0;
-        public SessionInfo _sessionInfo = new SessionInfo();
+        public SessionInfo _sessionInfo = new();
         private readonly SessionMode _sessionMode;
         private TextSummary? _chatSummary;
         public event EventHandler<SessionUpdatedEventArgs> SessionUpdated;
         private readonly string _moduleIdentifier = "Dashboard";
-        public SessionAnalytics _sessionAnalytics;
+        public AnalysisResults _sessionAnalytics;
         
 
         /// <summary>
@@ -99,6 +99,7 @@ namespace MessengerDashboard.Server
                 case Operation.RemoveClient:
                     break;
                 case Operation.EndSession:
+                    RemoveClient(clientPayload);
                     break;
                 default:
                     break;
@@ -106,7 +107,7 @@ namespace MessengerDashboard.Server
         }
 
         public void DeliverPayloadToClient(Operation operation, string ip, int port, SessionInfo? sessionInfo,
-            TextSummary? summary = null, SessionAnalytics? sessionAnalytics = null, 
+            TextSummary? summary = null, AnalysisResults? sessionAnalytics = null, 
             UserInfo? user = null, int userId = -1)
         {
             ServerPayload serverPayload;
@@ -178,12 +179,12 @@ namespace MessengerDashboard.Server
         {
             lock (this)
             {
-                _sessionInfo.AddUser(user);
+                _sessionInfo.Users.Add(user);
             }
         }
 
         public void BroadcastPayloadToClients(Operation operation, SessionInfo? sessionInfo,
-            TextSummary? summary = null, SessionAnalytics? sessionAnalytics = null, 
+            TextSummary? summary = null, AnalysisResults? sessionAnalytics = null, 
             UserInfo? user = null, int userId = -1)
         {
 
@@ -264,30 +265,16 @@ namespace MessengerDashboard.Server
             }
         }
 
-        private void RemoveClient(ClientPayload receivedObject, int userID = -1)
+        private void RemoveClient(ClientPayload receivedObject)
         {
             Trace.WriteLine("Dashboard: Removing Client");
-            //int userIDToRemove;
-            if (userID == -1)
-            {
-                //userIDToRemove = receivedObject.UserID;
-            }
-            else
-            {
-                //userIDToRemove = userID;
-            }
-
-            // TODO : Remove user
-            //var removedUser = _sessionInfo.RemoveUser(userIDToRemove);
             _communicator.RemoveClient(receivedObject.IpAddress, receivedObject.Port);
-
-            /*
-            if (removedUser != null)
+            int removedCount = _sessionInfo.Users.RemoveAll(user => user.UserID == receivedObject.UserID);
+            if (removedCount != 0)
             {
-                SessionUpdated.Invoke(this, new SessionUpdatedEventArgs(_sessionInfo));
-                DeliverPayloadToClient(Operation.RemoveClient, receivedObject.IpAddress, receivedObject.Port, _sessionInfo);
+                SessionUpdated.Invoke(this, new (_sessionInfo));
             }
-            */
+            DeliverPayloadToClient(Operation.RemoveClient, receivedObject.IpAddress, receivedObject.Port, _sessionInfo);
         }
     }
 }

@@ -13,13 +13,13 @@ namespace MessengerDashboard.Server
     {
         public UserInfo _user;
         public Operation eventType;
-        public SessionAnalytics sessionAnalytics;
+        public AnalysisResults sessionAnalytics;
         public SessionInfo sessionData;
         public TextSummary summaryDetail;
 
         //     Parametric constructor to initialize the fields
         public ServerPayload(Operation eventName, SessionInfo sessionDataToSend, TextSummary summaryDataToSend,
-            SessionAnalytics sessionAnalyticsToSend, UserInfo user)
+            AnalysisResults sessionAnalyticsToSend, UserInfo user)
         {
             // SessionAnalytics sessionAnalyticsToSend
             eventType = eventName;

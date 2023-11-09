@@ -13,17 +13,22 @@ namespace MessengerApp.ViewModels
     internal class HomeViewModel : ViewModelBase
     {
         public string WelcomeMessage => "Welcome To the home page";
-        public string ?UserName { get;}
+        public string? UserName { get; }
 
-        public string ?UserImage { get; }
-        public ICommand NavigateMeetCommand { get; }
+        public string? UserImage { get; }
 
+        public string? JoinMeetIP { get; set; }
+        public int JoinMeetPort { get; set; }
+        public ICommand NavigateServerMeetCommand { get; }
+
+        public ICommand NavigateClientMeetCommand { get; }
         public HomeViewModel(NavigationStore navigationStore)
         {
             UserName = navigationStore.AuthResult.UserName;
             UserImage = navigationStore.AuthResult.UserImage;
-            
-            NavigateMeetCommand = new NavigateMeetCommand(navigationStore);
+
+            NavigateServerMeetCommand = new NavigateServerMeetCommand(navigationStore);
+            NavigateClientMeetCommand = new NavigateClientMeetCommand(navigationStore, this);
         }
     }
 }

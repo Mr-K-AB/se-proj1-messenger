@@ -1,4 +1,4 @@
-﻿///<author>Amish Ashish Saxena</author>
+﻿///<author>Likhit5th Reddy</author>
 ///<summary> 
 ///This file contains tests for ScreenCapturer Class.  
 ///</summary>
@@ -83,7 +83,7 @@ namespace MessengerTests.ScreenshareTests
 
             // If the queue is empty, this means the capturing has been stopped sucessfully. 
             int framesCaptured = screenCapturer.GetCapturedFrameLength();
-            Assert.IsTrue(framesCaptured == 0);
+            Assert.AreEqual(0, framesCaptured);
         }
     }
 }

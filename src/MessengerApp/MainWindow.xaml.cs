@@ -16,6 +16,7 @@ namespace MessengerApp
             WhiteboardPage whiteboardPage = new(1);
             Content = whiteboardPage;
 
+
         }
     }
 }

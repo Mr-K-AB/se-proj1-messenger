@@ -11,8 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MessengerCloud\MessengerCloud.csproj" />
-    <ProjectReference Include="..\MessengerDashboard\MessengerDashboard.csproj" />
     <ProjectReference Include="..\MessengerNetworking\MessengerNetworking.csproj" />
   </ItemGroup>
 

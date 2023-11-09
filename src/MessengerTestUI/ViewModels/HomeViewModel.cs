@@ -20,13 +20,15 @@ namespace MessengerTestUI.ViewModels
         public string ? JoinMeetIP {  get; set; }
         public int JoinMeetPort { get; set; }
         public ICommand NavigateServerMeetCommand { get; }
-
+        
+        public ICommand NavigateClientMeetCommand { get; }
         public HomeViewModel(NavigationStore navigationStore)
         {
             UserName = navigationStore.AuthResult.UserName;
             UserImage = navigationStore.AuthResult.UserImage;
 
             NavigateServerMeetCommand = new NavigateServerMeetCommand(navigationStore);
+            NavigateClientMeetCommand = new NavigateClientMeetCommand(navigationStore, this);
         }
     }
 }

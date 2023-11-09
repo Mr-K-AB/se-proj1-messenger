@@ -5,8 +5,6 @@
 /// are implemented
 ///</summary>
 ///
-//using MessengerNetworking.Communicator;
-//using MessengerNetworking.NotificationHandler;
 using MessengerScreenshare.Client;
 using MessengerScreenshare;
 using System;
@@ -42,21 +40,10 @@ namespace MessengerScreenshare.Client
 
         // Name and Id of the current client user
         private string? _name;
-        private string? _id;
-        private bool _isExam;
-        private readonly string _myIP;
-        private readonly int _myPort;
+        private int _id=0;
         // Tokens added to be able to stop the thread execution
         private bool _confirmationCancellationToken;
         private readonly CancellationTokenSource? _imageCancellation;
-
-        public bool IsExam { get => _isExam;
-            set {
-                if(_isExam != value)
-                {
-                    _isExam = value;
-                }
-            } }
 
         /// <summary>
         /// Setting up the ScreenCapturer and ScreenProcessor Class
@@ -71,8 +58,6 @@ namespace MessengerScreenshare.Client
             {
                 _communicator = Factory.GetInstance();
                 _communicator.AddSubscriber(Utils.ModuleIdentifier, this);
-                _myPort = _communicator.ListenPort;
-                _myIP = _communicator.IpAddress;
             }
             Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped image processing", withTimeStamp: true));
         }
@@ -95,10 +80,10 @@ namespace MessengerScreenshare.Client
         /// </summary>
         public async Task StartScreensharingAsync()
         {
-            Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null"));
+            Debug.Assert(_id != 0, Utils.GetDebugMessage("_id property found null"));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null"));
 
-            DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "", _myPort, _myIP);
+            DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "");
             string serializedData = JsonSerializer.Serialize(dataPacket);
             _communicator.Broadcast(Utils.ModuleIdentifier, serializedData);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent REGISTER packet to server", withTimeStamp: true));
@@ -172,7 +157,7 @@ namespace MessengerScreenshare.Client
                     break;
                 }
 
-                DataPacket dataPacket = new(_id!, _name!, ClientDataHeader.Image.ToString(), serializedImg, _myPort, _myIP);
+                DataPacket dataPacket = new(_id!, _name!, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = JsonSerializer.Serialize(dataPacket);
 
                 Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} of size {serializedData.Length}", withTimeStamp: true));
@@ -203,9 +188,9 @@ namespace MessengerScreenshare.Client
         /// </summary>
         public void StopScreensharing()
         {
-            Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
+            Debug.Assert(_id != 0, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null", withTimeStamp: true));
-            DataPacket deregisterPacket = new(_id, _name, ClientDataHeader.Deregister.ToString(), "", _myPort, _myIP);
+            DataPacket deregisterPacket = new(_id, _name, ClientDataHeader.Deregister.ToString(), "");
             string serializedDeregisterPacket = JsonSerializer.Serialize(deregisterPacket);
 
             StopImageSending();
@@ -270,9 +255,9 @@ namespace MessengerScreenshare.Client
         private async Task SendConfirmationPacketAsync()
         {
             _confirmationCancellationToken = false;
-            Debug.Assert(_id != null, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
+            Debug.Assert(_id != 0, Utils.GetDebugMessage("_id property found null", withTimeStamp: true));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null", withTimeStamp: true));
-            DataPacket confirmationPacket = new(_id, _name, ClientDataHeader.Confirmation.ToString(), "", _myPort, _myIP);
+            DataPacket confirmationPacket = new(_id, _name, ClientDataHeader.Confirmation.ToString(), "");
             string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
 
             _sendConfirmationTask = Task.Run(async () =>
@@ -293,7 +278,7 @@ namespace MessengerScreenshare.Client
         /// </summary>
         /// <param name="id">ID of the client</param>
         /// <param name="name">Name of the client</param>
-        public void SetUser(string id, string name, int serverPortNumber, string serverIP)
+        public void SetUser(int id, string name)
         {
             _id = id;
             _name = name;

@@ -108,13 +108,13 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="sendContent">Instance of the SendChatData class</param>
         /// <exception cref="ArgumentException"></exception>
-        public void NewChat(SendChatData sendContent)
+        public void NewChat(SendChatData sendChat)
         {
-            if (string.IsNullOrEmpty(sendContent.Data))
+            if (string.IsNullOrEmpty(sendChat.Data))
             {
                 throw new ArgumentException("Invalid message string.");
             }
-            ChatData convertedData = ChatDataFromSendData(sendContent, MessageEvent.New);
+            ChatData convertedData = ChatDataFromSendData(sendChat, MessageEvent.New);
             convertedData.MessageID = -1;
             SerializeAndSendToServer(convertedData, "New");
         }

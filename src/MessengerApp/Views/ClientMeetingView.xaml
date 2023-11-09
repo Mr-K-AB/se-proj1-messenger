@@ -9,10 +9,12 @@
     <Grid>
         <!-- Navigation Bar -->
         <Menu>
-            <MenuItem Header="Whiteboard"/>
-            <MenuItem Header="Screenshare"/>
+            <MenuItem Header="Dashboard" Click="Dashboard_Click"/>
+            <MenuItem Header="Whiteboard" Click="WhiteBoard_Click"/>
+            <MenuItem Header="Screenshare" Click="ClientScreenshare_Click"/>
             <MenuItem Header="Participants"/>
-
+            <TextBlock Text="{Binding IP}"></TextBlock>
+            <TextBlock Text="{Binding Port}"></TextBlock>
         </Menu>
 
         <!-- Profile Information -->

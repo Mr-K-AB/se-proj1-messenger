@@ -24,5 +24,29 @@ namespace MessengerApp.Views
         {
             InitializeComponent();
         }
+
+        private void Dashboard_Click(object sender, RoutedEventArgs e)
+        {
+            DashboardControl dashboardControl = new();
+            MainContent.Content = dashboardControl;
+        }
+
+        private void WhiteBoard_Click(object sender, RoutedEventArgs e)
+        {
+            WhiteboardControl whiteboardControl = new(1);
+            MainContent.Content = whiteboardControl;
+        }
+
+        private void ClientScreenshare_Click(object sender, RoutedEventArgs e)
+        {
+            ScreenshareClientControl screenshareClientControl = new();
+            MainContent.Content = screenshareClientControl;
+        }
+
+        //private void Screenshare_Click(object sender, RoutedEventArgs e)
+        //{
+        //    ClientScreenshareControl screenshareControl = new();
+        //    MainContent.Content = screenshareControl;
+        //}
     }
 }

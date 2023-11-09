@@ -116,7 +116,7 @@
                 </Grid>
                 <Grid Grid.Row="2" >
 
-                    <lvc:CartesianChart Background="White" Margin="5 5 5 5" Loaded="CartesianChart_Loaded" >
+                    <lvc:CartesianChart Background="White" Margin="5 5 5 5">
                         <lvc:CartesianChart.Series>
                             <lvc:ColumnSeries Title="Chat Count" Values="{Binding ChatCountListForUserName}"/>
                         </lvc:CartesianChart.Series>
@@ -135,7 +135,7 @@
             </Grid>
             <Grid Grid.Column="2" >
 
-                <ListView Grid.Column="0" x:Name="ContactsLV" Background="Pink" ItemsSource="{Binding Users}" d:ItemsSource="{d:SampleData ItemCount=5} " SelectionChanged="ContactsLV_SelectionChanged" >
+                <ListView Grid.Column="0" x:Name="ContactsLV" Background="Pink" ItemsSource="{Binding Users}" d:ItemsSource="{d:SampleData ItemCount=5} ">
                     <ListView.ItemTemplate>
 
                         <DataTemplate>

@@ -16,6 +16,6 @@ namespace Messenger.Client
         /// Handles event of all messages sent to / received from client at once
         /// </summary>
         /// <param name="allMessages">List of thread objects containing all messages</param>
-        void OnAllMessagesReceived(List<ChatThread> allMessages);
+        //void OnAllMessagesReceived(List<ChatThread> allMessages);
     }
 }

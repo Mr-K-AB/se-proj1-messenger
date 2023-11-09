@@ -18,6 +18,7 @@ using MessengerDashboard;
 using MessengerDashboard.Dashboard;
 using MessengerDashboard.Dashboard.User.Session;
 using System.Windows;
+using MessengerDashboard.Client;
 
 namespace MessengerApp.ViewModels
 {

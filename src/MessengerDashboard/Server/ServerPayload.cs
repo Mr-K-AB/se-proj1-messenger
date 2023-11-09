@@ -11,33 +11,33 @@ namespace MessengerDashboard.Server
 {
     public class ServerPayload
     {
-        public UserInfo _user;
-        public Operation eventType;
-        public SessionAnalytics sessionAnalytics;
-        public SessionInfo sessionData;
-        public TextSummary summaryDetail;
+        public ClientInfo User { get; set; }
 
-        //     Parametric constructor to initialize the fields
-        public ServerPayload(Operation eventName, SessionInfo sessionDataToSend, TextSummary summaryDataToSend,
-            SessionAnalytics sessionAnalyticsToSend, UserInfo user)
+        public Operation Operation { get; set; }
+
+        public Analysis SessionAnalysis { get; set; }
+
+        public SessionInfo SessionInfo { get; set; }
+
+        public TextSummary Summary { get; set; }
+
+        public ServerPayload(
+            Operation eventName,
+            SessionInfo sessionDataToSend,
+            TextSummary summaryDataToSend,
+            Analysis sessionAnalyticsToSend,
+            ClientInfo user
+        )
         {
-            // SessionAnalytics sessionAnalyticsToSend
-            eventType = eventName;
-            _user = user;
-            sessionData = sessionDataToSend;
-            summaryDetail = summaryDataToSend;
-            sessionAnalytics = sessionAnalyticsToSend;
+            Operation = eventName;
+            User = user;
+            SessionInfo = sessionDataToSend;
+            Summary = summaryDataToSend;
+            SessionAnalysis = sessionAnalyticsToSend;
         }
 
-        //     Default constructor for serialization
         public ServerPayload()
         {
-        }
-
-        //     Method to access the UserData object
-        public UserInfo GetUser()
-        {
-            return _user;
         }
     }
 }

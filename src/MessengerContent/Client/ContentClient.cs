@@ -410,6 +410,11 @@ namespace MessengerContent.Client
             return _userID;
         }
 
+        public string GetUserName()
+        {
+            return _name;
+        }
+
         // event handler helper functions
 
         /// <summary>
@@ -652,31 +657,31 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="allMessages">List of threads containing all messages</param>
         /// <exception cref="ArgumentException"></exception>
-        public void OnReceive(List<ChatThread> allMessages)
-        {
-            if (allMessages is null)
-            {
-                throw new ArgumentException("Received null argument!");
-            }
-            Trace.WriteLine("[ContentClient] Received message history from server");
-            // update the internal data strcutures using the received history
-            SetAllMessages(allMessages);
-            Notify(allMessages);
-        }
+        //public void OnReceive(List<ChatThread> allMessages)
+        //{
+        //    if (allMessages is null)
+        //    {
+        //        throw new ArgumentException("Received null argument!");
+        //    }
+        //    Trace.WriteLine("[ContentClient] Received message history from server");
+        //    // update the internal data strcutures using the received history
+        //    SetAllMessages(allMessages);
+        //    Notify(allMessages);
+        //}
 
         /// <summary>
         /// Notify all subscribers of received entire message history
         /// </summary>
         /// <param name="allMessages"></param>
         /// <exception cref="ArgumentException"></exception>
-        private void Notify(List<ChatThread> allMessages)
-        {
-            Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared");
-            foreach (IMessageListener subscriber in _subscribers)
-            {
-                _ = Task.Run(() => { subscriber.OnAllMessagesReceived(allMessages); });
-            }
-        }
+        //private void Notify(List<ChatThread> allMessages)
+        //{
+        //    Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared");
+        //    foreach (IMessageListener subscriber in _subscribers)
+        //    {
+        //        _ = Task.Run(() => { subscriber.OnAllMessagesReceived(allMessages); });
+        //    }
+        //}
 
         /// <summary>
         /// Sends a request to server asking for all messages received on server

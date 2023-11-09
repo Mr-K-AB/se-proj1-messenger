@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MessengerNetworking\MessengerNetworking.csproj" />
+    <ProjectReference Include="..\MessengerScreenshare\MessengerScreenshare.csproj" />
   </ItemGroup>
 
 </Project>

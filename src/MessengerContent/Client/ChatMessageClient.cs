@@ -70,7 +70,7 @@ namespace MessengerContent.Client
             {
                 Type = sendChatData.Type,
                 Data = sendChatData.Data,
-                ReceiverIDs = sendChatData.ReceiverIDs,
+                //ReceiverIDs = sendChatData.ReceiverIDs,
                 ReplyMessageID = sendChatData.ReplyMessageID,
                 ReplyThreadID = sendChatData.ReplyThreadID,
                 SenderID = UserID,

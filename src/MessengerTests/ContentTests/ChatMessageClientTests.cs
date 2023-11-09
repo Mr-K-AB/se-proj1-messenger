@@ -16,13 +16,13 @@ using MessengerContent.Client;
 using MessengerContent.DataModels;
 using MessengerTests.ContentTests;
 
-namespace PlexShareTests.ContentTests.Client
+namespace MessnegerTests.ContentTests
 {
     [TestClass]
     public class ChatClientTests
     {
         [TestMethod]
-        public void ConvertSendContentData_ValidInput_ReturnsValidContentData()
+        public void ConvertSendChatData_ValidInput_ReturnsValidChatData()
         {
             var utility = new MockHelper();
             SendChatData sendContentData = utility.GenerateSendChatData(MessageType.Chat, "This is a message string");
@@ -30,16 +30,16 @@ namespace PlexShareTests.ContentTests.Client
 
             ChatData contentData = chatClient.ChatDataFromSendData(sendContentData, MessageEvent.New);
 
-            Assert.Equals(sendContentData.Type, contentData.Type);
-            Assert.Equals(sendContentData.Data, contentData.Data);
-            Assert.Equals(sendContentData.ReplyThreadID, contentData.ReplyThreadID);
-            Assert.Equals(MessageEvent.New, contentData.Event);
+            Assert.AreEqual(sendContentData.Type, contentData.Type);
+            Assert.AreEqual(sendContentData.Data, contentData.Data);
+            Assert.AreEqual(sendContentData.ReplyThreadID, contentData.ReplyThreadID);
+            Assert.AreEqual(MessageEvent.New, contentData.Event);
             Assert.IsFalse(contentData.Starred);
             Assert.IsNull(contentData.FileData);
         }
 
         [TestMethod]
-        public void NewChat_ValidInput_ReturnsValidContentData()
+        public void NewChat_ValidInput_ReturnsValidChatData()
         {
             var utility = new MockHelper();
             SendChatData sendContentData = utility.GenerateSendChatData(MessageType.Chat, "This is a message string");
@@ -58,13 +58,13 @@ namespace PlexShareTests.ContentTests.Client
             ChatData deserializedData = serializer.Deserialize<ChatData>(serializedData);
 
             //Assert.isType<ChatData>(deserializedData);
-            Assert.Equals(contentData.Type, deserializedData.Type);  
-            Assert.Equals(contentData.Data, deserializedData.Data);
-            Assert.Equals(contentData.ReplyThreadID, deserializedData.ReplyThreadID);
-            Assert.Equals(contentData.FileData, deserializedData.FileData);
-            Assert.Equals(contentData.SenderID, deserializedData.SenderID);
-            Assert.Equals(contentData.Starred, deserializedData.Starred);
-            Assert.Equals(contentData.Event, deserializedData.Event);
+            Assert.AreEqual(contentData.Type, deserializedData.Type);  
+            Assert.AreEqual(contentData.Data, deserializedData.Data);
+            Assert.AreEqual(contentData.ReplyThreadID, deserializedData.ReplyThreadID);
+            Assert.AreEqual(contentData.FileData, deserializedData.FileData);
+            Assert.AreEqual(contentData.SenderID, deserializedData.SenderID);
+            Assert.AreEqual(contentData.Starred, deserializedData.Starred);
+            Assert.AreEqual(contentData.Event, deserializedData.Event);
         }
     }
 }

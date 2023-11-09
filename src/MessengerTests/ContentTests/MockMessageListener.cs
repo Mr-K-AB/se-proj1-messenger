@@ -15,8 +15,6 @@ using Messenger.Client;
 using MessengerContent.Client;
 using MessengerContent.DataModels;
 
-
-
 namespace PlexShareTests.ContentTests
 {
     public class FakeContentListener : IMessageListener

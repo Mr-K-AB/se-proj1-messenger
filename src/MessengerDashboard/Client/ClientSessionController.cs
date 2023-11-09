@@ -1,4 +1,10 @@
-﻿using System;
+﻿/// <credits>
+/// <author>
+/// <name>Shailab Chauhan</name>
+/// <rollnumber>112001038</rollnumber>
+/// </author>
+/// </credits>
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -14,6 +20,8 @@ using MessengerDashboard.Summarization;
 using MessengerDashboard.Server;
 using MessengerDashboard.Client.Events;
 using MessengerNetworking.Factory;
+using MessengerScreenshare.ScreenshareFactory;
+using MessengerScreenshare.Client;
 
 namespace MessengerDashboard.Client
 {
@@ -36,6 +44,8 @@ namespace MessengerDashboard.Client
         private int _serverPort;
 
         private ClientInfo? _user;
+
+        private IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
 
         public ClientSessionController()
         {
@@ -108,6 +118,7 @@ namespace MessengerDashboard.Client
                 connected = _connectionEstablished.WaitOne((int)timeoutInMilliseconds);
             }
             _communicator.AddClient(serverIpAddress, serverPort);
+         
             return connected;
         }
 
@@ -163,6 +174,7 @@ namespace MessengerDashboard.Client
                     IsConnectedToServer = true;
                     _connectionEstablished.Set();
                     _user = serverPayload.User;
+                    _screenshareClient.SetUser(_user.ClientId, _user.ClientName);
                     return;
 
                 case Operation.GetSummary:
@@ -290,5 +302,7 @@ namespace MessengerDashboard.Client
                 }
             }
         }
+
+
     }
 }

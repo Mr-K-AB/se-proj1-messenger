@@ -43,8 +43,6 @@ namespace MessengerScreenshare.Client
         // Name and Id of the current client user
         private string? _name;
         private string? _id;
-        private string _serverIP;
-        private int _serverPortNumber;
         private bool _isExam;
         private readonly string _myIP;
         private readonly int _myPort;
@@ -102,14 +100,7 @@ namespace MessengerScreenshare.Client
 
             DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "", _myPort, _myIP);
             string serializedData = JsonSerializer.Serialize(dataPacket);
-            if (_isExam)
-            {
-                _communicator.SendMessage(_serverIP, _serverPortNumber, Utils.ModuleIdentifier, serializedData, 1);
-            }
-            else
-            {
-                _communicator.Broadcast(Utils.ModuleIdentifier, serializedData);
-            }
+            _communicator.Broadcast(Utils.ModuleIdentifier, serializedData);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent REGISTER packet to server", withTimeStamp: true));
 
             await SendConfirmationPacketAsync();
@@ -185,14 +176,7 @@ namespace MessengerScreenshare.Client
                 string serializedData = JsonSerializer.Serialize(dataPacket);
 
                 Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} of size {serializedData.Length}", withTimeStamp: true));
-                if (_isExam)
-                {
-                    _communicator.SendMessage(_serverIP, _serverPortNumber, Utils.ModuleIdentifier, serializedData, 1);
-                }
-                else
-                {
-                    _communicator.Broadcast(Utils.ModuleIdentifier, serializedData);
-                }
+                _communicator.Broadcast(Utils.ModuleIdentifier, serializedData);
                 cnt++;
                 await Task.Delay(1); // Introduce a small delay for asynchronous behavior
             }
@@ -226,14 +210,7 @@ namespace MessengerScreenshare.Client
 
             StopImageSending();
             StopConfirmationSendingAsync().Wait(); // Synchronously wait here for demonstration purposes
-            if (_isExam)
-            {
-                _communicator.SendMessage(_serverIP, _serverPortNumber, Utils.ModuleIdentifier, serializedDeregisterPacket, 1);
-            }
-            else
-            {
-                _communicator.Broadcast(Utils.ModuleIdentifier, serializedDeregisterPacket);
-            }
+            _communicator.Broadcast(Utils.ModuleIdentifier, serializedDeregisterPacket);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
         }
 
@@ -302,14 +279,7 @@ namespace MessengerScreenshare.Client
             {
                 while (!_confirmationCancellationToken)
                 {
-                    if (_isExam)
-                    {
-                        _communicator.SendMessage(_serverIP, _serverPortNumber, Utils.ModuleIdentifier, serializedConfirmationPacket, 1);
-                    }
-                    else
-                    {
-                        _communicator.Broadcast(Utils.ModuleIdentifier, serializedConfirmationPacket);
-                    }
+                    _communicator.Broadcast(Utils.ModuleIdentifier, serializedConfirmationPacket);
                     await Task.Delay(5000);
                 }
             });
@@ -327,8 +297,6 @@ namespace MessengerScreenshare.Client
         {
             _id = id;
             _name = name;
-            _serverPortNumber = serverPortNumber;
-            _serverIP = serverIP;
             Trace.WriteLine(Utils.GetDebugMessage("Successfully set client name and id"));
         }
         public void OnClientJoined(string ipAddress, int port)

@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
- * Filename    = ChatServer.cs
+ * Filename    = ChatMessageClient.cs
  *
  * Author      = Rapeti Siddhu Neehal
  *
@@ -93,7 +93,8 @@ namespace MessengerContent.Client
             {
                 string serializedStr = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[Chat Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.Send(serializedStr, _moduleIdentifier, null);
+                Debug.Assert(1 == 1, "debugg");
+                //_communicator.Send(serializedStr, _moduleIdentifier, null);
             }
             catch (Exception e)
             {

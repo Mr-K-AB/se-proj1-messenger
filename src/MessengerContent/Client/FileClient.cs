@@ -1,4 +1,15 @@
-﻿using MessengerContent.DataModels;
+﻿/******************************************************************************
+ * Filename    = FileClient.cs
+ *
+ * Author      = Rapeti Siddhu Neehal
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerContent
+ *
+ * Description = 
+ *****************************************************************************/
+using MessengerContent.DataModels;
 using System.Diagnostics;
 using System;
 using System.IO;
@@ -29,7 +40,7 @@ namespace MessengerContent.Client
         /// <summary>
         /// Communicator setter function
         /// </summary>
-        public ICommunicator Communicator
+          public ICommunicator Communicator
         {
             set => _communicator = value;
         }

@@ -412,6 +412,7 @@
                                                                 <Grid.RowDefinitions>
                                                                     <RowDefinition/>
                                                                     <RowDefinition/>
+                                                                    <RowDefinition/>
                                                                 </Grid.RowDefinitions>
 
                                                                 <Grid.ColumnDefinitions>
@@ -446,6 +447,11 @@
                                                                     </RadioButton.RenderTransform>
                                                                 </RadioButton>
                                                                 <RadioButton  Grid.Row="1" Grid.Column="2"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Black" Click="ChangeFillColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                                <RadioButton  Grid.Row="2" Grid.Column="0"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Transparent" Click="ChangeFillColor">
                                                                     <RadioButton.RenderTransform>
                                                                         <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                                     </RadioButton.RenderTransform>

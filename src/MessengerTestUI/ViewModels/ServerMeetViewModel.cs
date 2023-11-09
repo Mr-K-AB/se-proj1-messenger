@@ -23,6 +23,10 @@ namespace MessengerTestUI.ViewModels
         {
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
             _server = new();
+            _server.SetDetails(navigationStore.AuthResult.UserName, navigationStore.AuthResult.UserEmail, navigationStore.AuthResult.UserImage);
+
+            Port = _server.ConnectionDetails.Port;
+            IP = _server.ConnectionDetails.IpAddress;
 
         }
     }

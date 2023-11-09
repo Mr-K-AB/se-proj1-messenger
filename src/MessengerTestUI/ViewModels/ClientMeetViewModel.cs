@@ -27,13 +27,27 @@ namespace MessengerTestUI.ViewModels
 
             Client = client;
 
-            SwitchModeCommand = new SwitchModeCommand(this, typeof(ClientMeetViewModel));
+            //SwitchModeCommand = new SwitchModeCommand(this);
 
-            RefreshCommand = new RefreshCommand(this, typeof(ClientMeetViewModel));
-            EndMeetCommand = new EndMeetCommand(this, typeof(ClientMeetViewModel));
-    }
+            RefreshCommand = new RefreshCommand(this);
+            EndMeetCommand = new EndMeetCommand(this);
 
-        
+            Client.SessionChanged += Client_SessionChanged;
+
+            List<User> users = new();
+            Client.SessionInfo.Users.ForEach(user => { users.Add(new User(user.ClientName, user.ClientPhotoUrl)); });
+            Users = users;
+            Mode = Client.SessionInfo.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
+        }
+
+        private void Client_SessionChanged(object? sender, MessengerDashboard.Client.Events.ClientSessionChangedEventArgs e)
+        {
+            List<User> users = new();
+            e.Session.Users.ForEach(user => { users.Add(new User(user.ClientName, user.ClientPhotoUrl)); });
+            Users = users; 
+            Mode = Client.SessionInfo.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
+        }
+
         private List<User> _users;
         public List<User> Users
         {

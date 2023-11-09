@@ -25,7 +25,7 @@ namespace MessengerApp.Views
     {
         public DashboardControl()
         {
-            InitializeComponent();
+            InitializeComponent();/*
             DashboardViewModel viewModel = new();
             User user = new() { UserName = "Pratham", UserPicturePath = @"C:\\Users\\DELL\\Downloads\\Telegram Desktop\\MM.jpg" };
 
@@ -35,7 +35,7 @@ namespace MessengerApp.Views
             };
             viewModel.Summary = "Vinay Loves Hii Vinay";
             viewModel.Mode = "Lab Mode";
-            DataContext = viewModel;
+            DataContext = viewModel;*/
         }
     }
 }

@@ -9,7 +9,7 @@ namespace MessengerTestUI.Commands
 {
     public class RefreshCommand : ICommand
     {
-        public RefreshCommand(object viewModel, Type type) { }
+        public RefreshCommand(object viewModel) { }
 
         public event EventHandler? CanExecuteChanged;
 

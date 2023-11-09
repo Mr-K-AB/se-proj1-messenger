@@ -14,5 +14,11 @@ namespace MessengerDashboard
 
         }
         public string UserPicturePath { get; set; }
+
+        public User (string userName, string userPicturePath)
+        {
+            UserName = userName;
+            UserPicturePath = userPicturePath;
+        }
     }
 }

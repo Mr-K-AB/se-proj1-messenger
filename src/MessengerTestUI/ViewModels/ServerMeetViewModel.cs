@@ -11,7 +11,7 @@ using MessengerDashboard.Server;
 
 namespace MessengerTestUI.ViewModels
 {
-    internal class ServerMeetViewModel : ViewModelBase
+    public class ServerMeetViewModel : ViewModelBase
     {
         public ICommand NavigateHomeCommand { get; }
 
@@ -28,13 +28,26 @@ namespace MessengerTestUI.ViewModels
             Port = Server.ConnectionDetails.Port;
             IP = Server.ConnectionDetails.IpAddress;
 
+            Server.SessionUpdated += Server_SessionUpdated;
 
-            SwitchModeCommand = new SwitchModeCommand(this, typeof(ServerMeetViewModel));
+            SwitchModeCommand = new SwitchModeCommand(this);
 
-            RefreshCommand = new RefreshCommand(this, typeof(ServerMeetViewModel));
-            EndMeetCommand = new EndMeetCommand(this, typeof(ServerMeetViewModel));
+            RefreshCommand = new RefreshCommand(this);
+            EndMeetCommand = new EndMeetCommand(this);
+
+            List<User> users = new();
+            Server.SessionInfo.Users.ForEach(user => { users.Add(new User(user.ClientName, user.ClientPhotoUrl)); });
+            Users = users;
+            Mode = (Server.SessionInfo.SessionMode == SessionMode.Exam) ? "Exam" : "Lab";
         }
 
+        private void Server_SessionUpdated(object? sender, MessengerDashboard.Server.Events.SessionUpdatedEventArgs e)
+        {
+            List<User> users = new();
+            e.Session.Users.ForEach(user => { users.Add(new User(user.ClientName, user.ClientPhotoUrl)); });
+            Users = users;
+            Mode = Server.SessionInfo.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
+        }
 
         private List<User> _users;
         public List<User> Users

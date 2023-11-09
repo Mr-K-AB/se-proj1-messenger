@@ -1,12 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Drawing;
+using System.Windows.Controls;
 
 namespace MessengerScreenshare.Client
 {
     public class ScreenCapturer
     {
-        private const int MaxQueueLength = 20;
+        public const int MaxQueueLength = 20;
 
         private CancellationTokenSource? _cancellationTokenSource;
         private readonly ConcurrentQueue<Bitmap> _capturedFrameQueue;
@@ -31,7 +32,6 @@ namespace MessengerScreenshare.Client
                 {
                     return null;
                 }
-
                 await Task.Delay(100);
             }
         }
@@ -54,7 +54,7 @@ namespace MessengerScreenshare.Client
                     {
                         try
                         {
-                            Bitmap img = _screenshot.MakeScreenshot();
+                            Bitmap? img = _screenshot.MakeScreenshot();
                             if (img != null)
                             {
                                 await Task.Delay(150);

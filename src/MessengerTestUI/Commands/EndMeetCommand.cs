@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace MessengerDashboard
+namespace MessengerTestUI.Commands
 {
     public class EndMeetCommand : ICommand
     {
-        public EndMeetCommand(DashboardViewModel viewModel) { }
+        public EndMeetCommand(object viewModel, Type type) { }
 
         public event EventHandler? CanExecuteChanged;
 

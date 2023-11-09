@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System;
 using System.IO;
 using MessengerContent.Enums;
+using Messenger
 using MessengerNetworking.Communicator;
 
 namespace MessengerContent.Client

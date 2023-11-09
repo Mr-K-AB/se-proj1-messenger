@@ -2,40 +2,45 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Timers;
+using MessengerNetworking.NotificationHandler;
+using MessengerNetworking.Communicator;
+using MessengerNetworking.Factory;
 
 namespace MessengerScreenshare.Server
 {
     public class ScreenshareServer: ITimer,
-       //INotificationHandler, // To receive chat messages from clients.
-             // Handles client timeouts.
+       INotificationHandler, // To receive chat messages from clients.
+            // Handles client timeouts.
         IDisposable
     {
-        private  static ScreenshareServer? s_instance;
         private bool _disposedValue;
-        private readonly IDataReceiver _receiver;   // To notify changes to the UI.
         private static readonly object s_lockObject = new ();
         private readonly Dictionary<string, SharedClientScreen> _subscribers;
         private readonly bool _disposed;
-        protected ScreenshareServer(IDataReceiver listener, bool isDebugging)
+        private readonly ICommunicator _communicator;
+        private readonly Dictionary<string, Tuple<string, int>> _clientInformation;
+        private static ScreenshareServer? s_instance;
+
+        public ScreenshareServer(bool isDebugging)
         {
             if (!isDebugging)
             {
                 // Get an instance of a communicator object.
-               
+                _communicator = Factory.GetInstance();
 
                 // Subscribe to the networking module for packets.
-               
+               _communicator.AddSubscriber(Utils.ModuleIdentifier, this);
             }
 
             // Initialize the rest of the fields.
             _subscribers = new Dictionary<string, SharedClientScreen>();
-            _receiver = listener;
             _disposedValue = false;
-
+            _clientInformation =new Dictionary<string, Tuple<string, int>>();
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareServer", withTimeStamp: true));
         }
         ~ScreenshareServer()
@@ -45,6 +50,7 @@ namespace MessengerScreenshare.Server
             // readability and maintainability.
             Dispose(disposing: false);
         }
+
         public static ScreenshareServer GetInstance(IDataReceiver listener, bool isDebugging = false)
         {
             Debug.Assert(listener != null, Utils.GetDebugMessage("listener is found null"));
@@ -54,12 +60,13 @@ namespace MessengerScreenshare.Server
             {
                 lock (s_lockObject) // Use the defined lockObject for synchronization.
                 {
-                    s_instance ??= new ScreenshareServer(listener, isDebugging );
+                    s_instance ??= new ScreenshareServer(isDebugging);
                 }
             }
 
             return s_instance;
         }
+
         public void OnDataReceived(string packetData)
         {
             try
@@ -76,11 +83,13 @@ namespace MessengerScreenshare.Server
                 string clientName = packet.Name;
                 ClientDataHeader header = Enum.Parse<ClientDataHeader>(packet.Header);
                 string clientData = packet.Data;
+                string clientIP = packet.MyIP;
+                int clientPort = packet.MyPort;
 
                 // Create a dictionary to map packet headers to actions.
                 Dictionary<ClientDataHeader, Action> headerActions = new()
                 {       
-                    { ClientDataHeader.Register, () => RegisterClient(clientId, clientName) },
+                    { ClientDataHeader.Register, () => RegisterClient(clientId, clientName, clientPort, clientIP) },
                     { ClientDataHeader.Deregister, () => DeregisterClient(clientId) },
                     { ClientDataHeader.Image, () => PutImage(clientId, clientData) },
                     { ClientDataHeader.Confirmation, () => UpdateTimer(clientId) },
@@ -100,7 +109,7 @@ namespace MessengerScreenshare.Server
                 Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the packet: {e.Message}", withTimeStamp: true));
             }
         }
-        private void RegisterClient(string clientId, string clientName)
+        private void RegisterClient(string clientId, string clientName, int clientPort, string clientIp)
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
 
@@ -111,6 +120,10 @@ namespace MessengerScreenshare.Server
                     // If TryAdd fails, the client is already registered.
                     Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
                     return; // Early exit.
+                }
+                else
+                {
+                    _clientInformation.Add(clientId, new(clientIp, clientPort));
                 }
             }
 
@@ -181,11 +194,11 @@ namespace MessengerScreenshare.Server
         }
         public void BroadcastClients(List<string> clientIds, string headerVal, (int Rows, int Cols) numRowsColumns)
         {
-            //if (_communicator == null)
-            //{
-              //  Trace.WriteLine(Utils.GetDebugMessage("_communicator is found null", withTimeStamp: true));
-                //return;
-            //}
+            if (_communicator == null)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage("_communicator is found null", withTimeStamp: true));
+                return;
+            }
 
             if (clientIds == null)
             {
@@ -209,13 +222,14 @@ namespace MessengerScreenshare.Server
             {
                 int product = numRowsColumns.Rows * numRowsColumns.Cols;
 
-                var packet = new DataPacket("1", "Server", serverDataHeader.ToString(), JsonSerializer.Serialize(product));
+                var packet = new DataPacket("1", "Server", serverDataHeader.ToString(), JsonSerializer.Serialize(product), 0, "");
                 string packedData = JsonSerializer.Serialize(packet);
 
-                //foreach (string clientId in clientIds)
-               // {
-                   // _communicator.Send(packedData, Utils.ModuleIdentifier, clientId);
-                //}
+                foreach (string clientId in clientIds)
+                {
+                    (string clientIP, int clientPort) = _clientInformation[clientId];
+                    _communicator.SendMessage(clientIP, clientPort, Utils.ModuleIdentifier, packedData, 1);
+                }
             }
             catch (Exception e)
             {
@@ -285,18 +299,22 @@ namespace MessengerScreenshare.Server
             }
         }
 
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~ScreenshareServer()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
+       
 
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+        public void OnClientJoined(string ipAddress, int port)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnClientLeft(string ipAddress, int port)
+        {
+            throw new NotImplementedException();
         }
     }
 }

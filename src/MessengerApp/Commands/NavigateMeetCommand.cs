@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MessengerApp.Stores;
 using MessengerApp.ViewModels;
+using MessengerDashboard;
 
 namespace MessengerApp.Commands
 {
@@ -16,9 +17,9 @@ namespace MessengerApp.Commands
         {
             _navigationStore = navigationStore;
         }
-        public override void Execute(object parameter)
+        public override async void Execute(object parameter)
         {
-            _navigationStore.CurrentViewModel = new HomeViewModel(_navigationStore);
+            _navigationStore.CurrentViewModel = new MeetViewModel(_navigationStore);
         }
     }
 }

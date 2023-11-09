@@ -20,6 +20,7 @@ using MessengerContent.DataModels;
 using MessengerContent.Enums;
 using MessengerNetworking.NotificationHandler;
 using MessengerNetworking.Communicator;
+using System.Security.Cryptography;
 
 
 namespace MessengerContent.Client
@@ -48,6 +49,12 @@ namespace MessengerContent.Client
         /// ID of the user
         /// </summary>
         private int _userID;
+
+        // Name and Id of the current client user
+        private string? _name;
+        private string? _id;
+        private readonly string _myIP;
+        private readonly int _myPort;
 
         /// <summary>
         /// Lock object for locking
@@ -99,7 +106,7 @@ namespace MessengerContent.Client
             _chatHandler = new ChatMessageClient(_communicator);
             _fileHandler = new FileClient(_communicator);
             // instantiate other parameters
-            _userID = -1;
+            _userID = -1; 
             _lock = new object();
             AllMessages = new List<ChatThread>();
             _messageIDMap = new Dictionary<int, int>();
@@ -136,10 +143,15 @@ namespace MessengerContent.Client
                 _fileHandler.Communicator = value;
             }
         }
-
+        public void SetUser(string id, string name)
+        {
+            _id = id;
+            _name = name;
+        }
         /// <summary>
         /// User ID getter and setter functions
         /// </summary>
+        /// 
         public int UserID
         {
             get => _userID;
@@ -684,7 +696,7 @@ namespace MessengerContent.Client
                 // serialize message and send to server via network
                 string serializedMessage = _serializer.Serialize(message);
                 Trace.WriteLine($"[ContentClient] Sending request for message history to server for user ID = {UserID}");
-                _communicator.Send(serializedMessage, "Content", null);
+                _communicator.Send(serializedMessage, "Dashboard", null);
             }
             catch (Exception e)
             {

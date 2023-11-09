@@ -18,8 +18,18 @@ namespace MessengerApp
 
             _viewModel = ViewModel.Instance;
             _viewModel.ShapeItems = new();
-            DataContext = _viewModel;
             _viewModel.SetUserID(serverID);
+            if(serverID == 0)
+            {
+                Trace.WriteLine("Whiteboard Page :: Server Connected");
+                _viewModel.isServer = true;
+            }
+            else
+            {
+                Trace.WriteLine("Whiteboard Page :: Client Connected");
+                _viewModel.isServer = false;
+            }
+            DataContext = _viewModel;
         }
 
         //private void SampleRectangleClick(object sender, RoutedEventArgs e)
@@ -227,15 +237,15 @@ namespace MessengerApp
 
         private void ChangeStrokeColor(object sender, RoutedEventArgs e)
         {
-            Debug.Print((e.Source as Button).Name);
-            string bcolor = (e.Source as Button).Name;
+            //Debug.Print((e.Source as Button).Name);
+            Brush bcolor = (e.Source as RadioButton).Background;
             _viewModel.ChangeStrokeBrush(bcolor);
         }
 
         private void ChangeFillColor(object sender, RoutedEventArgs e)
         {
             //Debug.Print((e.Source as Button).ToolTip);
-            string bcolor = (e.Source as Button).ToolTip.ToString();
+            Brush bcolor = (e.Source as RadioButton).Background;
             _viewModel.ChangeFillBrush(bcolor);
         }
 

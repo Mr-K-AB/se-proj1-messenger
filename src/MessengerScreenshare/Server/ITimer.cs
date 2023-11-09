@@ -9,6 +9,6 @@ namespace MessengerScreenshare.Server
 {
     public interface ITimer
     {
-        public void OnTimeOut(object? source, string id, ElapsedEventArgs e);
+        public void OnTimeOut(object? source, int id, ElapsedEventArgs e);
     }
 }

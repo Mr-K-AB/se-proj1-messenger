@@ -1,7 +1,7 @@
 ﻿/// <credits>
 /// <author>
-/// <name>Aradhya Bijalwan</name>
-/// <rollnumber>112001006</rollnumber>
+/// <name>Shailab Chauhan</name>
+/// <rollnumber>112001038</rollnumber>
 /// </author>
 /// </credits>
 
@@ -16,21 +16,16 @@ namespace MessengerDashboard.Client
 {
     public class SessionInfo
     {
-        public int SessionID { get; set; }
-        public SessionMode SessionMode { get; set; }
-
-        public List<UserInfo> Users { get; set; }
-
         public SessionInfo()
         {
-            Users ??= new List<UserInfo>();
+            Users ??= new List<ClientInfo>();
             SessionMode = SessionMode.Lab;
             SessionID = new Random().Next();
         }
 
-        public void AddUser(UserInfo client)
-        {
-            Users.Add(client);
-        }
+        public int SessionID { get; set; }
+        public SessionMode SessionMode { get; set; }
+
+        public List<ClientInfo> Users { get; set; }
     }
 }

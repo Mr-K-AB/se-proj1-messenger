@@ -26,7 +26,7 @@ namespace MessengerScreenshare.Server
         /// <param name="clientName">
         /// Name of the client who started screen sharing.
         /// </param>
-        public void OnScreenshareStart(string clientId, string clientName);
+        public void OnScreenshareStart(int clientId, string clientName);
 
         /// <summary>
         /// Notifies that a client has stopped screen sharing.
@@ -37,6 +37,6 @@ namespace MessengerScreenshare.Server
         /// <param name="clientName">
         /// Name of the client who stopped screen sharing.
         /// </param>
-        public void OnScreenshareStop(string clientId, string clientName);
+        public void OnScreenshareStop(int clientId, string clientName);
     }
 }

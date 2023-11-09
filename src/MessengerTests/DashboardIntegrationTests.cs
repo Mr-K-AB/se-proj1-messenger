@@ -51,5 +51,35 @@ namespace MessengerTests
                 thread.Join();
             }
         }
+
+        [TestMethod]
+        public void ClientJoinAndExit()
+        {
+            ICommunicator communicator = Factory.GetInstance();
+            ServerSessionController server = new(communicator);
+            ConnectionDetails connectionDetails = server.ConnectionDetails;
+            List<Thread> threads = new();
+            for (int i = 0; i < 5; ++i)
+            {
+                Thread thread = new(() =>
+                {
+                    ClientSessionController client = new(new UdpCommunicator());
+                    if (!client.ConnectToServer(connectionDetails.IpAddress, connectionDetails.Port, 5000, "helo", "heko", "helo"))
+                    {
+                        Assert.Fail();
+                    }
+                    if (!client.RequestServerToRemoveClient(1000))
+                    {
+                        Assert.Fail();
+                    }
+                });
+                thread.Start();
+                threads.Add(thread);
+            }
+            foreach (Thread thread in threads)
+            {
+                thread.Join();
+            }
+        }
     }
 }

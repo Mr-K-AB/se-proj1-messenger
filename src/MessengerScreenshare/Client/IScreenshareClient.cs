@@ -8,7 +8,6 @@ namespace MessengerScreenshare.Client
 {
     public interface IScreenshareClient
     {
-        public void SetUser(string id, string naame, int serverPortNumber, string serverIP);
-        public bool IsExam { get; set; }
+        public void SetUser(int id, string name);
     }
 }

@@ -20,10 +20,9 @@ namespace MessengerScreenshare.Server
     {
         private bool _disposedValue;
         private static readonly object s_lockObject = new ();
-        private readonly Dictionary<string, SharedClientScreen> _subscribers;
+        private readonly Dictionary<int, SharedClientScreen> _subscribers;
         private readonly bool _disposed;
         private readonly ICommunicator _communicator;
-        private readonly Dictionary<string, Tuple<string, int>> _clientInformation;
         private static ScreenshareServer? s_instance;
 
         public ScreenshareServer(bool isDebugging)
@@ -38,9 +37,8 @@ namespace MessengerScreenshare.Server
             }
 
             // Initialize the rest of the fields.
-            _subscribers = new Dictionary<string, SharedClientScreen>();
+            _subscribers = new Dictionary<int, SharedClientScreen>();
             _disposedValue = false;
-            _clientInformation =new Dictionary<string, Tuple<string, int>>();
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareServer", withTimeStamp: true));
         }
         ~ScreenshareServer()
@@ -79,17 +77,15 @@ namespace MessengerScreenshare.Server
                     return;
                 }
 
-                string clientId = packet.Id;
+                int clientId = packet.Id;
                 string clientName = packet.Name;
                 ClientDataHeader header = Enum.Parse<ClientDataHeader>(packet.Header);
                 string clientData = packet.Data;
-                string clientIP = packet.MyIP;
-                int clientPort = packet.MyPort;
 
                 // Create a dictionary to map packet headers to actions.
                 Dictionary<ClientDataHeader, Action> headerActions = new()
                 {       
-                    { ClientDataHeader.Register, () => RegisterClient(clientId, clientName, clientPort, clientIP) },
+                    { ClientDataHeader.Register, () => RegisterClient(clientId, clientName) },
                     { ClientDataHeader.Deregister, () => DeregisterClient(clientId) },
                     { ClientDataHeader.Image, () => PutImage(clientId, clientData) },
                     { ClientDataHeader.Confirmation, () => UpdateTimer(clientId) },
@@ -109,7 +105,7 @@ namespace MessengerScreenshare.Server
                 Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the packet: {e.Message}", withTimeStamp: true));
             }
         }
-        private void RegisterClient(string clientId, string clientName, int clientPort, string clientIp)
+        private void RegisterClient(int clientId, string clientName)
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
 
@@ -121,10 +117,6 @@ namespace MessengerScreenshare.Server
                     Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
                     return; // Early exit.
                 }
-                else
-                {
-                    _clientInformation.Add(clientId, new(clientIp, clientPort));
-                }
             }
 
             //NotifyUX();
@@ -133,7 +125,7 @@ namespace MessengerScreenshare.Server
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully registered the client - Id: {clientId}, Name: {clientName}", withTimeStamp: true));
         }
 
-        private void DeregisterClient(string clientId)
+        private void DeregisterClient(int clientId)
         {
 
             lock (_subscribers)
@@ -170,7 +162,7 @@ namespace MessengerScreenshare.Server
                 }
             }
         }
-        private void PutImage(string clientId, string image)
+        private void PutImage(int clientId, string image)
         {
             lock (_subscribers)
             {
@@ -192,7 +184,7 @@ namespace MessengerScreenshare.Server
                 }
             }
         }
-        public void BroadcastClients(List<string> clientIds, string headerVal, (int Rows, int Cols) numRowsColumns)
+        public void BroadcastClients(List<int> clientIds, string headerVal, (int Rows, int Cols) numRowsColumns)
         {
             if (_communicator == null)
             {
@@ -222,14 +214,10 @@ namespace MessengerScreenshare.Server
             {
                 int product = numRowsColumns.Rows * numRowsColumns.Cols;
 
-                var packet = new DataPacket("1", "Server", serverDataHeader.ToString(), JsonSerializer.Serialize(product), 0, "");
+                var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), JsonSerializer.Serialize(product));
                 string packedData = JsonSerializer.Serialize(packet);
 
-                foreach (string clientId in clientIds)
-                {
-                    (string clientIP, int clientPort) = _clientInformation[clientId];
-                    _communicator.SendMessage(clientIP, clientPort, Utils.ModuleIdentifier, packedData, 1);
-                }
+                _communicator.Broadcast(Utils.ModuleIdentifier, packedData);
             }
             catch (Exception e)
             {
@@ -237,7 +225,7 @@ namespace MessengerScreenshare.Server
             }
         }
 
-        private void UpdateTimer(string clientId)
+        private void UpdateTimer(int clientId)
         {
             lock (_subscribers)
             {
@@ -246,7 +234,7 @@ namespace MessengerScreenshare.Server
                     try
                     {
                         client.UpdateTimer();
-                        BroadcastClients(new List<string> { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
+                        BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
 
                         Trace.WriteLine(Utils.GetDebugMessage($"Timer updated for the client with Id: {clientId}", withTimeStamp: true));
                     }
@@ -263,7 +251,7 @@ namespace MessengerScreenshare.Server
         }
 
 
-        public void OnTimeOut(object? source, string clientId, ElapsedEventArgs e)
+        public void OnTimeOut(object? source, int clientId, ElapsedEventArgs e)
         {
 
             DeregisterClient(clientId);

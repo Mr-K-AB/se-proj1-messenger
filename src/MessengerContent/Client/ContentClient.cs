@@ -53,8 +53,6 @@ namespace MessengerContent.Client
         // Name and Id of the current client user
         private string? _name;
         private string? _id;
-        private string _serverIP;
-        private int _serverPortNumber;
         private readonly string _myIP;
         private readonly int _myPort;
 
@@ -108,9 +106,7 @@ namespace MessengerContent.Client
             _chatHandler = new ChatMessageClient(_communicator);
             _fileHandler = new FileClient(_communicator);
             // instantiate other parameters
-            _userID = -1;
-            _myPort = _communicator.ListenPort;
-            _myIP = _communicator.IpAddress;
+            _userID = -1; 
             _lock = new object();
             AllMessages = new List<ChatThread>();
             _messageIDMap = new Dictionary<int, int>();
@@ -147,13 +143,10 @@ namespace MessengerContent.Client
                 _fileHandler.Communicator = value;
             }
         }
-        public void SetUser(string id, string name, int serverPortNumber, string serverIP)
+        public void SetUser(string id, string name)
         {
             _id = id;
             _name = name;
-            _serverPortNumber = serverPortNumber;
-            _serverIP = serverIP;
-            Trace.WriteLine(Utils.GetDebugMessage("Successfully set client name and id"));
         }
         /// <summary>
         /// User ID getter and setter functions

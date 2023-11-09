@@ -17,9 +17,9 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Height="40" Width="40"
-                                Cursor="Hand"
-								Background="{TemplateBinding Background}" 
-								Margin="5">
+                            Cursor="Hand"
+							Background="{TemplateBinding Background}" 
+							Margin="5">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
@@ -34,7 +34,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <!--Style for the images-->
         <Style TargetType="Image" x:Key="ImageStyle">
             <Setter Property="Height" Value="30"/>
@@ -49,9 +49,9 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Border Height="30" Width="30"
-                                Cursor="Hand"
-								Background="{TemplateBinding Background}" 
-								Margin="5">
+                            Cursor="Hand"
+							Background="{TemplateBinding Background}" 
+							Margin="5">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
@@ -89,15 +89,15 @@
 
                 <Grid Grid.Column="0">
                     <StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" HorizontalAlignment="Left">
-                        <TextBlock 
-                            FontSize="25"
-                            FontWeight="Bold"
-                            VerticalAlignment="Center"
-                            Padding="10,0,0,0"
-                            Text="Whiteboard |"/>
-                        <Button Name="Download" ToolTip="Download" Style="{StaticResource ButtonStyle}">
-                            <Image Source="../Images/download.png" Style="{StaticResource ImageStyle}" />
+                        <Button Name="Whiteboard" ToolTip="Whiteboard" Style="{StaticResource ButtonStyle}">
+                            <Image Source="../Images/whiteboard.png" Style="{StaticResource ImageStyle}" />
                         </Button>
+                        <TextBlock 
+                        FontSize="25"
+                        FontWeight="Bold"
+                        VerticalAlignment="Center"
+                        Padding="10,0,0,0"
+                        Text="Whiteboard "/>
 
                     </StackPanel>
 
@@ -108,131 +108,45 @@
 
                         <StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" >
 
-                            <ToggleButton Name="Size" ToolTip="Size" Style="{StaticResource ToggleButtonStyle}">
-                                <Image Source="../Images/size.png" Style="{StaticResource ImageStyle}" />
+                            <Button Name="Save" ToolTip="Save Session" Style="{StaticResource ButtonStyle}">
+                                <Image Source="../Images/save.png" Style="{StaticResource ImageStyle}" />
+                            </Button>
+
+                            <ToggleButton Name="Restore" ToolTip="Restore Session" Style="{StaticResource ToggleButtonStyle}">
+                                <Image Source="../Images/restore.png" Style="{StaticResource ImageStyle}" />
                             </ToggleButton>
-                            <Popup IsOpen="{Binding IsChecked, ElementName=Size}" 
-                                   StaysOpen="False" Placement="Bottom" AllowsTransparency="True" 
-                                   HorizontalOffset="0"
-                                   VerticalOffset="5">
-                                <Border Background="White" Height="auto" Width="auto" Padding="5">
+                            <Popup IsOpen="{Binding IsChecked, ElementName=Restore}" 
+                                PlacementTarget="{Binding ElementName=Restore}"
+                                Placement="Bottom"
+                                StaysOpen="False" AllowsTransparency="True" 
+                                PopupAnimation="Fade"
+                                Height="100"
+                                HorizontalOffset="0"
+                                VerticalOffset="5">
+                                <Border Background="WhiteSmoke" Height="auto" Width="auto" Padding="5">
                                     <Grid>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
+                                            <RowDefinition Height="2*"></RowDefinition>
+                                            <RowDefinition Height="3*"></RowDefinition>
                                         </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
 
-                                        <Grid Grid.Row="0" Grid.Column="0">
-                                            <Button Background="Black" Height="5" Width="5" Margin="5" Name="size1px" ToolTip="1px">
-                                                <Button.Resources>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="CornerRadius" Value="5"/>
-                                                    </Style>
-                                                </Button.Resources>
-                                            </Button>
-                                        </Grid>
-                                        <Grid Grid.Row="0" Grid.Column="1">
-                                            <Button Background="Black" Height="10" Width="10" Margin="5" Name="size4px" ToolTip="4px">
-                                                <Button.Resources>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="CornerRadius" Value="5"/>
-                                                    </Style>
-                                                </Button.Resources>
-                                            </Button>
-                                        </Grid>
-                                        <Grid Grid.Row="0" Grid.Column="2">
-                                            <Button Background="Black" Height="15" Width="15" Margin="5" Name="size8px" ToolTip="8px">
-                                                <Button.Resources>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="CornerRadius" Value="5"/>
-                                                    </Style>
-                                                </Button.Resources>
-                                            </Button>
-                                        </Grid>
 
-                                        <Grid Grid.Row="1" Grid.Column="0">
-                                            <TextBlock Text="1px" Padding="5" TextAlignment="Left"/>
-                                        </Grid>
-                                        <Grid Grid.Row="1" Grid.Column="1">
-                                            <TextBlock Text="4px" Padding="5" TextAlignment="Left"/>
-                                        </Grid>
-                                        <Grid Grid.Row="1" Grid.Column="2">
-                                            <TextBlock Text="8px" Padding="5" TextAlignment="Left"/>
-                                        </Grid>
+                                        <StackPanel Grid.Row="0" Orientation ="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock Text="Snapshots"
+                                               Foreground="Black"
+                                               FontSize="14"
+                                               FontWeight="light"
+                                               VerticalAlignment="Center"
+                                               Margin="2.5 5 0 10">
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                        <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke" ItemsSource="{Binding CheckList}">
+                                        </ListBox>
 
                                     </Grid>
                                 </Border>
                             </Popup>
-
-                            <TextBlock 
-                                FontSize="20"
-                                VerticalAlignment="Center"
-                                Text=": 1px  "/>
-                            
-                            <TextBlock 
-                                FontSize="20"
-                                VerticalAlignment="Center"
-                                Text="|"/>
-
-                            <ToggleButton Name="Color" ToolTip="Color" Style="{StaticResource ToggleButtonStyle}">
-                                <Image Source="../Images/color.png" Style="{StaticResource ImageStyle}" />
-                            </ToggleButton>
-                            <Popup IsOpen="{Binding IsChecked, ElementName=Color}" 
-                                   StaysOpen="False" Placement="Bottom" AllowsTransparency="True" 
-                                   HorizontalOffset="0"
-                                   VerticalOffset="5">
-                                <Border Background="White" Height="auto" Width="auto" Padding="5">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <Grid Grid.Row="0" Grid.Column="0">
-                                            <Button Background="White"  Height="15" Width="15" Margin="5" Name="White" ToolTip="White" Click="ChangeStrokeColor"/>
-                                        </Grid>
-                                        <Grid Grid.Row="0" Grid.Column="1">
-                                            <Button Background="Black" Height="15" Width="15" Margin="5" Name="Black" ToolTip="Black" Click="ChangeStrokeColor"/>
-                                        </Grid>
-                                        <Grid Grid.Row="0" Grid.Column="2">
-                                            <Button Background="Red" Height="15" Width="15" Margin="5" Name="Red" ToolTip="Red" Click="ChangeStrokeColor"/>
-                                        </Grid>
-
-                                        <Grid Grid.Row="1" Grid.Column="0">
-                                            <Button Background="Green" Height="15" Width="15" Margin="5" Name="Green" ToolTip="Green" Click="ChangeStrokeColor"/>
-                                        </Grid>
-                                        <Grid Grid.Row="1" Grid.Column="1">
-                                            <Button Background="Yellow" Height="15" Width="15" Margin="5" Name="Yellow" ToolTip="Yellow" Click="ChangeStrokeColor"/>
-                                        </Grid>
-                                        <Grid Grid.Row="1" Grid.Column="2">
-                                            <Button Background="Blue" Height="15" Width="15" Margin="5" Name="Blue" ToolTip="Blue" Click="ChangeStrokeColor"/>
-                                        </Grid>
-
-                                    </Grid>
-                                </Border>
-                            </Popup>
-
-                            <TextBlock 
-                                FontSize="20"
-                                VerticalAlignment="Center"
-                                Text=" : "/>
-                            <Grid Grid.Row="1" Grid.Column="2">
-                                <Button Background="Black" Height="15" Width="15" Margin="5" Name="curColor" ToolTip="Current Color"/>
-                            </Grid>
-                            <TextBlock 
-                                FontSize="20"
-                                VerticalAlignment="Center"
-                                Text=" Black "/>
 
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" >
@@ -240,17 +154,13 @@
                             <Button Name="Plus" ToolTip="Zoom In" Style="{StaticResource ButtonStyle}">
                                 <Image Source="../Images/plus.png" Style="{StaticResource ImageStyle}" />
                             </Button>
-                            <TextBlock 
-                                FontSize="20"
-                                VerticalAlignment="Center"
-                                Text="|"/>
 
                             <Button Name="Minus" ToolTip="Zoom Out" Style="{StaticResource ButtonStyle}">
                                 <Image Source="../Images/minus.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
                         </StackPanel>
-                        
+
                     </StackPanel>
 
                 </Grid>
@@ -275,68 +185,194 @@
                                 <Image Source="../Images/cursor.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
-                            <Button Name="Pen" ToolTip="Pen" Style="{StaticResource ButtonStyle}" Click="CurveMode">
+                            <ToggleButton Name="Pen" ToolTip="Pen" Style="{StaticResource ToggleButtonStyle}" Click="CurveMode">
                                 <Image Source="../Images/pen.png" Style="{StaticResource ImageStyle}" />
-                            </Button>
+                            </ToggleButton>
+                            <Popup IsOpen="{Binding IsChecked, ElementName=Pen}" 
+                               PlacementTarget="{Binding ElementName=Pen}"
+                               Placement="Right"
+                               StaysOpen="False" AllowsTransparency="True" 
+                               PopupAnimation="Fade"
+                               HorizontalOffset="0"
+                               VerticalOffset="5">
+                                <Border Background="WhiteSmoke" Height="auto" Width="auto" Padding="5">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="2*"/>
+                                            <RowDefinition Height="2*"/>
+                                        </Grid.RowDefinitions>
+                                        <StackPanel Grid.Row="0">
+                                            <TextBlock Text="Color"
+								            Foreground="Black"
+								            FontSize="14"
+								            FontWeight="light"
+								            VerticalAlignment="Center"
+								            Margin="10 10 0 5">
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" >
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <RadioButton Grid.Row="0" Grid.Column="0"  Margin="5 0 0 10"  VerticalAlignment="Center" Background="White" Click="ChangeStrokeColor">
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                                <RadioButton Grid.Row="0" Grid.Column="1"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Red" Click="ChangeStrokeColor">
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                                <RadioButton Grid.Row="0" Grid.Column="2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" Click="ChangeStrokeColor">
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                                <RadioButton Grid.Row="1" Grid.Column="0"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" Click="ChangeStrokeColor">
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                                <RadioButton  Grid.Row="1" Grid.Column="1"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" Click="ChangeStrokeColor">
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                                <RadioButton  Grid.Row="1" Grid.Column="2"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Black" Click="ChangeStrokeColor">
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                            </Grid>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="2">
+                                            <TextBlock Text="Thickness"
+											Foreground="Black"
+											FontSize="14"
+											FontWeight="light"
+											VerticalAlignment="Center"
+											Margin="10 0 0 0">
+                                            </TextBlock>
+                                            <Slider x:Name="PenThicknessSlider" Foreground="Black" Minimum="1" Maximum="21" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ></Slider>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </Popup>
+
+                            <ToggleButton Name="Line" ToolTip="Line" Style="{StaticResource ToggleButtonStyle}">
+                                <Image Source="../Images/line.png" Style="{StaticResource ImageStyle}" />
+                            </ToggleButton>
+                            <Popup IsOpen="{Binding IsChecked, ElementName=Line}" 
+                                PlacementTarget="{Binding ElementName=Line}"
+                                Placement="Right"
+                                StaysOpen="False" AllowsTransparency="True" 
+                                PopupAnimation="Fade"
+                                HorizontalOffset="0"
+                                VerticalOffset="5">
+                                <Border Background="WhiteSmoke" Height="auto" Width="auto" Padding="5">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="2*"/>
+                                            <RowDefinition Height="2*"/>
+                                        </Grid.RowDefinitions>
+                                        <StackPanel Grid.Row="0">
+                                            <TextBlock Text="Color"
+							            Foreground="Black"
+							            FontSize="14"
+							            FontWeight="light"
+							            VerticalAlignment="Center"
+							            Margin="10 10 0 5">
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" >
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <RadioButton Grid.Row="0" Grid.Column="0"  Margin="5 0 0 10"  VerticalAlignment="Center" Background="White" >
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                                <RadioButton Grid.Row="0" Grid.Column="1"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Red" >
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                                <RadioButton Grid.Row="0" Grid.Column="2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" >
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                                <RadioButton Grid.Row="1" Grid.Column="0"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" >
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                                <RadioButton  Grid.Row="1" Grid.Column="1"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" >
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                                <RadioButton  Grid.Row="1" Grid.Column="2"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Black" >
+                                                    <RadioButton.RenderTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                    </RadioButton.RenderTransform>
+                                                </RadioButton>
+                                            </Grid>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="2">
+                                            <TextBlock Text="Thickness"
+										Foreground="Black"
+										FontSize="14"
+										FontWeight="light"
+										VerticalAlignment="Center"
+										Margin="10 0 0 0">
+                                            </TextBlock>
+                                            <Slider x:Name="LineThicknessSlider" Foreground="Black" Minimum="1" Maximum="21" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ></Slider>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </Popup>
 
                             <Button Name="Eraser" ToolTip="Eraser" Style="{StaticResource ButtonStyle}" Click="DeleteMode">
                                 <Image Source="../Images/eraser.png" Style="{StaticResource ImageStyle}" />
                             </Button>
-
-                            <ToggleButton Name="Fill" ToolTip="Fill Color" Style="{StaticResource ToggleButtonStyle}">
-                                <Image Source="../Images/bucket.png" Style="{StaticResource ImageStyle}" />
-                            </ToggleButton>
-                            <Popup IsOpen="{Binding IsChecked, ElementName=Fill}" 
-                                   StaysOpen="False" Placement="Right" AllowsTransparency="True" 
-                                   HorizontalOffset="5"
-                                   VerticalOffset="80">
-                                <Border Background="White" Height="auto" Width="auto">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <Grid Grid.Row="0" Grid.Column="0">
-                                            <Button Background="Transparent"  Height="15" Width="15" Margin="5" Name="FillTransparent" ToolTip="Transparent" Click="ChangeFillColor"/>
-                                        </Grid>
-                                        <Grid Grid.Row="0" Grid.Column="1">
-                                            <Button Background="Black" Height="15" Width="15" Margin="5" Name="FillBlack" ToolTip="Black" Click="ChangeFillColor"/>
-                                        </Grid>
-                                        <Grid Grid.Row="1" Grid.Column="0">
-                                            <Button Background="Red" Height="15" Width="15" Margin="5" Name="FillRed" ToolTip="Red" Click="ChangeFillColor"/>
-                                        </Grid>
-
-                                        <Grid Grid.Row="1" Grid.Column="1">
-                                            <Button Background="Green" Height="15" Width="15" Margin="5" Name="FillGreen" ToolTip="Green" Click="ChangeFillColor"/>
-                                        </Grid>
-                                        <Grid Grid.Row="2" Grid.Column="0">
-                                            <Button Background="Yellow" Height="15" Width="15" Margin="5" Name="FillYellow" ToolTip="Yellow" Click="ChangeFillColor"/>
-                                        </Grid>
-                                        <Grid Grid.Row="2" Grid.Column="1">
-                                            <Button Background="Blue" Height="15" Width="15" Margin="5" Name="FillBlue" ToolTip="Blue" Click="ChangeFillColor"/>
-                                        </Grid>
-
-                                    </Grid>
-                                </Border>
-                            </Popup>
 
 
                             <ToggleButton Name="ShapesButton" ToolTip="Shapes" Style="{StaticResource ToggleButtonStyle}">
                                 <Image Source="../Images/shapes.png" Style="{StaticResource ImageStyle}" />
                             </ToggleButton>
                             <Popup IsOpen="{Binding IsChecked, ElementName=ShapesButton}" 
-                                   StaysOpen="False" Placement="Right" AllowsTransparency="True" 
-                                   HorizontalOffset="5"
-                                   VerticalOffset="80">
+                               StaysOpen="False" Placement="Right" AllowsTransparency="True" 
+                               HorizontalOffset="5"
+                               VerticalOffset="80">
                                 <Border Background="White" Height="auto" Width="auto">
                                     <Grid>
                                         <Grid.RowDefinitions>
+                                            <RowDefinition/>
                                             <RowDefinition/>
                                             <RowDefinition/>
                                             <RowDefinition/>
@@ -344,23 +380,181 @@
                                         </Grid.RowDefinitions>
 
                                         <Grid Grid.Row="0">
-                                            <Button Name="Line" ToolTip="Line" Style="{StaticResource ButtonStyle}">
-                                                <Image Source="../Images/line.png" Style="{StaticResource ImageStyle}" />
-                                            </Button>
+                                            <ToggleButton Name="Fill" ToolTip="Fill Color" Style="{StaticResource ToggleButtonStyle}">
+                                                <Image Source="../Images/bucket.png" Style="{StaticResource ImageStyle}" />
+                                            </ToggleButton>
+                                            <Popup IsOpen="{Binding IsChecked, ElementName=Fill}" 
+                                                PlacementTarget="{Binding ElementName=Fill}"
+                                                Placement="Right"
+                                                StaysOpen="False" AllowsTransparency="True" 
+                                                PopupAnimation="Fade"
+                                                HorizontalOffset="0"
+                                                VerticalOffset="5">
+                                                <Border Background="WhiteSmoke" Height="auto" Width="auto" Padding="5">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="2*"/>
+                                                            <RowDefinition Height="2*"/>
+                                                        </Grid.RowDefinitions>
+                                                        <StackPanel Grid.Row="0">
+                                                            <TextBlock Text="Color"
+			                                                Foreground="Black"
+			                                                FontSize="14"
+			                                                FontWeight="light"
+			                                                VerticalAlignment="Center"
+			                                                Margin="10 10 0 5">
+                                                            </TextBlock>
+                                                        </StackPanel>
+
+                                                        <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" >
+                                                            <Grid>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition/>
+                                                                    <RowDefinition/>
+                                                                </Grid.RowDefinitions>
+
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition/>
+                                                                    <ColumnDefinition/>
+                                                                    <ColumnDefinition/>
+                                                                </Grid.ColumnDefinitions>
+
+                                                                <RadioButton Grid.Row="0" Grid.Column="0"  Margin="5 0 0 10"  VerticalAlignment="Center" Background="White" Click="ChangeFillColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                                <RadioButton Grid.Row="0" Grid.Column="1"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Red" Click="ChangeFillColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                                <RadioButton Grid.Row="0" Grid.Column="2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" Click="ChangeFillColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                                <RadioButton Grid.Row="1" Grid.Column="0"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" Click="ChangeFillColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                                <RadioButton  Grid.Row="1" Grid.Column="1"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue"  Click="ChangeFillColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                                <RadioButton  Grid.Row="1" Grid.Column="2"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Black" Click="ChangeFillColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                            </Grid>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </Popup>
                                         </Grid>
                                         <Grid Grid.Row="1">
+                                            <ToggleButton Name="Size" ToolTip="Size" Style="{StaticResource ToggleButtonStyle}">
+                                                <Image Source="../Images/size.png" Style="{StaticResource ImageStyle}" />
+                                            </ToggleButton>
+                                            <Popup IsOpen="{Binding IsChecked, ElementName=Size}" 
+                                                PlacementTarget="{Binding ElementName=Size}"
+                                                Placement="Right"
+                                                StaysOpen="False" AllowsTransparency="True" 
+                                                PopupAnimation="Fade"
+                                                HorizontalOffset="0"
+                                                VerticalOffset="5">
+                                                <Border Background="WhiteSmoke" Height="auto" Width="auto" Padding="5">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="2*"/>
+                                                            <RowDefinition Height="2*"/>
+                                                        </Grid.RowDefinitions>
+                                                        <StackPanel Grid.Row="0">
+                                                            <TextBlock Text="Color"
+			                                                Foreground="Black"
+			                                                FontSize="14"
+			                                                FontWeight="light"
+			                                                VerticalAlignment="Center"
+			                                                Margin="10 10 0 5">
+                                                            </TextBlock>
+                                                        </StackPanel>
 
+                                                        <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" >
+                                                            <Grid>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition/>
+                                                                    <RowDefinition/>
+                                                                </Grid.RowDefinitions>
+
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition/>
+                                                                    <ColumnDefinition/>
+                                                                    <ColumnDefinition/>
+                                                                </Grid.ColumnDefinitions>
+
+                                                                <RadioButton Grid.Row="0" Grid.Column="0"  Margin="5 0 0 10"  VerticalAlignment="Center" Background="White" Click="ChangeStrokeColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                                <RadioButton Grid.Row="0" Grid.Column="1"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Red" Click="ChangeStrokeColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                                <RadioButton Grid.Row="0" Grid.Column="2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" Click="ChangeStrokeColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                                <RadioButton Grid.Row="1" Grid.Column="0"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" Click="ChangeStrokeColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                                <RadioButton  Grid.Row="1" Grid.Column="1"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" Click="ChangeStrokeColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                                <RadioButton  Grid.Row="1" Grid.Column="2"  Margin="5 0 0 10" VerticalAlignment="Center" Background="Black" Click="ChangeStrokeColor">
+                                                                    <RadioButton.RenderTransform>
+                                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                                    </RadioButton.RenderTransform>
+                                                                </RadioButton>
+                                                            </Grid>
+                                                        </StackPanel>
+                                                        <StackPanel Grid.Row="2">
+                                                            <TextBlock Text="Thickness"
+									                        Foreground="Black"
+									                        FontSize="14"
+									                        FontWeight="light"
+									                        VerticalAlignment="Center"
+									                        Margin="10 0 0 0">
+                                                            </TextBlock>
+                                                            <Slider x:Name="ShapeThicknessSlider" Foreground="Black" Minimum="1" Maximum="21" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ></Slider>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </Popup>
+                                        </Grid>
+
+                                        <Grid Grid.Row="2">
                                             <Button Name="Rectangle" ToolTip="Rectangle" Style="{StaticResource ButtonStyle}" Click="RectangleMode">
                                                 <Image Source="../Images/rectangle.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
-                                        <Grid Grid.Row="2">
+                                        <Grid Grid.Row="3">
                                             <Button Name="Ellipse" ToolTip="Ellipse" Style="{StaticResource ButtonStyle}" Click="EllipseMode">
                                                 <Image Source="../Images/ellipse.png" Style="{StaticResource ImageStyle}" />
-
                                             </Button>
                                         </Grid>
-                                        <Grid Grid.Row="3">
+                                        <Grid Grid.Row="4">
                                             <Button Name="Triangle" ToolTip="Triangle" Style="{StaticResource ButtonStyle}">
                                                 <Image Source="../Images/triangle.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
@@ -369,45 +563,24 @@
                                 </Border>
                             </Popup>
 
-                            <ToggleButton Name="MoreTools" ToolTip="More Tools" Style="{StaticResource ToggleButtonStyle}">
-                                <Image Source="../Images/down-arrow.png" Style="{StaticResource ImageStyle}" />
-                            </ToggleButton>
-                            <Popup IsOpen="{Binding IsChecked, ElementName=MoreTools}" 
-                                   StaysOpen="False" Placement="Right" AllowsTransparency="True" 
-                                   HorizontalOffset="5"
-                                   VerticalOffset="80">
-                                <Border Background="White" Height="auto" Width="auto">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
+                            <Button Name="Text" ToolTip="Text" Style="{StaticResource ButtonStyle}" Click="TextMode">
+                                <Image Source="../Images/text.png" Style="{StaticResource ImageStyle}" />
+                            </Button>
 
-                                        <Grid Grid.Row="0">
-
-                                            <Button Name="Text" ToolTip="Text" Style="{StaticResource ButtonStyle}" Click="TextMode">
-                                                <Image Source="/Images/text.png" Style="{StaticResource ImageStyle}" />
-                                            </Button>
-                                        </Grid>
-                                        <Grid Grid.Row="1">
-                                            <Button Name="Clear" ToolTip="Clear Page" Style="{StaticResource ButtonStyle}">
-                                                <Image Source="../Images/clear.png" Style="{StaticResource ImageStyle}" />
-                                            </Button>
-                                        </Grid>
-                                    </Grid>
-                                </Border>
-                            </Popup>
+                            <Button Name="Clear" ToolTip="Clear Page" Style="{StaticResource ButtonStyle}">
+                                <Image Source="../Images/clear.png" Style="{StaticResource ImageStyle}" />
+                            </Button>
 
                         </StackPanel>
 
                         <StackPanel Orientation="Vertical" Background="White" Margin="10">
 
 
-                            <Button Name="Undo" ToolTip="Undo" Click="UndoMode" Style="{StaticResource ButtonStyle}">
+                            <Button Name="Undo" ToolTip="Undo" Style="{StaticResource ButtonStyle}" Click="UndoMode">
                                 <Image Source="../Images/undo.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
-                            <Button Name="Redo" ToolTip="Redo" Click="RedoMode" Style="{StaticResource ButtonStyle}">
+                            <Button Name="Redo" ToolTip="Redo" Style="{StaticResource ButtonStyle}" Click="RedoMode">
                                 <Image Source="../Images/redo.png" Style="{StaticResource ImageStyle}" />
 
                             </Button>
@@ -427,6 +600,7 @@
                                      MouseDown="CanvasMouseDown"
                                      MouseMove="CanvasMouseMove"
                                      Background="White"
+                                     Margin="10"
 								 
                                  />
 
@@ -439,7 +613,7 @@
                                   Data="{Binding Geometry}"
                                   Fill="{Binding Fill}"
 						          Stroke="{Binding Stroke}"
-                                  StrokeThickness="{Binding StrokeThickness}" ClipToBounds="True"
+                                  StrokeThickness="{Binding StrokeThickness}"
                                   />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

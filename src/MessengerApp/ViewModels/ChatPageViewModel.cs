@@ -15,7 +15,6 @@ using MessengerApp.ViewModels;
 using System;
 using System.Windows.Threading;
 using MessengerDashboard;
-using MessengerDashboard;
 using System.Windows;
 using MessengerDashboard.Client;
 
@@ -161,10 +160,10 @@ namespace MessengerApp.ViewModels
                               {
                                   Trace.WriteLine("[ChatPageViewModel] Users List Received.");
                                   Users.Clear();
-                                  foreach (UserInfo user in currentSession.Users)
+                                  foreach (ClientInfo user in currentSession.Users)
                                   {
                                       // adding users for the session
-                                      Users.Add(user.UserID, user.UserName);
+                                      Users.Add(user.ClientId, user.ClientName);
                                   }
                               }
                           }

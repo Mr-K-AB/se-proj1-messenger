@@ -426,10 +426,10 @@
 
         <!--Setting up the templates for constructing chat bubbles-->
         <!--Note: Since, all the messages are not available in _msgCollection currently, This Template Selector can't run-->
-        <local:ChatBubbleConstructor x:Key="TemplateSelector" SentChatMessageTemplate="{StaticResource temp}"
+        <!--<local:ChatBubbleConstructor x:Key="TemplateSelector" SentChatMessageTemplate="{StaticResource temp}"
                           SentFileMessageTemplate="{StaticResource temp}"
                           ReceivedChatMessageTemplate="{StaticResource temp}"
-                          ReceivedFileMessageTemplate="{StaticResource temp}" />
+                          ReceivedFileMessageTemplate="{StaticResource temp}" />-->
         </UserControl.Resources>
 
 

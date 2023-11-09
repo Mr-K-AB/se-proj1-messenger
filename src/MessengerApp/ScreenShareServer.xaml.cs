@@ -46,7 +46,7 @@ namespace MessengerApp
                 Debug.Assert(pinButton.CommandParameter != null, "ClientId received to pin does not exist");
                 Debug.Assert(viewModel != null, Utils.GetDebugMessage("View Model could not be created"));
 
-                viewModel.OnPin(pinButton.CommandParameter.ToString()!);
+                viewModel.OnPin((int)pinButton.CommandParameter!);
             }
 
             Trace.WriteLine(Utils.GetDebugMessage("Pin Button Clicked", withTimeStamp: true));
@@ -62,7 +62,7 @@ namespace MessengerApp
                 Debug.Assert(someButton.CommandParameter != null, "ClientId received to unpin does not exist");
                 Debug.Assert(viewModel != null, Utils.GetDebugMessage("View Model could not be created"));
 
-                viewModel.OnUnpin(someButton.CommandParameter.ToString()!);
+                viewModel.OnUnpin((int)someButton.CommandParameter!);
             }
 
             Trace.WriteLine(Utils.GetDebugMessage("Unpin Button Clicked", withTimeStamp: true));

@@ -26,7 +26,14 @@ namespace MessengerTestUI.ViewModels
             //await Task.Delay(3000);
             IsButtonEnabled = true;
 
-            AuthenticationResult authResult = await Authenticator.Authenticate();
+            //AuthenticationResult authResult = await Authenticator.Authenticate();
+            AuthenticationResult authResult = new()
+            {
+                IsAuthenticated = true,
+                UserEmail = "mocktest@gmail.com",
+                UserName = "Application",
+                UserImage = @"https://lh3.googleusercontent.com/a/ACg8ocJKjXYyRFOA-tiDwFz2dvu65CH5s1V-bsuu5aG_PMvmrA\\u003ds96-c\"
+            };
 
             NavigationStore navigationStore = new()
             {

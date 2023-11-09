@@ -7,6 +7,6 @@ namespace MessengerDashboard.Telemetry
 {
     public interface ITelemetry
     {
-        public AnalysisResults GetTelemetryAnalytics();
+        public Analysis GetTelemetryAnalytics();
     }
 }

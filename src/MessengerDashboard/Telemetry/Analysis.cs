@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace MessengerDashboard.Telemetry
 {
-    public class AnalysisResults
+    public class Analysis
     {
-        public AnalysisResults(Dictionary<int, int> userIdToChatCountMap, Dictionary<int, string> userIdToName,
+        public Analysis(Dictionary<int, int> userIdToChatCountMap, Dictionary<int, string> userIdToName,
             List<int> insincereMembers, Dictionary<DateTime, int> timeStampToUserIdMap, int totalUserCount, int totalChatCount)
         {
             UserIdToChatCountMap = userIdToChatCountMap;

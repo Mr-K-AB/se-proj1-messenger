@@ -177,7 +177,7 @@ namespace MessengerScreenshare.Server
         /// <param name="clientName">
         /// Name of the client who started screen sharing.
         /// </param>
-        public void OnScreenshareStart(string clientId, string clientName)
+        public void OnScreenshareStart(int clientId, string clientName)
         {
             if (clientName == "")
             {
@@ -197,7 +197,7 @@ namespace MessengerScreenshare.Server
         /// <param name="clientName">
         /// Name of the client who stopped screen sharing.
         /// </param>
-        public void OnScreenshareStop(string clientId, string clientName)
+        public void OnScreenshareStop(int clientId, string clientName)
         {
             if (clientName == "")
             {
@@ -520,9 +520,9 @@ namespace MessengerScreenshare.Server
         /// <param name="clientId">
         /// Id of the client which is marked as pinned.
         /// </param>
-        public void OnPin(string clientId)
+        public void OnPin(int clientId)
         {
-            Debug.Assert(clientId != null, Utils.GetDebugMessage("Received null client id"));
+            Debug.Assert(clientId != 0, Utils.GetDebugMessage("Received null client id"));
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
             Debug.Assert(_subscribers.Count != 0, Utils.GetDebugMessage("_subscribers has count 0"));
 
@@ -567,9 +567,9 @@ namespace MessengerScreenshare.Server
         /// <param name="clientId">
         /// Id of the client which is marked as unpinned.
         /// </param>
-        public void OnUnpin(string clientId)
+        public void OnUnpin(int clientId)
         {
-            Debug.Assert(clientId != null, Utils.GetDebugMessage("Received null client id"));
+            Debug.Assert(clientId != 0, Utils.GetDebugMessage("Received null client id"));
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
             Debug.Assert(_subscribers.Count != 0, Utils.GetDebugMessage("_subscribers has count 0"));
 
@@ -995,7 +995,7 @@ namespace MessengerScreenshare.Server
         /// <returns>
         /// The page number of the client on which it's screen is displayed.
         /// </returns>
-        private int GetClientPage(string clientId)
+        private int GetClientPage(int clientId)
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
 

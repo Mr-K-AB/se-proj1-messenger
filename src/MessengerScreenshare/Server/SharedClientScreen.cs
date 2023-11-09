@@ -105,11 +105,11 @@ namespace MessengerScreenshare.Server
         /// If we are in debugging/testing mode.
         /// </param>
         /// <exception cref="Exception"></exception>
-        public SharedClientScreen(string clientId, string clientName, ITimer server, bool isDebug = false)
+        public SharedClientScreen(int clientId, string clientName, ITimer server, bool isDebug = false)
         {
             //Initialize all the variables
  
-            Id = clientId ?? throw new ArgumentNullException(nameof(clientId));
+            Id = clientId;
             Name = clientName ?? throw new ArgumentNullException(nameof(clientName));
             _serverTimeout = server ?? throw new ArgumentNullException(nameof(server));
 
@@ -210,7 +210,7 @@ namespace MessengerScreenshare.Server
         /// <summary>
         /// Gets the ID of the client sharing this screen.
         /// </summary>
-        public string Id { get; private set; }
+        public int Id { get; private set; }
 
         /// <summary>
         /// Gets the name of the client sharing this screen.

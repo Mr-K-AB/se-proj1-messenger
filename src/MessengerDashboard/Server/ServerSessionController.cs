@@ -27,6 +27,26 @@ namespace MessengerDashboard.Server
     /// </remarks>
     public class ServerSessionController : IServerSessionController    
     {
+        public Analysis _sessionAnalytics;
+
+        public SessionInfo _sessionInfo = new();
+
+        private readonly ICommunicator _communicator;
+
+        private readonly string _moduleIdentifier = "Dashboard";
+
+        private readonly ISentimentAnalyzer _sentimentAnalyzer = SentimentAnalyzerFactory.GetSentimentAnalyzer();
+
+        private readonly Serializer _serializer = new();
+
+        private readonly SessionMode _sessionMode;
+
+        private readonly ITextSummarizer _textSummarizer = TextSummarizerFactory.GetTextSummarizer();
+
+        private TextSummary? _chatSummary;
+
+        private int _clientCount = 0;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerSessionController"/> with the provided <see cref="ICommunicator"/> instance.
         /// </summary>
@@ -45,20 +65,49 @@ namespace MessengerDashboard.Server
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
         }
 
-        public SessionMode SessionMode { get; private set; }
+        public event EventHandler NewUserAdded;
 
-        private readonly ICommunicator _communicator;
-        private readonly ITextSummarizer _textSummarizer = TextSummarizerFactory.GetTextSummarizer();
-        private readonly ISentimentAnalyzer _sentimentAnalyzer = SentimentAnalyzerFactory.GetSentimentAnalyzer();
-        private readonly Serializer _serializer = new();
-        private int _clientCount = 0;
-        public SessionInfo _sessionInfo = new();
-        private readonly SessionMode _sessionMode;
-        private TextSummary? _chatSummary;
+        public event EventHandler SessionEnded;
+
         public event EventHandler<SessionUpdatedEventArgs> SessionUpdated;
-        private readonly string _moduleIdentifier = "Dashboard";
-        public Analysis _sessionAnalytics;
-        
+
+        //     Returns the credentials required to Join the meeting
+        public ConnectionDetails ConnectionDetails { get; private set; } = null;
+
+        public string UserName { get; set; }
+
+        public string UserEmail { get; set; }
+
+        public string UserPhotoUrl { get; set; }
+
+        public SessionMode SessionMode { get; private set; }
+        public void BroadcastPayloadToClients(Operation operation, SessionInfo? sessionInfo, TextSummary? summary = null,
+                                                      Analysis? sessionAnalytics = null, ClientInfo? user = null)
+        {
+            ServerPayload serverPayload;
+            lock (this)
+            {
+                serverPayload = new ServerPayload(operation, sessionInfo, summary, sessionAnalytics, user);
+                string serializedData = _serializer.Serialize(serverPayload);
+                _communicator.Broadcast(_moduleIdentifier, serializedData);
+            }
+            Trace.WriteLine("Dashboard: Data sent to specific client");
+
+        }
+
+        public void DeliverPayloadToClient(Operation operation, string ip, int port, SessionInfo? sessionInfo,
+                    TextSummary? summary = null, Analysis? sessionAnalytics = null,
+                    ClientInfo? user = null)
+        {
+            ServerPayload serverPayload;
+            lock (this)
+            {
+                serverPayload = new ServerPayload(operation, sessionInfo, summary, sessionAnalytics, user);
+                string serializedData = _serializer.Serialize(serverPayload);
+                _communicator.SendMessage(ip, port, _moduleIdentifier, serializedData);
+            }
+            Trace.WriteLine("Dashboard: Data sent to specific client");
+        }
 
         /// <summary>
         /// Safely ends the meeting.
@@ -67,6 +116,33 @@ namespace MessengerDashboard.Server
         {
             // Calculate the summary from the chats
             // Save the summary
+        }
+
+        public void EndSession()
+        {
+            BroadcastPayloadToClients(Operation.EndSession, _sessionInfo);
+        }
+
+        public void OnClientJoined(string ip, int port)
+        {
+            /*
+             
+            lock (this)
+            {
+                _clientCount += 1;
+                //_communicator.
+                int id = _clientCount;
+                UserInfo userInfo = new(null, id, null, null);
+                //_communicator.
+                //_communicator.AddClient();
+                DeliverPayloadToClient(Operation.ID, null, null, null, userInfo, id);
+            }
+           */
+        }
+
+        public void OnClientLeft(string ip, int port)
+        {
+            // TODO: Remove Client
         }
 
         public void OnDataReceived(string serializedData)
@@ -106,21 +182,6 @@ namespace MessengerDashboard.Server
                     break;
             }
         }
-
-        public void DeliverPayloadToClient(Operation operation, string ip, int port, SessionInfo? sessionInfo,
-            TextSummary? summary = null, Analysis? sessionAnalytics = null, 
-            ClientInfo? user = null)
-        {
-            ServerPayload serverPayload;
-            lock (this)
-            {
-                serverPayload = new ServerPayload(operation, sessionInfo, summary, sessionAnalytics, user);
-                string serializedData = _serializer.Serialize(serverPayload);
-                _communicator.SendMessage(ip, port, _moduleIdentifier, serializedData);
-            }
-            Trace.WriteLine("Dashboard: Data sent to specific client");
-        }
-
         private void AddClient(ClientPayload clientPayload)
         {
             lock (this)
@@ -135,29 +196,6 @@ namespace MessengerDashboard.Server
                 NewUserAdded?.Invoke(this, EventArgs.Empty);
             }
        }
-
-        public void OnClientJoined(string ip, int port)
-        {
-            /*
-             
-            lock (this)
-            {
-                _clientCount += 1;
-                //_communicator.
-                int id = _clientCount;
-                UserInfo userInfo = new(null, id, null, null);
-                //_communicator.
-                //_communicator.AddClient();
-                DeliverPayloadToClient(Operation.ID, null, null, null, userInfo, id);
-            }
-           */
-        }
-
-        public void OnClientLeft(string ip, int port)
-        {
-            // TODO: Remove Client
-        }
-
         /*
 
         //    Telemetry will Subscribes to changes in the session object
@@ -171,33 +209,6 @@ namespace MessengerDashboard.Server
 
 
         */
-        //     Returns the credentials required to Join the meeting
-        public ConnectionDetails ConnectionDetails { get; private set; } = null;
-
-        public event EventHandler SessionEnded;
-
-        public void BroadcastPayloadToClients(Operation operation, SessionInfo? sessionInfo, TextSummary? summary = null,
-                                              Analysis? sessionAnalytics = null, ClientInfo? user = null)
-        {
-            ServerPayload serverPayload;
-            lock (this)
-            {
-                serverPayload = new ServerPayload(operation, sessionInfo, summary, sessionAnalytics, user);
-                string serializedData = _serializer.Serialize(serverPayload);
-                _communicator.Broadcast(_moduleIdentifier, serializedData);
-            }
-            Trace.WriteLine("Dashboard: Data sent to specific client");
-
-        }
-
-        private void ToggleSessionMode()
-        {
-            Trace.WriteLine("Dashboard: Session Mode changed in Session Data");
-            BroadcastPayloadToClients(Operation.ToggleSessionMode, _sessionInfo);
-        }
-
-        public event EventHandler NewUserAdded;
-
         private TextSummary CreateSummary()
         {
             Trace.WriteLine("Dashboard: Getting chats");
@@ -210,17 +221,20 @@ namespace MessengerDashboard.Server
             return _chatSummary;
         }
 
-        public void EndSession()
+        private void DeliverAnalyticsToClient(ClientPayload receivedObject)
         {
-            BroadcastPayloadToClients(Operation.EndSession, _sessionInfo);
-        }
-
-        private void GetAnalytics(ClientPayload receivedObject)
-        {
-            ClientInfo user = new(receivedObject.UserName, receivedObject.UserID,
-                receivedObject.UserEmail, receivedObject.UserPhotoURL);
-            // TODO : Analysis of all chats
-            DeliverPayloadToClient(Operation.GetAnalytics, receivedObject.IpAddress, receivedObject.Port, null, null, null, user);
+            ClientInfo user = new(receivedObject.UserName, receivedObject.UserID, receivedObject.UserEmail, receivedObject.UserPhotoURL);
+            try
+            {
+                //var allChats = _contentServer.GetAllMessages().ToArray();
+                //_sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+                DeliverPayloadToClient(Operation.GetAnalytics, receivedObject.IpAddress, receivedObject.Port, null, null, _sessionAnalytics, user);
+            }
+            catch (Exception)
+            {
+                // In case of a failure, the user is returned a null object
+                //SendDataToClient("getAnalytics", null, null, null, user);
+            }
         }
 
         private void DeliverSummaryToClient(ClientPayload clientPayload)
@@ -231,20 +245,12 @@ namespace MessengerDashboard.Server
             DeliverPayloadToClient(Operation.GetSummary, clientPayload.IpAddress, clientPayload.Port, null, summaryData, null, user);
         }
 
-        private void DeliverAnalyticsToClient(ClientPayload receivedObject)
+        private void GetAnalytics(ClientPayload receivedObject)
         {
-            ClientInfo user = new(receivedObject.UserName, receivedObject.UserID, receivedObject.UserEmail, receivedObject.UserPhotoURL);
-            try
-            {
-                //var allChats = _contentServer.GetAllMessages().ToArray();
-                //_sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
-                DeliverPayloadToClient(Operation.GetAnalytics,receivedObject.IpAddress, receivedObject.Port, null, null, _sessionAnalytics, user);
-            }
-            catch (Exception)
-            {
-                // In case of a failure, the user is returned a null object
-                //SendDataToClient("getAnalytics", null, null, null, user);
-            }
+            ClientInfo user = new(receivedObject.UserName, receivedObject.UserID,
+                receivedObject.UserEmail, receivedObject.UserPhotoURL);
+            // TODO : Analysis of all chats
+            DeliverPayloadToClient(Operation.GetAnalytics, receivedObject.IpAddress, receivedObject.Port, null, null, null, user);
         }
 
         private void RemoveClient(ClientPayload receivedObject)
@@ -254,9 +260,15 @@ namespace MessengerDashboard.Server
             int removedCount = _sessionInfo.Users.RemoveAll(user => user.ClientId == receivedObject.UserID);
             if (removedCount != 0)
             {
-                SessionUpdated?.Invoke(this, new (_sessionInfo));
+                SessionUpdated?.Invoke(this, new(_sessionInfo));
             }
             DeliverPayloadToClient(Operation.RemoveClient, receivedObject.IpAddress, receivedObject.Port, _sessionInfo);
+        }
+
+        private void ToggleSessionMode()
+        {
+            Trace.WriteLine("Dashboard: Session Mode changed in Session Data");
+            BroadcastPayloadToClients(Operation.ToggleSessionMode, _sessionInfo);
         }
     }
 }

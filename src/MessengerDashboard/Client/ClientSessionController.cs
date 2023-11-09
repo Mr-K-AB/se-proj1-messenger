@@ -37,15 +37,13 @@ namespace MessengerDashboard.Client
 
         private readonly ManualResetEvent _sessionExited = new(false);
 
-        private readonly SessionMode _sessionMode;
-
         private string _serverIp = string.Empty;
 
         private int _serverPort;
 
         private ClientInfo? _user;
 
-        private IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
+        private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
 
         public ClientSessionController()
         {
@@ -63,7 +61,7 @@ namespace MessengerDashboard.Client
 
         public event EventHandler<AnalyticsChangedEventArgs>? AnalyticsChanged;
 
-        public event EventHandler<ClientSessionChangedEventArgs>? ClientSessionChanged;
+        public event EventHandler<ClientSessionChangedEventArgs>? SessionChanged;
 
         public event EventHandler? SessionEnded;
 
@@ -165,10 +163,13 @@ namespace MessengerDashboard.Client
 
             switch (operationType)
             {
-                case Operation.ToggleSessionMode:
-                    UpdateClientSessionModeData(serverPayload);
-                    return;
 
+                case Operation.ExamMode:
+                    UpdateClientSessionData(serverPayload);
+                    return;
+                case Operation.LabMode:
+                    UpdateClientSessionData(serverPayload);
+                    return;
                 case Operation.AddClientACK:
                     UpdateClientSessionData(serverPayload);
                     IsConnectedToServer = true;
@@ -230,11 +231,6 @@ namespace MessengerDashboard.Client
             _user = new ClientInfo(UserName, UserID, UserEmail, photoUrl);
         }
 
-        public void ToggleSessionMode()
-        {
-            Trace.WriteLine("Dashboard: ToggleSessionMode() is Called from Dashboard UX");
-            DeliverPayloadToServer(Operation.ToggleSessionMode, _user.ClientId, _user.ClientName);
-        }
 
         private void DeliverPayloadToServer(Operation operation, int userId, string? username, string? userEmail = null, string photoUrl = null)
         {
@@ -270,7 +266,7 @@ namespace MessengerDashboard.Client
             {
                 SessionInfo = receivedSessionData;
             }
-            ClientSessionChanged?.Invoke(this, new ClientSessionChangedEventArgs());
+            SessionChanged?.Invoke(this, new ClientSessionChangedEventArgs(SessionInfo));
         }
 
         private void UpdateClientSessionModeData(ServerPayload receivedData)
@@ -282,7 +278,7 @@ namespace MessengerDashboard.Client
                 SessionInfo = receivedSessionData;
             }
             SessionModeChanged?.Invoke(this, new SessionModeChangedEventArgs());
-            ClientSessionChanged?.Invoke(this, new ClientSessionChangedEventArgs());
+            SessionChanged?.Invoke(this, new ClientSessionChangedEventArgs(SessionInfo));
         }
 
         private void UpdateSummary(ServerPayload receivedData)

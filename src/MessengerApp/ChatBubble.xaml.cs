@@ -37,8 +37,7 @@ namespace MessengerApp
             viewModel.PropertyChanged += Listener; // Subscribe to PropertyChangedEvent
             DataContext = viewModel;
 
-            _msgCollection = new ObservableCollection<ChatMessage>(); // Binding all the messages
-            _msgCollection.Clear();
+            _msgCollection = new ObservableCollection<ChatMessage>();
             MainChat.ItemsSource = _msgCollection; // Binding all the messages to the MainChat (ListBox)
         }
 

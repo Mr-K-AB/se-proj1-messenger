@@ -93,7 +93,7 @@ namespace MessengerContent.Client
                 Type = sendContent.Type,
                 Data = sendContent.Data,
                 MessageID = -1,
-                ReceiverIDs = sendContent.ReceiverIDs,
+                //ReceiverIDs = sendContent.ReceiverIDs,
                 ReplyThreadID = -1,
                 SenderID = UserID,
                 SentTime = DateTime.Now,

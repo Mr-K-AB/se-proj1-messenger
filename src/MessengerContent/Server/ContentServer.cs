@@ -35,6 +35,7 @@ namespace MessengerContent.Server
         private FileServer _fileServer;
         private IContentSerializer _serializer;
         private List<IMessageListener> _subscribers;
+        private readonly ICommunicator _communicator;
 
         public ContentServer()
         {
@@ -135,7 +136,7 @@ namespace MessengerContent.Server
                 if (messageData.Event == MessageEvent.Download)
                 {
                     Trace.WriteLine("[ContentServer] MesseageEvent is Download, Sending File to client");
-                    //SendFile(receivedMessageData);
+                    SendFile(receivedMessageData);
                 }
                 // Else send the message to all the receivers and notify the subscribers
                 else
@@ -161,35 +162,18 @@ namespace MessengerContent.Server
         public void Send(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-
-            // If no ReceiverIds that means its a broadcast.
-            if (messageData.ReceiverIDs.Length == 0)
-            {
-                Communicator.Broadcast("Content", message);
-            }
-            // Else send the message to the receivers in ReceiversIds.
-            else
-            {
-                // Send the message to receivers and back to the sender.
-                List<string> targetUserIds = new() { messageData.SenderID.ToString() };
-                targetUserIds.AddRange(messageData.ReceiverIDs.Select(userId => userId.ToString()));
-
-                foreach (string userId in targetUserIds)
-                {
-                    Communicator.Broadcast("Content", message);
-                }
-            }
+            Communicator.Broadcast("Content", message);
         }
 
         /// <summary>
         /// Sends the file back to the requester.
         /// </summary>
         /// <param name="messageData"></param>
-        /*public void SendFile(ChatData messageData)
+        public void SendFile(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            Communicator.Broadcast(message, "Content", messageData.SenderID);
-        }*/
+            Communicator.SendMessage(_communicator.IpAddress, _communicator.ListenPort, "Content", message);
+        }
 
         /// <summary>
         /// Notifies all the subscribed modules.

@@ -80,6 +80,13 @@ namespace MessengerDashboard.Server
 
         public string UserPhotoUrl { get; set; }
 
+        public void SetDetails (string username, string email, string photoUrl)
+        {
+            UserName = username;
+            UserEmail = email;
+            UserPhotoUrl = photoUrl;
+        }
+
         public SessionMode SessionMode { get; private set; }
         public void BroadcastPayloadToClients(Operation operation, SessionInfo? sessionInfo, TextSummary? summary = null,
                                                       Analysis? sessionAnalytics = null, ClientInfo? user = null)

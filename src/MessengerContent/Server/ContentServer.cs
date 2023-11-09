@@ -69,11 +69,11 @@ namespace MessengerContent.Server
         }
 
         /// <inheritdoc />
-        public void SendAllMessagesToClient(int userId)
+        /*public void SendAllMessagesToClient(int userId)
         {
             string allMessagesSerialized = _serializer.Serialize(GetAllMessages());
-            Communicator.Send(allMessagesSerialized, "Content", userId.ToString());
-        }
+            Communicator.Broadcast(allMessagesSerialized, "Content", userId.ToString());
+        }*/
 
         /// <summary>
         /// Receives data from ContentServerNotificationHandler and processes it
@@ -111,10 +111,10 @@ namespace MessengerContent.Server
                         receivedMessageData = _fileServer.Receive(messageData);
                         break;
 
-                    case MessageType.HistoryRequest:
+                    /*case MessageType.HistoryRequest:
                         Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SendAllMessagesToClient");
                         SendAllMessagesToClient(messageData.SenderID);
-                        return;
+                        return;*/
 
                     default:
                         Trace.WriteLine("[ContentServer] MessageType is Unknown");
@@ -135,7 +135,7 @@ namespace MessengerContent.Server
                 if (messageData.Event == MessageEvent.Download)
                 {
                     Trace.WriteLine("[ContentServer] MesseageEvent is Download, Sending File to client");
-                    SendFile(receivedMessageData);
+                    //SendFile(receivedMessageData);
                 }
                 // Else send the message to all the receivers and notify the subscribers
                 else
@@ -165,7 +165,7 @@ namespace MessengerContent.Server
             // If no ReceiverIds that means its a broadcast.
             if (messageData.ReceiverIDs.Length == 0)
             {
-                Communicator.Send(message, "Content", null);
+                Communicator.Broadcast("Content", message);
             }
             // Else send the message to the receivers in ReceiversIds.
             else
@@ -176,7 +176,7 @@ namespace MessengerContent.Server
 
                 foreach (string userId in targetUserIds)
                 {
-                    Communicator.Send(message, "Content", userId);
+                    Communicator.Broadcast("Content", message);
                 }
             }
         }
@@ -185,11 +185,11 @@ namespace MessengerContent.Server
         /// Sends the file back to the requester.
         /// </summary>
         /// <param name="messageData"></param>
-        public void SendFile(ChatData messageData)
+        /*public void SendFile(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            Communicator.Send(message, "Content", messageData.SenderID.ToString());
-        }
+            Communicator.Broadcast(message, "Content", messageData.SenderID);
+        }*/
 
         /// <summary>
         /// Notifies all the subscribed modules.

@@ -52,9 +52,6 @@ namespace MessengerContent.Client
 
         // Name and Id of the current client user
         private string? _name;
-        private string? _id;
-        private readonly string _myIP;
-        private readonly int _myPort;
 
         /// <summary>
         /// Lock object for locking
@@ -143,9 +140,9 @@ namespace MessengerContent.Client
                 _fileHandler.Communicator = value;
             }
         }
-        public void SetUser(string id, string name)
+        public void SetUser(int id, string name)
         {
-            _id = id;
+            _userID = id;
             _name = name;
         }
         /// <summary>
@@ -684,24 +681,24 @@ namespace MessengerContent.Client
         /// <summary>
         /// Sends a request to server asking for all messages received on server
         /// </summary>
-        public void RequestMessageHistory()
+        /*public void RequestMessageHistory()
         {
             ReceiveChatData? message = new ChatData
             {
                 SenderID = UserID,
                 Type = MessageType.HistoryRequest
-            };
+            }
             try
             {
                 // serialize message and send to server via network
                 string serializedMessage = _serializer.Serialize(message);
                 Trace.WriteLine($"[ContentClient] Sending request for message history to server for user ID = {UserID}");
-                _communicator.Send(serializedMessage, "Dashboard", null);
+                _communicator.Broadcast("Dashboard", serializedMessage);
             }
             catch (Exception e)
             {
                 Trace.WriteLine($"[ContentClient] Exception occurred during sending message history request.\n{e.GetType()} : {e.Message}");
             }
-        }
+        }*/
     }
 }

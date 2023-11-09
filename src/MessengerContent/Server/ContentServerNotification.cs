@@ -29,8 +29,19 @@ namespace MessengerContent.Server
         {
             throw new NotImplementedException();
         }
+
+        public void OnClientJoined(string ipAddress, int port)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <inheritdoc />
         public void OnClientLeft(string clientId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnClientLeft(string ipAddress, int port)
         {
             throw new NotImplementedException();
         }

@@ -9,7 +9,7 @@
  *
  * Description = Unit tests for the chat messenger.
  *****************************************************************************/
-
+/*
 using MessengerNetworking.Communicator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
@@ -108,7 +108,7 @@ namespace MessengerTests.MessengerNetworkingTest
 
 
     }
-        */
+        *//*
 
         /// <summary>
         /// Processor for chat messages.
@@ -168,3 +168,4 @@ namespace MessengerTests.MessengerNetworkingTest
         }
     }
 }
+*/

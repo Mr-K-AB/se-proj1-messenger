@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MessengerApp.Stores;
 using MessengerApp.ViewModels;
+using MessengerDashboard;
 
 namespace MessengerApp.Commands
 {

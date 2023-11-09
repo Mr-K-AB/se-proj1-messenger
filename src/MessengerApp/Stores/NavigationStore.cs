@@ -1,4 +1,5 @@
 ﻿using MessengerApp.ViewModels;
+using MessengerDashboard;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,6 +19,8 @@ namespace MessengerApp.Stores
                 OnCurrentViewModelChanged();
             }
         }
+
+        public AuthenticationResult AuthResult { get; set; }
 
         public event Action CurrentViewModelChanged;
 

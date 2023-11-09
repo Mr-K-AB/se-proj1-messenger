@@ -13,12 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MessengerApp
+namespace MessengerApp.Views
 {
     /// <summary>
     /// Interaction logic for HostMeetingView.xaml
     /// </summary>
-    public partial class HostMeetingView : Page
+    public partial class HostMeetingView : UserControl
     {
         public HostMeetingView()
         {

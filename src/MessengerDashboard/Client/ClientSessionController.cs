@@ -23,6 +23,8 @@ namespace MessengerDashboard.Client
         private readonly string _moduleIdentifier = "Dashboard";
         private UserInfo? _user;
         private readonly SessionMode _sessionMode;
+
+        
         public ConnectionDetails ConnectionDetails { get; private set; }
 
         public bool IsConnectedToServer { get; private set; } = false;
@@ -67,7 +69,7 @@ namespace MessengerDashboard.Client
 
         public event EventHandler<ClientSessionChangedEventArgs> ClientSessionChanged;
 
-        public ManualResetEvent ConnectionEstablished = new(false);
+        private readonly ManualResetEvent _connectionEstablished = new(false);
 
         public void OnDataReceived(string serializedData)
         {
@@ -91,7 +93,7 @@ namespace MessengerDashboard.Client
                 case Operation.AddClientACK:
                     UpdateClientSessionData(serverPayload);
                     IsConnectedToServer = true;
-                    ConnectionEstablished.Set();
+                    _connectionEstablished.Set();
                     return;
 
                 case Operation.GetSummary:
@@ -131,13 +133,13 @@ namespace MessengerDashboard.Client
             Trace.WriteLine("Dashboard: Data sent to Network module to transfer to Server");
         }
 
-        public void RequestConnectionToServer(string serverIpAddress, int serverPort, string clientUsername, string clientEmail = null, string clientPhotoUrl = null)
+        public bool ConnectToServer(string serverIpAddress, int serverPort, int? timeoutInMilliseconds, string clientUsername, string clientEmail, string clientPhotoUrl)
         {
             Trace.WriteLine("Dashboard: Connecting to server at IP: " + serverIpAddress + " Port: " + serverPort);
 
             if (string.IsNullOrWhiteSpace(clientUsername))
             {
-                return;
+                return false;
             }
 
             // ipAddress = ipAddress.Trim();
@@ -150,6 +152,17 @@ namespace MessengerDashboard.Client
                 _communicator.SendMessage(serverIpAddress, serverPort, _moduleIdentifier, serializedMessage);
                 Trace.WriteLine("Dashboard: Sent Connection Request");
             }
+            bool connected;
+            if (timeoutInMilliseconds == null)
+            {
+                connected = _connectionEstablished.WaitOne();
+            }
+            else
+            {
+                connected = _connectionEstablished.WaitOne((int)timeoutInMilliseconds);
+            }
+            _communicator.AddClient(serverIpAddress, serverPort);
+            return connected;
         }
 
         public void EndMeet()

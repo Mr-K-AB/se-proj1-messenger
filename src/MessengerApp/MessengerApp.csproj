@@ -11,10 +11,12 @@
     <None Remove="Images\text.png" />
     <None Remove="ScreenshareIcons\NextPageButton.png" />
     <None Remove="ScreenshareIcons\NoClient.gif" />
+    <None Remove="ScreenshareIcons\NotSharedScreenBackground.png" />
     <None Remove="ScreenshareIcons\NotSharedScreenBackground.webp" />
     <None Remove="ScreenshareIcons\PinButton.png" />
     <None Remove="ScreenshareIcons\PreviousPageButton.png" />
     <None Remove="ScreenshareIcons\SharedScreenBackground.jpeg" />
+    <None Remove="ScreenshareIcons\SharedScreenBackground.png" />
     <None Remove="ScreenshareIcons\StartScreenShare.png" />
     <None Remove="ScreenshareIcons\StartShare.png" />
     <None Remove="ScreenshareIcons\StopShare.png" />
@@ -82,13 +84,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="ScreenshareIcons\NextPageButton.png" />
-    <Resource Include="ScreenshareIcons\NoClient.gif" />
-    <Resource Include="ScreenshareIcons\NotSharedScreenBackground.webp" />
+    <Resource Include="ScreenshareIcons\NotSharedScreenBackground.png" />
     <Resource Include="ScreenshareIcons\PinButton.png" />
-    <Resource Include="ScreenshareIcons\PreviousPageButton.png" />
-    <Resource Include="ScreenshareIcons\SharedScreenBackground.jpeg" />
-    <Resource Include="ScreenshareIcons\StartScreenShare.png" />
+    <Resource Include="ScreenshareIcons\SharedScreenBackground.png" />
     <Resource Include="ScreenshareIcons\StartShare.png" />
     <Resource Include="ScreenshareIcons\StopShare.png" />
     <Resource Include="ScreenshareIcons\UnpinButton.png" />

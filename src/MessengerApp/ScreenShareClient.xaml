@@ -31,7 +31,7 @@
                 <Image Width="63" Source="ScreenshareIcons/StartShare.png" />
                 <Button.Resources>
                     <Style TargetType="Button">
-                        <Setter Property="Background" Value="CadetBlue" />
+                        <Setter Property="Background" Value="DodgerBlue" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
                                 <Setter Property="IsHitTestVisible" Value="False" />
@@ -59,11 +59,11 @@
 
                 <Image
                     Width="63"
-                    Height="27"
-                    Source="ScreenshareIcons/StopShare.png" />
+                    Height="25"
+                    Source="ScreenshareIcons/StopShare.png"/>
                 <Button.Resources>
                     <Style TargetType="Button">
-                        <Setter Property="Background" Value="CadetBlue" />
+                        <Setter Property="Background" Value="DodgerBlue" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="False">
                                 <Setter Property="IsHitTestVisible" Value="False" />
@@ -85,16 +85,17 @@
             Orientation="Vertical">
             <Image
                 Name="Main"
-                Width="513"
-                Height="232"
-                Source="ScreenshareIcons/NotSharedScreenBackground.webp" />
+                Width="484"
+                Height="248"
+                Source="ScreenshareIcons/NotSharedScreenBackground.png"
+                Margin="20"/>
             <TextBlock
                 x:Name="MainText"
                 HorizontalAlignment="Center"
-                FontFamily="Comic Sans MS"
-                FontSize="60"
-                Foreground="IndianRed"
-                Text="You are not sharing the screen"
+                FontFamily="Arial"
+                FontSize="50"
+                Foreground="White"
+                Text="Your Screen is not being shared."
                 TextAlignment="Center"
                 TextWrapping="WrapWithOverflow" />
 
@@ -115,7 +116,7 @@
             x:Name="SharedScreen"
             Grid.Row="0"
             Orientation="Vertical">
-            <Image Height="400" Source="ScreenshareIcons/SharedScreenBackground.jpeg" />
+            <Image Height="400" Source="ScreenshareIcons/SharedScreenBackground.png" />
             <TextBlock
                 HorizontalAlignment="Center"
                 FontFamily="Comic Sans MS"

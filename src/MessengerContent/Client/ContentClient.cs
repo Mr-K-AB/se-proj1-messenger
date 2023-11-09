@@ -20,6 +20,7 @@ using MessengerContent.DataModels;
 using MessengerContent.Enums;
 using MessengerNetworking.NotificationHandler;
 using MessengerNetworking.Communicator;
+using System.Security.Cryptography;
 
 
 namespace MessengerContent.Client
@@ -48,6 +49,14 @@ namespace MessengerContent.Client
         /// ID of the user
         /// </summary>
         private int _userID;
+
+        // Name and Id of the current client user
+        private string? _name;
+        private string? _id;
+        private string _serverIP;
+        private int _serverPortNumber;
+        private readonly string _myIP;
+        private readonly int _myPort;
 
         /// <summary>
         /// Lock object for locking
@@ -100,6 +109,8 @@ namespace MessengerContent.Client
             _fileHandler = new FileClient(_communicator);
             // instantiate other parameters
             _userID = -1;
+            _myPort = _communicator.ListenPort;
+            _myIP = _communicator.IpAddress;
             _lock = new object();
             AllMessages = new List<ChatThread>();
             _messageIDMap = new Dictionary<int, int>();
@@ -136,10 +147,18 @@ namespace MessengerContent.Client
                 _fileHandler.Communicator = value;
             }
         }
-
+        public void SetUser(string id, string name, int serverPortNumber, string serverIP)
+        {
+            _id = id;
+            _name = name;
+            _serverPortNumber = serverPortNumber;
+            _serverIP = serverIP;
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully set client name and id"));
+        }
         /// <summary>
         /// User ID getter and setter functions
         /// </summary>
+        /// 
         public int UserID
         {
             get => _userID;
@@ -684,7 +703,7 @@ namespace MessengerContent.Client
                 // serialize message and send to server via network
                 string serializedMessage = _serializer.Serialize(message);
                 Trace.WriteLine($"[ContentClient] Sending request for message history to server for user ID = {UserID}");
-                _communicator.Send(serializedMessage, "Content", null);
+                _communicator.Send(serializedMessage, "Dashboard", null);
             }
             catch (Exception e)
             {

@@ -52,9 +52,6 @@ namespace MessengerContent.Client
 
         // Name and Id of the current client user
         private string? _name;
-        private string? _id;
-        private readonly string _myIP;
-        private readonly int _myPort;
 
         /// <summary>
         /// Lock object for locking
@@ -143,9 +140,9 @@ namespace MessengerContent.Client
                 _fileHandler.Communicator = value;
             }
         }
-        public void SetUser(string id, string name)
+        public void SetUser(int id, string name)
         {
-            _id = id;
+            _userID = id;
             _name = name;
         }
         /// <summary>

@@ -16,6 +16,8 @@ using MessengerDashboard.Server.Events;
 using MessengerDashboard.Client;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using MessengerNetworking.Factory;
+using MessengerScreenshare.Client;
+using MessengerScreenshare.ScreenshareFactory;
 
 namespace MessengerDashboard.Server
 {
@@ -45,7 +47,9 @@ namespace MessengerDashboard.Server
 
         private TextSummary? _chatSummary;
 
-        private int _clientCount = 0;
+        private int _clientCount = 1;
+
+        private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerSessionController"/> with the provided <see cref="ICommunicator"/> instance.
@@ -79,6 +83,14 @@ namespace MessengerDashboard.Server
         public string UserEmail { get; set; }
 
         public string UserPhotoUrl { get; set; }
+
+        public void SetDetails (string username, string email, string photoUrl)
+        {
+            UserName = username;
+            UserEmail = email;
+            UserPhotoUrl = photoUrl;
+            _screenshareClient.SetUser(1, UserName);
+        }
 
         public SessionMode SessionMode { get; private set; }
         public void BroadcastPayloadToClients(Operation operation, SessionInfo? sessionInfo, TextSummary? summary = null,

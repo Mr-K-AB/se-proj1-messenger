@@ -38,7 +38,7 @@ namespace MessengerContent.DataModels
             Type = receiveChatData.Type;
             Data = receiveChatData.Data;
             MessageID = receiveChatData.MessageID;
-            ReceiverIDs = receiveChatData.ReceiverIDs;
+            //ReceiverIDs = receiveChatData.ReceiverIDs;
             ReplyMessageID = receiveChatData.ReplyMessageID;
             ReplyThreadID = receiveChatData.ReplyThreadID;
             SenderID = receiveChatData.SenderID;

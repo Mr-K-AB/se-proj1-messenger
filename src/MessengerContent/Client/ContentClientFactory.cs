@@ -31,11 +31,11 @@ namespace MessengerContent.Client
         /// Sets the user ID and makes a request for message history
         /// </summary>
         /// <param name="userID">ID of the user</param>
-        public static void GetAllMessages(int userID)
+       /* public static void GetAllMessages(int userID)
         {
             ContentClient instance = s_contentClient.Value;
             instance.UserID = userID;
             instance.RequestMessageHistory();
-        }
+        }*/
     }
 }

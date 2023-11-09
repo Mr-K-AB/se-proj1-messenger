@@ -32,7 +32,7 @@ namespace MessengerContent.DataModels
         /// List containing the receiver IDs.
         /// Empty in case of broadcast message.
         /// </summary>
-        public int[]? ReceiverIDs;
+        //public int[]? ReceiverIDs;
 
         /// <summary>
         /// ID of message being replied to.
@@ -51,7 +51,7 @@ namespace MessengerContent.DataModels
         public SendChatData()
         {
             Data = "";
-            ReceiverIDs = null;
+            //ReceiverIDs = null;
             ReplyMessageID = -1;
             ReplyThreadID = -1;
         }

@@ -14,7 +14,6 @@ using System.Diagnostics;
 using System;
 using System.IO;
 using MessengerContent.Enums;
-using Messenger
 using MessengerNetworking.Communicator;
 
 namespace MessengerContent.Client
@@ -64,7 +63,7 @@ namespace MessengerContent.Client
             {
                 string xml = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[File Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.Send(xml, _moduleIdentifier, null);
+                _communicator.Broadcast(_moduleIdentifier, xml);
             }
             catch (Exception e)
             {
@@ -94,7 +93,7 @@ namespace MessengerContent.Client
                 Type = sendContent.Type,
                 Data = sendContent.Data,
                 MessageID = -1,
-                ReceiverIDs = sendContent.ReceiverIDs,
+                //ReceiverIDs = sendContent.ReceiverIDs,
                 ReplyThreadID = -1,
                 SenderID = UserID,
                 SentTime = DateTime.Now,

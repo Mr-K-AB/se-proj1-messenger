@@ -35,6 +35,7 @@ namespace MessengerContent.Server
         private FileServer _fileServer;
         private IContentSerializer _serializer;
         private List<IMessageListener> _subscribers;
+        private readonly ICommunicator _communicator;
 
         public ContentServer()
         {
@@ -69,11 +70,11 @@ namespace MessengerContent.Server
         }
 
         /// <inheritdoc />
-        public void SendAllMessagesToClient(int userId)
+        /*public void SendAllMessagesToClient(int userId)
         {
             string allMessagesSerialized = _serializer.Serialize(GetAllMessages());
-            Communicator.Send(allMessagesSerialized, "Content", userId.ToString());
-        }
+            Communicator.Broadcast(allMessagesSerialized, "Content", userId.ToString());
+        }*/
 
         /// <summary>
         /// Receives data from ContentServerNotificationHandler and processes it
@@ -111,10 +112,10 @@ namespace MessengerContent.Server
                         receivedMessageData = _fileServer.Receive(messageData);
                         break;
 
-                    case MessageType.HistoryRequest:
+                    /*case MessageType.HistoryRequest:
                         Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SendAllMessagesToClient");
                         SendAllMessagesToClient(messageData.SenderID);
-                        return;
+                        return;*/
 
                     default:
                         Trace.WriteLine("[ContentServer] MessageType is Unknown");
@@ -161,24 +162,7 @@ namespace MessengerContent.Server
         public void Send(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-
-            // If no ReceiverIds that means its a broadcast.
-            if (messageData.ReceiverIDs.Length == 0)
-            {
-                Communicator.Send(message, "Content", null);
-            }
-            // Else send the message to the receivers in ReceiversIds.
-            else
-            {
-                // Send the message to receivers and back to the sender.
-                List<string> targetUserIds = new() { messageData.SenderID.ToString() };
-                targetUserIds.AddRange(messageData.ReceiverIDs.Select(userId => userId.ToString()));
-
-                foreach (string userId in targetUserIds)
-                {
-                    Communicator.Send(message, "Content", userId);
-                }
-            }
+            Communicator.Broadcast("Content", message);
         }
 
         /// <summary>
@@ -188,7 +172,7 @@ namespace MessengerContent.Server
         public void SendFile(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            Communicator.Send(message, "Content", messageData.SenderID.ToString());
+            Communicator.SendMessage(_communicator.IpAddress, _communicator.ListenPort, "Content", message);
         }
 
         /// <summary>

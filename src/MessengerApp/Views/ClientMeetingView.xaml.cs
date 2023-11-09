@@ -37,6 +37,12 @@ namespace MessengerApp.Views
             MainContent.Content = whiteboardControl;
         }
 
+        private void ClientScreenshare_Click(object sender, RoutedEventArgs e)
+        {
+            ScreenshareClientControl screenshareClientControl = new();
+            MainContent.Content = screenshareClientControl;
+        }
+
         //private void Screenshare_Click(object sender, RoutedEventArgs e)
         //{
         //    ClientScreenshareControl screenshareControl = new();

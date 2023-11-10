@@ -88,9 +88,6 @@
 
   <ItemGroup>
     <Resource Include="Images\whiteboard.png" />
-    <Resource Include="ScreenshareIcons\NextPageButton.png" />
-    <Resource Include="ScreenshareIcons\NoClient.gif" />
-    <Resource Include="ScreenshareIcons\NotSharedScreenBackground.webp" />
 
     <Resource Include="ScreenshareIcons\PinButton.png" />
     <Resource Include="ScreenshareIcons\SharedScreenBackground.png" />

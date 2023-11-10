@@ -43,10 +43,11 @@ namespace MessengerApp.Views
             MainContent.Content = screenshareserverControl;
         }
 
-        //private void Screenshare_Click(object sender, RoutedEventArgs e)
-        //{
-        //    HostScreenshareControl screenshareControl = new();
-        //    MainContent.Content = screenshareControl;
-        //}
+        private void Chat_Click(object sender, RoutedEventArgs e)
+        {
+            ChatBubble chatBubbleControl = new();
+            OverlayContent.Content = chatBubbleControl;
+            OverlayPanel.Visibility = OverlayPanel.IsVisible ? Visibility.Collapsed : Visibility.Visible;
+        }
     }
 }

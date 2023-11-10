@@ -218,7 +218,7 @@ namespace MessengerContent.Client
         /// <param name="previousSenderID">ID of the sender of existing message</param>
         /// <returns>List of Receiver IDs</returns>
         /// <exception cref="ArgumentException"></exception>
-        private int[] AllReceivers(int[] previousReceiverIDs, int[] currentReceiverIDs, int previousSenderID)
+        /*private int[] AllReceivers(int[] previousReceiverIDs, int[] currentReceiverIDs, int previousSenderID)
         {
             // exisiting message receiver ID array is empty implies message is a broadcast message
             // final receiver array is simply the receiver array of the new message
@@ -240,7 +240,7 @@ namespace MessengerContent.Client
                 throw new ArgumentException("Invalid array of receivers.");
             }
             return allReceivers;
-        }
+        }*/
 
         /// <summary>
         /// Function to check if path is accessible and a file can be created
@@ -266,10 +266,10 @@ namespace MessengerContent.Client
         public void ClientSendData(SendChatData chatData)
         {
             // check if receiver ID list is not null
-            if (chatData.ReceiverIDs is null)
+            /*if (chatData.ReceiverIDs is null)
             {
                 throw new ArgumentException("List of receiver IDs given is null");
-            }
+            }*/
             // check if message is part of thread
             if (chatData.ReplyThreadID != -1)
             {
@@ -283,8 +283,8 @@ namespace MessengerContent.Client
             if (chatData.ReplyMessageID != -1)
             {
                 ValidateReplyMessageID(chatData.ReplyMessageID, chatData.ReplyThreadID);
-                ReceiveChatData? existingMessage = GetMessage(chatData.ReplyMessageID) ?? throw new ArgumentException("Message being replied to does not exist");
-                chatData.ReceiverIDs = AllReceivers(existingMessage.ReceiverIDs, chatData.ReceiverIDs, existingMessage.SenderID);
+                _ = GetMessage(chatData.ReplyMessageID) ?? throw new ArgumentException("Message being replied to does not exist");
+                //chatData.ReceiverIDs = AllReceivers(existingMessage.ReceiverIDs, chatData.ReceiverIDs, existingMessage.SenderID);
             }
             // otherwise, use the respective message type handlers
             switch (chatData.Type)
@@ -408,6 +408,11 @@ namespace MessengerContent.Client
         public int GetUserID()
         {
             return _userID;
+        }
+
+        public string GetUserName()
+        {
+            return _name;
         }
 
         // event handler helper functions
@@ -652,31 +657,31 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="allMessages">List of threads containing all messages</param>
         /// <exception cref="ArgumentException"></exception>
-        public void OnReceive(List<ChatThread> allMessages)
-        {
-            if (allMessages is null)
-            {
-                throw new ArgumentException("Received null argument!");
-            }
-            Trace.WriteLine("[ContentClient] Received message history from server");
-            // update the internal data strcutures using the received history
-            SetAllMessages(allMessages);
-            Notify(allMessages);
-        }
+        //public void OnReceive(List<ChatThread> allMessages)
+        //{
+        //    if (allMessages is null)
+        //    {
+        //        throw new ArgumentException("Received null argument!");
+        //    }
+        //    Trace.WriteLine("[ContentClient] Received message history from server");
+        //    // update the internal data strcutures using the received history
+        //    SetAllMessages(allMessages);
+        //    Notify(allMessages);
+        //}
 
         /// <summary>
         /// Notify all subscribers of received entire message history
         /// </summary>
         /// <param name="allMessages"></param>
         /// <exception cref="ArgumentException"></exception>
-        private void Notify(List<ChatThread> allMessages)
-        {
-            Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared");
-            foreach (IMessageListener subscriber in _subscribers)
-            {
-                _ = Task.Run(() => { subscriber.OnAllMessagesReceived(allMessages); });
-            }
-        }
+        //private void Notify(List<ChatThread> allMessages)
+        //{
+        //    Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared");
+        //    foreach (IMessageListener subscriber in _subscribers)
+        //    {
+        //        _ = Task.Run(() => { subscriber.OnAllMessagesReceived(allMessages); });
+        //    }
+        //}
 
         /// <summary>
         /// Sends a request to server asking for all messages received on server

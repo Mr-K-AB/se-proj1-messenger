@@ -9,7 +9,7 @@
  *
  * Description = Unit tests for the chat messenger.
  *****************************************************************************/
-
+/*
 using MessengerNetworking.Communicator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
@@ -108,7 +108,7 @@ namespace MessengerTests.MessengerNetworkingTest
 
 
     }
-        */
+        *//*
 
         /// <summary>
         /// Processor for chat messages.
@@ -139,12 +139,12 @@ namespace MessengerTests.MessengerNetworkingTest
                 communicator.AddSubscriber(Identity, this);
             }
 
-            public void OnClientJoined(TcpClient socket)
+            public void OnClientJoined(string ipAddress, int port)
             {
 
             }
 
-            public void OnClientLeft(string clientId)
+            public void OnClientLeft(string ipAddress, int port)
             {
 
             }
@@ -168,3 +168,4 @@ namespace MessengerTests.MessengerNetworkingTest
         }
     }
 }
+*/

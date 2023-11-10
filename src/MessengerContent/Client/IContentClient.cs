@@ -56,5 +56,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <returns>User ID associated with instance</returns>
         int GetUserID();
+
+        string GetUserName();
     }
 }

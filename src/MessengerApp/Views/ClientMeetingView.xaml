@@ -9,11 +9,17 @@
     <Grid>
         <!-- Navigation Bar -->
         <Menu>
-            <MenuItem Header="Whiteboard"/>
-            <MenuItem Header="Screenshare"/>
+            <MenuItem Header="Dashboard" Click="Dashboard_Click"/>
+            <MenuItem Header="Whiteboard" Click="WhiteBoard_Click"/>
+            <MenuItem Header="Screenshare" Click="ClientScreenshare_Click"/>
             <MenuItem Header="Participants"/>
-
+            <MenuItem Header="Chat" Click="Chat_Click"/>
+            <TextBlock Text="{Binding IP}"></TextBlock>
+            <TextBlock Text="{Binding Port}"></TextBlock>
         </Menu>
+        <Grid x:Name="OverlayPanel" Panel.ZIndex="1000" Visibility="Collapsed" HorizontalAlignment="Right" Width="300" Background="AliceBlue">
+            <ContentControl x:Name="OverlayContent"/>
+        </Grid>
 
         <!-- Profile Information -->
         <Button Content="Leave Meeting" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>

@@ -21,7 +21,7 @@ using MessengerContent.Enums;
 using MessengerNetworking.NotificationHandler;
 using MessengerNetworking.Communicator;
 using System.Security.Cryptography;
-
+using MessengerNetworking.Factory;
 
 namespace MessengerContent.Client
 {
@@ -86,12 +86,12 @@ namespace MessengerContent.Client
         {
             // instantiate requried network parameters
             _notificationHandler = new ContentClientNotificationHandler(this);
-            // need to get communicator using _communicator and factory
+            _communicator = Factory.GetInstance();
             _serializer = new ContentSerializer();
             // subscribe to network module
             try
             {
-                // need to subscribe to network module using _communicator
+                _communicator.AddSubscriber("Content", _notificationHandler);
             }
             catch (Exception e)
             {
@@ -130,7 +130,7 @@ namespace MessengerContent.Client
                 _communicator = value;
                 try
                 {
-                    //subscribing to network module using _communicator and subscribe
+                    _communicator.AddSubscriber("Content", _notificationHandler);
                 }
                 catch (Exception e)
                 {

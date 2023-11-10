@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessengerDashboard
+namespace MessengerTestUI.ViewModels
 {
-    public enum SessionMode
+    internal class DashboardClientViewModel
     {
-        Exam,
-        Lab
     }
 }

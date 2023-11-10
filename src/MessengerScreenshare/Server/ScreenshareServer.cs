@@ -34,7 +34,7 @@ namespace MessengerScreenshare.Server
                 _communicator = Factory.GetInstance();
 
                 // Subscribe to the networking module for packets.
-               _communicator.AddSubscriber(Utils.ModuleIdentifier, this);
+               _communicator.AddSubscriber(Utils.ServerIdentifier, this);
             }
 
             // Initialize the rest of the fields.
@@ -219,7 +219,7 @@ namespace MessengerScreenshare.Server
                 var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), JsonSerializer.Serialize(product));
                 string packedData = JsonSerializer.Serialize(packet);
 
-                _communicator.Broadcast(Utils.ModuleIdentifier, packedData);
+                _communicator.Broadcast(Utils.ClientIdentifier, packedData);
             }
             catch (Exception e)
             {

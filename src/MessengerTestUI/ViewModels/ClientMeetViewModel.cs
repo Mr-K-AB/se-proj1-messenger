@@ -35,7 +35,7 @@ namespace MessengerTestUI.ViewModels
             Client.SessionChanged += Client_SessionChanged;
 
             List<User> users = new();
-            Client.SessionInfo.Users.ForEach(user => { users.Add(new User(user.ClientName, user.ClientPhotoUrl)); });
+            Client.SessionInfo.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
             Users = users;
             Mode = Client.SessionInfo.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
         }
@@ -43,7 +43,7 @@ namespace MessengerTestUI.ViewModels
         private void Client_SessionChanged(object? sender, MessengerDashboard.Client.Events.ClientSessionChangedEventArgs e)
         {
             List<User> users = new();
-            e.Session.Users.ForEach(user => { users.Add(new User(user.ClientName, user.ClientPhotoUrl)); });
+            e.Session.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
             Users = users; 
             Mode = Client.SessionInfo.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
         }

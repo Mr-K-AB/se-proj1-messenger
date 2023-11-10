@@ -41,7 +41,7 @@ namespace MessengerDashboard.Client
 
         private int _serverPort;
 
-        private ClientInfo? _user;
+        private UserInfo? _user;
 
         private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
 
@@ -123,16 +123,16 @@ namespace MessengerDashboard.Client
         public void GetAnalytics()
         {
             Trace.WriteLine("Dashboard: GetAnalytics() is called from Dashboard UX");
-            DeliverPayloadToServer(Operation.GetAnalytics, _user.ClientId, _user.ClientName);
+            DeliverPayloadToServer(Operation.GetAnalytics, _user.UserId, _user.UserName);
         }
 
         public void GetSummary()
         {
             Trace.WriteLine("Dashboard: GetSummary() is called from Dashboard UX");
-            DeliverPayloadToServer(Operation.GetSummary, _user.ClientId, _user.ClientName);
+            DeliverPayloadToServer(Operation.GetSummary, _user.UserId, _user.UserName);
         }
 
-        public ClientInfo GetUser()
+        public UserInfo GetUser()
         {
             Trace.WriteLine("Dashboard: GetUser() is Called from Dashboard UX");
             return _user;
@@ -175,7 +175,7 @@ namespace MessengerDashboard.Client
                     IsConnectedToServer = true;
                     _connectionEstablished.Set();
                     _user = serverPayload.User;
-                    _screenshareClient.SetUser(_user.ClientId, _user.ClientName);
+                    _screenshareClient.SetUser(_user.UserId, _user.UserName);
                     return;
 
                 case Operation.GetSummary:
@@ -203,7 +203,7 @@ namespace MessengerDashboard.Client
 
         public bool RequestServerToRemoveClient(int? timeout)
         {
-            DeliverPayloadToServer(Operation.RemoveClient, _user.ClientId, _user.ClientName);
+            DeliverPayloadToServer(Operation.RemoveClient, _user.UserId, _user.UserName);
             bool exited;
             if (timeout is null)
             {
@@ -218,7 +218,7 @@ namespace MessengerDashboard.Client
             return exited;
         }
 
-        public void SetSessionUsers(List<ClientInfo> users)
+        public void SetSessionUsers(List<UserInfo> users)
         {
             for (int i = 0; i < users.Count; ++i)
             {
@@ -228,7 +228,7 @@ namespace MessengerDashboard.Client
 
         public void SetUser(string UserName, int UserID = 1, string UserEmail = null, string photoUrl = null)
         {
-            _user = new ClientInfo(UserName, UserID, UserEmail, photoUrl);
+            _user = new UserInfo(UserName, UserID, UserEmail, photoUrl);
         }
 
 
@@ -254,7 +254,7 @@ namespace MessengerDashboard.Client
         private void UpdateAnalytics(ServerPayload receivedData)
         {
             AnalysisResults = receivedData.SessionAnalysis;
-            ClientInfo receiveduser = receivedData.User;
+            UserInfo receiveduser = receivedData.User;
             AnalyticsChanged?.Invoke(this, new(AnalysisResults));
         }
 
@@ -284,8 +284,8 @@ namespace MessengerDashboard.Client
         private void UpdateSummary(ServerPayload receivedData)
         {
             TextSummary receivedSummary = receivedData.Summary;
-            ClientInfo receivedUser = receivedData.User;
-            if (receivedUser.ClientId == _user.ClientId)
+            UserInfo receivedUser = receivedData.User;
+            if (receivedUser.UserId == _user.UserId)
             {
                 lock (this)
                 {

@@ -14,8 +14,8 @@ namespace MessengerDashboard.Telemetry
         private readonly int _timeThreshold = 30;
 
         private readonly Dictionary<DateTime, int> _timeStampToUserCountMap = new();
-        private readonly Dictionary<ClientInfo, DateTime> _userToJoiningTimeMap = new();
-        private readonly Dictionary<ClientInfo, DateTime> _userLeavingTimeMap = new();
+        private readonly Dictionary<int, DateTime> _userToJoiningTimeMap = new();
+        private readonly Dictionary<int, DateTime> _userLeavingTimeMap = new();
         private readonly Dictionary<int, int> _userChatCountMap = new();
         private readonly Dictionary<int, string> _userIdToEmailMap = new();
         private readonly Dictionary<string, string> _emailToUsernameMap = new();
@@ -44,7 +44,7 @@ namespace MessengerDashboard.Telemetry
             }
         }
 
-        public Analysis CalculateResults(List<string> chatData)
+        public Analysis Analyze(List<string> chatData)
         {
             //DateTime currentTime = DateTime.Now;
             UpdateUserIdToChatCount();
@@ -58,7 +58,7 @@ namespace MessengerDashboard.Telemetry
                 totalUsers++;
             }
 
-            Analysis sessionAnalytics = new(_userChatCountMap, new(), new(), new(), new(), new());
+            Analysis sessionAnalytics = new(_userChatCountMap, new(), new(), new(), new());
             {
                 /*
                     ChatCountPerUserID = UserChatCount,
@@ -103,11 +103,11 @@ namespace MessengerDashboard.Telemetry
         //TODO:Add Comments
         public void UpdateEmailToUsername(SessionInfo sessionData)
         {
-            foreach (ClientInfo user in sessionData.Users)
+            foreach (UserInfo user in sessionData.Users)
             {
-                if (!_emailToUsernameMap.ContainsKey(user.ClientEmail))
+                if (!_emailToUsernameMap.ContainsKey(user.UserEmail))
                 {
-                    _emailToUsernameMap[user.ClientEmail] = user.ClientName;
+                    _emailToUsernameMap[user.UserEmail] = user.UserName;
                 }
             }
         }
@@ -132,11 +132,11 @@ namespace MessengerDashboard.Telemetry
         //TODO: Add Comments
         public void UpdateJoiningTimeOfUsers(SessionInfo sessionData, DateTime currentTime)
         {
-            foreach (ClientInfo user in sessionData.Users)
+            foreach (UserInfo user in sessionData.Users)
             {
-                if (!_userToJoiningTimeMap.ContainsKey(user))
+                if (!_userToJoiningTimeMap.ContainsKey(user.UserId))
                 {
-                    _userToJoiningTimeMap[user] = currentTime;
+                    _userToJoiningTimeMap[user.UserId] = currentTime;
                 }
             }
         }
@@ -144,9 +144,17 @@ namespace MessengerDashboard.Telemetry
         //TODO: Add Comments
         public void UpdateLeavingTimeOfUsers(SessionInfo sessionData, DateTime currentTime)
         {
-            foreach (KeyValuePair<ClientInfo, DateTime> userEntry in _userToJoiningTimeMap)
+            foreach (KeyValuePair<int, DateTime> userEntry in _userToJoiningTimeMap)
             {
-                if (!sessionData.Users.Contains(userEntry.Key) && !_userLeavingTimeMap.ContainsKey(userEntry.Key))
+                bool contains1 = false;
+                foreach (UserInfo user in sessionData.Users)
+                {
+                    if (user.UserId == userEntry.Key)
+                    {
+                        contains1 = true;
+                    }
+                }
+                if (!contains1 && !_userLeavingTimeMap.ContainsKey(userEntry.Key))
                 {
                     _userLeavingTimeMap[userEntry.Key] = currentTime;
                 }
@@ -155,7 +163,7 @@ namespace MessengerDashboard.Telemetry
 
         public Analysis GetTelemetryAnalytics()
         {
-            return new Analysis(new(), new(), new(), new(), 1, 1);
+            return new Analysis(new(), new(), new(), 1, 1);
         }
 
     }

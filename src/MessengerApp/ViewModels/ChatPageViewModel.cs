@@ -160,10 +160,10 @@ namespace MessengerApp.ViewModels
                               {
                                   Trace.WriteLine("[ChatPageViewModel] Users List Received.");
                                   Users.Clear();
-                                  foreach (ClientInfo user in currentSession.Users)
+                                  foreach (UserInfo user in currentSession.Users)
                                   {
                                       // adding users for the session
-                                      Users.Add(user.ClientId, user.ClientName);
+                                      Users.Add(user.UserId, user.UserName);
                                   }
                               }
                           }
@@ -227,7 +227,7 @@ namespace MessengerApp.ViewModels
                                       MessageType = contentData.Type == MessageType.Chat,
                                       MsgData = contentData.Data,
                                       Time = contentData.SentTime.ToString("hh:mm tt"),
-                                      Sender = Users.ContainsKey(contentData.SenderID) ? Users[contentData.SenderID] : "Anonymous",
+                                      Sender = UserName,
                                       //Sender = contentData.SenderID,
                                       isCurrentUser = UserId == contentData.SenderID,
                                       ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID],

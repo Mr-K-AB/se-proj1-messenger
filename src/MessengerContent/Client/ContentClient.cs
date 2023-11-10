@@ -21,7 +21,7 @@ using MessengerContent.Enums;
 using MessengerNetworking.NotificationHandler;
 using MessengerNetworking.Communicator;
 using System.Security.Cryptography;
-
+using MessengerNetworking.Factory;
 
 namespace MessengerContent.Client
 {
@@ -32,7 +32,7 @@ namespace MessengerContent.Client
         /// </summary>
         private readonly INotificationHandler _notificationHandler;
         private ICommunicator _communicator;
-        private readonly IContentSerializer _serializer;
+        //private readonly IContentSerializer _serializer;
 
         /// <summary>
         /// List of subscribers
@@ -86,12 +86,12 @@ namespace MessengerContent.Client
         {
             // instantiate requried network parameters
             _notificationHandler = new ContentClientNotificationHandler(this);
-            // need to get communicator using _communicator and factory
-            _serializer = new ContentSerializer();
+            _communicator = Factory.GetInstance();
+            //_serializer = new ContentSerializer();
             // subscribe to network module
             try
             {
-                // need to subscribe to network module using _communicator
+                _communicator.AddSubscriber("Content", _notificationHandler);
             }
             catch (Exception e)
             {
@@ -130,7 +130,7 @@ namespace MessengerContent.Client
                 _communicator = value;
                 try
                 {
-                    //subscribing to network module using _communicator and subscribe
+                    _communicator.AddSubscriber("Content", _notificationHandler);
                 }
                 catch (Exception e)
                 {
@@ -140,25 +140,18 @@ namespace MessengerContent.Client
                 _fileHandler.Communicator = value;
             }
         }
+        /// <summary>
+        /// User ID setter functions
+        /// </summary>
+        /// 
         public void SetUser(int id, string name)
         {
             _userID = id;
+            _chatHandler.UserID = id;
+            _fileHandler.UserID = id;
             _name = name;
         }
-        /// <summary>
-        /// User ID getter and setter functions
-        /// </summary>
-        /// 
-        public int UserID
-        {
-            get => _userID;
-            set
-            {
-                _userID = value;
-                _chatHandler.UserID = value;
-                _fileHandler.UserID = value;
-            }
-        }
+
 
         /// <summary>
         /// Check for valid reply message ID 
@@ -328,7 +321,7 @@ namespace MessengerContent.Client
                 throw new ArgumentException($"Invalid message type for editing : {message.Type}");
             }
             // check if user can edit the message
-            if (message.SenderID != UserID)
+            if (message.SenderID != _userID)
             {
                 throw new ArgumentException("Edit not allowed for messages from another sender");
 
@@ -348,7 +341,7 @@ namespace MessengerContent.Client
                 throw new ArgumentException($"Invalid message type for deleting : {message.Type}");
             }
             // check if user can delete the message
-            if (message.SenderID != UserID)
+            if (message.SenderID != _userID)
             {
                 throw new ArgumentException("Delete not allowed for messages from another sender");
             }
@@ -615,7 +608,7 @@ namespace MessengerContent.Client
         /// Set all messages of in the internal data strcutures
         /// </summary>
         /// <param name="allMessages">List of threads containing all messages</param>
-        private void SetAllMessages(List<ChatThread> allMessages)
+        /*private void SetAllMessages(List<ChatThread> allMessages)
         {
             // lock before updating data strcutures
             lock (_lock)
@@ -635,7 +628,7 @@ namespace MessengerContent.Client
                     }
                 }
             }
-        }
+        }*/
 
         /// <summary>
         /// Handles received messages from network

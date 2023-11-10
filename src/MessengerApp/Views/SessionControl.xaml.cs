@@ -13,19 +13,29 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MessengerDashboard;
-using LiveCharts;
-using LiveCharts.Wpf;
 
 namespace MessengerApp.Views
 {
     /// <summary>
-    /// Interaction logic for DashboardControl.xaml
+    /// Interaction logic for SessionControl.xaml
     /// </summary>
-    public partial class DashboardControl : UserControl
+    public partial class SessionControl : UserControl
     {
-        public DashboardControl()
+        public SessionControl()
         {
+            /*
             InitializeComponent();
+            SessionsViewModel viewModel = new();
+
+            SessionEntry entry = new() { SessionName = "S1", Summary = "All the best" };
+
+            viewModel.Enteries = new List<SessionEntry>
+            {
+                entry
+            };
+            viewModel.SessionSummary = "Vinay Loves Hii Vinay";
+            DataContext = viewModel;
+            */
         }
     }
 }

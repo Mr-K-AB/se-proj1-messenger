@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Input;
-
+/*
 namespace MessengerDashboard
 {
     public class DashboardViewModel : ViewModel
@@ -37,3 +37,4 @@ namespace MessengerDashboard
         public ICommand RefreshCommand { get; set; }
     }
 }
+*/

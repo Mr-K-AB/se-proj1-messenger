@@ -25,16 +25,6 @@ namespace MessengerTestUI.Views
         public DashboardControl()
         {
             InitializeComponent();
-            DashboardViewModel viewModel = new();
-            User user = new() { UserName = "Pratham", UserPicturePath = @"C:\\Users\\DELL\\Downloads\\Telegram Desktop\\MM.jpg" };
-
-            viewModel.Users = new List<User>
-            {
-                user
-            };
-            viewModel.Summary = "Vinay Loves Hii Vinay";
-            viewModel.Mode = "Lab Mode";
-            DataContext = viewModel;
         }
     }
 }

@@ -78,7 +78,12 @@
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0">
-                        <TextBlock Width="auto" Background="Gray" Text="Total Participant" TextAlignment="Center" Margin="5 5 5 5"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Width="auto" Background="Gray" Text="Participants" TextAlignment="Center" Margin="5 5 5 0" FontSize="10" />
+                        <TextBlock Grid.Row="1" Width="auto" Background="Gray" Text="{Binding Users.Count}" TextAlignment="Center" Margin="5 0 5 5" FontSize="10" />
                     </Grid>
                     <Grid Grid.Column="1">
                         <TextBlock Width="auto" Background="Gray" Text="BBBBBB" TextAlignment="Center" Margin="5 5 5 5"/>

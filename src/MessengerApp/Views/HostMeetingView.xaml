@@ -9,17 +9,18 @@
     <Grid>
         <!-- Navigation Bar -->
         <Menu>
-            <MenuItem Header="Dashboard"/>
-            <MenuItem Header="Whiteboard"/>
-            <MenuItem Header="Screenshare"/>
-
+            <MenuItem Header="Dashboard" Click="Dashboard_Click"/>
+            <MenuItem Header="Whiteboard" Click="WhiteBoard_Click"/>
+            <MenuItem Header="Screenshare" Click="HostScreenshare_Click"/>
+            <TextBlock Text="{Binding IP}"></TextBlock>
+            <TextBlock Text="{Binding Port}"></TextBlock>
         </Menu>
 
         <!-- Profile Information -->
         <Button Content="End Meeting" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>
 
         <!-- Content Control for Dynamic Content -->
-        <ContentControl x:Name="MainContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <ContentControl x:Name="MainContent" Margin="0,25,0,0"/>
 
     </Grid>
 </UserControl>

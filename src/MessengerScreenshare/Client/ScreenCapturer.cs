@@ -91,6 +91,7 @@ namespace MessengerScreenshare.Client
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Unable to stop capture: {e.Message}", withTimeStamp: true));
             }
+            _capturedFrameQueue.Clear();
         }
     }
 }

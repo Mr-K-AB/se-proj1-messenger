@@ -10,6 +10,7 @@ using System.Windows.Input;
 using MessengerDashboard.Client;
 using System.Runtime.CompilerServices;
 using MessengerTestUI.Views;
+using MessengerDashboard;
 
 namespace MessengerTestUI.ViewModels
 {
@@ -17,15 +18,31 @@ namespace MessengerTestUI.ViewModels
     {
         public ICommand NavigateHomeCommand { get; }
 
+        public ICommand NavigateDashboardCommand { get; }
+
+        private readonly NavigationStore _navigationStore;
+
+        public ViewModel SubViewModel => _navigationStore.SubViewModel;
+
         private readonly ClientSessionController _client;
+
+
         public int Port { get; set; }
         public string IP { get; set; }
 
         public ClientMeetViewModel(NavigationStore navigationStore, ClientSessionController client)
         {
+            _navigationStore = navigationStore;
+            navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
+            NavigateDashboardCommand = new NavigateDashboardCommand(navigationStore);
 
             _client = client;
+        }
+
+        private void NavigationStore_SubViewModelChanged()
+        {
+            OnPropertyChanged(nameof(SubViewModel));
         }
     }
 }

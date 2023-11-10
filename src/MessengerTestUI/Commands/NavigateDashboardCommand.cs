@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MessengerTestUI.Stores;
 using MessengerTestUI.ViewModels;
 using MessengerDashboard;
+using System.Diagnostics;
 
 namespace MessengerTestUI.Commands
 {

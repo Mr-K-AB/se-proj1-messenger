@@ -31,7 +31,7 @@ namespace MessengerDashboard.Server
     {
         public Analysis _sessionAnalytics;
 
-        public SessionInfo _sessionInfo = new();
+        public SessionInfo SessionInfo { get; set; } = new();
 
         private readonly ICommunicator _communicator;
 
@@ -40,8 +40,6 @@ namespace MessengerDashboard.Server
         private readonly ISentimentAnalyzer _sentimentAnalyzer = SentimentAnalyzerFactory.GetSentimentAnalyzer();
 
         private readonly Serializer _serializer = new();
-
-        private readonly SessionMode _sessionMode;
 
         private readonly ITextSummarizer _textSummarizer = TextSummarizerFactory.GetTextSummarizer();
 
@@ -90,11 +88,14 @@ namespace MessengerDashboard.Server
             UserEmail = email;
             UserPhotoUrl = photoUrl;
             _screenshareClient.SetUser(1, UserName);
+
+            UserInfo clientInfo = new(username, _clientCount, email, photoUrl);
+            SessionInfo.Users.Add(clientInfo);
+            SessionUpdated?.Invoke(this, new(SessionInfo));
         }
 
-        public SessionMode SessionMode { get; private set; }
         public void BroadcastPayloadToClients(Operation operation, SessionInfo? sessionInfo, TextSummary? summary = null,
-                                                      Analysis? sessionAnalytics = null, ClientInfo? user = null)
+                                                      Analysis? sessionAnalytics = null, UserInfo? user = null)
         {
             ServerPayload serverPayload;
             lock (this)
@@ -109,7 +110,7 @@ namespace MessengerDashboard.Server
 
         public void DeliverPayloadToClient(Operation operation, string ip, int port, SessionInfo? sessionInfo,
                     TextSummary? summary = null, Analysis? sessionAnalytics = null,
-                    ClientInfo? user = null)
+                    UserInfo? user = null)
         {
             ServerPayload serverPayload;
             lock (this)
@@ -132,7 +133,7 @@ namespace MessengerDashboard.Server
 
         public void EndSession()
         {
-            BroadcastPayloadToClients(Operation.EndSession, _sessionInfo);
+            BroadcastPayloadToClients(Operation.EndSession, SessionInfo);
         }
 
         public void OnClientJoined(string ip, int port)
@@ -173,8 +174,6 @@ namespace MessengerDashboard.Server
             Operation operationType = clientPayload.Operation;
             switch (operationType)
             {
-                case Operation.ToggleSessionMode:
-                    break;
                 case Operation.AddClient:
                     AddClient(clientPayload);
                     break;
@@ -200,11 +199,12 @@ namespace MessengerDashboard.Server
             {
                 _clientCount += 1;
                 int id = _clientCount;
-                ClientInfo user = new() { ClientEmail = clientPayload.UserEmail, ClientId = id, ClientName = clientPayload.UserName,
-                                        ClientPhotoUrl = clientPayload.UserPhotoURL };
-                _sessionInfo.Users.Add(user);
+                UserInfo user = new() { UserEmail = clientPayload.UserEmail, UserId = id, UserName = clientPayload.UserName,
+                                        UserPhotoUrl = clientPayload.UserPhotoURL };
+                SessionInfo.Users.Add(user);
+                SessionUpdated?.Invoke(this, new(SessionInfo));
                 _communicator.AddClient(clientPayload.IpAddress, clientPayload.Port);
-                DeliverPayloadToClient(Operation.AddClientACK, clientPayload.IpAddress, clientPayload.Port, _sessionInfo, null, null, user);
+                DeliverPayloadToClient(Operation.AddClientACK, clientPayload.IpAddress, clientPayload.Port, SessionInfo, null, null, user);
                 NewUserAdded?.Invoke(this, EventArgs.Empty);
             }
        }
@@ -235,7 +235,7 @@ namespace MessengerDashboard.Server
 
         private void DeliverAnalyticsToClient(ClientPayload receivedObject)
         {
-            ClientInfo user = new(receivedObject.UserName, receivedObject.UserID, receivedObject.UserEmail, receivedObject.UserPhotoURL);
+            UserInfo user = new(receivedObject.UserName, receivedObject.UserID, receivedObject.UserEmail, receivedObject.UserPhotoURL);
             try
             {
                 //var allChats = _contentServer.GetAllMessages().ToArray();
@@ -252,14 +252,14 @@ namespace MessengerDashboard.Server
         private void DeliverSummaryToClient(ClientPayload clientPayload)
         {
             TextSummary summaryData = CreateSummary();
-            ClientInfo user = new(clientPayload.UserName, clientPayload.UserID, clientPayload.UserEmail, clientPayload.UserPhotoURL);
+            UserInfo user = new(clientPayload.UserName, clientPayload.UserID, clientPayload.UserEmail, clientPayload.UserPhotoURL);
             Trace.WriteLine("Dashboard: Sending summary to client");
             DeliverPayloadToClient(Operation.GetSummary, clientPayload.IpAddress, clientPayload.Port, null, summaryData, null, user);
         }
 
         private void GetAnalytics(ClientPayload receivedObject)
         {
-            ClientInfo user = new(receivedObject.UserName, receivedObject.UserID,
+            UserInfo user = new(receivedObject.UserName, receivedObject.UserID,
                 receivedObject.UserEmail, receivedObject.UserPhotoURL);
             // TODO : Analysis of all chats
             DeliverPayloadToClient(Operation.GetAnalytics, receivedObject.IpAddress, receivedObject.Port, null, null, null, user);
@@ -269,18 +269,25 @@ namespace MessengerDashboard.Server
         {
             Trace.WriteLine("Dashboard: Removing Client");
             _communicator.RemoveClient(receivedObject.IpAddress, receivedObject.Port);
-            int removedCount = _sessionInfo.Users.RemoveAll(user => user.ClientId == receivedObject.UserID);
+            int removedCount = SessionInfo.Users.RemoveAll(user => user.UserId == receivedObject.UserID);
             if (removedCount != 0)
             {
-                SessionUpdated?.Invoke(this, new(_sessionInfo));
+                SessionUpdated?.Invoke(this, new(SessionInfo));
             }
-            DeliverPayloadToClient(Operation.RemoveClient, receivedObject.IpAddress, receivedObject.Port, _sessionInfo);
+            DeliverPayloadToClient(Operation.RemoveClient, receivedObject.IpAddress, receivedObject.Port, SessionInfo);
         }
 
-        private void ToggleSessionMode()
+        public void SetExamMode()
         {
-            Trace.WriteLine("Dashboard: Session Mode changed in Session Data");
-            BroadcastPayloadToClients(Operation.ToggleSessionMode, _sessionInfo);
+            SessionInfo.SessionMode = SessionMode.Exam;
+            SessionUpdated?.Invoke(this, new(SessionInfo));
+            BroadcastPayloadToClients(Operation.ExamMode, SessionInfo);
+        }
+        public void SetLabMode()
+        {
+            SessionInfo.SessionMode = SessionMode.Lab;
+            SessionUpdated?.Invoke(this, new(SessionInfo));
+            BroadcastPayloadToClients(Operation.LabMode, SessionInfo);
         }
     }
 }

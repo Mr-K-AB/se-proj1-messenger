@@ -21,7 +21,6 @@ using MessengerContent.Enums;
 using MessengerNetworking.NotificationHandler;
 using MessengerNetworking.Communicator;
 using System.Security.Cryptography;
-using Newtonsoft.Json.Linq;
 using MessengerNetworking.Factory;
 
 namespace MessengerContent.Client
@@ -92,7 +91,7 @@ namespace MessengerContent.Client
             // subscribe to network module
             try
             {
-                // need to subscribe to network module using _communicator
+                _communicator.AddSubscriber("Content", _notificationHandler);
             }
             catch (Exception e)
             {
@@ -131,7 +130,7 @@ namespace MessengerContent.Client
                 _communicator = value;
                 try
                 {
-                    //subscribing to network module using _communicator and subscribe
+                    _communicator.AddSubscriber("Content", _notificationHandler);
                 }
                 catch (Exception e)
                 {

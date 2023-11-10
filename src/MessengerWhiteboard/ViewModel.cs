@@ -11,6 +11,7 @@ namespace MessengerWhiteboard
         public ShapeItem? _tempShape;
 
         private string _userID = "tempUser";
+        public bool isServer = true;
 
         //public string shapeMode = "Rectangle";
         public string activeTool = "Select";
@@ -105,7 +106,14 @@ namespace MessengerWhiteboard
         {
             _userID = _userid.ToString();
             //_userID = GetUserID();
-            machine = ClientState.Instance;
+            if(isServer)
+            {
+                machine = ServerState.Instance;
+            }
+            else
+            {
+                machine = ClientState.Instance;
+            }
             machine.SetUserId(_userID);
         }
 
@@ -116,16 +124,16 @@ namespace MessengerWhiteboard
             //this.UpdateStrokeWidth();
         }
 
-        public void ChangeStrokeBrush(string bcolour)
+        public void ChangeStrokeBrush(Brush bcolour)
         {
-            strokeBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(bcolour));
+            strokeBrush = bcolour;
             Trace.WriteLine("Whiteboard View Model :: border colour changed to : " + bcolour);
             //this.UpdateBorderBrush();
         }
 
-        public void ChangeFillBrush(string fcolour)
+        public void ChangeFillBrush(Brush fcolour)
         {
-            fillBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(fcolour)); ;
+            fillBrush = fcolour;
             Trace.WriteLine("Whiteboard View Model :: fill colour changed to : " + fcolour);
             //this.UpdateFillBrush();
         }

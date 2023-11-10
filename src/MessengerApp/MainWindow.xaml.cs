@@ -13,10 +13,7 @@ namespace MessengerApp
         {
             InitializeComponent();
 
-<<<<<<< HEAD
-=======
          
->>>>>>> 5f781938287a400fc3f5de4b378472eab61eea79
 
 
         }

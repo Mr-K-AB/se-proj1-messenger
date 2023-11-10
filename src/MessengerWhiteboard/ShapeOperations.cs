@@ -121,6 +121,7 @@ namespace MessengerWhiteboard
         {
             if (_tempShape != null)
             {
+                Trace.WriteLine("EndShape: ", _tempShape.ShapeType);
                 machine.OnShapeReceived(_tempShape, Operation.Creation);
                 //tempShape.EditShape(tempShape.boundary.TopLeft, a);
                 //ShapeItems[ShapeItems.Count - 1] = tempShape;

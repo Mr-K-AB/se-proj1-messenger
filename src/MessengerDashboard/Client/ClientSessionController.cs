@@ -115,8 +115,10 @@ namespace MessengerDashboard.Client
             {
                 connected = _connectionEstablished.WaitOne((int)timeoutInMilliseconds);
             }
-            _communicator.AddClient(serverIpAddress, serverPort);
-         
+            if (connected)
+            {
+                _communicator.AddClient(serverIpAddress, serverPort);
+            }
             return connected;
         }
 

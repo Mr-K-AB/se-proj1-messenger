@@ -1,4 +1,7 @@
-﻿using MessengerNetworking.Communicator;
+﻿using System.Diagnostics;
+using System.Windows.Shapes;
+using MessengerNetworking.Communicator;
+using MessengerNetworking.Factory;
 
 namespace MessengerWhiteboard
 {
@@ -6,7 +9,8 @@ namespace MessengerWhiteboard
     {
         private static ServerCommunicator s_instance;
         private static Serializer s_serializer;
-        //private static ICommunicator s_communicator;
+        private static readonly string s_moduleID = "whiteboard";
+        private static ICommunicator s_communicator;
 
         public static ServerCommunicator Instance
         {
@@ -16,7 +20,8 @@ namespace MessengerWhiteboard
                 {
                     s_instance = new ServerCommunicator();
                     s_serializer = new Serializer();
-                    //s_communicator = new Communicator(); //TODO
+                    s_communicator = Factory.GetInstance();
+                    s_communicator.AddSubscriber(s_moduleID, ViewModel.Instance);
                 }
                 return s_instance;
             }
@@ -27,7 +32,8 @@ namespace MessengerWhiteboard
             try
             {
                 string serializedShape = s_serializer.SerializeWBShape(wBShape);
-                //s_communicator.Send(serializedShape);
+                //Trace.WriteLine("Broadcast: {0}", serializedShape);
+                s_communicator.Broadcast(s_moduleID, serializedShape);
             }
             catch (Exception)
             {
@@ -39,6 +45,7 @@ namespace MessengerWhiteboard
         {
             try
             {
+                //Trace.WriteLine("Broadcast List<ShapeItem>: {0}", shapes.Count.ToString());
                 List<SerializableShapeItem> serializedShapes = s_serializer.SerializeShapes(shapes);
                 WBShape wBShape = new(serializedShapes, op);
                 Broadcast(wBShape);
@@ -53,6 +60,7 @@ namespace MessengerWhiteboard
         {
             try
             {
+                //Trace.WriteLine("Broadcast ShapeItem: {0}", shape.ShapeType);
                 List<ShapeItem> shapes = new()
                 {
                     shape

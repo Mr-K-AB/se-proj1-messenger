@@ -26,8 +26,12 @@ namespace MessengerNetworking.Communicator
         private readonly UdpClient _listener;
         private readonly Thread _senderThread;      // Thread that sends message using priority queue.
         private readonly Thread _listenThread;      // Thread that listens for messages on the UDP port.
+        private readonly Thread _timeoutThread;
         public readonly Dictionary<string, INotificationHandler> _subscribers; // List of subscribers.
         private readonly Queue<_queueContents> _highPriorityQueue, _lowPriorityQueue;
+        private readonly Dictionary<Tuple<string, int>, DateTime> _timeTrack;
+        private readonly Dictionary<Tuple<string, int>, Tuple<List<Tuple<string, string>>, int>> _msgTrack;
+        private readonly int _timeOut = 60;
 
 
 
@@ -46,6 +50,7 @@ namespace MessengerNetworking.Communicator
             IpAddress = getIPAddress();
             _highPriorityQueue = new Queue<_queueContents>();
             _lowPriorityQueue = new Queue<_queueContents>();
+            _timeTrack = new Dictionary<Tuple<string, int>, DateTime>();
             _listener = new(ListenPort);
             _listenThread = new(new ThreadStart(ListenerThreadProc))
             {
@@ -54,6 +59,10 @@ namespace MessengerNetworking.Communicator
             _senderThread = new(new ThreadStart(SenderThreadProc))
             {
                 IsBackground = true // Stop the thread when the main thread stops.
+            };
+            _timeoutThread = new(new ThreadStart(AliveChecker))
+            {
+                IsBackground = true
             };
             _listenThread.Start();
             _senderThread.Start();
@@ -69,6 +78,7 @@ namespace MessengerNetworking.Communicator
             IpAddress = getIPAddress();
             _highPriorityQueue = new Queue<_queueContents>();
             _lowPriorityQueue = new Queue<_queueContents>();
+            _timeTrack = new Dictionary<Tuple<string, int>, DateTime>();
             _listener = new(ListenPort);
             _listenThread = new(new ThreadStart(ListenerThreadProc))
             {
@@ -77,6 +87,10 @@ namespace MessengerNetworking.Communicator
             _senderThread = new(new ThreadStart(SenderThreadProc))
             {
                 IsBackground = true // Stop the thread when the main thread stops.
+            };
+            _timeoutThread = new(new ThreadStart(AliveChecker))
+            {
+                IsBackground = true
             };
             _listenThread.Start();
             _senderThread.Start();
@@ -128,6 +142,11 @@ namespace MessengerNetworking.Communicator
 
             // Assert valid Ip address
             _clients.Add(new Tuple<string, int>(ipAddress, port));
+
+            foreach (KeyValuePair<string, INotificationHandler> subscriber in _subscribers)
+            {
+                subscriber.Value.OnClientJoined(ipAddress, port);
+            }
         }
 
         public void RemoveClient(string ipAddress, int port)
@@ -136,6 +155,11 @@ namespace MessengerNetworking.Communicator
             Debug.Assert(port != 0);
 
             _clients.Remove(new Tuple<string, int>(ipAddress, port));
+
+            foreach (KeyValuePair<string, INotificationHandler> subscriber in _subscribers)
+            {
+                subscriber.Value.OnClientLeft(ipAddress, port);
+            }
         }
 
         private static int FindFreePort()
@@ -169,9 +193,25 @@ namespace MessengerNetworking.Communicator
         {
             Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             IPAddress broadcastAddress = IPAddress.Parse(ipAddress);
-            byte[] sendBuffer = Encoding.ASCII.GetBytes($"{senderId}:{message}");
+            byte[] sendBuffer = Encoding.ASCII.GetBytes($"{ipAddress}:{port}:{senderId}:{message}");
             IPEndPoint endPoint = new(broadcastAddress, port);
             int bytesSent = socket.SendTo(sendBuffer, endPoint);
+            _timeTrack.Add(new Tuple<string, int> (ipAddress, port), DateTime.Now);
+
+            if (_msgTrack.ContainsKey(new Tuple<string, int> (ipAddress, port)))
+            {
+                Tuple<List<Tuple<string, string>>, int> value = _msgTrack[new Tuple<string, int>(ipAddress, port)];
+                value.Item1.Add(new Tuple<string, string> (senderId, message));
+                _msgTrack[new Tuple<string, int>(ipAddress, port)] = new Tuple<List<Tuple<string, string>>, int> (value.Item1, value.Item2);
+            }
+            else
+            {
+                List<Tuple<string, string>> value = new()
+                {
+                    new Tuple<string, string> (senderId, message)
+                };
+                _msgTrack.Add(new Tuple<string, int>(ipAddress, port), new Tuple<List<Tuple<string, string>>, int>(value, 0));
+            }
             Debug.Assert(bytesSent == sendBuffer.Length);
         }
 
@@ -238,6 +278,40 @@ namespace MessengerNetworking.Communicator
         }
 
 
+        private void AliveChecker()
+        {
+            while (true)
+            {
+                lock (this)
+                {
+                    foreach (KeyValuePair<Tuple<string, int>, DateTime> item in _timeTrack)
+                    {
+                        if (item.Value - DateTime.Now > new TimeSpan(0, 1, 0))
+                        {
+                            if(_msgTrack.ContainsKey(item.Key))
+                            {
+                                Tuple<List<Tuple<string, string>>, int> msgToSend = _msgTrack[(item.Key)];
+                                if (msgToSend.Item2 == 3)
+                                {
+                                    RemoveClient(item.Key.Item1, item.Key.Item2);
+                                    _timeTrack.Remove(item.Key);
+                                }
+                                else
+                                {
+                                    foreach (Tuple<string, string> toSend in msgToSend.Item1)
+                                    {
+                                        SendMessage(item.Key.Item1, item.Key.Item2, toSend.Item1, toSend.Item2);
+                                    }
+                                    int count = _msgTrack[(item.Key)].Item2 + 1;
+                                    _msgTrack[(item.Key)] = new Tuple<List<Tuple<string, string>>, int>(msgToSend.Item1, count);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Listens for messages on the listening port.
         /// </summary>
@@ -255,11 +329,18 @@ namespace MessengerNetworking.Communicator
                     Debug.WriteLine($"Received payload: {payload}");
 
                     // The received payload is expected to be in the format <Identity>:<Message>
-                    string[] tokens = payload.Split(':', 2, StringSplitOptions.RemoveEmptyEntries);
-                    if (tokens.Length == 2)
+                    string[] tokens = payload.Split(':', 4, StringSplitOptions.RemoveEmptyEntries);
+                    if (tokens.Length == 4)
                     {
-                        string id = tokens[0];
-                        string message = tokens[1];
+                        string ipAddress = tokens[0];
+                        string port = tokens[1];
+                        string id = tokens[2];
+                        string message = tokens[3];
+
+                        if (! _clients.Contains(new Tuple<string, int> (ipAddress, int.Parse(port))))
+                        {
+                            AddClient(ipAddress, int.Parse(port));
+                        }
                         // lock (this)
                         {
                             Console.WriteLine("[" +  id + "] : " + message);
@@ -270,6 +351,14 @@ namespace MessengerNetworking.Communicator
                             else
                             {
                                 Debug.WriteLine($"Received message for unknown subscriber: {id}");
+                            }
+                            if (message != "ALIVE")
+                            {
+                                SendMessage(ipAddress, int.Parse(port), "Networking", "ALIVE");
+                            }
+                            if (_timeTrack.ContainsKey(new Tuple<string, int> (ipAddress, int.Parse(port))))
+                            {
+                                _timeTrack.Remove(new Tuple<string, int>(ipAddress, int.Parse(port)));
                             }
                         }
                     }

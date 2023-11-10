@@ -31,7 +31,7 @@ namespace MessengerApp.Commands
 
             _connected = _client.ConnectToServer(_homeViewModel.JoinMeetIP,
                 _homeViewModel.JoinMeetPort,
-                10000,
+                null,
                 _navigationStore.AuthResult.UserName,
                 _navigationStore.AuthResult.UserEmail,
                 _navigationStore.AuthResult.UserImage);

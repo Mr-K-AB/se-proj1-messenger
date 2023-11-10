@@ -18,7 +18,7 @@ namespace MessengerDashboard.Client
     {
         public SessionInfo()
         {
-            Users ??= new List<ClientInfo>();
+            Users ??= new List<UserInfo>();
             SessionMode = SessionMode.Lab;
             SessionID = new Random().Next();
         }
@@ -26,6 +26,6 @@ namespace MessengerDashboard.Client
         public int SessionID { get; set; }
         public SessionMode SessionMode { get; set; }
 
-        public List<ClientInfo> Users { get; set; }
+        public List<UserInfo> Users { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace MessengerDashboard.Server
 {
     public class ServerPayload
     {
-        public ClientInfo User { get; set; }
+        public UserInfo User { get; set; }
 
         public Operation Operation { get; set; }
 
@@ -26,7 +26,7 @@ namespace MessengerDashboard.Server
             SessionInfo sessionDataToSend,
             TextSummary summaryDataToSend,
             Analysis sessionAnalyticsToSend,
-            ClientInfo user
+            UserInfo user
         )
         {
             Operation = eventName;

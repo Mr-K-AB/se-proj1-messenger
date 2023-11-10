@@ -22,7 +22,7 @@ using MessengerNetworking;
 using MessengerNetworking.Communicator;
 using MessengerNetworking.NotificationHandler;
 using MessengerNetworking.Serializer;
-//using MessengerNetworking.Factory;
+using MessengerNetworking.Factory;
 
 namespace MessengerContent.Server
 {
@@ -40,13 +40,13 @@ namespace MessengerContent.Server
         public ContentServer()
         {
             _subscribers = new List<IMessageListener>();
-            //_communicator = Factory.GetCommunicator(false);
+            _communicator = Factory.GetInstance();
             _contentDatabase = new ContentDataBase();
             _notificationHandler = new ContentServerNotificationHandler(this);
             _fileServer = new FileServer(_contentDatabase);
             _chatServer = new ChatServer(_contentDatabase);
             _serializer = new ContentSerializer();
-            //_communicator.Subscribe("Content", _notificationHandler);
+            _communicator.AddSubscriber("Content", _notificationHandler);
         }
 
         /// <summary>

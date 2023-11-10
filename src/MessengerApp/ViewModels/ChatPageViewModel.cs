@@ -160,10 +160,10 @@ namespace MessengerApp.ViewModels
                               {
                                   Trace.WriteLine("[ChatPageViewModel] Users List Received.");
                                   Users.Clear();
-                                  foreach (ClientInfo user in currentSession.Users)
+                                  foreach (UserInfo user in currentSession.Users)
                                   {
                                       // adding users for the session
-                                      Users.Add(user.ClientId, user.ClientName);
+                                      Users.Add(user.UserId, user.UserName);
                                   }
                               }
                           }

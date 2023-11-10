@@ -136,9 +136,9 @@ namespace MessnegerTests.ContentTests
             SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, "Message Deleted.");
             MockCommunicator mockCommunicator = utility.GetMockCommunicator();
             var serializer = new ContentSerializer();
-            var userID = 5;
-            var messageID = 6;
-            var threadID = 7;
+            int userID = 5;
+            int messageID = 6;
+            int threadID = 7;
             var chatClient = new ChatMessageClient(mockCommunicator)
             {
                 UserID = userID,

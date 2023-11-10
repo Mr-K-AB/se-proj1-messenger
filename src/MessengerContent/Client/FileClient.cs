@@ -101,7 +101,6 @@ namespace MessengerContent.Client
                 Event = MessageEvent.New,
                 FileData = new SendFileData(sendContent.Data)
             };
-            //sendData.ReplyMessageID = sendContent.ReplyMessageID;
             SerializeAndSendToServer(sendData, "New");
         }
 

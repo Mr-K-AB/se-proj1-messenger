@@ -30,7 +30,7 @@ namespace MessengerTestUI.ViewModels
 
             Server.SessionUpdated += Server_SessionUpdated;
 
-            SwitchModeCommand = new SwitchModeCommand(this);
+            //SwitchModeCommand = new SwitchModeCommand(this);
 
             RefreshCommand = new RefreshCommand(this);
             EndMeetCommand = new EndMeetCommand(this);

@@ -27,7 +27,7 @@ namespace MessengerDashboard.Client
 
         void GetAnalytics();
 
-        ClientInfo GetUser();
+        UserInfo GetUser();
 
         SessionInfo GetSessionInfo();
 

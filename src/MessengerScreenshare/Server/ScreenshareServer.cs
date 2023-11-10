@@ -22,10 +22,11 @@ namespace MessengerScreenshare.Server
         private static readonly object s_lockObject = new ();
         private readonly Dictionary<int, SharedClientScreen> _subscribers;
         private readonly bool _disposed;
+        private readonly IDataReceiver _receiver;
         private readonly ICommunicator _communicator;
         private static ScreenshareServer? s_instance;
 
-        public ScreenshareServer(bool isDebugging)
+        protected ScreenshareServer(IDataReceiver receiver,bool isDebugging)
         {
             if (!isDebugging)
             {
@@ -39,6 +40,7 @@ namespace MessengerScreenshare.Server
             // Initialize the rest of the fields.
             _subscribers = new Dictionary<int, SharedClientScreen>();
             _disposedValue = false;
+            _receiver = receiver;
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareServer", withTimeStamp: true));
         }
         ~ScreenshareServer()
@@ -49,16 +51,16 @@ namespace MessengerScreenshare.Server
             Dispose(disposing: false);
         }
 
-        public static ScreenshareServer GetInstance(IDataReceiver listener, bool isDebugging = false)
+        public static ScreenshareServer GetInstance(IDataReceiver receiver, bool isDebugging = false)
         {
-            Debug.Assert(listener != null, Utils.GetDebugMessage("listener is found null"));
+            Debug.Assert(receiver != null, Utils.GetDebugMessage("receiver is found null"));
 
             // Create a new instance if it was null before.
             if (s_instance == null)
             {
                 lock (s_lockObject) // Use the defined lockObject for synchronization.
                 {
-                    s_instance ??= new ScreenshareServer(isDebugging);
+                    s_instance ??= new ScreenshareServer(receiver,isDebugging);
                 }
             }
 
@@ -119,8 +121,8 @@ namespace MessengerScreenshare.Server
                 }
             }
 
-            //NotifyUX();
-            //NotifyUX(clientId, clientName, hasStarted: true);
+            NotifyUX();
+            NotifyUX(clientId, clientName, start: true);
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully registered the client - Id: {clientId}, Name: {clientName}", withTimeStamp: true));
         }
@@ -134,8 +136,8 @@ namespace MessengerScreenshare.Server
                 {
                     _subscribers.Remove(clientId);
 
-                    //NotifyUX();
-                    //NotifyUX(clientId, client.Name, hasStarted: false);
+                    NotifyUX();
+                    NotifyUX(clientId, client.Name, start: false);
 
                     try
                     {
@@ -151,7 +153,7 @@ namespace MessengerScreenshare.Server
                     }
                     finally
                     {
-                        //client.Dispose(); // Dispose of the client's resources.
+                        client.Dispose(); // Dispose of the client's resources.
                     }
 
                     Trace.WriteLine(Utils.GetDebugMessage($"Successfully removed the client with Id {clientId}", withTimeStamp: true));
@@ -294,6 +296,32 @@ namespace MessengerScreenshare.Server
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+        private void NotifyUX()
+        {
+            Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
+            Debug.Assert(_receiver != null, Utils.GetDebugMessage("_receiver is found null"));
+
+            List<SharedClientScreen> sharedClientScreens;
+
+          
+            lock (_subscribers)
+            {
+                sharedClientScreens = _subscribers.Values.ToList();
+            }
+
+            _receiver.OnSubscribersUpdated(sharedClientScreens);
+        }
+        private void NotifyUX(int clientId, string clientName, bool start)
+        {
+            if (start)
+            {
+                _receiver.OnScreenshareStart(clientId, clientName);
+            }
+            else
+            {
+                _receiver.OnScreenshareStop(clientId, clientName);
+            }
         }
         public void OnClientJoined(string ipAddress, int port)
         {

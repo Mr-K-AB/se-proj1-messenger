@@ -32,7 +32,7 @@ namespace MessengerContent.Client
         /// </summary>
         private readonly INotificationHandler _notificationHandler;
         private ICommunicator _communicator;
-        private readonly IContentSerializer _serializer;
+        //private readonly IContentSerializer _serializer;
 
         /// <summary>
         /// List of subscribers
@@ -87,7 +87,7 @@ namespace MessengerContent.Client
             // instantiate requried network parameters
             _notificationHandler = new ContentClientNotificationHandler(this);
             _communicator = Factory.GetInstance();
-            _serializer = new ContentSerializer();
+            //_serializer = new ContentSerializer();
             // subscribe to network module
             try
             {

@@ -8,6 +8,8 @@ using MessengerTestUI.Commands;
 using MessengerTestUI.Stores;
 using System.Windows.Input;
 using MessengerDashboard.Client;
+using System.Runtime.CompilerServices;
+using MessengerTestUI.Views;
 
 namespace MessengerTestUI.ViewModels
 {
@@ -18,7 +20,6 @@ namespace MessengerTestUI.ViewModels
         private readonly ClientSessionController _client;
         public int Port { get; set; }
         public string IP { get; set; }
-
 
         public ClientMeetViewModel(NavigationStore navigationStore, ClientSessionController client)
         {

@@ -23,6 +23,7 @@ namespace MessengerApp.Views
     {
         public SessionControl()
         {
+            /*
             InitializeComponent();
             SessionsViewModel viewModel = new();
 
@@ -34,6 +35,7 @@ namespace MessengerApp.Views
             };
             viewModel.SessionSummary = "Vinay Loves Hii Vinay";
             DataContext = viewModel;
+            */
         }
     }
 }

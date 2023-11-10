@@ -22,7 +22,7 @@ using MessengerNetworking.NotificationHandler;
 using MessengerNetworking.Communicator;
 using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
-
+using MessengerNetworking.Factory;
 
 namespace MessengerContent.Client
 {
@@ -87,7 +87,7 @@ namespace MessengerContent.Client
         {
             // instantiate requried network parameters
             _notificationHandler = new ContentClientNotificationHandler(this);
-            // need to get communicator using _communicator and factory
+            _communicator = Factory.GetInstance();
             _serializer = new ContentSerializer();
             // subscribe to network module
             try

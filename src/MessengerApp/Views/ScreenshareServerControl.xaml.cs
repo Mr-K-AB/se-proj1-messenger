@@ -1,6 +1,4 @@
-﻿/// <author> Harsh Kanani </author>
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,14 +16,14 @@ using System.Windows.Shapes;
 using MessengerScreenshare;
 using MessengerScreenshare.Server;
 
-namespace MessengerApp
+namespace MessengerApp.Views
 {
     /// <summary>
-    /// Interaction logic for ScreenShareServer.xaml
+    /// Interaction logic for ScreenshareServerControl.xaml
     /// </summary>
-    public partial class ScreenShareServer : Page
+    public partial class ScreenshareServerControl : UserControl
     {
-        public ScreenShareServer()
+        public ScreenshareServerControl()
         {
             InitializeComponent();
             ScreenshareServerViewModel viewModel = ScreenshareServerViewModel.GetInstance();
@@ -35,7 +33,6 @@ namespace MessengerApp
 
             Debug.WriteLine(viewModel.CurrentWindowClients.Count);
         }
-
         private void PinButtonClicked(object sender, RoutedEventArgs e)
         {
             if (sender is Button pinButton)

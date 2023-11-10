@@ -13,7 +13,7 @@ namespace MessengerTests.ContentTests
     [TestClass]
     public class ServerTests
     {
-        public MockUtils? _utils;
+        public MockHelper? _utils;
         public ContentDataBase? database;
         public ChatServer? ChatServer;
 
@@ -21,7 +21,7 @@ namespace MessengerTests.ContentTests
         {
             database = new ContentDataBase();
             ChatServer = new ChatServer(database);
-            _utils = new MockUtils();
+            _utils = new MockHelper();
         }
 
         [TestMethod]

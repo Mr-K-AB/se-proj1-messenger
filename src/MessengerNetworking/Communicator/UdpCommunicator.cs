@@ -197,6 +197,7 @@ namespace MessengerNetworking.Communicator
 
         public void Broadcast(string senderId, string message, int priority = 0)
         {
+            Trace.WriteLine("Broadcasting message to : " + _clients.Count);
             foreach (Tuple<string, int> client in _clients)
             {
                 SendMessage(client.Item1, client.Item2, senderId, message, priority);

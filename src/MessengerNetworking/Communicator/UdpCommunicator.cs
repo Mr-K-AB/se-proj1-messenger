@@ -57,6 +57,8 @@ namespace MessengerNetworking.Communicator
             };
             _listenThread.Start();
             _senderThread.Start();
+            _endPoint = new(IPAddress.Parse(IpAddress), ListenPort);
+
         }
         public UdpCommunicator()
         {
@@ -80,6 +82,7 @@ namespace MessengerNetworking.Communicator
             };
             _listenThread.Start();
             _senderThread.Start();
+            _endPoint = new(IPAddress.Parse(IpAddress), ListenPort);
         }
 
         /// <inheritdoc />

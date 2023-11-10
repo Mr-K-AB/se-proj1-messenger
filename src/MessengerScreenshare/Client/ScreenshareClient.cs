@@ -57,7 +57,7 @@ namespace MessengerScreenshare.Client
             if (!isDebugging)
             {
                 _communicator = Factory.GetInstance();
-                _communicator.AddSubscriber(Utils.ModuleIdentifier, this);
+                _communicator.AddSubscriber(Utils.ClientIdentifier, this);
             }
             Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped image processing", withTimeStamp: true));
         }
@@ -85,7 +85,7 @@ namespace MessengerScreenshare.Client
 
             DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "");
             string serializedData = JsonSerializer.Serialize(dataPacket);
-            _communicator.Broadcast(Utils.ModuleIdentifier, serializedData);
+            _communicator.Broadcast(Utils.ServerIdentifier, serializedData);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent REGISTER packet to server", withTimeStamp: true));
 
             await SendConfirmationPacketAsync();
@@ -161,7 +161,7 @@ namespace MessengerScreenshare.Client
                 string serializedData = JsonSerializer.Serialize(dataPacket);
 
                 Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} of size {serializedData.Length}", withTimeStamp: true));
-                _communicator.Broadcast(Utils.ModuleIdentifier, serializedData);
+                _communicator.Broadcast(Utils.ServerIdentifier, serializedData);
                 cnt++;
                 await Task.Delay(1); // Introduce a small delay for asynchronous behavior
             }
@@ -195,7 +195,7 @@ namespace MessengerScreenshare.Client
 
             StopImageSending();
             StopConfirmationSendingAsync().Wait(); // Synchronously wait here for demonstration purposes
-            _communicator.Broadcast(Utils.ModuleIdentifier, serializedDeregisterPacket);
+            _communicator.Broadcast(Utils.ServerIdentifier, serializedDeregisterPacket);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
         }
 
@@ -264,7 +264,7 @@ namespace MessengerScreenshare.Client
             {
                 while (!_confirmationCancellationToken)
                 {
-                    _communicator.Broadcast(Utils.ModuleIdentifier, serializedConfirmationPacket);
+                    _communicator.Broadcast(Utils.ServerIdentifier, serializedConfirmationPacket);
                     await Task.Delay(5000);
                 }
             });

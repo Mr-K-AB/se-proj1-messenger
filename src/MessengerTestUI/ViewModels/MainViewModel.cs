@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MessengerDashboard;
 using MessengerTestUI.Stores;
 
 namespace MessengerTestUI.ViewModels
@@ -11,7 +12,7 @@ namespace MessengerTestUI.ViewModels
     {
         private readonly NavigationStore _navigationStore;
         public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
-
+        public ViewModel SubViewModel => _navigationStore.SubViewModel;
         public MainViewModel(NavigationStore navigationStore)
         {
             _navigationStore = navigationStore;

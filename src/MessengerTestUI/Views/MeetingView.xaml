@@ -10,8 +10,8 @@
         <TabControl TabStripPlacement="Left">
             <TabItem Header="Start meeting" IsSelected="True">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox HorizontalAlignment="Center" Margin="0,-100,0,0" TextWrapping="Wrap" Text="{Binding CreateMeetIP}" VerticalAlignment="Center" Width="150"/>
-                    <TextBox HorizontalAlignment="Center" TextWrapping="Wrap" Text="{Binding CreateMeetPort}" VerticalAlignment="Center" Margin="0,-30,0,0" Width="150"/>
+                    <!--<TextBox HorizontalAlignment="Center" Margin="0,-100,0,0" TextWrapping="Wrap" Text="{Binding CreateMeetIP}" VerticalAlignment="Center" Width="150"/>
+                    <TextBox HorizontalAlignment="Center" TextWrapping="Wrap" Text="{Binding CreateMeetPort}" VerticalAlignment="Center" Margin="0,-30,0,0" Width="150"/>-->
                     <Button Content="Start Meeting" Command="{Binding NavigateServerMeetCommand}" HorizontalAlignment="Center" Margin="0,30,0,0" VerticalAlignment="Center" Width="Auto"/>
                 </Grid>
             </TabItem>

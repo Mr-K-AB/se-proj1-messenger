@@ -25,10 +25,5 @@ namespace MessengerTestUI.Views
             InitializeComponent();
         }
 
-        private void Dashboard_Click(object sender, RoutedEventArgs e)
-        {
-            DashboardControl dashboardControl = new();
-            MainContent.Content = dashboardControl;
-        }
     }
 }

@@ -4,12 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MessengerTestUI.Views"
+             xmlns:dashboard="clr-namespace:MessengerDashboard;assembly=MessengerDashboard"
+             xmlns:views="clr-namespace:MessengerTestUI.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <!-- Navigation Bar -->
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type dashboard:DashboardViewModel}">
+                <views:DashboardControl/>
+            </DataTemplate>
+        </Grid.Resources>
+
         <Menu>
-            <MenuItem Header="Dashboard" Click="Dashboard_Click"/>
+            <MenuItem Header="Dashboard" Command="{Binding NavigateDashboardCommand}"/>
             <MenuItem Header="Whiteboard"/>
             <MenuItem Header="Screenshare"/>
             <MenuItem Header="Participants"/>
@@ -21,7 +29,7 @@
         <Button Content="Leave Meeting" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>
 
         <!-- Content Control for Dynamic Content -->
-        <ContentControl x:Name="MainContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <ContentControl Content="{Binding SubViewModel}" Margin="0,25,0,0"/>
 
     </Grid>
 </UserControl>

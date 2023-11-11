@@ -17,5 +17,6 @@ namespace MessengerDashboard.Server
         /// Fires when session is updated.
         /// </summary>
         event EventHandler<SessionUpdatedEventArgs> SessionUpdated;
+
     }
 }

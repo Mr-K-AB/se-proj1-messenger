@@ -18,6 +18,9 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using MessengerNetworking.Factory;
 using MessengerScreenshare.Client;
 using MessengerScreenshare.ScreenshareFactory;
+using MessengerContent.Client;
+using MessengerContent.Server;
+using MessengerContent.DataModels;
 
 namespace MessengerDashboard.Server
 {
@@ -31,24 +34,16 @@ namespace MessengerDashboard.Server
     {
         public Analysis _sessionAnalytics;
 
-        public SessionInfo SessionInfo { get; set; } = new();
-
         private readonly ICommunicator _communicator;
-
+        private readonly IContentClient _contentClient = ContentClientFactory.GetInstance();
+        private readonly IContentServer _contentServer = ContentServerFactory.GetInstance();
         private readonly string _moduleIdentifier = "Dashboard";
-
-        private readonly ISentimentAnalyzer _sentimentAnalyzer = SentimentAnalyzerFactory.GetSentimentAnalyzer();
-
-        private readonly Serializer _serializer = new();
-
-        private readonly ITextSummarizer _textSummarizer = TextSummarizerFactory.GetTextSummarizer();
-
-        private TextSummary? _chatSummary;
-
-        private int _clientCount = 1;
-
         private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
-
+        private readonly ISentimentAnalyzer _sentimentAnalyzer = SentimentAnalyzerFactory.GetSentimentAnalyzer();
+        private readonly Serializer _serializer = new();
+        private readonly ITextSummarizer _textSummarizer = TextSummarizerFactory.GetTextSummarizer();
+        private TextSummary? _chatSummary;
+        private int _clientCount = 1;
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerSessionController"/> with the provided <see cref="ICommunicator"/> instance.
         /// </summary>
@@ -59,7 +54,7 @@ namespace MessengerDashboard.Server
             _communicator.AddSubscriber(_moduleIdentifier, this);
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
         }
-        
+
         public ServerSessionController()
         {
             _communicator = Factory.GetInstance();
@@ -76,23 +71,10 @@ namespace MessengerDashboard.Server
         //     Returns the credentials required to Join the meeting
         public ConnectionDetails ConnectionDetails { get; private set; } = null;
 
-        public string UserName { get; set; }
-
+        public SessionInfo SessionInfo { get; set; } = new();
         public string UserEmail { get; set; }
-
+        public string UserName { get; set; }
         public string UserPhotoUrl { get; set; }
-
-        public void SetDetails (string username, string email, string photoUrl)
-        {
-            UserName = username;
-            UserEmail = email;
-            UserPhotoUrl = photoUrl;
-            _screenshareClient.SetUser(1, UserName);
-
-            UserInfo clientInfo = new(username, _clientCount, email, photoUrl);
-            SessionInfo.Users.Add(clientInfo);
-            SessionUpdated?.Invoke(this, new(SessionInfo));
-        }
 
         public void BroadcastPayloadToClients(Operation operation, SessionInfo? sessionInfo, TextSummary? summary = null,
                                                       Analysis? sessionAnalytics = null, UserInfo? user = null)
@@ -106,6 +88,19 @@ namespace MessengerDashboard.Server
             }
             Trace.WriteLine("Dashboard: Data sent to specific client");
 
+        }
+
+        public TextSummary CreateSummary()
+        {
+            Trace.WriteLine("Dashboard: Getting chats");
+            //List<MessengerContent.DataModels.ChatThread> chats = _contentServer.GetAllMessages();
+
+            Trace.WriteLine("Dashboard: Creating Summary");
+            string[] chats = new string[] { string.Empty };
+            TextSummarizationOptions options = new();
+            _chatSummary = _textSummarizer.Summarize(chats, options);
+            Trace.WriteLine("Dashboard: Created Summary");
+            return _chatSummary;
         }
 
         public void DeliverPayloadToClient(Operation operation, string ip, int port, SessionInfo? sessionInfo,
@@ -160,7 +155,7 @@ namespace MessengerDashboard.Server
 
         public void OnDataReceived(string serializedData)
         {
-            
+
             if (serializedData == null)
             {
                 throw new ArgumentNullException("Null data received");
@@ -193,6 +188,32 @@ namespace MessengerDashboard.Server
                     break;
             }
         }
+
+        public void SetDetails(string username, string email, string photoUrl)
+        {
+            UserName = username;
+            UserEmail = email;
+            UserPhotoUrl = photoUrl;
+            _screenshareClient.SetUser(1, UserName);
+            _contentClient.SetUser(1, UserName);
+            UserInfo clientInfo = new(username, _clientCount, email, photoUrl);
+            SessionInfo.Users.Add(clientInfo);
+            SessionUpdated?.Invoke(this, new(SessionInfo));
+        }
+        public void SetExamMode()
+        {
+            SessionInfo.SessionMode = SessionMode.Exam;
+            SessionUpdated?.Invoke(this, new(SessionInfo));
+            BroadcastPayloadToClients(Operation.ExamMode, SessionInfo);
+        }
+
+        public void SetLabMode()
+        {
+            SessionInfo.SessionMode = SessionMode.Lab;
+            SessionUpdated?.Invoke(this, new(SessionInfo));
+            BroadcastPayloadToClients(Operation.LabMode, SessionInfo);
+        }
+
         private void AddClient(ClientPayload clientPayload)
         {
             lock (this)
@@ -221,18 +242,6 @@ namespace MessengerDashboard.Server
 
 
         */
-        private TextSummary CreateSummary()
-        {
-            Trace.WriteLine("Dashboard: Getting chats");
-            // TODO : GET chats
-            Trace.WriteLine("Dashboard: Creating Summary");
-            string[] chats = new string[] { string.Empty };
-            TextSummarizationOptions options = new();
-            _chatSummary = _textSummarizer.Summarize(chats, options);
-            Trace.WriteLine("Dashboard: Created Summary");
-            return _chatSummary;
-        }
-
         private void DeliverAnalyticsToClient(ClientPayload receivedObject)
         {
             UserInfo user = new(receivedObject.UserName, receivedObject.UserID, receivedObject.UserEmail, receivedObject.UserPhotoURL);
@@ -251,6 +260,11 @@ namespace MessengerDashboard.Server
 
         private void DeliverSummaryToClient(ClientPayload clientPayload)
         {
+            List<ChatThread> chatThreads = _contentServer.GetAllMessages();
+            foreach(ChatThread chatThread in chatThreads)
+            {
+                foreach(List<  chatThread.MessageList
+            }
             TextSummary summaryData = CreateSummary();
             UserInfo user = new(clientPayload.UserName, clientPayload.UserID, clientPayload.UserEmail, clientPayload.UserPhotoURL);
             Trace.WriteLine("Dashboard: Sending summary to client");
@@ -275,19 +289,6 @@ namespace MessengerDashboard.Server
                 SessionUpdated?.Invoke(this, new(SessionInfo));
             }
             DeliverPayloadToClient(Operation.RemoveClient, receivedObject.IpAddress, receivedObject.Port, SessionInfo);
-        }
-
-        public void SetExamMode()
-        {
-            SessionInfo.SessionMode = SessionMode.Exam;
-            SessionUpdated?.Invoke(this, new(SessionInfo));
-            BroadcastPayloadToClients(Operation.ExamMode, SessionInfo);
-        }
-        public void SetLabMode()
-        {
-            SessionInfo.SessionMode = SessionMode.Lab;
-            SessionUpdated?.Invoke(this, new(SessionInfo));
-            BroadcastPayloadToClients(Operation.LabMode, SessionInfo);
         }
     }
 }

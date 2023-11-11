@@ -14,12 +14,12 @@ namespace MessengerDashboard
 
         private static readonly Lazy<ClientSessionController> s_clientSessionController = new(() => new ClientSessionController());
 
-        public static ServerSessionController GetServerSessionController()
+        public static IServerSessionController GetServerSessionController()
         {
             return s_serverSessionController.Value;
         }
 
-        public static ClientSessionController GetClientSessionController()
+        public static IClientSessionController GetClientSessionController()
         {
             return s_clientSessionController.Value;
         }

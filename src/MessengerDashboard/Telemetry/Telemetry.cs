@@ -44,7 +44,7 @@ namespace MessengerDashboard.Telemetry
             }
         }
 
-        public Analysis Analyze(List<string> chatData)
+        public Analysis AnalyzeChats(List<string> chatData)
         {
             //DateTime currentTime = DateTime.Now;
             UpdateUserIdToChatCount();
@@ -84,17 +84,18 @@ namespace MessengerDashboard.Telemetry
         // TODO: Integrate with chat module
         public void UpdateUserIdToChatCount()
         {
+            _userChatCountMap.Clear();
             /*
-            UserChatCount.Clear();
+            List<string> chatData = new ();
             foreach (string chatMessage in chatData)
             {
-                if (UserChatCount.ContainsKey(chatMessage.SenderID))
+                if (_userChatCountMap.ContainsKey(chatMessage.SenderID))
                 {
                     UserChatCount[chatMessage.SenderID]++;
                 }
                 else
                 {
-                    UserChatCount.Add(chatMessage.SenderID, 1);
+                    _userChatCountMap.Add(chatMessage.SenderID, 1);
                 }
             }
             */
@@ -122,14 +123,12 @@ namespace MessengerDashboard.Telemetry
             Trace.WriteLine("Dashboard: Updated Telemetry");
         }
 
-        //TODO: AddComments
         public void UpdateUserCountHistory(SessionInfo sessionData, DateTime currentTime)
         {
             _timeStampToUserCountMap[currentTime] = sessionData.Users.Count;
         }
 
 
-        //TODO: Add Comments
         public void UpdateJoiningTimeOfUsers(SessionInfo sessionData, DateTime currentTime)
         {
             foreach (UserInfo user in sessionData.Users)
@@ -141,20 +140,19 @@ namespace MessengerDashboard.Telemetry
             }
         }
 
-        //TODO: Add Comments
         public void UpdateLeavingTimeOfUsers(SessionInfo sessionData, DateTime currentTime)
         {
             foreach (KeyValuePair<int, DateTime> userEntry in _userToJoiningTimeMap)
             {
-                bool contains1 = false;
+                bool contains = false;
                 foreach (UserInfo user in sessionData.Users)
                 {
                     if (user.UserId == userEntry.Key)
                     {
-                        contains1 = true;
+                        contains = true;
                     }
                 }
-                if (!contains1 && !_userLeavingTimeMap.ContainsKey(userEntry.Key))
+                if (!contains && !_userLeavingTimeMap.ContainsKey(userEntry.Key))
                 {
                     _userLeavingTimeMap[userEntry.Key] = currentTime;
                 }

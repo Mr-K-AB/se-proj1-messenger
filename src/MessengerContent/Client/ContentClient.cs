@@ -442,14 +442,11 @@ namespace MessengerContent.Client
             // check if message ID is unique 
             if (_messageIDMap.ContainsKey(receivedMessage.MessageID))
             {
+                Debug.Print("{0}", receivedMessage.MessageID);
                 throw new ArgumentException("Message ID is not unique");
             }
             // check if thread exists
             int key = receivedMessage.ReplyThreadID;
-            if (key == -1)
-            {
-                throw new ArgumentException("Message has invalid reply thread ID");
-            }
             // if message is a reply, check if message being replied to exists
             if (receivedMessage.ReplyMessageID != -1)
             {

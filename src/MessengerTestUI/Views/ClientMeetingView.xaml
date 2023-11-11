@@ -12,7 +12,7 @@
         <!-- Navigation Bar -->
         <Grid.Resources>
             <DataTemplate DataType="{x:Type dashboard:DashboardViewModel}">
-                <views:DashboardControl/>
+                <views:DashboardControl/>  
             </DataTemplate>
         </Grid.Resources>
 

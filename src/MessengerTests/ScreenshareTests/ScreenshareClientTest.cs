@@ -31,7 +31,7 @@ namespace MessengerTests.ScreenshareTests
             Task.Run(async() => await screenshareClient.StartScreensharingAsync());
 
             string argString = "";
-            communicatorMock.Setup(p => p.Broadcast(SSUtils.ModuleIdentifier, It.IsAny<string>(), 0))
+            communicatorMock.Setup(p => p.Broadcast(SSUtils.ClientIdentifier, It.IsAny<string>(), 0))
                 .Callback((string s, string s2, int s3) => { if (argString == "") { argString = s; } });
 
             DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(argString);
@@ -54,7 +54,7 @@ namespace MessengerTests.ScreenshareTests
             Task.Run(async () => await screenshareClient.StartScreensharingAsync());
 
             bool isImagePacketSent = false;
-            communicatorMock.Setup(p => p.Broadcast(SSUtils.ModuleIdentifier, It.IsAny<string>(), 0))
+            communicatorMock.Setup(p => p.Broadcast(SSUtils.ClientIdentifier, It.IsAny<string>(), 0))
                 .Callback((string s, string s2, int s3) =>
                 {
                     DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(s);
@@ -87,7 +87,7 @@ namespace MessengerTests.ScreenshareTests
             Task.Run(async () => await screenshareClient.StartScreensharingAsync());
 
             bool isImagePacketSent = false;
-            communicatorMock.Setup(p => p.Broadcast(SSUtils.ModuleIdentifier, It.IsAny<string>(), 0))
+            communicatorMock.Setup(p => p.Broadcast(SSUtils.ClientIdentifier, It.IsAny<string>(), 0))
                 .Callback((string s, string s2, int s3) =>
                 {
                     DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(s);

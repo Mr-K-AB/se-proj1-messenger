@@ -10,6 +10,7 @@ using System.Timers;
 using MessengerNetworking.NotificationHandler;
 using MessengerNetworking.Communicator;
 using MessengerNetworking.Factory;
+using System.Drawing.Printing;
 
 namespace MessengerScreenshare.Server
 {
@@ -83,23 +84,23 @@ namespace MessengerScreenshare.Server
                 string clientName = packet.Name;
                 ClientDataHeader header = Enum.Parse<ClientDataHeader>(packet.Header);
                 string clientData = packet.Data;
-
-                // Create a dictionary to map packet headers to actions.
-                Dictionary<ClientDataHeader, Action> headerActions = new()
-                {       
-                    { ClientDataHeader.Register, () => RegisterClient(clientId, clientName) },
-                    { ClientDataHeader.Deregister, () => DeregisterClient(clientId) },
-                    { ClientDataHeader.Image, () => PutImage(clientId, clientData) },
-                    { ClientDataHeader.Confirmation, () => UpdateTimer(clientId) },
-                };
-
-                if (headerActions.TryGetValue(header, out Action? action))
+                Trace.WriteLine(Utils.GetDebugMessage(header.ToString()));
+                switch (header)
                 {
-                    action.Invoke();
-                }
-                else
-                {
-                    throw new Exception($"Unknown header {packet.Header}");
+                    case ClientDataHeader.Register:
+                        RegisterClient(clientId, clientName);
+                        break;
+                    case ClientDataHeader.Deregister:
+                        DeregisterClient(clientId);
+                        break;
+                    case ClientDataHeader.Image:
+                        PutImage(clientId, clientData);
+                        break;
+                    case ClientDataHeader.Confirmation:
+                        UpdateTimer(clientId);
+                        break;
+                    default:
+                        throw new Exception($"Unknown header {packet.Header}");
                 }
             }
             catch (Exception e)

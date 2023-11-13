@@ -134,7 +134,20 @@ namespace MessengerScreenshare.Server
 
             if (!isDebug)
             {
-               SetupTimer();
+                try
+                {
+                    Timer _timer = new();
+                    _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, e);
+                    _timer.Interval = 20000;
+                    _timer.AutoReset = true;
+                    //UpdateTimer();
+                    _timer.Enabled = true;
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}", withTimeStamp: true));
+                    throw new Exception("Failed to create the timer", e);
+                }
             }
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully created client with id: {Id} and name: {Name}", withTimeStamp: true));
@@ -551,7 +564,7 @@ namespace MessengerScreenshare.Server
             try
             {
                 // It will reset the timer to start again.
-                _timer.Interval = SharedClientScreen.Timeout;
+                _timer.Interval = Timeout;
             }
             catch (Exception e)
             {

@@ -108,7 +108,8 @@ namespace MessengerApp.ViewModels
             {
                 MsgToSend.ReplyThreadID = ThreadIds[replyMsgId];
             }
-
+            ServerIP = _model.GetIP();
+            ServerPort = _model.GetPort();
             _model.ClientSendData(MsgToSend, ServerIP, ServerPort);
         }
 
@@ -224,7 +225,6 @@ namespace MessengerApp.ViewModels
                                   UserName = _model.GetUserName();
                                   ServerIP = _model.GetIP();
                                   ServerPort = _model.GetPort();
-
 
                                   // Creating object for the received message
                                   // Message object, ReceivedMsg, will modify the current user's _allmessages list upon property changed event

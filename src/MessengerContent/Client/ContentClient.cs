@@ -103,7 +103,7 @@ namespace MessengerContent.Client
             _chatHandler = new ChatMessageClient(_communicator);
             _fileHandler = new FileClient(_communicator);
             // instantiate other parameters
-            _userID = -1; 
+            _userID = -1;   
             _lock = new object();
             AllMessages = new List<ChatThread>();
             _messageIDMap = new Dictionary<int, int>();

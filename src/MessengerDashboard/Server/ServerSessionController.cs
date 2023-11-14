@@ -48,6 +48,7 @@ namespace MessengerDashboard.Server
         {
             _communicator = communicator;
             _communicator.AddSubscriber(_moduleIdentifier, this);
+            _communicator.AddClient(_communicator.IpAddress, _communicator.ListenPort);
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
         }
 
@@ -55,6 +56,7 @@ namespace MessengerDashboard.Server
         {
             _communicator = Factory.GetInstance();
             _communicator.AddSubscriber(_moduleIdentifier, this);
+            _communicator.AddClient(_communicator.IpAddress, _communicator.ListenPort);
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
         }
 

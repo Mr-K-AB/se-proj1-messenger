@@ -38,7 +38,7 @@ namespace MessengerTestUI.Commands
 
             if (_connected)
             {
-                _navigationStore.CurrentViewModel = new ClientMeetViewModel(_navigationStore, _client);
+                _navigationStore.CurrentViewModel = new ClientMeetViewModel(_navigationStore);
 
             }
 

@@ -134,7 +134,7 @@ namespace MessengerContent.Client
                 _communicator = value;
                 try
                 {
-                    _communicator.AddSubscriber("Content", _notificationHandler);
+                    _communicator.AddSubscriber("ContentClient", _notificationHandler);
                 }
                 catch (Exception e)
                 {

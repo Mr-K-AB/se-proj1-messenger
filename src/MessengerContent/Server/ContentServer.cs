@@ -46,7 +46,7 @@ namespace MessengerContent.Server
             _fileServer = new FileServer(_contentDatabase);
             _chatServer = new ChatServer(_contentDatabase);
             _serializer = new ContentSerializer();
-            _communicator.AddSubscriber("Content", _notificationHandler);
+            _communicator.AddSubscriber("ContentServer", _notificationHandler);
         }
 
         /// <summary>

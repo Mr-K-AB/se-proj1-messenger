@@ -29,7 +29,7 @@ namespace MessengerContent.Client
         /// <summary>
         /// Module identifier for communicator
         /// </summary>
-        private readonly string _moduleIdentifier = "Content";
+        private readonly string _moduleIdentifier = "ContentServer";
         private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
 

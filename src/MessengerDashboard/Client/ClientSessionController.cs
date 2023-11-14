@@ -59,6 +59,14 @@ namespace MessengerDashboard.Client
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
         }
 
+        public ClientSessionController(ICommunicator communicator, IContentClient contentClient)
+        {
+            _communicator = communicator;
+            _communicator.AddSubscriber(_moduleIdentifier, this);
+            ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
+            _contentClient = contentClient;
+        }
+
         public event EventHandler<AnalyticsChangedEventArgs>? AnalyticsChanged;
 
         public event EventHandler<ClientSessionChangedEventArgs>? SessionChanged;

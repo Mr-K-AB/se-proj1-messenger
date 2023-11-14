@@ -1,26 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 using MessengerDashboard.Sentiment;
 using MessengerDashboard.Summarization;
 using MessengerNetworking.Communicator;
-using System.Net;
-using MessengerNetworking.NotificationHandler;
 using MessengerDashboard.Telemetry;
 using System.Diagnostics;
-using System.Threading;
 using MessengerDashboard.Server.Events;
 using MessengerDashboard.Client;
-using Microsoft.Extensions.Configuration.UserSecrets;
 using MessengerNetworking.Factory;
 using MessengerScreenshare.Client;
 using MessengerScreenshare.ScreenshareFactory;
 using MessengerContent.Client;
 using MessengerContent.Server;
 using MessengerContent.DataModels;
+using MessengerContent.DataModels;
+using System.Windows.Automation.Text;
 
 namespace MessengerDashboard.Server
 {
@@ -41,9 +35,11 @@ namespace MessengerDashboard.Server
         private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
         private readonly ISentimentAnalyzer _sentimentAnalyzer = SentimentAnalyzerFactory.GetSentimentAnalyzer();
         private readonly Serializer _serializer = new();
+        private readonly ITelemetry _telemetry = TelemetryFactory.GetTelemetryInstance();
         private readonly ITextSummarizer _textSummarizer = TextSummarizerFactory.GetTextSummarizer();
-        private TextSummary? _chatSummary;
+        private TextSummary? _chatSummary; 
         private int _clientCount = 1;
+        private readonly Dictionary<int, UserInfo> _userIdToUserInfoMap = new();
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerSessionController"/> with the provided <see cref="ICommunicator"/> instance.
         /// </summary>
@@ -93,12 +89,20 @@ namespace MessengerDashboard.Server
         public TextSummary CreateSummary()
         {
             Trace.WriteLine("Dashboard: Getting chats");
-            //List<MessengerContent.DataModels.ChatThread> chats = _contentServer.GetAllMessages();
-
-            Trace.WriteLine("Dashboard: Creating Summary");
-            string[] chats = new string[] { string.Empty };
+            List<ChatThread> chatThreads = _contentServer.GetAllMessages();
+            List<string> chats = new();
+            foreach(ChatThread chatThread in chatThreads)
+            {
+                foreach(ReceiveChatData receiveChatData in chatThread.MessageList)
+                {
+                    if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                    {
+                        chats.Add(receiveChatData.Data);
+                    }
+                }
+            }
             TextSummarizationOptions options = new();
-            _chatSummary = _textSummarizer.Summarize(chats, options);
+            _chatSummary = _textSummarizer.Summarize(chats.ToArray(), options);
             Trace.WriteLine("Dashboard: Created Summary");
             return _chatSummary;
         }
@@ -133,24 +137,10 @@ namespace MessengerDashboard.Server
 
         public void OnClientJoined(string ip, int port)
         {
-            /*
-             
-            lock (this)
-            {
-                _clientCount += 1;
-                //_communicator.
-                int id = _clientCount;
-                UserInfo userInfo = new(null, id, null, null);
-                //_communicator.
-                //_communicator.AddClient();
-                DeliverPayloadToClient(Operation.ID, null, null, null, userInfo, id);
-            }
-           */
         }
 
         public void OnClientLeft(string ip, int port)
         {
-            // TODO: Remove Client
         }
 
         public void OnDataReceived(string serializedData)
@@ -228,20 +218,31 @@ namespace MessengerDashboard.Server
                 DeliverPayloadToClient(Operation.AddClientACK, clientPayload.IpAddress, clientPayload.Port, SessionInfo, null, null, user);
                 NewUserAdded?.Invoke(this, EventArgs.Empty);
             }
-       }
-        /*
-
-        //    Telemetry will Subscribes to changes in the session object
-        public void Subscribe(ITelemetryNotifications listener)
+        }
+        private Analysis CalculateAnalysis(ClientPayload receivedObject)
         {
-            lock (this)
+            UserInfo user = new(receivedObject.UserName, receivedObject.UserID, receivedObject.UserEmail, receivedObject.UserPhotoURL);
+            List<ChatThread> chatThreads = _contentServer.GetAllMessages();
+            Dictionary<int, Tuple<UserInfo, List<string>>> userIdToUserInfoAndChatMap = new();
+            foreach(ChatThread chatThread in chatThreads)
             {
-                _telemetrySubscribers.Add(listener);
+                foreach(ReceiveChatData receiveChatData in chatThread.MessageList)
+                {
+                    if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                    {
+                        if (!userIdToUserInfoAndChatMap.ContainsKey(receiveChatData.SenderID))
+                        {
+                            userIdToUserInfoAndChatMap[receiveChatData.SenderID] = new(_userIdToUserInfoMap[receiveChatData.SenderID], new());
+                            userIdToUserInfoAndChatMap[receiveChatData.SenderID].Item2.Add(receiveChatData.Data);
+                        }
+                    }
+                }
             }
+            Analysis analysis = _telemetry.UpdateAnalysis(userIdToUserInfoAndChatMap);
+            DeliverPayloadToClient(Operation.GetAnalytics, receivedObject.IpAddress, receivedObject.Port, null, null, analysis, user);
+            return analysis;
         }
 
-
-        */
         private void DeliverAnalyticsToClient(ClientPayload receivedObject)
         {
             UserInfo user = new(receivedObject.UserName, receivedObject.UserID, receivedObject.UserEmail, receivedObject.UserPhotoURL);
@@ -260,25 +261,11 @@ namespace MessengerDashboard.Server
 
         private void DeliverSummaryToClient(ClientPayload clientPayload)
         {
-            List<ChatThread> chatThreads = _contentServer.GetAllMessages();
-            foreach(ChatThread chatThread in chatThreads)
-            {
-                foreach(List<  chatThread.MessageList
-            }
             TextSummary summaryData = CreateSummary();
             UserInfo user = new(clientPayload.UserName, clientPayload.UserID, clientPayload.UserEmail, clientPayload.UserPhotoURL);
             Trace.WriteLine("Dashboard: Sending summary to client");
             DeliverPayloadToClient(Operation.GetSummary, clientPayload.IpAddress, clientPayload.Port, null, summaryData, null, user);
         }
-
-        private void GetAnalytics(ClientPayload receivedObject)
-        {
-            UserInfo user = new(receivedObject.UserName, receivedObject.UserID,
-                receivedObject.UserEmail, receivedObject.UserPhotoURL);
-            // TODO : Analysis of all chats
-            DeliverPayloadToClient(Operation.GetAnalytics, receivedObject.IpAddress, receivedObject.Port, null, null, null, user);
-        }
-
         private void RemoveClient(ClientPayload receivedObject)
         {
             Trace.WriteLine("Dashboard: Removing Client");

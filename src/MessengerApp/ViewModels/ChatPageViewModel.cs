@@ -200,6 +200,8 @@ namespace MessengerApp.ViewModels
 
                                   UserId = _model.GetUserID();
                                   UserName = _model.GetUserName();
+                                  ServerIP = _model.GetIP();
+                                  ServerPort = _model.GetPort();
 
                                   ReceivedMsg = new()
                                   {
@@ -220,6 +222,8 @@ namespace MessengerApp.ViewModels
 
                                   UserId = _model.GetUserID();
                                   UserName = _model.GetUserName();
+                                  ServerIP = _model.GetIP();
+                                  ServerPort = _model.GetPort();
 
 
                                   // Creating object for the received message

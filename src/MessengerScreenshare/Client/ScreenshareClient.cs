@@ -39,8 +39,8 @@ namespace MessengerScreenshare.Client
         private readonly ScreenProcessor _processor;
 
         // Name and Id of the current client user
-        private string? _name;
-        private int _id=0;
+        private string? _name = "SuryaBhai";
+        private int _id=10;
         // Tokens added to be able to stop the thread execution
         private bool _confirmationCancellationToken;
         private readonly CancellationTokenSource? _imageCancellation;
@@ -54,6 +54,7 @@ namespace MessengerScreenshare.Client
         {
             _capturer = new ScreenCapturer();
             _processor = new ScreenProcessor(_capturer);
+            _imageCancellation = new CancellationTokenSource();
             if (!isDebugging)
             {
                 _communicator = Factory.GetInstance();
@@ -90,8 +91,6 @@ namespace MessengerScreenshare.Client
 
             await SendConfirmationPacketAsync();
             Trace.WriteLine(Utils.GetDebugMessage("Started sending confirmation packet", withTimeStamp: true));
-
-            await StartImageSendingAsync();
         }
 
         /// <summary>
@@ -145,19 +144,18 @@ namespace MessengerScreenshare.Client
         /// send it to the server via the networking module. Images are sent only if there
         /// are any changes in pixels as compared to previous image.
         /// </summary>
-        private async Task ImageSendingAsync()
+        private async Task ImageSendingAsync(CancellationToken cancellationToken)
         {
             int cnt = 0;
-            CancellationToken _imageCancellationToken = _imageCancellation!.Token;
-            while (!_imageCancellationToken.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                string serializedImg = await _processor.GetFrameAsync(_imageCancellationToken);
-                if (_imageCancellationToken.IsCancellationRequested)
+                string serializedImg = await _processor.GetFrameAsync(cancellationToken);
+                if (cancellationToken.IsCancellationRequested)
                 {
                     break;
                 }
 
-                DataPacket dataPacket = new(_id!, _name!, ClientDataHeader.Image.ToString(), serializedImg);
+                DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = JsonSerializer.Serialize(dataPacket);
 
                 Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} of size {serializedData.Length}", withTimeStamp: true));
@@ -172,12 +170,13 @@ namespace MessengerScreenshare.Client
         /// </summary>
         private async Task StartImageSendingAsync()
         {
+            CancellationToken cancellationToken = _imageCancellation!.Token;
+            _imageCancellation?.Dispose();
             _capturer.StartCapture();
             _processor?.StartProcessingAsync(1);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully started capturer and processor", withTimeStamp: true));
-
-            _imageCancellation?.Dispose();
-            _sendImageTask = Task.Run(async () => await ImageSendingAsync());
+            
+            _sendImageTask = Task.Run(async () => await ImageSendingAsync(cancellationToken));
             Trace.WriteLine(Utils.GetDebugMessage("Successfully started image sending", withTimeStamp: true));
             await _sendImageTask;
         }

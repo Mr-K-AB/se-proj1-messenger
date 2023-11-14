@@ -185,7 +185,7 @@ namespace MessengerDashboard.Server
             UserEmail = email;
             UserPhotoUrl = photoUrl;
             _screenshareClient.SetUser(1, UserName);
-            _contentClient.SetUser(1, UserName);
+            _contentClient.SetUser(1, UserName, _communicator.IpAddress, _communicator.ListenPort);
             UserInfo clientInfo = new(username, _clientCount, email, photoUrl);
             SessionInfo.Users.Add(clientInfo);
             SessionUpdated?.Invoke(this, new(SessionInfo));

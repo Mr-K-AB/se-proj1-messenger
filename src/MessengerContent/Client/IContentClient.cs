@@ -58,5 +58,9 @@ namespace MessengerContent.Client
         int GetUserID();
 
         string GetUserName();
+
+        string GetIP();
+
+        int GetPort();
     }
 }

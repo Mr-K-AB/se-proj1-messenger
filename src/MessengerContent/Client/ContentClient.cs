@@ -22,6 +22,7 @@ using MessengerNetworking.NotificationHandler;
 using MessengerNetworking.Communicator;
 using System.Security.Cryptography;
 using MessengerNetworking.Factory;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MessengerContent.Client
 {
@@ -411,6 +412,16 @@ namespace MessengerContent.Client
         public string GetUserName()
         {
             return _name;
+        }
+
+        public string GetIP()
+        {
+            return _serverIP;
+        }
+
+        public int GetPort()
+        {
+            return _serverPort;
         }
 
         // event handler helper functions

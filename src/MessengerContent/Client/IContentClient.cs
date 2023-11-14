@@ -5,7 +5,7 @@ namespace MessengerContent.Client
 {
     public interface IContentClient
     {
-        public void SetUser(int id, string name);
+        public void SetUser(int id, string name, string ip, int port);
         /// <summary>
         /// Sends chat or file data to clients
         /// </summary>

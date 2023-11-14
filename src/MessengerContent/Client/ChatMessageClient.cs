@@ -87,14 +87,14 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="chatData">Instance of SendChatData class</param>
         /// <param name="eventType">Type of message event as string</param>
-        private void SerializeAndSendToServer(ChatData chatData, string eventType)
+        private void SerializeAndSendToServer(ChatData chatData, string eventType, string ip, int port)
         {
             try
             {
                 string serializedStr = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[Chat Client] Setting event as '{eventType}' and sending object to server.");
                 Debug.Assert(1 == 1, "debugg");
-                _communicator.Broadcast(_moduleIdentifier, serializedStr);
+                _communicator.SendMessage(ip, port, _moduleIdentifier, serializedStr);
             }
             catch (Exception e)
             {
@@ -109,7 +109,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="sendContent">Instance of the SendChatData class</param>
         /// <exception cref="ArgumentException"></exception>
-        public void NewChat(SendChatData sendChat)
+        public void NewChat(SendChatData sendChat, string ip, int port)
         {
             if (string.IsNullOrEmpty(sendChat.Data))
             {
@@ -117,7 +117,7 @@ namespace MessengerContent.Client
             }
             ChatData convertedData = ChatDataFromSendData(sendChat, MessageEvent.New);
             convertedData.MessageID = -1;
-            SerializeAndSendToServer(convertedData, "New");
+            SerializeAndSendToServer(convertedData, "New", ip, port);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace MessengerContent.Client
         /// <param name="newMessage">Edited message string</param>
         /// <param name="replyThreadID">ID of thread to which the message belongs to</param>
         /// <exception cref="ArgumentException"></exception>
-        public void EditChat(int messageID, string newMessage, int replyThreadID)
+        public void EditChat(int messageID, string newMessage, int replyThreadID, string ip, int port)
         {
             if (string.IsNullOrEmpty(newMessage))
             {
@@ -142,7 +142,7 @@ namespace MessengerContent.Client
                 SenderID = UserID,
                 Event = MessageEvent.Edit
             };
-            SerializeAndSendToServer(sendData, "Edit");
+            SerializeAndSendToServer(sendData, "Edit", ip, port);
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="messageID">ID of the message</param>
         /// <param name="replyThreadID">ID of thread to which the message belongs to</param>
-        public void DeleteChat(int messageID, int replyThreadID)
+        public void DeleteChat(int messageID, int replyThreadID, string ip, int port)
         {
             ChatData sendData = new()
             {
@@ -161,7 +161,7 @@ namespace MessengerContent.Client
                 SenderID = UserID,
                 Event = MessageEvent.Delete
             };
-            SerializeAndSendToServer(sendData, "Delete");
+            SerializeAndSendToServer(sendData, "Delete", ip, port);
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="messageID">ID of the message</param>
         /// <param name="replyThreadID">ID of thread to which the message belongs to</param>
-        public void StarChat(int messageID, int replyThreadID)
+        public void StarChat(int messageID, int replyThreadID, string ip, int port)
         {
             ChatData sendData = new()
             {
@@ -179,7 +179,7 @@ namespace MessengerContent.Client
                 SenderID = UserID,
                 Event = MessageEvent.Star
             };
-            SerializeAndSendToServer(sendData, "Star");
+            SerializeAndSendToServer(sendData, "Star", ip, port);
         }
 
     }

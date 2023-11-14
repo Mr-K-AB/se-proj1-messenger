@@ -48,6 +48,7 @@ namespace MessengerDashboard.Server
         {
             _communicator = communicator;
             _communicator.AddSubscriber(_moduleIdentifier, this);
+            _communicator.AddClient(_communicator.IpAddress, _communicator.ListenPort);
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
         }
 
@@ -55,6 +56,7 @@ namespace MessengerDashboard.Server
         {
             _communicator = Factory.GetInstance();
             _communicator.AddSubscriber(_moduleIdentifier, this);
+            _communicator.AddClient(_communicator.IpAddress, _communicator.ListenPort);
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
         }
 
@@ -185,7 +187,7 @@ namespace MessengerDashboard.Server
             UserEmail = email;
             UserPhotoUrl = photoUrl;
             _screenshareClient.SetUser(1, UserName);
-            _contentClient.SetUser(1, UserName);
+            _contentClient.SetUser(1, UserName, _communicator.IpAddress, _communicator.ListenPort);
             UserInfo clientInfo = new(username, _clientCount, email, photoUrl);
             SessionInfo.Users.Add(clientInfo);
             SessionUpdated?.Invoke(this, new(SessionInfo));

@@ -95,7 +95,7 @@ namespace MessengerContent.Client
             // subscribe to network module
             try
             {
-                _communicator.AddSubscriber("Content", _notificationHandler);
+                _communicator.AddSubscriber("ContentClient", _notificationHandler);
             }
             catch (Exception e)
             {

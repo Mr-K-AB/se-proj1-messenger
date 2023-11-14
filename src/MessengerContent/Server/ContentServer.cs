@@ -162,7 +162,7 @@ namespace MessengerContent.Server
         public void Send(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            _communicator.Broadcast("Content", message);
+            _communicator.Broadcast("ContentClient", message);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace MessengerContent.Server
         public void SendFile(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            _communicator.SendMessage(_communicator.IpAddress, _communicator.ListenPort, "Content", message);
+            _communicator.SendMessage(_communicator.IpAddress, _communicator.ListenPort, "ContentClient", message);
         }
 
         /// <summary>

@@ -158,12 +158,30 @@ namespace MessengerScreenshare.Client
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = JsonSerializer.Serialize(dataPacket);
 
-                Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} of size {serializedData.Length}", withTimeStamp: true));
-                _communicator.Broadcast(Utils.ServerIdentifier, serializedData);
+                // Split the data into 500 fragments
+                List<string> dataFragments = SplitDataIntoFragments(serializedData, 100);
+
+                foreach (string fragment in dataFragments)
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} fragment of size {fragment.Length}", withTimeStamp: true));
+                    _communicator.Broadcast(Utils.ServerIdentifier, fragment);
+                }
                 cnt++;
                 await Task.Delay(1); // Introduce a small delay for asynchronous behavior
             }
         }
+
+        private List<string> SplitDataIntoFragments(string data, int fragmentSize)
+        {
+            List<string> fragments = new();
+            for (int i = 0; i < data.Length; i += fragmentSize)
+            {
+                int length = Math.Min(fragmentSize, data.Length - i);
+                fragments.Add(data.Substring(i, length));
+            }
+            return fragments;
+        }
+
 
         /// <summary>
         /// Starting the image sending function on a thread.

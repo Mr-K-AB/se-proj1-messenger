@@ -53,6 +53,9 @@ namespace MessengerContent.Client
         // Name and Id of the current client user
         private string? _name;
 
+        private string _serverIP;
+        private int _serverPort;
+
         /// <summary>
         /// Lock object for locking
         /// </summary>
@@ -144,12 +147,14 @@ namespace MessengerContent.Client
         /// User ID setter functions
         /// </summary>
         /// 
-        public void SetUser(int id, string name)
+        public void SetUser(int id, string name, string ip, int port)
         {
             _userID = id;
             _chatHandler.UserID = id;
             _fileHandler.UserID = id;
             _name = name;
+            _serverIP = ip;
+            _serverPort = port;
         }
 
 
@@ -256,7 +261,7 @@ namespace MessengerContent.Client
         // interface functions
 
         ///<inheritdoc/>
-        public void ClientSendData(SendChatData chatData)
+        public void ClientSendData(SendChatData chatData, string ip, int port)
         {
             // check if receiver ID list is not null
             /*if (chatData.ReceiverIDs is null)
@@ -284,11 +289,11 @@ namespace MessengerContent.Client
             {
                 case MessageType.Chat:
                     Trace.WriteLine("[ContentClient] Using chat handler to send event to server");
-                    _chatHandler.NewChat(chatData);
+                    _chatHandler.NewChat(chatData, ip, port);
                     break;
                 case MessageType.File:
                     Trace.WriteLine("[ContentClient] Using file handler to send event to server");
-                    _fileHandler.SendFile(chatData);
+                    _fileHandler.SendFile(chatData, ip, port);
                     break;
                 default:
                     throw new ArgumentException($"Invalid Message Field Type : {chatData.Type}");
@@ -311,7 +316,7 @@ namespace MessengerContent.Client
         }
 
         ///<inheritdoc/>
-        public void ClientEdit(int messageID, string newMessage)
+        public void ClientEdit(int messageID, string newMessage, string ip, int port)
         {
             // get message and check if it is empty
             ReceiveChatData? message = GetMessage(messageID) ?? throw new ArgumentException("Message with given message ID does not exist");
@@ -327,11 +332,11 @@ namespace MessengerContent.Client
 
             }
             Trace.WriteLine("[ContentClient] Using chat handler to send edit event to server");
-            _chatHandler.EditChat(messageID, newMessage, message.ReplyThreadID);
+            _chatHandler.EditChat(messageID, newMessage, message.ReplyThreadID, ip, port);
         }
 
         ///<inheritdoc/>
-        public void ClientDelete(int messageID)
+        public void ClientDelete(int messageID, string ip, int port)
         {
             // get message and check if it is empty
             ReceiveChatData message = GetMessage(messageID) ?? throw new ArgumentException("Message being replied to does not exist");
@@ -346,11 +351,11 @@ namespace MessengerContent.Client
                 throw new ArgumentException("Delete not allowed for messages from another sender");
             }
             Trace.WriteLine("[ContentClient] Using chat handler to send delete event to server");
-            _chatHandler.DeleteChat(messageID, message.ReplyThreadID);
+            _chatHandler.DeleteChat(messageID, message.ReplyThreadID, ip, port);
         }
 
         /// <inheritdoc/>
-        public void ClientDownload(int messageID, string savePath)
+        public void ClientDownload(int messageID, string savePath, string ip, int port)
         {
             // check save path and message 
             CheckFilePath(savePath);
@@ -366,11 +371,11 @@ namespace MessengerContent.Client
                 throw new ArgumentException($"Invalid message type : {message.Type}");
             }
             Trace.WriteLine("[ContentClient] Using file handler to send download file event to server");
-            _fileHandler.DownloadFile(messageID, savePath);
+            _fileHandler.DownloadFile(messageID, savePath, ip, port);
         }
 
         ///<inheritdoc/>
-        public void ClientStar(int messageID)
+        public void ClientStar(int messageID, string ip, int port)
         {
             // check if message is empty
             ReceiveChatData? message = GetMessage(messageID) ?? throw new ArgumentException("Message with given message ID to does not exist");
@@ -380,7 +385,7 @@ namespace MessengerContent.Client
                 throw new ArgumentException($"Invalid message type : {message.Type}");
             }
             Trace.WriteLine("[ContentClient] Using chat handler to send star chat to server");
-            _chatHandler.StarChat(messageID, message.ReplyThreadID);
+            _chatHandler.StarChat(messageID, message.ReplyThreadID, ip, port);
         }
 
         /// <inheritdoc/>

@@ -1,10 +1,12 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using MessengerCloud;
 
-namespace MessengerTests
+namespace MessengerCloud
 {
     public class RestClient
     {

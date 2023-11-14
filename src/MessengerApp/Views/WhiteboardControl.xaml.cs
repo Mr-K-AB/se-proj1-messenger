@@ -240,15 +240,15 @@ namespace MessengerApp.Views
 
         private void ChangeStrokeColor(object sender, RoutedEventArgs e)
         {
-            Debug.Print((e.Source as Button).Name);
-            string bcolor = (e.Source as Button).Name;
+            //Debug.Print((e.Source as Button).Name);
+            Brush bcolor = (e.Source as RadioButton).Background;
             _viewModel.ChangeStrokeBrush(bcolor);
         }
 
         private void ChangeFillColor(object sender, RoutedEventArgs e)
         {
             //Debug.Print((e.Source as Button).ToolTip);
-            string bcolor = (e.Source as Button).ToolTip.ToString();
+            Brush bcolor = (e.Source as RadioButton).Background;
             _viewModel.ChangeFillBrush(bcolor);
         }
 

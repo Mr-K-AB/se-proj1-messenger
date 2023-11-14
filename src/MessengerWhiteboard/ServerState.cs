@@ -19,7 +19,7 @@ namespace MessengerWhiteboard
 {
     public class ServerState : IShapeReceiver
     {
-        private static readonly IServerCommunicator s_communicator;
+        private static IServerCommunicator s_communicator;
         private readonly Serializer _serializer;
         private static ServerState s_instance;
 
@@ -30,7 +30,11 @@ namespace MessengerWhiteboard
         {
             get
             {
-                s_instance ??= new ServerState();
+                if(s_instance == null)
+                {
+                    s_instance = new ServerState();
+                    s_communicator = ServerCommunicator.Instance;
+                }
 
                 return s_instance;
             }
@@ -71,6 +75,7 @@ namespace MessengerWhiteboard
         /// <param name="operation">Operation preformed</param>
         public void OnShapeReceived(ShapeItem shapeItem, Operation operation)
         {
+            //Trace.WriteLine("[White-Board] " + "inside OnShapeReceived " + shapeItem.Id);
             if (operation == Operation.Creation)
             {
                 AddShapeToServerList(shapeItem.Id, shapeItem, operation);
@@ -101,6 +106,11 @@ namespace MessengerWhiteboard
         {
             try
             {
+                //Trace.WriteLine("mapping count: ", _mapping.Count.ToString());
+                if(_mapping.ContainsKey(shapeId))
+                {
+                    return;
+                }
                 _mapping.Add(shapeId, shapeItem);
                 Trace.WriteLine("[White-Board] " + "inside AddShapeToServerList" + shapeItem.Id);
                 Trace.WriteLine("[White-Board] " + "inside AddShapeToServerList" + shapeItem.Geometry.GetType().Name);
@@ -109,7 +119,7 @@ namespace MessengerWhiteboard
             catch(Exception e)
             {
                 Trace.WriteLine("[White-Board] Error Occured in ServerSide: AddShapeToServerSide");
-                Trace.WriteLine(e.Message);
+                Trace.WriteLine("exception: ", e.Message);
             }
         }
 
@@ -172,6 +182,7 @@ namespace MessengerWhiteboard
         // Function for broadcasting single shape to clients
         public void BroadcastToClients(ShapeItem shapeItem, Operation operation)
         {
+            Trace.WriteLine("[White-Board] " + "inside BroadcastToClients " + shapeItem.Id);
             s_communicator.Broadcast(shapeItem, operation);
         }
 

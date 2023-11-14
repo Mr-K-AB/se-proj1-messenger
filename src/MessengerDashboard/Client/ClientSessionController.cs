@@ -186,7 +186,7 @@ namespace MessengerDashboard.Client
                     _connectionEstablished.Set();
                     _user = serverPayload.User;
                     _screenshareClient.SetUser(_user.UserId, _user.UserName);
-                    _contentClient.SetUser(_user.UserId, _user.UserName, _communicator.IpAddress, _communicator.ListenPort);
+                    _contentClient.SetUser(_user.UserId, _user.UserName, _serverIp, _serverPort);
                     return;
 
                 case Operation.GetSummary:

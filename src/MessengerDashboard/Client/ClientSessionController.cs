@@ -22,17 +22,20 @@ using MessengerDashboard.Client.Events;
 using MessengerNetworking.Factory;
 using MessengerScreenshare.ScreenshareFactory;
 using MessengerScreenshare.Client;
+using MessengerContent.Client;
 
 namespace MessengerDashboard.Client
 {
-    public class ClientSessionController : INotificationHandler
+    public class ClientSessionController : IClientSessionController
     {
         private readonly ICommunicator _communicator = Factory.GetInstance();
 
         private readonly ManualResetEvent _connectionEstablished = new(false);
 
+        private readonly IContentClient _contentClient = ContentClientFactory.GetInstance();
         private readonly string _moduleIdentifier = "Dashboard";
 
+        private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
         private readonly Serializer _serializer = new();
 
         private readonly ManualResetEvent _sessionExited = new(false);
@@ -42,9 +45,6 @@ namespace MessengerDashboard.Client
         private int _serverPort;
 
         private UserInfo? _user;
-
-        private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
-
         public ClientSessionController()
         {
             _communicator.AddSubscriber(_moduleIdentifier, this);
@@ -57,6 +57,14 @@ namespace MessengerDashboard.Client
             _communicator = communicator;
             _communicator.AddSubscriber(_moduleIdentifier, this);
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
+        }
+
+        public ClientSessionController(ICommunicator communicator, IContentClient contentClient)
+        {
+            _communicator = communicator;
+            _communicator.AddSubscriber(_moduleIdentifier, this);
+            ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
+            _contentClient = contentClient;
         }
 
         public event EventHandler<AnalyticsChangedEventArgs>? AnalyticsChanged;
@@ -178,6 +186,7 @@ namespace MessengerDashboard.Client
                     _connectionEstablished.Set();
                     _user = serverPayload.User;
                     _screenshareClient.SetUser(_user.UserId, _user.UserName);
+                    _contentClient.SetUser(_user.UserId, _user.UserName);
                     return;
 
                 case Operation.GetSummary:

@@ -15,6 +15,7 @@ using MessengerContent.Server;
 using MessengerContent.DataModels;
 using MessengerContent.DataModels;
 using System.Windows.Automation.Text;
+using MessengerCloud;
 
 namespace MessengerDashboard.Server
 {
@@ -40,6 +41,10 @@ namespace MessengerDashboard.Server
         private TextSummary? _chatSummary; 
         private int _clientCount = 1;
         private readonly Dictionary<int, UserInfo> _userIdToUserInfoMap = new();
+        private readonly string _cloudUrl = @"http://localhost:7166/api/entity"; 
+        private readonly RestClient _restClient;
+        private readonly LocalSave _localSave = new();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerSessionController"/> with the provided <see cref="ICommunicator"/> instance.
         /// </summary>
@@ -50,6 +55,7 @@ namespace MessengerDashboard.Server
             _communicator.AddSubscriber(_moduleIdentifier, this);
             _communicator.AddClient(_communicator.IpAddress, _communicator.ListenPort);
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
+            _restClient = new(_cloudUrl);
         }
 
         public ServerSessionController()
@@ -58,6 +64,7 @@ namespace MessengerDashboard.Server
             _communicator.AddSubscriber(_moduleIdentifier, this);
             _communicator.AddClient(_communicator.IpAddress, _communicator.ListenPort);
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
+            _restClient = new(_cloudUrl);
         }
 
         public event EventHandler NewUserAdded;
@@ -86,6 +93,24 @@ namespace MessengerDashboard.Server
             }
             Trace.WriteLine("Dashboard: Data sent to specific client");
 
+        }
+        public SentimentResult CalculateSentiment()
+        {
+            Trace.WriteLine("Dashboard: Getting chats for sentiment");
+            List<ChatThread> chatThreads = _contentServer.GetAllMessages();
+            List<string> chats = new();
+            foreach(ChatThread chatThread in chatThreads)
+            {
+                foreach(ReceiveChatData receiveChatData in chatThread.MessageList)
+                {
+                    if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                    {
+                        chats.Add(receiveChatData.Data);
+                    }
+                }
+            }
+            SentimentResult sentiment = _sentimentAnalyzer.AnalyzeSentiment(chats.ToArray());
+            return sentiment;
         }
 
         public TextSummary CreateSummary()
@@ -221,9 +246,16 @@ namespace MessengerDashboard.Server
                 NewUserAdded?.Invoke(this, EventArgs.Empty);
             }
         }
-        private Analysis CalculateAnalysis(ClientPayload receivedObject)
+        
+        private void SendAnalysisToClient(ClientPayload receivedObject)
         {
             UserInfo user = new(receivedObject.UserName, receivedObject.UserID, receivedObject.UserEmail, receivedObject.UserPhotoURL);
+            Analysis analysis = CalculateAnalysis();
+            DeliverPayloadToClient(Operation.GetAnalytics, receivedObject.IpAddress, receivedObject.Port, null, null, analysis, user);
+        }
+
+        private Analysis CalculateAnalysis()
+        {
             List<ChatThread> chatThreads = _contentServer.GetAllMessages();
             Dictionary<int, Tuple<UserInfo, List<string>>> userIdToUserInfoAndChatMap = new();
             foreach(ChatThread chatThread in chatThreads)
@@ -241,7 +273,6 @@ namespace MessengerDashboard.Server
                 }
             }
             Analysis analysis = _telemetry.UpdateAnalysis(userIdToUserInfoAndChatMap);
-            DeliverPayloadToClient(Operation.GetAnalytics, receivedObject.IpAddress, receivedObject.Port, null, null, analysis, user);
             return analysis;
         }
 
@@ -278,6 +309,92 @@ namespace MessengerDashboard.Server
                 SessionUpdated?.Invoke(this, new(SessionInfo));
             }
             DeliverPayloadToClient(Operation.RemoveClient, receivedObject.IpAddress, receivedObject.Port, SessionInfo);
+        }
+
+        public EntityInfoWrapper CreateSessionSaveData()
+        {
+            TextSummary textSummary = CreateSummary();
+            SentimentResult sentimentResult = CalculateSentiment();
+            Analysis analysis = CalculateAnalysis();
+            EntityInfoWrapper entityInfo = new(textSummary.Sentences, sentimentResult.PositiveChatCount, sentimentResult.NegativeChatCount, sentimentResult.IsOverallSentimentPositive, Guid.NewGuid().ToString(), ConvertToCloudObject(analysis));
+            return entityInfo;
+        }
+
+        public bool SaveSessionToCloud()
+        {
+            EntityInfoWrapper entityInfo = CreateSessionSaveData();
+            try
+            {
+                _restClient.PostEntityAsync(entityInfo).Wait();
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine($"{e.Message}");
+                return false;
+            }
+            return true;
+        }
+
+        public bool SaveSessionToLocalStorage()
+        {
+            EntityInfoWrapper entityInfo = CreateSessionSaveData();
+            try
+            {
+                _localSave.AddEntity(entityInfo);
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine($"{e.Message}");
+                return false;
+            }
+            return true;
+
+        }
+        public bool SaveSessionToCloud(EntityInfoWrapper entityInfo)
+        {
+            try
+            {
+                _restClient.PostEntityAsync(entityInfo).Wait();
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine($"{e.Message}");
+                return false;
+            }
+            return true;
+        }
+
+        public bool SaveSessionToLocalStorage(EntityInfoWrapper entityInfo)
+        {
+            try
+            {
+                _localSave.AddEntity(entityInfo);
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine($"{e.Message}");
+                return false;
+            }
+            return true;
+        }
+
+        private AnalysisCloud ConvertToCloudObject(Analysis analysis)
+        {
+            Dictionary<int, UserActivityCloud> userIdToUserActivityMap = new();
+            foreach(KeyValuePair<int, UserActivity> keyValuePair in analysis.UserIdToUserActivityMap)
+            {
+                UserActivityCloud userActivity = new()
+                {
+                    ExitTime = keyValuePair.Value.ExitTime,
+                    EntryTime = keyValuePair.Value.EntryTime,
+                    UserEmail = keyValuePair.Value.UserEmail,
+                    UserChatCount = keyValuePair.Value.UserChatCount,
+                    UserName = keyValuePair.Value.UserName
+                };
+                userIdToUserActivityMap.Add(keyValuePair.Key, userActivity);
+            }
+            AnalysisCloud analysisCloud = new(userIdToUserActivityMap, analysis.TimeStampToUserCountMap, analysis.TotalUserCount, analysis.TotalChatCount);
+            return analysisCloud;
         }
     }
 }

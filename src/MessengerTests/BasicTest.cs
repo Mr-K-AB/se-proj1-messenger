@@ -1,4 +1,10 @@
-﻿using System;
+﻿/// <credits>
+/// <author>
+/// <name>Shubh Pareek</name>
+/// <rollnumber>112001039</rollnumber>
+/// </author>
+/// </credits>
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,9 +17,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 
 namespace MessengerTests
 {
+    /// <summary>
+    /// Basic tests for small methods .
+    /// </summary>
     [TestClass]
     public class BasicTest
     {
+        
         
         private AnalysisCloud _analysisCloud;
         readonly List<string> _sentences = new() { "Hi", "Hello", "Wow" };
@@ -32,6 +42,9 @@ namespace MessengerTests
             _analysisCloud.TimeStampToUserCountMap.Add(DateTime.Now, 3);
             _analysisCloud.UserIdToUserActivityMap.Add(4, new UserActivityCloud() { EntryTime = DateTime.Now, ExitTime = DateTime.Now, UserEmail = "hello", UserChatCount = 2, UserName = "shubh" });
         }
+        /// <summary>
+        /// checking if the class is serializable or not  
+        /// </summary>
         [TestMethod]
         public void Test1()
         {
@@ -56,13 +69,13 @@ namespace MessengerTests
 
 
         /// <summary>
-        /// Tests creating and getting an entity.
+        /// Tests creating and getting an local entity.
         /// </summary>
         [TestMethod]
-        public async Task TestPostAndGet()
+        public async Task LocalSaveTesting()
         {
             // delete all 
-            Logger.LogMessage("Deleting all entries from our Azure table storage.");
+            Logger.LogMessage("Deleting all entries from our Azure tddable storage.");
 
             // Create an entity.
             Logger.LogMessage("Create an entity.");

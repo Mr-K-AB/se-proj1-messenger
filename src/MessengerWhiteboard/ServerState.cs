@@ -78,6 +78,8 @@ namespace MessengerWhiteboard
             //Trace.WriteLine("[White-Board] " + "inside OnShapeReceived " + shapeItem.Id);
             if (operation == Operation.Creation)
             {
+                //Trace.Write($"Server Geometry: {shapeItem.Geometry}");
+                Trace.WriteLine($"HandleData: {shapeItem.Id}");
                 AddShapeToServerList(shapeItem.Id, shapeItem, operation);
             }
             else if (operation == Operation.Deletion)
@@ -182,7 +184,6 @@ namespace MessengerWhiteboard
         // Function for broadcasting single shape to clients
         public void BroadcastToClients(ShapeItem shapeItem, Operation operation)
         {
-            Trace.WriteLine("[White-Board] " + "inside BroadcastToClients " + shapeItem.Id);
             s_communicator.Broadcast(shapeItem, operation);
         }
 

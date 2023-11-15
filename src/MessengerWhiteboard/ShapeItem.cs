@@ -9,7 +9,7 @@ namespace MessengerWhiteboard
     {
         public string ShapeType { get; set; }
         public Geometry Geometry { get; set; }
-        public float StrokeThickness { get; set; }
+        public int StrokeThickness { get; set; }
         public int ZIndex { get; set; }
 
         public Brush Fill { get; set; }
@@ -58,6 +58,11 @@ namespace MessengerWhiteboard
                 (Geometry as PathGeometry).AddGeometry(new LineGeometry(points[^1], b));
                 points.Add(b);
             }
+            else if(ShapeType == "Line")
+            {
+                Geometry = new LineGeometry(a, b);
+                points[^1] = b;
+            }
         }
 
         public void MoveShape(Point a, Point b)
@@ -76,6 +81,20 @@ namespace MessengerWhiteboard
         public override string ToString()
         {
             return $"{ShapeType}";
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if(obj == null)
+            {
+                return false;
+            }
+            if(obj is ShapeItem)
+            {
+                ShapeItem shape = obj as ShapeItem;
+                return Id == shape.Id;
+            }
+            return false;
         }
     }
 }

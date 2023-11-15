@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Media;
@@ -33,7 +34,7 @@ namespace MessengerWhiteboard
         //shape attributes
         public Brush fillBrush = Brushes.Transparent;
         public Brush strokeBrush = Brushes.Black;
-        public float StrokeThickness = 1;
+        public int StrokeThickness = 1;
         //Brush borderBrush;                                 // stores color of the border
         int _strokeWidth;                                       // thickness of the stroke
         public IShapeReceiver machine;
@@ -77,6 +78,7 @@ namespace MessengerWhiteboard
         {
             //Debug.WriteLine("Inside AddShape");
             ShapeItems.Add(shape);
+            Debug.Print(ShapeItems[^1].points.First().ToString());
         }
 
         public void RemoveShape(ShapeItem shape)
@@ -106,6 +108,10 @@ namespace MessengerWhiteboard
         {
             _userID = _userid.ToString();
             //_userID = GetUserID();
+            if(_userid == 1)
+            {
+                isServer = false;
+            }
             if(isServer)
             {
                 machine = ServerState.Instance;
@@ -136,6 +142,12 @@ namespace MessengerWhiteboard
             fillBrush = fcolour;
             Trace.WriteLine("Whiteboard View Model :: fill colour changed to : " + fcolour);
             //this.UpdateFillBrush();
+        }
+
+        public void ClearScreen()
+        {
+            ShapeItems.Clear();
+            machine.OnShapeReceived(null, Operation.Clear);
         }
 
         //public void UpdateStrokeWidth()

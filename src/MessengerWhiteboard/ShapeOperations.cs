@@ -7,7 +7,7 @@ namespace MessengerWhiteboard
 {
     public partial class ViewModel
     {
-        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, float strokeThickness, string textData = "Text")
+        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, int strokeThickness, string textData = "Text")
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;
@@ -53,8 +53,8 @@ namespace MessengerWhiteboard
                 Fill = fillBrush,
                 Stroke = borderBrush,
                 Id = Guid.NewGuid(),
-                points = new List<Point>{start},
-                TextString = textData
+                points = new List<Point>{start, end},
+                TextString = textData,
             };
 
             return newShape;
@@ -97,6 +97,7 @@ namespace MessengerWhiteboard
                         //Debug.WriteLine(_tempShape.boundary);
                         lastDownPoint = a;
                     }
+                    machine.OnShapeReceived(_tempShape, Operation.ModifyShape);
 
                 }
                 else if(activeTool == "Delete")

@@ -139,8 +139,8 @@
                                             </TextBlock>
                                         </StackPanel>
 
-                                        <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke" ItemsSource="{Binding CheckList}">
-                                        </ListBox>
+                                        <!--<ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke" ItemsSource="{Binding CheckList}">
+                                        </ListBox>-->
 
                                     </Grid>
                                 </Border>
@@ -263,13 +263,13 @@
 										VerticalAlignment="Center"
 										Margin="10 0 0 0">
                                             </TextBlock>
-                                            <Slider x:Name="PenThicknessSlider" Foreground="Black" Minimum="1" Maximum="21" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ></Slider>
+                                            <Slider x:Name="PenThicknessSlider" Foreground="Black" Minimum="1" Maximum="21" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" Value="{Binding StrokeThickness, Mode=TwoWay}"></Slider>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
                             </Popup>
 
-                            <ToggleButton Name="Line" ToolTip="Line" Style="{StaticResource ToggleButtonStyle}">
+                            <ToggleButton Name="Line" ToolTip="Line" Style="{StaticResource ToggleButtonStyle}" Click="LineMode">
                                 <Image Source="../Images/line.png" Style="{StaticResource ImageStyle}" />
                             </ToggleButton>
                             <Popup IsOpen="{Binding IsChecked, ElementName=Line}" 
@@ -565,7 +565,7 @@
                                 <Image Source="../Images/text.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
-                            <Button Name="Clear" ToolTip="Clear Page" Style="{StaticResource ButtonStyle}">
+                            <Button Name="Clear" ToolTip="Clear Page" Style="{StaticResource ButtonStyle}" Click="ClearScreen">
                                 <Image Source="../Images/clear.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 

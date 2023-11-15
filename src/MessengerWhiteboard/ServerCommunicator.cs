@@ -32,7 +32,7 @@ namespace MessengerWhiteboard
             try
             {
                 string serializedShape = s_serializer.SerializeWBShape(wBShape);
-                //Trace.WriteLine("Broadcast: {0}", serializedShape);
+                Debug.Print("Broadcast: WBShape {0}", serializedShape);
                 s_communicator.Broadcast(s_moduleID, serializedShape);
             }
             catch (Exception)

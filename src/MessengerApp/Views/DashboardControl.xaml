@@ -17,11 +17,11 @@
 
                 <ColumnDefinition Width="7.5*" />
 
-                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition Width="2*"/>
 
-                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="11*"/>
 
-                <ColumnDefinition Width="3.5*"/>
+                <ColumnDefinition Width="2*"/>
 
             </Grid.ColumnDefinitions>
 
@@ -42,12 +42,20 @@
                 </Grid>
             </Grid>
 
-            <Grid Grid.Column="2" >
-                <Button Width="auto" Content="Refresh" Background="Gray" Margin="5 5 0 5 "  Command="{Binding RefreshCommand}"/>
+            <Grid Grid.Column="1" >
+                <Border  CornerRadius="2" BorderThickness="3" BorderBrush="Gray" Margin="5 5 5 5">
+                    <Button Width="auto" Background="Gray" Command="{Binding RefreshCommand}" BorderThickness="0" Click="Button_Click" ToolTip="Refresh">
+                        <Image Source="../Images/refresh.png" Height="23" />
+                    </Button>
+                </Border>
             </Grid>
 
             <Grid Grid.Column="3" >
-                <Button Width="auto" Content="End Meet" Background="Red" Margin="0 5 5 5 " Command="{Binding EndMeetCommand}"/>
+                <Border  CornerRadius="6" BorderThickness="5" BorderBrush="Red" Margin="5 5 5 5">
+                    <Button Width="auto" Background="Red" Command="{Binding EndMeetCommand}" BorderThickness="0" ToolTip="End Meet">
+                        <Image Source="../Images/end-meet.png" Width="40"/>
+                    </Button>
+                </Border>
             </Grid>
 
         </Grid>

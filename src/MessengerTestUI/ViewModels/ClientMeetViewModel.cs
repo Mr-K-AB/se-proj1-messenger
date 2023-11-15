@@ -21,13 +21,13 @@ namespace MessengerTestUI.ViewModels
 
         public ICommand NavigateHomeCommand { get; }
 
-        public ICommand NavigateDashboardCommand { get; }
+        public ICommand NavigateClientDashboardCommand { get; }
 
         private readonly NavigationStore _navigationStore;
 
         public ViewModelBase SubViewModel => _navigationStore.SubViewModel;
 
-        private readonly ClientSessionController _client;
+        private readonly ClientSessionController _client = DashboardFactory.GetClientSessionController();
 
 
         public int Port { get; set; }
@@ -38,7 +38,7 @@ namespace MessengerTestUI.ViewModels
             _navigationStore = navigationStore;
             navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
-            NavigateDashboardCommand = new NavigateClientDashboardCommand(navigationStore);
+            NavigateClientDashboardCommand = new NavigateClientDashboardCommand(navigationStore);
         }
 
         private void NavigationStore_SubViewModelChanged()

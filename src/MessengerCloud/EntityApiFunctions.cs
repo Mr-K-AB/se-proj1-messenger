@@ -1,14 +1,9 @@
-﻿/******************************************************************************
- * Filename    = EntityApiFunctions.cs
- *
- * Author      = Ramaswamy Krishnan-Chittur
- *
- * Product     = CloudProgrammingDemo
- * 
- * Project     = ServerlessFunc
- *
- * Description = Defines custom Azure Function Apps APIs.
- *****************************************************************************/
+﻿/// <credits>
+/// <author>
+/// <name>Shubh Pareek</name>
+/// <rollnumber>112001039</rollnumber>
+/// </author>
+/// </credits>
 
 using Azure;
 using Azure.Data.Tables;

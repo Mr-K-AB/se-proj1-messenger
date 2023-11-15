@@ -37,5 +37,10 @@ namespace MessengerApp.Views
             DataContext = viewModel;
             */
         }
+
+        private void SubmissionsPage_Navigated(object sender, NavigationEventArgs e)
+        {
+
+        }
     }
 }

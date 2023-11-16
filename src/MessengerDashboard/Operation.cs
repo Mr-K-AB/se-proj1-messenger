@@ -13,7 +13,8 @@ namespace MessengerDashboard
         LabMode,
         AddClient,
         GetSummary,
-        GetAnalytics,
+        GetTelemetryAnalysis,
+        GetSentiment,
         RemoveClient,
         ID,
         AddClientACK

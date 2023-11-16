@@ -7,23 +7,27 @@ using MessengerTestUI.Stores;
 using MessengerTestUI.ViewModels;
 using MessengerDashboard;
 using System.Diagnostics;
+using MessengerDashboard.Client;
 
 namespace MessengerTestUI.Commands
 {
-    internal class NavigateDashboardCommand : CommandBase
+    internal class NavigateServerDashboardCommand : CommandBase
     {
         private readonly NavigationStore _navigationStore;
 
+        private readonly DashboardServerViewModel _dashboardViewModel;
+
         //private readonly string 
 
-        public NavigateDashboardCommand(NavigationStore navigationStore)
+        public NavigateServerDashboardCommand(NavigationStore navigationStore, DashboardServerViewModel dashboardViewModel)
         {
             _navigationStore = navigationStore;
+            _dashboardViewModel = dashboardViewModel;
         }
 
         public override void Execute(object parameter)
         {
-            _navigationStore.SubViewModel = new DashboardViewModel();
+            _navigationStore.SubViewModel = _dashboardViewModel;
         }
     }
 }

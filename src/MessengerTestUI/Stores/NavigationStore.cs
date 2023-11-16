@@ -20,8 +20,8 @@ namespace MessengerTestUI.Stores
             }
         }
 
-        private ViewModel _subViewModel;
-        public ViewModel SubViewModel
+        private ViewModelBase _subViewModel;
+        public ViewModelBase SubViewModel
         {
             get => _subViewModel;
             set

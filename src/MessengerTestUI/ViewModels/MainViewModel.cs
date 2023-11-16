@@ -12,7 +12,7 @@ namespace MessengerTestUI.ViewModels
     {
         private readonly NavigationStore _navigationStore;
         public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
-        public ViewModel SubViewModel => _navigationStore.SubViewModel;
+        public ViewModelBase SubViewModel => _navigationStore.SubViewModel;
         public MainViewModel(NavigationStore navigationStore)
         {
             _navigationStore = navigationStore;

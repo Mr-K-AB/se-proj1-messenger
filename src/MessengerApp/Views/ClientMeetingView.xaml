@@ -16,7 +16,7 @@
             </DataTemplate>
         </Grid.Resources>
         <Menu>
-            <MenuItem Header="Dashboard" Click="{Binding NavigateClientDashboardCommand}"/>
+            <MenuItem Header="Dashboard" Command="{Binding NavigateClientDashboardCommand}"/>
             <MenuItem Header="Whiteboard"/>
             <MenuItem Header="Screenshare"/>
             <MenuItem Header="Participants"/>

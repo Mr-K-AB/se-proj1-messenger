@@ -11,14 +11,14 @@
     <Grid>
         <!-- Navigation Bar -->
 
-        <!--<Grid.Resources>
+        <Grid.Resources>
             <DataTemplate DataType="{x:Type viewmodels:DashboardInstructorViewModel}">
                 <views:DashboardControl/>
             </DataTemplate>
-        </Grid.Resources>-->
+        </Grid.Resources>            
 
-            <Menu>
-            <MenuItem Header="Dashboard" Click="{Binding NavigateServerDashboardCommand}"/>
+        <Menu>
+            <MenuItem Header="Dashboard" Command="{Binding NavigateServerDashboardCommand}"/>
             <MenuItem Header="Whiteboard" />
             <MenuItem Header="Screenshare" />
             <MenuItem Header="Chat" Click="Chat_Click"/>
@@ -31,8 +31,7 @@
         <!-- Profile Information -->
         <Button Content="End Meeting" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>
 
-        <!-- Content Control for Dynamic Content -->
-        <!--<ContentControl Content="{Binding SubViewModel}" Margin="0,25,0,0"/>-->
+        <ContentControl Content="{Binding SubViewModel}" Margin="0,25,0,0"/>
 
     </Grid>
 </UserControl>

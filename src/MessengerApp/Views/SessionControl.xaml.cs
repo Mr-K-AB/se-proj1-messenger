@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MessengerDashboard;
+using MessengerDashboard.UI.ViewModels;
 
 namespace MessengerApp.Views
 {
@@ -23,19 +24,9 @@ namespace MessengerApp.Views
     {
         public SessionControl()
         {
-            /*
             InitializeComponent();
             SessionsViewModel viewModel = new();
-
-            SessionEntry entry = new() { SessionName = "S1", Summary = "All the best" };
-
-            viewModel.Enteries = new List<SessionEntry>
-            {
-                entry
-            };
-            viewModel.SessionSummary = "Vinay Loves Hii Vinay";
             DataContext = viewModel;
-            */
         }
 
         private void SubmissionsPage_Navigated(object sender, NavigationEventArgs e)

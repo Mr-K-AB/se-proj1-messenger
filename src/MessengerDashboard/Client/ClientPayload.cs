@@ -9,28 +9,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MessengerDashboard.Sentiment;
 
 namespace MessengerDashboard.Client
 {
     public class ClientPayload
     {
-        public ClientPayload(
-            Operation eventName,
-            string clientName,
-            string ipAddress,
-            int port,
-            int clientID = -1,
-            string clientEmail = null,
-            string clientPhotoUrl = null
-        )
+        public ClientPayload(Operation eventName, string ipAddress, int port, UserInfo userInfo)
         {
             Operation = eventName;
-            UserName = clientName;
-            UserID = clientID;
-            UserEmail = clientEmail;
-            UserPhotoURL = clientPhotoUrl;
             IpAddress = ipAddress;
             Port = port;
+            UserInfo = userInfo;
         }
 
         public ClientPayload()
@@ -39,13 +29,11 @@ namespace MessengerDashboard.Client
         }
 
         public string? IpAddress { get; set; } = string.Empty;
+        
         public Operation Operation { get; set; }
 
         public int Port { get; set; } = -1;
-        public string? UserEmail { get; set; }
-        public int UserID { get; set; }
 
-        public string? UserName { get; set; }
-        public string? UserPhotoURL { get; set; }
+        public UserInfo? UserInfo { get; set; }
     }
 }

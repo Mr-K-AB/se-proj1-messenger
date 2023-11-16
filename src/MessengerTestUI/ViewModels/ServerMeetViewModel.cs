@@ -37,7 +37,6 @@ namespace MessengerTestUI.ViewModels
 
             Port = _server.ConnectionDetails.Port;
             IP = _server.ConnectionDetails.IpAddress;
-
         }
 
         private void NavigationStore_SubViewModelChanged()

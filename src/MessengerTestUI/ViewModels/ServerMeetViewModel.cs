@@ -36,9 +36,9 @@ namespace MessengerTestUI.ViewModels
             EndMeetCommand = new EndMeetCommand(this);
 
             List<User> users = new();
-            Server.SessionInfo.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
+            Server._sessionInfo.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
             Users = users;
-            Mode = (Server.SessionInfo.SessionMode == SessionMode.Exam) ? "Exam" : "Lab";
+            Mode = (Server._sessionInfo.SessionMode == SessionMode.Exam) ? "Exam" : "Lab";
         }
 
         private void Server_SessionUpdated(object? sender, MessengerDashboard.Server.Events.SessionUpdatedEventArgs e)
@@ -46,7 +46,7 @@ namespace MessengerTestUI.ViewModels
             List<User> users = new();
             e.Session.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
             Users = users;
-            Mode = Server.SessionInfo.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
+            Mode = Server._sessionInfo.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
         }
 
         private List<User> _users;

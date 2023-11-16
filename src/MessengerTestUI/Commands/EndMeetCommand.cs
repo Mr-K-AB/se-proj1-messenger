@@ -33,7 +33,7 @@ namespace MessengerTestUI.Commands
 
         public void Execute(object? parameter)
         {
-            _clientMeetViewModel?.Client.RequestServerToRemoveClient(null);
+            _clientMeetViewModel?.Client.SendExitSessionRequestToServer(null);
             _serverMeetViewModel?.Server.EndSession();
         }
     }

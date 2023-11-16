@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MessengerDashboard.Server.Events;
 using MessengerNetworking.NotificationHandler;
 
 namespace MessengerDashboard.Server
@@ -13,12 +12,6 @@ namespace MessengerDashboard.Server
     /// </summary>
     public interface IServerSessionController : INotificationHandler
     {
-        /// <summary>
-        /// Fires when session is updated.
-        /// </summary>
-        event EventHandler<SessionUpdatedEventArgs> SessionUpdated;
-
         public ConnectionDetails ConnectionDetails { get; }
-
     }
 }

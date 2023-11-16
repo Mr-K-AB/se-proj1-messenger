@@ -152,7 +152,9 @@ namespace MessengerContent.Client
         {
             _userID = id;
             _chatHandler.UserID = id;
+            _chatHandler.UserName = name;
             _fileHandler.UserID = id;
+            _fileHandler.UserName = name;
             _name = name;
             _serverIP = ip;
             _serverPort = port;

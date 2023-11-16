@@ -136,7 +136,7 @@
                             <!--buttons-->
                             <StackPanel Orientation="Horizontal" Grid.Column="1">
                                 <!--reply button-->
-                                <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                <Button Background="white" BorderBrush="Transparent" HorizontalAlignment="Right"
                             Width="30" Height="20" Margin="0,0,0,0" Click="ReplyHandler" ToolTip="Reply">
                                 </Button>
                                 <!--undo reply-->

@@ -48,7 +48,7 @@
 
             <Grid Grid.Column="1" >
                 <Border  CornerRadius="2" BorderThickness="3" BorderBrush="Gray" Margin="5 5 5 5">
-                    <Button Width="auto" Background="Gray" Command="{Binding RefreshCommand}" BorderThickness="0" Click="Button_Click" ToolTip="Refresh">
+                    <Button Width="auto" Background="Gray" Command="{Binding RefreshCommand}" BorderThickness="0" ToolTip="Refresh">
                         <Image Source="../Images/refresh.png" Height="23" />
                     </Button>
                 </Border>

@@ -1,5 +1,6 @@
 ﻿using MessengerApp.ViewModels;
 using MessengerDashboard;
+using MessengerDashboard.UI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,8 +21,8 @@ namespace MessengerApp.Stores
             }
         }
 
-        private ViewModelBase _subViewModel;
-        public ViewModelBase SubViewModel
+        private DashboardViewModel _subViewModel;
+        public DashboardViewModel SubViewModel
         {
             get => _subViewModel;
             set

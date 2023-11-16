@@ -14,7 +14,7 @@ using MessengerApp.Commands;
 
 namespace MessengerApp.ViewModels
 {
-    public class SessionsViewModel : ViewModel
+    public class SessionsViewModel : ViewModelBase
     {
 
         //public SessionsViewModel()

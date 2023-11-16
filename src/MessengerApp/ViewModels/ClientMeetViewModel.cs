@@ -9,6 +9,7 @@ using MessengerApp.Stores;
 using System.Windows.Input;
 using MessengerDashboard.Client;
 using MessengerDashboard;
+using MessengerDashboard.UI.ViewModels;
 
 namespace MessengerApp.ViewModels
 {
@@ -17,14 +18,16 @@ namespace MessengerApp.ViewModels
         public ICommand NavigateHomeCommand { get; }
         public ICommand NavigateClientDashboardCommand { get; }
 
-        private readonly IClientSessionController _client;
+        public DashboardViewModel SubViewModel;
+
+        private readonly IClientSessionController _client = DashboardFactory.GetClientSessionController();
         public int Port { get; set; }
         public string IP { get; set; }
 
 
-        public ClientMeetViewModel(NavigationStore navigationStore, IClientSessionController client)
+        public ClientMeetViewModel(NavigationStore navigationStore)
         {
-            _navigationStore = navigationStore;
+            SubViewModel = navigationStore.SubViewModel;
             navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
             NavigateClientDashboardCommand = new NavigateClientDashboardCommand(navigationStore);

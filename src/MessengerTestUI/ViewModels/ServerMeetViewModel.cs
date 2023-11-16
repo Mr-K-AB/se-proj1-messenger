@@ -22,7 +22,7 @@ namespace MessengerTestUI.ViewModels
 
         public ViewModelBase SubViewModel => _navigationStore.SubViewModel;
 
-        private ServerSessionController _server { get; } = DashboardFactory.GetServerSessionController();
+        private IServerSessionController _server { get; } = DashboardFactory.GetServerSessionController();
         public int Port { get; set; }
         public string IP { get; set; }
 

@@ -5,9 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using MessengerApp.Stores;
 using MessengerApp.ViewModels;
-using MessengerDashboard;
+using MessengerDashboard.UI;
 using System.Diagnostics;
 using MessengerDashboard.Client;
+using MessengerDashboard.UI.ViewModels;
 
 namespace MessengerApp.Commands
 {
@@ -15,11 +16,11 @@ namespace MessengerApp.Commands
     {
         private readonly NavigationStore _navigationStore;
 
-        private readonly DashboardServerViewModel _dashboardViewModel;
+        private readonly DashboardInstructorViewModel _dashboardViewModel;
 
         //private readonly string 
 
-        public NavigateServerDashboardCommand(NavigationStore navigationStore, DashboardServerViewModel dashboardViewModel)
+        public NavigateServerDashboardCommand(NavigationStore navigationStore, DashboardInstructorViewModel dashboardViewModel)
         {
             _navigationStore = navigationStore;
             _dashboardViewModel = dashboardViewModel;

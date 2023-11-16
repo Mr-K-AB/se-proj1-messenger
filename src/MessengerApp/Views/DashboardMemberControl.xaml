@@ -25,41 +25,33 @@
 
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2.7*" />
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" Grid.ColumnSpan="2" Margin="3">
-                    <Border CornerRadius="10" BorderThickness="5" BorderBrush="Gray">
-                        <TextBlock Background="Gray" Text="{Binding Mode}" TextAlignment="Left"/>
-                    </Border>
-                </Grid>
-                <Grid Grid.Column="1">
-                    <Button Width="auto" Content="Switch" Background="LightBlue" Command="{Binding SwitchModeCommand}" BorderThickness="0"  Margin="5 5 5 5">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="5"></Setter>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
-                </Grid>
+            <Grid Grid.Column="0" Margin="3" >
+                <Border CornerRadius="10" BorderThickness="5" BorderBrush="Gray" Background="Gray">
+                    <TextBlock Background="Gray" Text="Binding Mode" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="18"/>
+                </Border>
             </Grid>
 
             <Grid Grid.Column="1" >
-                <Border  CornerRadius="2" BorderThickness="3" BorderBrush="Gray" Margin="5 5 5 5">
-                    <Button Width="auto" Background="Gray" Command="{Binding RefreshCommand}" BorderThickness="0" ToolTip="Refresh">
-                        <Image Source="../Images/refresh.png" Height="23" />
-                    </Button>
-                </Border>
+
+                <Button Width="auto" Background="#00ad11" Command="{Binding RefreshCommand}" BorderThickness="0" ToolTip="Refresh" Margin="5 5 5 5">
+                    <Image Source="../Images/refresh.png" Height="23" />
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"></Setter>
+                        </Style>
+                    </Button.Resources>
+              </Button>
             </Grid>
 
             <Grid Grid.Column="3" >
-                <Border  CornerRadius="6" BorderThickness="5" BorderBrush="Red" Margin="5 5 5 5">
-                    <Button Width="auto" Background="Red" Command="{Binding EndMeetCommand}" BorderThickness="0" ToolTip="End Meet">
-                        <Image Source="../Images/end-meet.png" Width="40"/>
-                    </Button>
-                </Border>
+                <Button Width="auto" Background="Red" Command="{Binding EndMeetCommand}"  ToolTip="End Meet" Margin="5 5 5 5">
+                    <Image Source="../Images/end-meet.png" Width="40"/>
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"></Setter>
+                        </Style>
+                    </Button.Resources>
+                </Button>
             </Grid>
 
         </Grid>
@@ -91,11 +83,11 @@
                             <TextBlock Width="auto" Background="Wheat" Text="Chat Summary" TextAlignment="Center" FontWeight="Bold"/>
                             <ScrollViewer Grid.Row="1" Width="auto" VerticalScrollBarVisibility="Auto">
                                 <TextBlock TextWrapping="Wrap"
-                                           Width="auto" 
-                                           Height="auto" 
-                                           Background="Wheat" 
-                                           Text="{Binding Summary}"
-                                           TextAlignment="Center" />
+                                       Width="auto" 
+                                       Height="auto" 
+                                       Background="Wheat" 
+                                       Text="{Binding Summary}"
+                                       TextAlignment="Center" />
                             </ScrollViewer>
                         </Grid>
                     </Border>
@@ -108,16 +100,52 @@
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0">
-                        <TextBlock Width="auto" Background="Gray" Text="Total Participant" TextAlignment="Center" Margin="5 5 5 5"/>
+                        <Border CornerRadius="5" BorderThickness="1" BorderBrush="Teal" Margin="3" Background="Teal">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Total Chats" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
+                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding Users.Count}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
+                            </Grid>
+                        </Border>
                     </Grid>
                     <Grid Grid.Column="1">
-                        <TextBlock Width="auto" Background="Gray" Text="BBBBBB" TextAlignment="Center" Margin="5 5 5 5"/>
+                        <Border CornerRadius="5" BorderThickness="1" BorderBrush="Teal" Margin="3" Background="Teal">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Positive Chats" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
+                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding Users.Count}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
+                            </Grid>
+                        </Border>
                     </Grid>
                     <Grid Grid.Column="2">
-                        <TextBlock Width="auto" Background="Gray" Text="CCCCCCC" TextAlignment="Center" Margin="5 5 5 5"/>
+                        <Border CornerRadius="5" BorderThickness="1" BorderBrush="Teal" Margin="3" Background="Teal">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Negative Chats" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
+                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding Users.Count}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
+                            </Grid>
+                        </Border>
                     </Grid>
                     <Grid Grid.Column="3">
-                        <TextBlock Width="auto" Background="Gray" Text="DDDDDD" TextAlignment="Center" Margin="5 5 5 5"/>
+                        <Border CornerRadius="5" BorderThickness="1" BorderBrush="Teal" Margin="3" Background="Teal">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Overall Sentiment" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
+                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding Users.Count}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
+                            </Grid>
+                        </Border>
                     </Grid>
                 </Grid>
             </Grid>
@@ -183,30 +211,39 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="Participants" Background="Pink" TextAlignment="Center" FontWeight="Bold"/>
-                    <ListView Grid.Row="1" x:Name="ContactsLV" Background="Pink" ItemsSource="{Binding Users}" d:ItemsSource="{d:SampleData ItemCount=5}" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="5, 10, 0, 10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Ellipse Width="30" Height="30">
-                                        <Ellipse.Fill>
-                                            <ImageBrush ImageSource="{Binding UserPicturePath}" />
-                                        </Ellipse.Fill>
-                                    </Ellipse>
-                                    <Grid Grid.Column="1">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="1*"/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"  Text="{Binding UserName}" Foreground="White" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Margin="5, 0, 0, 0" />
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="5*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="1" Text="Participant(s)" Background="Pink" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="0" Text="{Binding Users.Count}" Background="Pink" TextAlignment="Right" FontWeight="Bold" />
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <ListView Grid.Row="1" x:Name="ContactsLV" Background="Pink" ItemsSource="{Binding Users}" d:ItemsSource="{d:SampleData ItemCount=5}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="5, 10, 0, 10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="1*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse Width="30" Height="30">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding UserPicturePath}" />
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <Grid Grid.Column="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="1*"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"  Text="{Binding UserName}" Foreground="Black" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Margin="5, 0, 0, 0" />
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
                 </Grid>
             </Border>
         </Grid>

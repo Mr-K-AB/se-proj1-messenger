@@ -157,7 +157,7 @@ namespace MessengerContent.Client
             _serverIP = ip;
             _serverPort = port;
         }
-
+           
 
         /// <summary>
         /// Check for valid reply message ID 

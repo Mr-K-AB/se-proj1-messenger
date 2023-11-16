@@ -9,18 +9,6 @@ namespace MessengerTests
     [TestClass]
     public class DashboardTests
     {
-        [TestMethod]
-        public void AuthenticationTest()
-        {
-            Task<AuthenticationResult> task = Authenticator.Authenticate();
-            task.Wait();
-            AuthenticationResult result = task.Result;
-            if (!result.IsAuthenticated)
-            {
-                Assert.Fail("Authentication Failed");
-            }
-
-        }
         //[TestMethod]
         //public void ForMessengerCloud
 

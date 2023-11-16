@@ -10,18 +10,18 @@ namespace MessengerDashboard
 {
     public static class DashboardFactory
     {
-        private static readonly Lazy<ServerSessionController> s_serverSessionController = new(() => new ServerSessionController());
+        private static readonly ServerSessionController s_serverSessionController = new();
 
-        private static readonly Lazy<ClientSessionController> s_clientSessionController = new(() => new ClientSessionController());
+        private static readonly ClientSessionController s_clientSessionController = new();
 
         public static IServerSessionController GetServerSessionController()
         {
-            return s_serverSessionController.Value;
+            return s_serverSessionController;
         }
 
         public static IClientSessionController GetClientSessionController()
         {
-            return s_clientSessionController.Value;
+            return s_clientSessionController;
         }
     }
 }

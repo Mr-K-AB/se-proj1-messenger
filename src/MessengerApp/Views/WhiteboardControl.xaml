@@ -139,15 +139,15 @@
                                             </TextBlock>
                                         </StackPanel>
 
-                                        <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke" ItemsSource="{Binding CheckList}">
-                                        </ListBox>
+                                        <!--<ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke" ItemsSource="{Binding CheckList}">
+                                        </ListBox>-->
 
                                     </Grid>
                                 </Border>
                             </Popup>
 
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" >
+                        <!--<StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" >
 
                             <Button Name="Plus" ToolTip="Zoom In" Style="{StaticResource ButtonStyle}">
                                 <Image Source="../Images/plus.png" Style="{StaticResource ImageStyle}" />
@@ -157,7 +157,7 @@
                                 <Image Source="../Images/minus.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
-                        </StackPanel>
+                        </StackPanel>-->
 
                     </StackPanel>
 
@@ -263,13 +263,13 @@
 										VerticalAlignment="Center"
 										Margin="10 0 0 0">
                                             </TextBlock>
-                                            <Slider x:Name="PenThicknessSlider" Foreground="Black" Minimum="1" Maximum="21" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ></Slider>
+                                            <Slider x:Name="PenThicknessSlider" Foreground="Black" Minimum="1" Maximum="8" TickPlacement="BottomRight" TickFrequency="3" Margin="5 5 5 5" Value="{Binding StrokeThickness, Mode=TwoWay}"></Slider>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
                             </Popup>
 
-                            <ToggleButton Name="Line" ToolTip="Line" Style="{StaticResource ToggleButtonStyle}">
+                            <ToggleButton Name="Line" ToolTip="Line" Style="{StaticResource ToggleButtonStyle}" Click="LineMode">
                                 <Image Source="../Images/line.png" Style="{StaticResource ImageStyle}" />
                             </ToggleButton>
                             <Popup IsOpen="{Binding IsChecked, ElementName=Line}" 
@@ -454,7 +454,7 @@
                                                 </Border>
                                             </Popup>
                                         </Grid>
-                                        <Grid Grid.Row="1">
+                                        <!--<Grid Grid.Row="1">
                                             <ToggleButton Name="Size" ToolTip="Size" Style="{StaticResource ToggleButtonStyle}">
                                                 <Image Source="../Images/size.png" Style="{StaticResource ImageStyle}" />
                                             </ToggleButton>
@@ -540,7 +540,7 @@
                                                     </Grid>
                                                 </Border>
                                             </Popup>
-                                        </Grid>
+                                        </Grid>-->
 
                                         <Grid Grid.Row="2">
                                             <Button Name="Rectangle" ToolTip="Rectangle" Style="{StaticResource ButtonStyle}" Click="RectangleMode">
@@ -552,20 +552,20 @@
                                                 <Image Source="../Images/ellipse.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>
-                                        <Grid Grid.Row="4">
+                                        <!--<Grid Grid.Row="4">
                                             <Button Name="Triangle" ToolTip="Triangle" Style="{StaticResource ButtonStyle}">
                                                 <Image Source="../Images/triangle.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
-                                        </Grid>
+                                        </Grid>-->
                                     </Grid>
                                 </Border>
                             </Popup>
 
-                            <Button Name="Text" ToolTip="Text" Style="{StaticResource ButtonStyle}" Click="TextMode">
+                            <!--<Button Name="Text" ToolTip="Text" Style="{StaticResource ButtonStyle}" Click="TextMode">
                                 <Image Source="../Images/text.png" Style="{StaticResource ImageStyle}" />
-                            </Button>
+                            </Button>-->
 
-                            <Button Name="Clear" ToolTip="Clear Page" Style="{StaticResource ButtonStyle}">
+                            <Button Name="Clear" ToolTip="Clear Page" Style="{StaticResource ButtonStyle}" Click="ClearScreen">
                                 <Image Source="../Images/clear.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
@@ -574,11 +574,11 @@
                         <StackPanel Orientation="Vertical" Background="White" Margin="10">
 
 
-                            <Button Name="Undo" ToolTip="Undo" Style="{StaticResource ButtonStyle}" Click="UndoMode">
+                            <Button Name="UndoButton" ToolTip="Undo" Style="{StaticResource ButtonStyle}" Click="Undo">
                                 <Image Source="../Images/undo.png" Style="{StaticResource ImageStyle}" />
                             </Button>
 
-                            <Button Name="Redo" ToolTip="Redo" Style="{StaticResource ButtonStyle}" Click="RedoMode">
+                            <Button Name="RedoButton" ToolTip="Redo" Style="{StaticResource ButtonStyle}" Click="Redo">
                                 <Image Source="../Images/redo.png" Style="{StaticResource ImageStyle}" />
 
                             </Button>
@@ -590,7 +590,7 @@
                 </Grid>
 
                 <DockPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding ShapeItems, Mode=TwoWay}">
+                    <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding ShapeItems, Mode=TwoWay}" ClipToBounds="True">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Canvas  Name="mc2"
@@ -608,11 +608,11 @@
 
                             <DataTemplate>
                                 <Path Uid="{Binding Id}"
-                              Data="{Binding Geometry}"
-                              Fill="{Binding Fill}"
-					          Stroke="{Binding Stroke}"
-                              StrokeThickness="{Binding StrokeThickness}"
-                              />
+                                      Data="{Binding Geometry}"
+                                      Fill="{Binding Fill}"
+					                  Stroke="{Binding Stroke}"
+                                      StrokeThickness="{Binding StrokeThickness}"
+                                />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.ItemContainerStyle>

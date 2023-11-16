@@ -67,6 +67,7 @@ namespace MessengerNetworking.Communicator
             };
             _listenThread.Start();
             _senderThread.Start();
+            Trace.TraceInformation("Networking constructor initialised");
         }
         public UdpCommunicator()
         {
@@ -96,6 +97,7 @@ namespace MessengerNetworking.Communicator
             };
             _listenThread.Start();
             _senderThread.Start();
+            Trace.TraceInformation("Networking constructor initialised");
         }
 
         /// <inheritdoc />
@@ -112,9 +114,11 @@ namespace MessengerNetworking.Communicator
             {
                 if (address.AddressFamily == AddressFamily.InterNetwork)
                 {
+                    Trace.TraceInformation("Networking IP returned :" + address.ToString());
                     return address.ToString();
                 }
             }
+            Trace.TraceWarning("Networking : IP returned as 127.0.0.1");
             return "127.0.0.1";
         }
 
@@ -135,6 +139,7 @@ namespace MessengerNetworking.Communicator
                     _subscribers.Add(id, subscriber);
                 }
             }
+            Trace.TraceInformation("Networking Subscriber added " + id);
         }
 
         public void AddClient(string ipAddress, int port)
@@ -149,6 +154,7 @@ namespace MessengerNetworking.Communicator
             {
                 subscriber.Value.OnClientJoined(ipAddress, port);
             }
+            Trace.TraceInformation("Networking client added with ip and port " + ipAddress + port.ToString());
         }
 
         public void RemoveClient(string ipAddress, int port)
@@ -162,6 +168,7 @@ namespace MessengerNetworking.Communicator
             {
                 subscriber.Value.OnClientLeft(ipAddress, port);
             }
+            Trace.TraceInformation("Networking client removed with ip and port " + ipAddress + port.ToString());
         }
 
         private static int FindFreePort()
@@ -172,6 +179,7 @@ namespace MessengerNetworking.Communicator
             int port =
                 ((IPEndPoint)tcpListener.LocalEndpoint).Port;
             tcpListener.Stop();
+            Trace.TraceInformation("Networking free port found " + port.ToString());
             return port;
         }
 
@@ -188,6 +196,7 @@ namespace MessengerNetworking.Communicator
                     _subscribers.Remove(id);
                 }
             }
+            Trace.TraceInformation("Networking Subscriber Removed" + id);
         }
 
         /// <inheritdoc/>
@@ -211,6 +220,7 @@ namespace MessengerNetworking.Communicator
             {
                 int bytesSent = socket.SendTo(sendBuffer, endPoint);
                 Debug.Assert(bytesSent == sendBuffer.Length);
+                Trace.TraceInformation("Networking bytes sent " +  bytesSent.ToString() + " to endpoint " + endPoint.ToString());
             }
             _timeTrack.Add(new Tuple<string, int>(ipAddress, port), DateTime.Now);
 
@@ -242,10 +252,12 @@ namespace MessengerNetworking.Communicator
             if (priority == 1)
             {
                 _highPriorityQueue.Enqueue(_content);
+                Trace.TraceInformation("Networking high priority message received");
             }
             else
             {
                 _lowPriorityQueue.Enqueue(_content);
+                Trace.TraceInformation("Networking low priority message received");
             }
         }
 
@@ -256,6 +268,7 @@ namespace MessengerNetworking.Communicator
             {
                 SendMessage(client.Item1, client.Item2, senderId, message, priority);
             }
+            Trace.TraceInformation("Networking message broadcasted");
         }
 
         private void SenderThreadProc()
@@ -275,6 +288,7 @@ namespace MessengerNetworking.Communicator
                             _queueContents _front = _highPriorityQueue.Dequeue();
                             SendMessageWithPriority(_front._ipAddress, _front._port, _front._senderId, _front._message);
                             count--;
+                            Trace.TraceInformation("Networking control given to sendmessagepriority");
                         }
                         count = 2;
                         while (count > 0 && _lowPriorityQueue.Count > 0)
@@ -282,12 +296,14 @@ namespace MessengerNetworking.Communicator
                             _queueContents _front = _lowPriorityQueue.Dequeue();
                             SendMessageWithPriority(_front._ipAddress, _front._port, _front._senderId, _front._message);
                             count--;
+                            Trace.TraceInformation("Networking control given to sendmessagepriority");
                         }
                     }
                 }
                 catch (Exception e)
                 {
                     Debug.WriteLine(e.Message);
+                    Trace.TraceError("Networking" + e.Message);
                 }
             }
         }
@@ -303,11 +319,14 @@ namespace MessengerNetworking.Communicator
                     {
                         if (item.Value - DateTime.Now > new TimeSpan(0, 1, 0))
                         {
+                            Trace.TraceInformation("Networking timeout detected");
                             if (_msgTrack.ContainsKey(item.Key))
                             {
                                 Tuple<List<Tuple<string, string>>, int> msgToSend = _msgTrack[(item.Key)];
+                                Trace.TraceInformation("Networking retry left for a message " +  msgToSend.Item2.ToString());
                                 if (msgToSend.Item2 == 3)
                                 {
+                                    Trace.TraceInformation("Networking removed client from non activity");
                                     RemoveClient(item.Key.Item1, item.Key.Item2);
                                     _timeTrack.Remove(item.Key);
                                 }
@@ -382,6 +401,7 @@ namespace MessengerNetworking.Communicator
                     {
                         byte[] bytes = _listener.Receive(ref _endPoint);
                         payload = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+                        Trace.TraceInformation("Networking received message");
                     }
                     Debug.WriteLine($"Received payload: {payload}");
 
@@ -408,9 +428,11 @@ namespace MessengerNetworking.Communicator
                             else
                             {
                                 Debug.WriteLine($"Received message for unknown subscriber: {id}");
+                                Trace.TraceWarning($"Netwroking Received message for unknown subscriber: {id}");
                             }
                             if (message != "ALIVE")
                             {
+                                Trace.TraceInformation("Networking sent message alive");
                                 SendMessage(ipAddress, int.Parse(port), "Networking", "ALIVE");
                             }
                             if (_timeTrack.ContainsKey(new Tuple<string, int>(ipAddress, int.Parse(port))))
@@ -423,6 +445,7 @@ namespace MessengerNetworking.Communicator
                 catch (Exception e)
                 {
                     Debug.WriteLine(e.Message);
+                    Trace.TraceError("Networking " + e.Message);
                 }
             }
         }

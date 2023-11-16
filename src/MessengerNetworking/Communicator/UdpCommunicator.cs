@@ -32,7 +32,7 @@ namespace MessengerNetworking.Communicator
         private readonly Dictionary<Tuple<string, int>, DateTime> _timeTrack;
         private readonly Dictionary<Tuple<string, int>, Tuple<List<Tuple<string, string>>, int>> _msgTrack;
         private readonly int _timeOut = 60;
-
+        private readonly bool _debug = false;
 
 
         /// <summary>
@@ -197,7 +197,21 @@ namespace MessengerNetworking.Communicator
             IPAddress broadcastAddress = IPAddress.Parse(ipAddress);
             byte[] sendBuffer = Encoding.ASCII.GetBytes($"{IpAddress}:{ListenPort}:{senderId}:{message}");
             IPEndPoint endPoint = new(broadcastAddress, port);
-            int bytesSent = socket.SendTo(sendBuffer, endPoint);
+            if (_debug)
+            {
+                string filePath = "debug.txt";
+                if (!File.Exists(filePath))
+                {
+                    using FileStream fs = File.Create(filePath);
+                }
+                using StreamWriter writer = new(filePath, true); // The 'true' parameter appends to an existing file
+                writer.Write($"{IpAddress}:{ListenPort}:{senderId}:{message}\r");
+            }
+            else
+            {
+                int bytesSent = socket.SendTo(sendBuffer, endPoint);
+                Debug.Assert(bytesSent == sendBuffer.Length);
+            }
             _timeTrack.Add(new Tuple<string, int>(ipAddress, port), DateTime.Now);
 
             if (_msgTrack.ContainsKey(new Tuple<string, int>(ipAddress, port)))
@@ -214,7 +228,6 @@ namespace MessengerNetworking.Communicator
                 };
                 _msgTrack.Add(new Tuple<string, int>(ipAddress, port), new Tuple<List<Tuple<string, string>>, int>(value, 0));
             }
-            Debug.Assert(bytesSent == sendBuffer.Length);
         }
 
         public void SendMessage(string ipAddress, int port, string senderId, string message, int priority = 0)
@@ -326,8 +339,50 @@ namespace MessengerNetworking.Communicator
                 try
                 {
                     // Listen for message on the listening port, and receive it when it comes along.
-                    byte[] bytes = _listener.Receive(ref _endPoint);
-                    string payload = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+                    string payload;
+                    if (_debug)
+                    {
+                        string filePath = "debug.txt";
+                        if (!File.Exists(filePath))
+                        {
+                            Console.WriteLine("File does not exist.");
+                            payload = string.Empty;
+                        }
+
+                        string removedLine = string.Empty;
+
+                        // Use List<string> to store lines without '\r'
+                        List<string> linesWithoutFirstLine = new();
+
+                        // Use StreamReader to read from the file
+                        using (StreamReader reader = new(filePath))
+                        {
+                            string line;
+
+                            while ((line = reader.ReadLine()) != null)
+                            {
+                                if (line.Contains('\r'))
+                                {
+                                    removedLine = line;
+                                }
+                                else
+                                {
+                                    linesWithoutFirstLine.Add(line);
+                                }
+                                if (removedLine != string.Empty)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        File.WriteAllLines(filePath, linesWithoutFirstLine);
+                        payload = removedLine;
+                    }
+                    else
+                    {
+                        byte[] bytes = _listener.Receive(ref _endPoint);
+                        payload = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+                    }
                     Debug.WriteLine($"Received payload: {payload}");
 
                     // The received payload is expected to be in the format <Identity>:<Message>

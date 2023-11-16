@@ -9,7 +9,7 @@ namespace MessengerWhiteboard
     {
         public string ShapeType { get; set; }
         public Geometry Geometry { get; set; }
-        public int StrokeThickness { get; set; }
+        public double StrokeThickness { get; set; }
         public int ZIndex { get; set; }
 
         public Brush Fill { get; set; }

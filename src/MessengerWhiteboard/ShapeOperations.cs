@@ -7,7 +7,7 @@ namespace MessengerWhiteboard
 {
     public partial class ViewModel
     {
-        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, int strokeThickness, string textData = "Text")
+        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, string textData = "Text")
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;

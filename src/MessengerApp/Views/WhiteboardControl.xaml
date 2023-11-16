@@ -263,7 +263,7 @@
 										VerticalAlignment="Center"
 										Margin="10 0 0 0">
                                             </TextBlock>
-                                            <Slider x:Name="PenThicknessSlider" Foreground="Black" Minimum="1" Maximum="21" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" Value="{Binding StrokeThickness, Mode=TwoWay}"></Slider>
+                                            <Slider x:Name="PenThicknessSlider" Foreground="Black" Minimum="1" Maximum="8" TickPlacement="BottomRight" TickFrequency="3" Margin="5 5 5 5" Value="{Binding StrokeThickness, Mode=TwoWay}"></Slider>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
@@ -590,7 +590,7 @@
                 </Grid>
 
                 <DockPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding ShapeItems, Mode=TwoWay}">
+                    <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding ShapeItems, Mode=TwoWay}" ClipToBounds="True">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Canvas  Name="mc2"
@@ -608,11 +608,11 @@
 
                             <DataTemplate>
                                 <Path Uid="{Binding Id}"
-                              Data="{Binding Geometry}"
-                              Fill="{Binding Fill}"
-					          Stroke="{Binding Stroke}"
-                              StrokeThickness="{Binding StrokeThickness}"
-                              />
+                                      Data="{Binding Geometry}"
+                                      Fill="{Binding Fill}"
+					                  Stroke="{Binding Stroke}"
+                                      StrokeThickness="{Binding StrokeThickness}"
+                                />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.ItemContainerStyle>

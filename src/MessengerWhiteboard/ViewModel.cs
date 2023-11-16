@@ -34,7 +34,7 @@ namespace MessengerWhiteboard
         //shape attributes
         public Brush fillBrush = Brushes.Transparent;
         public Brush strokeBrush = Brushes.Black;
-        public int StrokeThickness = 1;
+        public double StrokeThickness { get; set; }
         //Brush borderBrush;                                 // stores color of the border
         int _strokeWidth;                                       // thickness of the stroke
         public IShapeReceiver machine;
@@ -50,6 +50,7 @@ namespace MessengerWhiteboard
             //this.fillBrush = null;                                            // stores color of the object (fill colour)
             //this.borderBrush = Brushes.Black;                                 // stores color of the border
             _strokeWidth = 1;
+            StrokeThickness = 1;
         }
 
         private static ViewModel? s_instance;

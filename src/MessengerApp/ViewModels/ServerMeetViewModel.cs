@@ -15,19 +15,16 @@ namespace MessengerApp.ViewModels
     {
         public ICommand NavigateHomeCommand { get; }
 
-        private readonly ServerSessionController _server;
+        private readonly IServerSessionController _server;
         public int Port { get; set; }
         public string IP { get; set; }
 
         public ServerMeetViewModel(NavigationStore navigationStore)
         {
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
-            _server = new();
-            _server.SetDetails(navigationStore.AuthResult.UserName, navigationStore.AuthResult.UserEmail, navigationStore.AuthResult.UserImage);
-
+            _server = DashboardFactory.GetServerSessionController();
             Port = _server.ConnectionDetails.Port;
             IP = _server.ConnectionDetails.IpAddress;
-
         }
     }
 }

@@ -8,8 +8,8 @@
 * Project     = White-Board
 *
 * Description = This represents Cliend Side Implementation. 
-*               It handles client-side operations when receiving shapes or 
-*               messages from the ViewModel and send them to the Server.
+*               It handles client-side operations when receiving shapes or messages
+*               from the ViewModel and send them to the Serverusing interface.
 ***************************/
 
 using System.Diagnostics;
@@ -22,6 +22,7 @@ namespace MessengerWhiteboard
         IClientCommunicator _communicator;
         readonly Serializer _serializer;
         private static ClientState? s_instance;
+        ClientSnapshotHandler _clientSnapshotHandler;
 
         /// <summary>
         ///     Making sure there is a single instance of the client on a particular machine.
@@ -41,15 +42,26 @@ namespace MessengerWhiteboard
         {
             _communicator = ClientCommunicator.Instance;
             _serializer = new Serializer();
+            _clientSnapshotHandler = new ClientSnapshotHandler();
             InitializeUser();
         }
 
-        public string _userID;
-
-        // Sets the User ID
-        public void SetUserId(string userID)
+        /// <summary>
+        ///     This function sets a Client Communicator for testing purpose.
+        /// </summary>
+        /// <param name="communicator">Client Communicator needed to be tested.</param>
+        public void SetCommunicator(IClientCommunicator communicator)
         {
-            _userID = userID;
+            _communicator = communicator;
+        }
+
+        /// <summary>
+        ///     This function gives client snap-shot handler for testing purpose.
+        /// </summary>
+        /// <returns>Snap-shot handler.</returns>
+        public ClientSnapshotHandler GetSnapshotHandler()
+        {
+            return _clientSnapshotHandler;
         }
 
         /// <summary>
@@ -72,22 +84,66 @@ namespace MessengerWhiteboard
             _communicator.SendToServer(wBShape);
         }
 
+        public string _userId;
+
+        /// <summary>
+        ///     This function sets the User ID.
+        /// </summary>
+        /// <param name="userID">Value of the user ID to be set.</param>
+        public void SetUserId(string userId)
+        {
+            _userId = userId;
+        }
+
         /// <summary>
         ///     When a new user joins the session, their details, including the user ID,
         ///     are relayed to the server using the client communicator in the form of a WBShape.
         /// </summary>
         public void InitializeUser()
         {
-            WBShape wBShape = new(null, Operation.NewUser, _userID);
+            WBShape wBShape = new(null, Operation.NewUser, _userId);
             _communicator.SendToServer(wBShape);
         }
 
         /// <summary>
-        ///     This function sets a Client Communicator for testing purpose.
+        ///     This function returns the Zindex of the last shape.
         /// </summary>
-        public void SetCommunicator(IClientCommunicator communicator)
+        /// <param name="lastShape">Shape whose Zindex is needed.</param>
+        /// <returns>Zindex.</returns>
+        public int GetMaxZindex(ShapeItem lastShape)
         {
-            _communicator = communicator;
+            return lastShape.ZIndex;
+        }
+
+        /// <summary>
+        ///     This function sets the snapshot number.
+        /// </summary>
+        /// <param name="snapshotNumber">Value of the snap-shot number to be set.</param>
+        public void SetSnapshotNumber(int snapshotNumber)
+        {
+            _clientSnapshotHandler.SnapshotNumber = snapshotNumber;
+        }
+
+        /// <summary>
+        ///     This function restores a snap-shot, for which we use RestoreSnapshot function.
+        /// </summary>
+        /// <param name="snapshotNumber">The snap-shot number of the snap-shot which needs to be restoreed.</param>
+        /// <param name="userId">User ID of the user who wants to restore the snap-shot.</param>
+        /// <returns>Null value.</returns>
+        public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId)
+        {
+            _clientSnapshotHandler.RestoreSnapshot(snapshotNumber, userId);
+            return null;
+        }
+
+        /// <summary>
+        ///     This function saves the snap-shot, for which we use SaveSnapshot function.
+        /// </summary>
+        /// <param name="userId">User ID of the user who wants to save the snap-shot.</param>
+        /// <returns>Snap-shot number of the new snap-shot created.</returns>
+        public int OnSaveMessage(string userId)
+        {
+            return _clientSnapshotHandler.SaveSnapshot(userId);
         }
     }
 }

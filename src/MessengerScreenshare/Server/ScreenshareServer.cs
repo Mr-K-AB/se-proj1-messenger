@@ -108,6 +108,39 @@ namespace MessengerScreenshare.Server
                 Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the packet: {e.Message}", withTimeStamp: true));
             }
         }
+
+
+        /*private StringBuilder _receivedDataBuffer = new StringBuilder();
+
+        // Assuming this method is called when data is received from a client
+        private void OnDataReceived(string receivedFragment)
+        {
+            _receivedDataBuffer.Append(receivedFragment);
+
+            // Check if the complete data has been received
+            if (IsCompleteDataReceived(_receivedDataBuffer.ToString()))
+            {
+                // Process the complete data
+                string completeData = _receivedDataBuffer.ToString();
+                DataPacket dataPacket = JsonSerializer.Deserialize<DataPacket>(completeData);
+
+                // Your analysis logic here using dataPacket
+                // ...
+
+                // Clear the buffer for the next set of fragments
+                _receivedDataBuffer.Clear();
+            }
+        }
+
+        private bool IsCompleteDataReceived(string data)
+        {
+            // Your logic to determine if the complete data has been received
+            // For simplicity, you can check if the data ends with a specific marker or pattern
+            return data.EndsWith("EndOfDataMarker");
+        }
+        */
+
+
         private void RegisterClient(int clientId, string clientName)
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
@@ -236,7 +269,7 @@ namespace MessengerScreenshare.Server
                 {
                     try
                     {
-                        client.UpdateTimer();
+                        client.UpdateTimer(client._timer!);
                         BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
 
                         Trace.WriteLine(Utils.GetDebugMessage($"Timer updated for the client with Id: {clientId}", withTimeStamp: true));

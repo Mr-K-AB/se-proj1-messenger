@@ -76,7 +76,7 @@ namespace MessengerScreenshare.Client
         /// </summary>
         public ScreenshareClientViewModel()
         {
-            _model = ScreenshareClient.GetInstance(false);
+            _model = ScreenshareClient.GetInstance(this, false);
             _sharingScreen = false;
         }
 

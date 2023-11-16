@@ -22,6 +22,7 @@ namespace MessengerScreenshare
             Id = 0;
             Name = "";
             Header = "";
+            Offset = 0;
             Data = "";
         }
 
@@ -43,11 +44,12 @@ namespace MessengerScreenshare
         /// Data contained in the packet.
         /// </param>
         [JsonConstructor]
-        public DataPacket(int id, string name, string header, string data)
+        public DataPacket(int id, string name, string header, int offset, string data)
         {
             Id = id;
             Name = name;
             Header = header;
+            Offset = offset;
             Data = data;
         }
 
@@ -67,6 +69,7 @@ namespace MessengerScreenshare
         /// Possible headers from the client: Register, Deregister, Image, Confirmation
         /// </summary>
         public string Header { get; private set; }
+        public int Offset { get; private set; }
 
         /// <summary>
         /// Gets the data field of the packet.

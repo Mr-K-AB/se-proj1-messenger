@@ -80,9 +80,13 @@
                         </Border>
                     </Grid>
                     <Grid Grid.Row="2">
-                        <Border BorderBrush="LightGray" BorderThickness="5" CornerRadius="10" Margin="3 3 3 0">
-                            <Button Width="auto" Content="Refresh" Background="LightGray" Command="{Binding SessionRefreshCommand}" BorderThickness="0"/>
-                        </Border>
+                        <Button Width="auto" Content="Refresh" Background="LightGray" Command="{Binding SessionRefreshCommand}" BorderThickness="0" Margin="3 3 3 0">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="15"></Setter>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
                     </Grid>
                 </Grid>
                 <Grid Grid.Column="3">

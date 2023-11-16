@@ -35,9 +35,8 @@ namespace MessengerTestUI.ViewModels
                 navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
                 NavigateServerDashboardCommand = new NavigateServerDashboardCommand(navigationStore, _dashboardViewModel);
 
-                Port = _server.ConnectionDetails.Port;
-                IP = _server.ConnectionDetails.IpAddress;
-
+            Port = _server.ConnectionDetails.Port;
+            IP = _server.ConnectionDetails.IpAddress;
         }
 
         private void NavigationStore_SubViewModelChanged()

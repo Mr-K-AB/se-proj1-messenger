@@ -16,10 +16,7 @@ namespace MessengerApp.ViewModels
         public ICommand NavigateHomeCommand { get; }
         public ICommand NavigateServerDashboardCommand { get; }
 
-        private readonly NavigationStore _navigationStore;
-        private readonly DashboardServerViewModel _dashboardViewModel;
-        private ViewModelBase SubViewModel => _navigationStore.SubViewModel;
-        private readonly ServerSessionController _server = DashboardFactory.GetServerSessionController();
+        private readonly IServerSessionController _server;
         public int Port { get; set; }
         public string IP { get; set; }
 
@@ -27,19 +24,9 @@ namespace MessengerApp.ViewModels
         {
             _navigationStore = navigationStore;
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
-            _dashboardViewModel = new DashboardServerViewModel(navigationStore);
-            _server.SetDetails(navigationStore.AuthResult.UserName, navigationStore.AuthResult.UserEmail, navigationStore.AuthResult.UserImage);
-            navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
-            NavigateServerDashboardCommand = new NavigateServerDashboardCommand(navigationStore, _dashboardViewModel);
-
+            _server = DashboardFactory.GetServerSessionController();
             Port = _server.ConnectionDetails.Port;
             IP = _server.ConnectionDetails.IpAddress;
-
-        }
-
-        private void NavigationStore_SubViewModelChanged()
-        {
-            OnPropertyChanged(nameof(SubViewModel));
         }
     }
 }

@@ -27,14 +27,7 @@ namespace MessengerTestUI.Commands
 
         public void Execute(object? parameter)
         {
-            if (_dashboardServerViewModel.Server.SessionInfo.SessionMode == SessionMode.Lab) 
-            {
-                _dashboardServerViewModel.Server.SetExamMode();
-            }
-            else
-            {
-                _dashboardServerViewModel.Server.SetLabMode();
-            }
+
         }
     }
 }

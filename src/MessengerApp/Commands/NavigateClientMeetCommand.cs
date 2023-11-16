@@ -15,7 +15,7 @@ namespace MessengerApp.Commands
         private readonly NavigationStore _navigationStore;
         private readonly HomeViewModel _homeViewModel;
 
-        private ClientSessionController _client = DashboardFactory.GetClientSessionController();
+        private IClientSessionController _client;
         private bool _connected = false;
 
         public NavigateClientMeetCommand(NavigationStore navigationStore, HomeViewModel homeViewModel)
@@ -27,7 +27,6 @@ namespace MessengerApp.Commands
         {
 
             _client = DashboardFactory.GetClientSessionController();
-            
 
             _connected = _client.ConnectToServer(_homeViewModel.JoinMeetIP,
                 _homeViewModel.JoinMeetPort,
@@ -41,12 +40,6 @@ namespace MessengerApp.Commands
                 _navigationStore.CurrentViewModel = new ClientMeetViewModel(_navigationStore);
 
             }
-            else
-            {
-                // relay error to ui.
-            }
-
-
         }
     }
 }

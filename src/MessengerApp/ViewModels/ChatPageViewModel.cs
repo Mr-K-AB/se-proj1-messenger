@@ -53,7 +53,10 @@ namespace MessengerApp.ViewModels
         public static int UserId { get; private set; }
 
         public static string UserName { get; private set; }
+
+        public static string ServerIP { get; private set; }
         
+        public static int ServerPort { get; private set; }
         /// <summary>
         ///     The received message
         /// </summary>
@@ -106,7 +109,7 @@ namespace MessengerApp.ViewModels
                 MsgToSend.ReplyThreadID = ThreadIds[replyMsgId];
             }
 
-            _model.ClientSendData(MsgToSend);
+            _model.ClientSendData(MsgToSend, ServerIP, ServerPort);
         }
 
         /// <summary>
@@ -116,7 +119,7 @@ namespace MessengerApp.ViewModels
         /// <param name="msgId">  </param>
         public void DownloadFile(string savePath, int msgId)
         {
-            _model.ClientDownload(msgId, savePath);
+            _model.ClientDownload(msgId, savePath, ServerIP, ServerPort);
         }
 
         /// <summary>
@@ -126,7 +129,7 @@ namespace MessengerApp.ViewModels
         /// <param name="newMsg"> The updated Chat Message  </param>
         public void EditChatMsg(int msgID, string newMsg)
         {
-            _model.ClientEdit(msgID, newMsg);
+            _model.ClientEdit(msgID, newMsg, ServerIP, ServerPort);
         }
 
         /// <summary>
@@ -135,7 +138,7 @@ namespace MessengerApp.ViewModels
         /// <param name="msgID"> </param>
         public void DeleteChatMsg(int msgID)
         {
-            _model.ClientDelete(msgID);
+            _model.ClientDelete(msgID, ServerIP, ServerPort);
         }
 
         /// <summary>
@@ -144,7 +147,7 @@ namespace MessengerApp.ViewModels
         /// <param name="msgId"> </param>
         public void StarChatMsg(int msgId)
         {
-            _model.ClientStar(msgId);
+            _model.ClientStar(msgId, ServerIP, ServerPort);
         }
 
 
@@ -197,6 +200,8 @@ namespace MessengerApp.ViewModels
 
                                   UserId = _model.GetUserID();
                                   UserName = _model.GetUserName();
+                                  ServerIP = _model.GetIP();
+                                  ServerPort = _model.GetPort();
 
                                   ReceivedMsg = new()
                                   {
@@ -217,6 +222,8 @@ namespace MessengerApp.ViewModels
 
                                   UserId = _model.GetUserID();
                                   UserName = _model.GetUserName();
+                                  ServerIP = _model.GetIP();
+                                  ServerPort = _model.GetPort();
 
 
                                   // Creating object for the received message

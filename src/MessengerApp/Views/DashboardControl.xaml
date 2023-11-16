@@ -7,7 +7,7 @@
              xmlns:local="clr-namespace:MessengerApp.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Grid Background="LightGray">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
             <RowDefinition Height="10*" />
@@ -17,11 +17,11 @@
 
                 <ColumnDefinition Width="7.5*" />
 
-                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition Width="2*"/>
 
-                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="11*"/>
 
-                <ColumnDefinition Width="3.5*"/>
+                <ColumnDefinition Width="2*"/>
 
             </Grid.ColumnDefinitions>
 
@@ -30,22 +30,36 @@
                     <ColumnDefinition Width="2.7*" />
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" Grid.ColumnSpan="2">
-                    <TextBlock Width="auto" Background="Gray" Text="{Binding Mode}" TextAlignment="Left" Margin="5 5 5 5 " />
+                <Grid Grid.Column="0" Grid.ColumnSpan="2" Margin="3">
+                    <Border CornerRadius="10" BorderThickness="5" BorderBrush="Gray">
+                        <TextBlock Background="Gray" Text="{Binding Mode}" TextAlignment="Left"/>
+                    </Border>
                 </Grid>
                 <Grid Grid.Column="1">
-                    <Button Width="auto" Content="Switch" Background="Red" Margin="5 7 7 7 "   Command="{Binding SwitchModeCommand}"/>
+                    <Button Width="auto" Content="Switch" Background="LightBlue" Command="{Binding SwitchModeCommand}" BorderThickness="0"  Margin="5 5 5 5">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="5"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
                 </Grid>
-
-
             </Grid>
 
-            <Grid Grid.Column="2" >
-                <Button Width="auto" Content="Refresh" Background="Gray" Margin="5 5 0 5 "  Command="{Binding RefreshCommand}"/>
+            <Grid Grid.Column="1" >
+                <Border  CornerRadius="2" BorderThickness="3" BorderBrush="Gray" Margin="5 5 5 5">
+                    <Button Width="auto" Background="Gray" Command="{Binding RefreshCommand}" BorderThickness="0" Click="Button_Click" ToolTip="Refresh">
+                        <Image Source="../Images/refresh.png" Height="23" />
+                    </Button>
+                </Border>
             </Grid>
 
             <Grid Grid.Column="3" >
-                <Button Width="auto" Content="End Meet" Background="Red" Margin="0 5 5 5 " Command="{Binding EndMeetCommand}"/>
+                <Border  CornerRadius="6" BorderThickness="5" BorderBrush="Red" Margin="5 5 5 5">
+                    <Button Width="auto" Background="Red" Command="{Binding EndMeetCommand}" BorderThickness="0" ToolTip="End Meet">
+                        <Image Source="../Images/end-meet.png" Width="40"/>
+                    </Button>
+                </Border>
             </Grid>
 
         </Grid>
@@ -68,7 +82,23 @@
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" >
-                    <TextBlock Width="auto" Background="Wheat" Text="{Binding Summary}" TextAlignment="Center" Margin="5 5 5 5"/>
+                    <Border BorderBrush="Wheat" BorderThickness="5" CornerRadius="10" Margin="3 3 3 0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Width="auto" Background="Wheat" Text="Chat Summary" TextAlignment="Center" FontWeight="Bold"/>
+                            <ScrollViewer Grid.Row="1" Width="auto" VerticalScrollBarVisibility="Auto">
+                                <TextBlock TextWrapping="Wrap"
+                                           Width="auto" 
+                                           Height="auto" 
+                                           Background="Wheat" 
+                                           Text="{Binding Summary}"
+                                           TextAlignment="Center" />
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
                 </Grid>
                 <Grid Grid.Row="1" >
                     <Grid.ColumnDefinitions>
@@ -97,78 +127,88 @@
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" >
-
-                    <lvc:CartesianChart Background="White" Margin="5 5 5 5" >
-                        <lvc:CartesianChart.Series>
-                            <lvc:ColumnSeries  Title="User Counts" Values="{Binding UserCountList}"/>
-                        </lvc:CartesianChart.Series>
-                        <lvc:CartesianChart.AxisX>
-                            <lvc:Axis Title="TimeStamps" Labels="{Binding TimeStampsList}">
-                                <lvc:Axis.Separator>
-                                    <lvc:Separator Step="1"/>
-                                </lvc:Axis.Separator>
-                            </lvc:Axis>
-                        </lvc:CartesianChart.AxisX>
-                        <lvc:CartesianChart.AxisY>
-                            <lvc:Axis Title="User Count"/>
-                        </lvc:CartesianChart.AxisY>
-                    </lvc:CartesianChart>
+                    <Border BorderThickness="5" BorderBrush="White" CornerRadius="10" Margin="0 2 0 2">
+                        <lvc:CartesianChart Background="White">
+                            <lvc:CartesianChart.Series>
+                                <lvc:LineSeries  Title="Users" Values="{Binding UserCountList}" StrokeThickness="3" Stroke="Gray">
+                                    <lvc:LineSeries.Fill>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                            <GradientStop Color="Gray" Offset="0"/>
+                                            <GradientStop Color="White" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </lvc:LineSeries.Fill>
+                                </lvc:LineSeries>
+                            </lvc:CartesianChart.Series>
+                            <lvc:CartesianChart.AxisX>
+                                <lvc:Axis Title="Time" Labels="{Binding TimeStampsList}">
+                                    <lvc:Axis.Separator>
+                                        <lvc:Separator StrokeThickness="0" Step="1"/>
+                                    </lvc:Axis.Separator>
+                                </lvc:Axis>
+                            </lvc:CartesianChart.AxisX>
+                            <lvc:CartesianChart.AxisY>
+                                <lvc:Axis Title="Users" MinValue="0">
+                                    <lvc:Axis.Separator>
+                                        <lvc:Separator StrokeThickness="1"/>
+                                    </lvc:Axis.Separator>
+                                </lvc:Axis>
+                            </lvc:CartesianChart.AxisY>
+                        </lvc:CartesianChart>
+                    </Border>
                 </Grid>
-                <Grid Grid.Row="2" >
-
-                    <lvc:CartesianChart Background="White" Margin="5 5 5 5">
-                        <lvc:CartesianChart.Series>
-                            <lvc:ColumnSeries Title="Chat Count" Values="{Binding ChatCountListForUserName}"/>
-                        </lvc:CartesianChart.Series>
-                        <lvc:CartesianChart.AxisX>
-                            <lvc:Axis Title="Users"  Labels="{Binding UserNameList}">
-                                <lvc:Axis.Separator>
-                                    <lvc:Separator Step="1"/>
-                                </lvc:Axis.Separator>
-                            </lvc:Axis>
-                        </lvc:CartesianChart.AxisX>
-                        <lvc:CartesianChart.AxisY>
-                            <lvc:Axis Title="Chat Count"/>
-                        </lvc:CartesianChart.AxisY>
-                    </lvc:CartesianChart>
+                    <Grid Grid.Row="2">
+                        <Border BorderThickness="5" BorderBrush="White" CornerRadius="10" Margin="0 2 0 5">
+                         <lvc:CartesianChart Background="White">
+                            <lvc:CartesianChart.Series>
+                                <!--<lvc:StackedColumnSeries Title="Chat Count" Values="{Binding ChatCountListForUserName}"/>-->
+                                <lvc:ColumnSeries Title="Chat Count" Values="10,220,30,40,50"/>
+                            </lvc:CartesianChart.Series>
+                            <lvc:CartesianChart.AxisX>
+                                <lvc:Axis Title="Users"  Labels="{Binding UserNameList}">
+                                    <lvc:Axis.Separator>
+                                        <lvc:Separator Step="1" StrokeThickness="0"/>
+                                    </lvc:Axis.Separator>
+                                </lvc:Axis>
+                            </lvc:CartesianChart.AxisX>
+                            <lvc:CartesianChart.AxisY>
+                                <lvc:Axis Title="Chat Count" MinValue="0"/>
+                            </lvc:CartesianChart.AxisY>
+                        </lvc:CartesianChart>                       
+                    </Border>
                 </Grid>
             </Grid>
-            <Grid Grid.Column="2" >
-
-                <ListView Grid.Column="0" x:Name="ContactsLV" Background="Pink" ItemsSource="{Binding Users}" d:ItemsSource="{d:SampleData ItemCount=5} ">
-                    <ListView.ItemTemplate>
-
-                        <DataTemplate>
-
-                            <Grid Margin="5, 10, 0, 10">
-
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <Ellipse Width="30" Height="30">
-                                    <Ellipse.Fill>
-                                        <ImageBrush ImageSource="{Binding UserPicturePath}" />
-                                    </Ellipse.Fill>
-                                </Ellipse>
-
-                                <Grid Grid.Column="1">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="1*"/>
-
-                                    </Grid.RowDefinitions>
-
-                                    <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"  Text="{Binding UserName}" Foreground="White" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Margin="5, 0, 0, 0" />
-
+            <Border Grid.Column="2" BorderBrush="Pink" BorderThickness="5" CornerRadius="10" Margin="3 3 3 3">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Participants" Background="Pink" TextAlignment="Center" FontWeight="Bold"/>
+                    <ListView Grid.Row="1" x:Name="ContactsLV" Background="Pink" ItemsSource="{Binding Users}" d:ItemsSource="{d:SampleData ItemCount=5}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="5, 10, 0, 10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Ellipse Width="30" Height="30">
+                                        <Ellipse.Fill>
+                                            <ImageBrush ImageSource="{Binding UserPicturePath}" />
+                                        </Ellipse.Fill>
+                                    </Ellipse>
+                                    <Grid Grid.Column="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="1*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"  Text="{Binding UserName}" Foreground="White" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Margin="5, 0, 0, 0" />
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </Grid>
-
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>

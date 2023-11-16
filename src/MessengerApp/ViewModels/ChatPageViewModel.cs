@@ -108,7 +108,8 @@ namespace MessengerApp.ViewModels
             {
                 MsgToSend.ReplyThreadID = ThreadIds[replyMsgId];
             }
-
+            UserId = _model.GetUserID();
+            UserName = _model.GetUserName();
             ServerIP = _model.GetIP();
             ServerPort = _model.GetPort();
             _model.ClientSendData(MsgToSend, ServerIP, ServerPort);

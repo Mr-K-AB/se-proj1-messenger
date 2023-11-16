@@ -2,12 +2,13 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
 {
     public partial class ViewModel
     {
-        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, int strokeThickness, string textData = "Text")
+        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, string textData = "Text")
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;
@@ -124,6 +125,8 @@ namespace MessengerWhiteboard
             {
                 Trace.WriteLine("EndShape: ", _tempShape.ShapeType);
                 machine.OnShapeReceived(_tempShape, Operation.Creation);
+                UndoStackElement undoStackElement = new(_tempShape, _tempShape, Operation.Creation);
+                InsertIntoStack(undoStackElement);
                 //tempShape.EditShape(tempShape.boundary.TopLeft, a);
                 //ShapeItems[ShapeItems.Count - 1] = tempShape;
             }

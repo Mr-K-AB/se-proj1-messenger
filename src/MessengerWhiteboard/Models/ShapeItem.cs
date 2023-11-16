@@ -3,13 +3,13 @@ using System.Windows;
 using System.Windows.Media;
 
 
-namespace MessengerWhiteboard
+namespace MessengerWhiteboard.Models
 {
     public class ShapeItem
     {
         public string ShapeType { get; set; }
         public Geometry Geometry { get; set; }
-        public int StrokeThickness { get; set; }
+        public double StrokeThickness { get; set; }
         public int ZIndex { get; set; }
 
         public Brush Fill { get; set; }
@@ -45,7 +45,7 @@ namespace MessengerWhiteboard
                 //Geometry geometry = new RectangleGeometry(boundingBox);
                 boundary = boundingBox;
             }
-            else if(ShapeType == "Ellipse")
+            else if (ShapeType == "Ellipse")
             {
                 Rect boundingBox = new(a, b);
                 //Geometry.SetValue(EllipseGeometry., boundingBox);
@@ -53,12 +53,12 @@ namespace MessengerWhiteboard
                 boundary = boundingBox;
                 Geometry = geometry;
             }
-            else if(ShapeType == "Curve")
+            else if (ShapeType == "Curve")
             {
                 (Geometry as PathGeometry).AddGeometry(new LineGeometry(points[^1], b));
                 points.Add(b);
             }
-            else if(ShapeType == "Line")
+            else if (ShapeType == "Line")
             {
                 Geometry = new LineGeometry(a, b);
                 points[^1] = b;
@@ -70,7 +70,7 @@ namespace MessengerWhiteboard
             Rect boundingBox = new(a, b);
             double dX = boundingBox.X - boundary.X;
             double dY = boundingBox.Y - boundary.Y;
-            if(Geometry.Transform is TranslateTransform)
+            if (Geometry.Transform is TranslateTransform)
             {
                 dX = (Geometry.Transform as TranslateTransform).X + boundingBox.X - boundary.X;
                 dY = (Geometry.Transform as TranslateTransform).Y + boundingBox.Y - boundary.Y;
@@ -85,11 +85,11 @@ namespace MessengerWhiteboard
 
         public override bool Equals(object? obj)
         {
-            if(obj == null)
+            if (obj == null)
             {
                 return false;
             }
-            if(obj is ShapeItem)
+            if (obj is ShapeItem)
             {
                 ShapeItem shape = obj as ShapeItem;
                 return Id == shape.Id;

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace MessengerWhiteboard
+namespace MessengerWhiteboard.Models
 {
     public class SerializableShapeItem
     {
@@ -15,8 +15,8 @@ namespace MessengerWhiteboard
 
         public Color color { get; set; }
         public int ZIndex { get; set; }
-        public int StrokeThickness { get; set; }
+        public double StrokeThickness { get; set; }
 
-        public List<Point> points{ get; set;}
+        public List<Point> points { get; set; }
     }
 }

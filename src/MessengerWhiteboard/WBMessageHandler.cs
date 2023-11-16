@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Threading;
 using MessengerNetworking.NotificationHandler;
+using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
 {

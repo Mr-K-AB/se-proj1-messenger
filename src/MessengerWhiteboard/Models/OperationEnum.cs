@@ -7,11 +7,11 @@
 * 
 * Project     = White-Board
 *
-* Description = This file contains all the operations that can be executes on the 
-*               Whiteboard, and includes certain messages that need to be conveyed.
+* Description = This file contains all the operations that can be executed on the 
+*               Whiteboard, along with passing of messages.
 ***************************/
 
-namespace MessengerWhiteboard
+namespace MessengerWhiteboard.Models
 {
     /// <summary>
     ///         Type of operations that can be performed on the ShapeItems

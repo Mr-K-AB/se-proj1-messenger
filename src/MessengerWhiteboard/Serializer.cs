@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using MessengerWhiteboard.Models;
 using Newtonsoft.Json;
 
 namespace MessengerWhiteboard
@@ -45,6 +46,42 @@ namespace MessengerWhiteboard
                 serializableShapes.Add(SerializeShape(shape));
             }
             return serializableShapes;
+        }
+
+        public string MarhsalShapes(List<ShapeItem> shapes)
+        {
+            if(shapes == null)
+            {
+                return null;
+            }
+            List<SerializableShapeItem> serializableShapes = new();
+            foreach (ShapeItem shape in shapes)
+            {
+                serializableShapes.Add(SerializeShape(shape));
+            }
+            return JsonConvert.SerializeObject(serializableShapes);
+        }
+
+        public List<ShapeItem> UnMarshalShapes(string jsonString)
+        {
+            try
+            {
+                List<SerializableShapeItem>? boardShapes = JsonConvert.DeserializeObject<List<SerializableShapeItem>>(
+                    jsonString
+                );
+                if(boardShapes == null)
+                {
+                    return null;
+                }
+                List<ShapeItem> result = DeserializeShapes(boardShapes);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("[Whiteboard] Error Occured: Serializer:DeserializeShapeItems");
+                Trace.WriteLine(ex.Message);
+            }
+            return null;
         }
 
         public string SerializeWBShape(WBShape shape)

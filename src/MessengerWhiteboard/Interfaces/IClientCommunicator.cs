@@ -11,7 +11,9 @@
 *               The Interface deals with sending objects across the network.
 ***************************/
 
-namespace MessengerWhiteboard
+using MessengerWhiteboard.Models;
+
+namespace MessengerWhiteboard.Interfaces
 {
     public interface IClientCommunicator
     {

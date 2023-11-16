@@ -12,10 +12,10 @@ namespace MessengerTestUI.Commands
     public class SwitchModeCommand : ICommand
     {
 
-        private readonly ServerMeetViewModel _serverMeetViewModel;
-        public SwitchModeCommand(ServerMeetViewModel viewModel)
+        private readonly DashboardServerViewModel _dashboardServerViewModel;
+        public SwitchModeCommand(DashboardServerViewModel viewModel)
         {
-            _serverMeetViewModel = viewModel;
+            _dashboardServerViewModel = viewModel;
         }
 
         public event EventHandler? CanExecuteChanged;
@@ -27,14 +27,7 @@ namespace MessengerTestUI.Commands
 
         public void Execute(object? parameter)
         {
-            if (_serverMeetViewModel.Server._sessionInfo.SessionMode == SessionMode.Lab) 
-            {
-                _serverMeetViewModel.Server.SetExamMode();
-            }
-            else
-            {
-                _serverMeetViewModel.Server.SetLabMode();
-            }
+
         }
     }
 }

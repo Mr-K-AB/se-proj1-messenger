@@ -15,14 +15,12 @@ namespace MessengerTestUI.ViewModels
     {
         public ICommand NavigateHomeCommand { get; }
 
-        public  ServerSessionController Server { get; set; }
+        public ServerSessionController Server { get; } = DashboardFactory.GetServerSessionController();
         public int Port { get; set; }
         public string IP { get; set; }
 
         public DashboardServerViewModel(NavigationStore navigationStore)
         {
-            NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
-            Server = new();
             Server.SetDetails(navigationStore.AuthResult.UserName, navigationStore.AuthResult.UserEmail, navigationStore.AuthResult.UserImage);
 
             Port = Server.ConnectionDetails.Port;
@@ -30,7 +28,7 @@ namespace MessengerTestUI.ViewModels
 
             Server.SessionUpdated += Server_SessionUpdated;
 
-            //SwitchModeCommand = new SwitchModeCommand(this);
+            SwitchModeCommand = new SwitchModeCommand(this);
 
             RefreshCommand = new RefreshCommand(this);
             EndMeetCommand = new EndMeetCommand(this);

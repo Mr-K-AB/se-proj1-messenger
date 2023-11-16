@@ -10,17 +10,17 @@ namespace MessengerTestUI.Commands
 {
     public class EndMeetCommand : ICommand
     {
-        private readonly ClientMeetViewModel? _clientMeetViewModel;
-        private readonly ServerMeetViewModel? _serverMeetViewModel;
+        private readonly DashboardClientViewModel? _dashboardClientViewModel;
+        private readonly DashboardServerViewModel? _dashboardServerViewModel;
         public EndMeetCommand(object viewModel) 
         {
-            if (viewModel is ClientMeetViewModel model)
+            if (viewModel is DashboardClientViewModel model)
             {
-                _clientMeetViewModel = model;
+                _dashboardClientViewModel = model;
             }
             else
             {
-                _serverMeetViewModel = (ServerMeetViewModel) viewModel;
+                _dashboardServerViewModel = (DashboardServerViewModel) viewModel;
             }
         }
 
@@ -33,8 +33,7 @@ namespace MessengerTestUI.Commands
 
         public void Execute(object? parameter)
         {
-            _clientMeetViewModel?.Client.SendExitSessionRequestToServer(null);
-            _serverMeetViewModel?.Server.EndSession();
+
         }
     }
 }

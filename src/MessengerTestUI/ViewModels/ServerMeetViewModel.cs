@@ -28,15 +28,15 @@ namespace MessengerTestUI.ViewModels
 
         public ServerMeetViewModel(NavigationStore navigationStore)
         {
-            _navigationStore = navigationStore;
-            NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
-            _dashboardViewModel = new DashboardServerViewModel(navigationStore);
-            _server.SetDetails(navigationStore.AuthResult.UserName, navigationStore.AuthResult.UserEmail, navigationStore.AuthResult.UserImage);
-            navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
-            NavigateServerDashboardCommand = new NavigateServerDashboardCommand(navigationStore, _dashboardViewModel);
+                _navigationStore = navigationStore;
+                NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
+                _dashboardViewModel = new DashboardServerViewModel(navigationStore);
+                _server.SetDetails(navigationStore.AuthResult.UserName, navigationStore.AuthResult.UserEmail, navigationStore.AuthResult.UserImage);
+                navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
+                NavigateServerDashboardCommand = new NavigateServerDashboardCommand(navigationStore, _dashboardViewModel);
 
-            Port = _server.ConnectionDetails.Port;
-            IP = _server.ConnectionDetails.IpAddress;
+                Port = _server.ConnectionDetails.Port;
+                IP = _server.ConnectionDetails.IpAddress;
 
         }
 

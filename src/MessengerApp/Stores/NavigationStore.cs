@@ -20,13 +20,31 @@ namespace MessengerApp.Stores
             }
         }
 
+        private ViewModelBase _subViewModel;
+        public ViewModelBase SubViewModel
+        {
+            get => _subViewModel;
+            set
+            {
+                _subViewModel = value;
+                OnSubViewModelChanged();
+            }
+        }
+
         public AuthenticationResult AuthResult { get; set; }
 
         public event Action CurrentViewModelChanged;
 
+        public event Action SubViewModelChanged;
+
         private void OnCurrentViewModelChanged()
         {
             CurrentViewModelChanged?.Invoke();
+        }
+
+        private void OnSubViewModelChanged()
+        {
+            SubViewModelChanged?.Invoke();
         }
     }
 }

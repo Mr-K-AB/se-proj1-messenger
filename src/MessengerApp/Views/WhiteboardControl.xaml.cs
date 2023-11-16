@@ -264,5 +264,20 @@ namespace MessengerApp.Views
             _viewModel.ClearScreen();
         }
 
+        private void Undo(object sender, RoutedEventArgs e)
+        {
+            _viewModel.CallUndo();
+        }
+
+        private void Redo(object sender, RoutedEventArgs e)
+        {
+            _viewModel.CallRedo();
+        }
+
+        //private void SaveMode(object sender, RoutedEventArgs e)
+        //{
+        //    _viewModel.SaveSession(new Random());
+        //}
+
     }
 }

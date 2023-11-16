@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
 {
@@ -124,6 +125,8 @@ namespace MessengerWhiteboard
             {
                 Trace.WriteLine("EndShape: ", _tempShape.ShapeType);
                 machine.OnShapeReceived(_tempShape, Operation.Creation);
+                UndoStackElement undoStackElement = new(_tempShape, _tempShape, Operation.Creation);
+                InsertIntoStack(undoStackElement);
                 //tempShape.EditShape(tempShape.boundary.TopLeft, a);
                 //ShapeItems[ShapeItems.Count - 1] = tempShape;
             }

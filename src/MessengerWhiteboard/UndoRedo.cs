@@ -12,6 +12,7 @@
 ***************************/
 
 using System.Diagnostics;
+using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
 {
@@ -64,7 +65,7 @@ namespace MessengerWhiteboard
             }
             else if (head.Operation == Operation.Deletion)
             {
-                head.NewShapeItem.ZIndex = machine.GetMaxZindex(head.NewShapeItem);
+                //head.NewShapeItem.ZIndex = machine.GetMaxZindex(head.NewShapeItem);
                 CreateIncomingShape(head.PreviousShapeItem);
                 modifiedObject.Operation = Operation.Creation;
             }

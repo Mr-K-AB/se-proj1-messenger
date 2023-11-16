@@ -12,16 +12,18 @@
 *               must be implemented by Server and Client.
 ***************************/
 
-namespace MessengerWhiteboard
+using MessengerWhiteboard.Models;
+
+namespace MessengerWhiteboard.Interfaces
 {
     public interface IShapeReceiver
     {
         void OnShapeReceived(ShapeItem shapeItem, Operation operation);
         void SetUserId(string userId);
         public int GetMaxZindex(ShapeItem lastShape);
-        public void SetSnapshotNumber(int snapshotNumber);
-        public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId);
-        public int OnSaveMessage(string userId);
+        //public void SetSnapshotNumber(int snapshotNumber);
+        //public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId);
+        //public int OnSaveMessage(string userId);
 
     }
 }

@@ -3,12 +3,15 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Media;
+using MessengerWhiteboard.Interfaces;
+using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
 {
     public partial class ViewModel : INotifyPropertyChanged
     {
         public BindingList<ShapeItem> ShapeItems { get; set; }
+        public BindingList<string> SavedSessions { get; set; }
         public ShapeItem? _tempShape;
 
         private string _userID = "tempUser";

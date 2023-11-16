@@ -14,6 +14,8 @@
 ***************************/
 
 using System.Diagnostics;
+using MessengerWhiteboard.Interfaces;
+using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
 {
@@ -22,7 +24,7 @@ namespace MessengerWhiteboard
         private static IServerCommunicator s_communicator;
         private readonly Serializer _serializer;
         private static ServerState s_instance;
-        private ServerSnapshotHandler _serverSnapshotHandler;
+        private readonly ServerSnapshotHandler _serverSnapshotHandler;
 
         /// <summary>
         ///     Making sure there is a single instance of the server on a particular machine.
@@ -52,10 +54,10 @@ namespace MessengerWhiteboard
         ///     This function gives server snap-shot handler for testing purpose.
         /// </summary>
         /// <returns>Snap-shot handler.</returns>
-        public ServerSnapshotHandler GetSnapshotHandler()
-        {
-            return _serverSnapshotHandler;
-        }
+        //public ServerSnapshotHandler GetSnapshotHandler()
+        //{
+        //    return _serverSnapshotHandler;
+        //}
 
 
         /// <summary>
@@ -81,12 +83,12 @@ namespace MessengerWhiteboard
         /// </summary>
         /// <param name="deserializedObject">Deserialized object received from the network.</param>
         /// <returns>Current snap-shot number.</returns>
-        public int CreateSnapshotHandler(WBShape deserializedObject)
-        {
-            int n = _serverSnapshotHandler.SaveBoard(_mapping.Values.ToList(), deserializedObject.UserId);
-            s_communicator.Broadcast(deserializedObject, null);
-            return n;
-        }
+        //public int CreateSnapshotHandler(WBShape deserializedObject)
+        //{
+        //    int n = _serverSnapshotHandler.SaveBoard(_mapping.Values.ToList(), deserializedObject.UserId);
+        //    s_communicator.Broadcast(deserializedObject, null);
+        //    return n;
+        //}
 
 
         /// <summary>
@@ -166,9 +168,9 @@ namespace MessengerWhiteboard
         ///     This function sets the snapshot number.
         /// </summary>
         /// <param name="snapshotNumber">Value of the snap-shot number to be set.</param>
-        public void SetSnapshotNumber(int snapshotNumber)
+        public void SetSnapshot(string ssid)
         {
-            _serverSnapshotHandler.SnapshotNumber = snapshotNumber;
+            _serverSnapshotHandler.SnapshotId = ssid;
         }
 
 
@@ -182,17 +184,17 @@ namespace MessengerWhiteboard
         /// <param name="snapshotNumber">The snap-shot number of the snap-shot which needs to be restoreed.</param>
         /// <param name="userId">User ID of the user who wants to restore the snap-shot.</param>
         /// <returns>The restored loaded shapes.</returns>
-        public List<ShapeItem> OnLoadMessage(int snapshotNumber, string userId)
+        public List<ShapeItem> OnLoadMessage(string ssid)
         {
-            WBShape deserializedObject = new(null, Operation.RestoreSnapshot, userId, snapshotNumber);
+            WBShape deserializedObject = new(null, Operation.RestoreSnapshot);
 
-            Trace.WriteLine("[Whiteboard] ServerState.RestoreSnapshotHandler: Restoring Snapshot " + deserializedObject.SnapshotNumber);
+            Trace.WriteLine("[Whiteboard] ServerState.RestoreSnapshotHandler: Restoring Snapshot " + deserializedObject.SnapshotID);
             Trace.WriteLine("[Whiteboard] " + GetServerListSize());
 
-            List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
-            List<SerializableShapeItem> serializableShapeItems = _serializer.SerializeShapes(loadedShapes);
+            List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadSession(deserializedObject.SnapshotID);
+            //List<SerializableShapeItem> serializableShapeItems = _serializer.SerializeShapes(loadedShapes);
 
-            WBShape wBShape = new(serializableShapeItems, Operation.RestoreSnapshot, deserializedObject.UserId);
+            //WBShape wBShape = new(serializableShapeItems, Operation.RestoreSnapshot, deserializedObject.UserId);
 
             BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
             return loadedShapes;
@@ -205,11 +207,17 @@ namespace MessengerWhiteboard
         /// </summary>
         /// <param name="userId">User ID of the user who wants to save the snap-shot.</param>
         /// <returns>Snap-shot number of the new snap-shot created.</returns>
-        public int OnSaveMessage(string userId)
+        public string OnSaveMessage(string ssid)
         {
-            int snapshotNumber = _serverSnapshotHandler.SnapshotNumber + 1;
-            WBShape wBShape = new(null, Operation.CreateSnapshot, userId, snapshotNumber);
-            return CreateSnapshotHandler(wBShape);
+            WBShape wBShape = new(null, Operation.CreateSnapshot, "0", ssid);
+            return CreateSnapshot(wBShape);
+        }
+
+        public string CreateSnapshot(WBShape wBShape)
+        {
+            string s = _serverSnapshotHandler.SaveSession(wBShape.SnapshotID, _mapping.Values.ToList());
+
+            return s;
         }
 
 

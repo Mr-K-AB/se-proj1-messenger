@@ -11,7 +11,7 @@
 *               Whiteboard, along with passing of messages.
 ***************************/
 
-namespace MessengerWhiteboard
+namespace MessengerWhiteboard.Models
 {
     /// <summary>
     ///         Type of operations that can be performed on the ShapeItems

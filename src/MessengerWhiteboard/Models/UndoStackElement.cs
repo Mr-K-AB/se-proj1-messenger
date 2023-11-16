@@ -10,7 +10,7 @@
 * Description = This file contains the elements for Undo and Redo Stacks. 
 ***************************/
 
-namespace MessengerWhiteboard
+namespace MessengerWhiteboard.Models
 {
     public class UndoStackElement
     {

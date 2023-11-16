@@ -15,12 +15,12 @@ namespace MessengerApp.ViewModels
     {
         public ICommand NavigateHomeCommand { get; }
 
-        private readonly ClientSessionController _client;
+        private readonly IClientSessionController _client;
         public int Port { get; set; }
         public string IP { get; set; }
 
 
-        public ClientMeetViewModel(NavigationStore navigationStore, ClientSessionController client)
+        public ClientMeetViewModel(NavigationStore navigationStore, IClientSessionController client)
         {
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
 

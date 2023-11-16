@@ -18,5 +18,7 @@ namespace MessengerDashboard.Server
         /// </summary>
         event EventHandler<SessionUpdatedEventArgs> SessionUpdated;
 
+        public ConnectionDetails ConnectionDetails { get; }
+
     }
 }

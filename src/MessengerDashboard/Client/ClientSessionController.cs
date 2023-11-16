@@ -22,31 +22,29 @@ using MessengerDashboard.Client.Events;
 using MessengerNetworking.Factory;
 using MessengerScreenshare.ScreenshareFactory;
 using MessengerScreenshare.Client;
+using MessengerContent.Client;
 
 namespace MessengerDashboard.Client
 {
-    public class ClientSessionController : INotificationHandler
+    public class ClientSessionController : IClientSessionController
     {
         private readonly ICommunicator _communicator = Factory.GetInstance();
 
         private readonly ManualResetEvent _connectionEstablished = new(false);
 
+        private readonly IContentClient _contentClient = ContentClientFactory.GetInstance();
         private readonly string _moduleIdentifier = "Dashboard";
 
+        private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
         private readonly Serializer _serializer = new();
 
         private readonly ManualResetEvent _sessionExited = new(false);
-
-        private readonly SessionMode _sessionMode;
 
         private string _serverIp = string.Empty;
 
         private int _serverPort;
 
-        private ClientInfo? _user;
-
-        private IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
-
+        private UserInfo? _user;
         public ClientSessionController()
         {
             _communicator.AddSubscriber(_moduleIdentifier, this);
@@ -61,9 +59,17 @@ namespace MessengerDashboard.Client
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
         }
 
+        public ClientSessionController(ICommunicator communicator, IContentClient contentClient)
+        {
+            _communicator = communicator;
+            _communicator.AddSubscriber(_moduleIdentifier, this);
+            ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
+            _contentClient = contentClient;
+        }
+
         public event EventHandler<AnalyticsChangedEventArgs>? AnalyticsChanged;
 
-        public event EventHandler<ClientSessionChangedEventArgs>? ClientSessionChanged;
+        public event EventHandler<ClientSessionChangedEventArgs>? SessionChanged;
 
         public event EventHandler? SessionEnded;
 
@@ -117,24 +123,26 @@ namespace MessengerDashboard.Client
             {
                 connected = _connectionEstablished.WaitOne((int)timeoutInMilliseconds);
             }
-            _communicator.AddClient(serverIpAddress, serverPort);
-         
+            if (connected)
+            {
+                _communicator.AddClient(serverIpAddress, serverPort);
+            }
             return connected;
         }
 
         public void GetAnalytics()
         {
             Trace.WriteLine("Dashboard: GetAnalytics() is called from Dashboard UX");
-            DeliverPayloadToServer(Operation.GetAnalytics, _user.ClientId, _user.ClientName);
+            DeliverPayloadToServer(Operation.GetAnalytics, _user.UserId, _user.UserName);
         }
 
         public void GetSummary()
         {
             Trace.WriteLine("Dashboard: GetSummary() is called from Dashboard UX");
-            DeliverPayloadToServer(Operation.GetSummary, _user.ClientId, _user.ClientName);
+            DeliverPayloadToServer(Operation.GetSummary, _user.UserId, _user.UserName);
         }
 
-        public ClientInfo GetUser()
+        public UserInfo GetUser()
         {
             Trace.WriteLine("Dashboard: GetUser() is Called from Dashboard UX");
             return _user;
@@ -165,16 +173,20 @@ namespace MessengerDashboard.Client
 
             switch (operationType)
             {
-                case Operation.ToggleSessionMode:
-                    UpdateClientSessionModeData(serverPayload);
-                    return;
 
+                case Operation.ExamMode:
+                    UpdateClientSessionData(serverPayload);
+                    return;
+                case Operation.LabMode:
+                    UpdateClientSessionData(serverPayload);
+                    return;
                 case Operation.AddClientACK:
                     UpdateClientSessionData(serverPayload);
                     IsConnectedToServer = true;
                     _connectionEstablished.Set();
                     _user = serverPayload.User;
-                    _screenshareClient.SetUser(_user.ClientId, _user.ClientName);
+                    _screenshareClient.SetUser(_user.UserId, _user.UserName);
+                    _contentClient.SetUser(_user.UserId, _user.UserName, _serverIp, _serverPort);
                     return;
 
                 case Operation.GetSummary:
@@ -202,7 +214,7 @@ namespace MessengerDashboard.Client
 
         public bool RequestServerToRemoveClient(int? timeout)
         {
-            DeliverPayloadToServer(Operation.RemoveClient, _user.ClientId, _user.ClientName);
+            DeliverPayloadToServer(Operation.RemoveClient, _user.UserId, _user.UserName);
             bool exited;
             if (timeout is null)
             {
@@ -217,7 +229,7 @@ namespace MessengerDashboard.Client
             return exited;
         }
 
-        public void SetSessionUsers(List<ClientInfo> users)
+        public void SetSessionUsers(List<UserInfo> users)
         {
             for (int i = 0; i < users.Count; ++i)
             {
@@ -227,14 +239,9 @@ namespace MessengerDashboard.Client
 
         public void SetUser(string UserName, int UserID = 1, string UserEmail = null, string photoUrl = null)
         {
-            _user = new ClientInfo(UserName, UserID, UserEmail, photoUrl);
+            _user = new UserInfo(UserName, UserID, UserEmail, photoUrl);
         }
 
-        public void ToggleSessionMode()
-        {
-            Trace.WriteLine("Dashboard: ToggleSessionMode() is Called from Dashboard UX");
-            DeliverPayloadToServer(Operation.ToggleSessionMode, _user.ClientId, _user.ClientName);
-        }
 
         private void DeliverPayloadToServer(Operation operation, int userId, string? username, string? userEmail = null, string photoUrl = null)
         {
@@ -258,7 +265,7 @@ namespace MessengerDashboard.Client
         private void UpdateAnalytics(ServerPayload receivedData)
         {
             AnalysisResults = receivedData.SessionAnalysis;
-            ClientInfo receiveduser = receivedData.User;
+            UserInfo receiveduser = receivedData.User;
             AnalyticsChanged?.Invoke(this, new(AnalysisResults));
         }
 
@@ -270,7 +277,7 @@ namespace MessengerDashboard.Client
             {
                 SessionInfo = receivedSessionData;
             }
-            ClientSessionChanged?.Invoke(this, new ClientSessionChangedEventArgs());
+            SessionChanged?.Invoke(this, new ClientSessionChangedEventArgs(SessionInfo));
         }
 
         private void UpdateClientSessionModeData(ServerPayload receivedData)
@@ -282,14 +289,14 @@ namespace MessengerDashboard.Client
                 SessionInfo = receivedSessionData;
             }
             SessionModeChanged?.Invoke(this, new SessionModeChangedEventArgs());
-            ClientSessionChanged?.Invoke(this, new ClientSessionChangedEventArgs());
+            SessionChanged?.Invoke(this, new ClientSessionChangedEventArgs(SessionInfo));
         }
 
         private void UpdateSummary(ServerPayload receivedData)
         {
             TextSummary receivedSummary = receivedData.Summary;
-            ClientInfo receivedUser = receivedData.User;
-            if (receivedUser.ClientId == _user.ClientId)
+            UserInfo receivedUser = receivedData.User;
+            if (receivedUser.UserId == _user.UserId)
             {
                 lock (this)
                 {

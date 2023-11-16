@@ -38,6 +38,7 @@ namespace MessengerCloud
             NegativeChatCount = info.NegativeChatCount;
             IsOverallSentimentPositive = info.IsOverallSentimentPositive;
             Sentences = info.Sentences;
+            Analysis = info.Analysis;
         }
 
         public Entity()   { }
@@ -76,6 +77,9 @@ namespace MessengerCloud
         [JsonInclude]
         [JsonPropertyName("Timestamp")]
         public DateTimeOffset? Timestamp { get; set; }
+        [JsonInclude]
+        [JsonPropertyName("Analysis")]
+        public AnalysisCloud Analysis { get; set; }
 
         [JsonIgnore]
         public ETag ETag { get; set; }

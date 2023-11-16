@@ -9,7 +9,8 @@ namespace MessengerDashboard
     public enum Operation
     {
         EndSession,
-        ToggleSessionMode,
+        ExamMode,
+        LabMode,
         AddClient,
         GetSummary,
         GetAnalytics,

@@ -14,5 +14,11 @@ namespace MessengerDashboard.Client.Events
 {
     public class ClientSessionChangedEventArgs
     {
+        public ClientSessionChangedEventArgs(SessionInfo sessionInfo)
+        {
+            Session = sessionInfo;
+        }
+
+        public SessionInfo Session { get; set; }
     }
 }

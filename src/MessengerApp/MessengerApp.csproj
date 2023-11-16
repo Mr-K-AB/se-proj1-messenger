@@ -8,13 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\restore.png" />
+    <None Remove="Images\save.png" />
     <None Remove="Images\text.png" />
+    <None Remove="Images\whiteboard.png" />
     <None Remove="ScreenshareIcons\NextPageButton.png" />
     <None Remove="ScreenshareIcons\NoClient.gif" />
+    <None Remove="ScreenshareIcons\NotSharedScreenBackground.png" />
     <None Remove="ScreenshareIcons\NotSharedScreenBackground.webp" />
     <None Remove="ScreenshareIcons\PinButton.png" />
     <None Remove="ScreenshareIcons\PreviousPageButton.png" />
     <None Remove="ScreenshareIcons\SharedScreenBackground.jpeg" />
+    <None Remove="ScreenshareIcons\SharedScreenBackground.png" />
     <None Remove="ScreenshareIcons\StartScreenShare.png" />
     <None Remove="ScreenshareIcons\StartShare.png" />
     <None Remove="ScreenshareIcons\StopShare.png" />
@@ -48,8 +53,6 @@
   <ItemGroup>
     <Resource Include="Images\bucket.png" />
     <Resource Include="Images\clear.png" />
-    <Resource Include="Images\color.png" />
-    <Resource Include="Images\down-arrow.png" />
     <Resource Include="Images\download.png" />
     <Resource Include="Images\ellipse.png" />
   </ItemGroup>
@@ -69,6 +72,8 @@
     <Resource Include="Images\plus.png" />
     <Resource Include="Images\rectangle.png" />
     <Resource Include="Images\redo.png" />
+    <Resource Include="Images\restore.png" />
+    <Resource Include="Images\save.png" />
     <Resource Include="Images\shapes.png" />
     <Resource Include="Images\size.png" />
     <Resource Include="Images\text.png" />
@@ -82,13 +87,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="ScreenshareIcons\NextPageButton.png" />
-    <Resource Include="ScreenshareIcons\NoClient.gif" />
-    <Resource Include="ScreenshareIcons\NotSharedScreenBackground.webp" />
+    <Resource Include="Images\whiteboard.png" />
+
     <Resource Include="ScreenshareIcons\PinButton.png" />
-    <Resource Include="ScreenshareIcons\PreviousPageButton.png" />
-    <Resource Include="ScreenshareIcons\SharedScreenBackground.jpeg" />
-    <Resource Include="ScreenshareIcons\StartScreenShare.png" />
+    <Resource Include="ScreenshareIcons\SharedScreenBackground.png" />
     <Resource Include="ScreenshareIcons\StartShare.png" />
     <Resource Include="ScreenshareIcons\StopShare.png" />
     <Resource Include="ScreenshareIcons\UnpinButton.png" />

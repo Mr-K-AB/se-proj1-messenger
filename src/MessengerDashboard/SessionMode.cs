@@ -8,7 +8,7 @@ namespace MessengerDashboard
 {
     public enum SessionMode
     {
-        Test,
+        Exam,
         Lab
     }
 }

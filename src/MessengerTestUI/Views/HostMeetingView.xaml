@@ -13,6 +13,7 @@
             <MenuItem Header="Whiteboard"/>
             <MenuItem Header="Screenshare"/>
             <TextBlock Text="{Binding IP}"></TextBlock>
+            <TextBlock Text="{Binding Port}"></TextBlock>
         </Menu>
 
         <!-- Profile Information -->

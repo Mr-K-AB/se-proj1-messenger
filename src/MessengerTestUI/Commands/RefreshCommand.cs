@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace MessengerDashboard
+namespace MessengerTestUI.Commands
 {
     public class RefreshCommand : ICommand
     {
-        public RefreshCommand(DashboardViewModel viewModel) { }
+        public RefreshCommand(object viewModel) { }
 
         public event EventHandler? CanExecuteChanged;
 

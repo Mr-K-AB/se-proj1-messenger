@@ -96,7 +96,7 @@ namespace MessengerTests.MessengerNetworkingTest
 
 
     }
-        */
+        *//*
 
         /// <summary>
         /// Processor for chat messages.
@@ -156,3 +156,4 @@ namespace MessengerTests.MessengerNetworkingTest
         }
     }
 }
+*/

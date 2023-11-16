@@ -66,13 +66,6 @@ namespace MessengerContent.Client
                     _messageHandler.OnReceive(_receivedMessage);
                     Trace.WriteLine($"[ContentClientNotificationHandler] Deserialized data and sending it to content client");
                 }
-                // if data is a List<ChatThread>
-                //else if (string.Equals(deserializedType, typeof(List<ChatThread>).ToString()))
-                //{
-                //    _allMessages = _serialzer.Deserialize<List<ChatThread>>(data);
-                //    _messageHandler.OnReceive(_allMessages);
-                //    Trace.WriteLine($"[ContentClientNotificationHandler] Deserialized data and sending it to content client");
-                //}
                 else
                 {
                     throw new ArgumentException($"Deserialized object of unknown type : {deserializedType}");

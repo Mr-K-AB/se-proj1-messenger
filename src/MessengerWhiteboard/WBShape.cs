@@ -2,7 +2,7 @@
 {
     public class WBShape
     {
-        public WBShape(List<SerializableShapeItem> serializedShapes, Operation operation, string userID = "1")
+        public WBShape(List<SerializableShapeItem> serializedShapes, Operation operation, string userID = "1", int snapshotNumber = 0)
         {
             ShapeItems = serializedShapes;
             Op = operation;

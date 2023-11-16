@@ -25,24 +25,6 @@ namespace MessengerApp.Views
             InitializeComponent();
         }
 
-        private void Dashboard_Click(object sender, RoutedEventArgs e)
-        {
-            DashboardControl dashboardControl = new();
-            MainContent.Content = dashboardControl;
-        }
-
-        private void WhiteBoard_Click(object sender, RoutedEventArgs e)
-        {
-            WhiteboardControl whiteboardControl = new(0);
-            MainContent.Content = whiteboardControl;
-        }
-
-        private void HostScreenshare_Click(object sender, RoutedEventArgs e)
-        {
-            ScreenshareServerControl screenshareserverControl = new();
-            MainContent.Content = screenshareserverControl;
-        }
-
         private void Chat_Click(object sender, RoutedEventArgs e)
         {
             ChatBubble chatBubbleControl = new();

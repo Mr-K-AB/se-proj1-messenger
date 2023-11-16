@@ -1,4 +1,10 @@
-﻿using System;
+﻿/// <credits>
+/// <author>
+/// <name>Shubh Pareek</name>
+/// <rollnumber>112001039</rollnumber>
+/// </author>
+/// </credits>
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -80,6 +86,10 @@ namespace MessengerTests
                 Assert.Fail($"Unexpected exception type. Message = {ex.Message}");
             }
         }
+        /// <summary>
+        /// adds entities, deletes them 
+        /// </summary>
+        /// <returns>nothing</returns>
         [TestMethod]
         public async Task TestDeleteAllAndGetAll()
         {

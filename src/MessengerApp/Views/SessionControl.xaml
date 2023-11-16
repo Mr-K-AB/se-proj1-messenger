@@ -65,7 +65,7 @@
                     </Grid>
                     <Grid Grid.Row="1">
                         <Border BorderBrush="LightGray" BorderThickness="5" CornerRadius="10" Margin="3 3 3 0">
-                            <ListView Grid.Column="0" x:Name="ContactsLV" Background="LightGray" ItemsSource="{Binding Enteries}" d:ItemsSource="{d:SampleData ItemCount=2} " SelectionChanged="ContactsLV_SelectionChanged" BorderThickness="0" >
+                            <ListView Grid.Column="0" x:Name="ContactsLV" Background="LightGray" ItemsSource="{Binding Enteries}" d:ItemsSource="{d:SampleData ItemCount=2}" BorderThickness="0" >
                                 <ListView.ItemTemplate>
 
                                     <DataTemplate>

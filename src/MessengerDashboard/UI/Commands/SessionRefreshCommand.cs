@@ -4,19 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using MessengerDashboard;
-using MessengerTestUI.ViewModels;
+using MessengerDashboard.UI.ViewModels;
 
-namespace MessengerTestUI.Commands
+namespace MessengerDashboard.UI.Commands
 {
-    public class SwitchModeCommand : ICommand
+    public class SessionRefreshCommand : ICommand
     {
-
-        private readonly DashboardServerViewModel _dashboardServerViewModel;
-        public SwitchModeCommand(DashboardServerViewModel viewModel)
-        {
-            _dashboardServerViewModel = viewModel;
-        }
+        public SessionRefreshCommand(SessionsViewModel viewModel) { }
 
         public event EventHandler? CanExecuteChanged;
 
@@ -27,7 +21,6 @@ namespace MessengerTestUI.Commands
 
         public void Execute(object? parameter)
         {
-
         }
     }
 }

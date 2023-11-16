@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,6 +36,11 @@ namespace MessengerApp.Views
             viewModel.SessionSummary = "Vinay Loves Hii Vinay";
             DataContext = viewModel;
             */
+        }
+
+        private void SubmissionsPage_Navigated(object sender, NavigationEventArgs e)
+        {
+
         }
     }
 }

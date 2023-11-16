@@ -15,7 +15,7 @@ namespace MessengerTestUI.Commands
         private readonly NavigationStore _navigationStore;
         private readonly HomeViewModel _homeViewModel;
 
-        private ClientSessionController _client = DashboardFactory.GetClientSessionController();
+        private IClientSessionController _client = DashboardFactory.GetClientSessionController();
         private bool _connected = false;
 
         public NavigateClientMeetCommand(NavigationStore navigationStore, HomeViewModel homeViewModel)

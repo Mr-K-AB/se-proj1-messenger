@@ -32,7 +32,7 @@
             </Grid>
 
             <Grid Grid.Column="1" >
-                <Button Width="auto" Background="#00ad11" Command="{Binding RefreshCommand}" BorderThickness="0" Click="Button_Click" ToolTip="Refresh" Margin="5 5 5 5">
+                <Button Width="auto" Background="#00ad11" Command="{Binding RefreshCommand}" BorderThickness="0" ToolTip="Refresh" Margin="5 5 5 5">
                     <Image Source="../Images/refresh.png" Height="23" />
                     <Button.Resources>
                         <Style TargetType="Border">

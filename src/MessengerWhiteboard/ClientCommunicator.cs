@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using MessengerNetworking.Communicator;
 using MessengerNetworking.Factory;
+using MessengerWhiteboard.Interfaces;
+using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
 {

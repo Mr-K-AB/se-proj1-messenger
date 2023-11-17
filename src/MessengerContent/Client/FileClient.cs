@@ -23,7 +23,7 @@ namespace MessengerContent.Client
         /// <summary>
         /// Module identifier for communicator
         /// </summary>
-        private readonly string _moduleIdentifier = "Content";
+        private readonly string _moduleIdentifier = "ContentServer";
         private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
 
@@ -50,6 +50,8 @@ namespace MessengerContent.Client
         /// Auto-implemented UserID property.
         /// </summary>
         public int UserID { get; set; }
+
+        public string UserName { get; set; }
 
         /// <summary>
         /// Serializes the ChatData object and send it to the server via networking module. 
@@ -96,6 +98,7 @@ namespace MessengerContent.Client
                 //ReceiverIDs = sendContent.ReceiverIDs,
                 ReplyThreadID = -1,
                 SenderID = UserID,
+                SenderName = UserName,
                 SentTime = DateTime.Now,
                 Starred = false,
                 Event = MessageEvent.New,

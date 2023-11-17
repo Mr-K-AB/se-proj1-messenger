@@ -43,6 +43,10 @@ namespace MessengerApp
         /// </summary>
         public DataTemplate? ReceivedFileMessageTemplate { get; set; }
 
+        public DataTemplate? SentChatMessageNotReplyTemplate { get; set; }
+
+        public DataTemplate? ReceivedChatMessageNotReplyTemplate { get; set; }
+
         /// <summary>
         /// Select DataTemplate for the messages which are sent by us and received to us accordingly.
         /// </summary>
@@ -54,11 +58,19 @@ namespace MessengerApp
             var message = item as ChatMessage;
             if (message.isCurrentUser == true)
             {
-                return message.MessageType ? SentChatMessageTemplate : SentFileMessageTemplate;
+                if(message.MessageType == true)
+                {
+                    return (message.ReplyMessage != null && message.ReplyMessage != "") ? SentChatMessageTemplate : SentChatMessageNotReplyTemplate;
+                }
+                return SentFileMessageTemplate;
             }
             else
             {
-                return message.MessageType ? ReceivedChatMessageTemplate : ReceivedFileMessageTemplate;
+                if( message.MessageType == true)
+                {
+                    return (message.ReplyMessage != null) ? ReceivedChatMessageTemplate : ReceivedChatMessageNotReplyTemplate;
+                }
+                return ReceivedFileMessageTemplate;
             }
         }
     }

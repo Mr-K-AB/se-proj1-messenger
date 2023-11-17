@@ -11,6 +11,7 @@ using MessengerNetworking.NotificationHandler;
 using MessengerNetworking.Communicator;
 using MessengerNetworking.Factory;
 using System.Drawing.Printing;
+using System.Security.Cryptography;
 
 namespace MessengerScreenshare.Server
 {
@@ -93,10 +94,10 @@ namespace MessengerScreenshare.Server
                         RegisterClient(clientId, clientName);
                         break;
                     case ClientDataHeader.Deregister:
-                        DeregisterClient(clientId);
+                        DeregisterClient(clientId, clientName);
                         break;
                     case ClientDataHeader.Image:
-                        PutImage(clientId, clientData, fragmentOffset, imgCount);
+                        PutImage(clientId, clientData);
                         break;
                     case ClientDataHeader.Confirmation:
                         UpdateTimer(clientId);
@@ -156,14 +157,16 @@ namespace MessengerScreenshare.Server
                     return; // Early exit.
                 }
             }
-
+            DataPacket confirmationPacket = new(clientId, clientName, ServerDataHeader.Send.ToString(), 0, 0, "");
+            string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
+            _communicator.Broadcast(Utils.ServerIdentifier, serializedConfirmationPacket);
             NotifyUX();
             NotifyUX(clientId, clientName, start: true);
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully registered the client - Id: {clientId}, Name: {clientName}", withTimeStamp: true));
         }
 
-        private void DeregisterClient(int clientId)
+        private void DeregisterClient(int clientId, string clientName)
         {
 
             lock (_subscribers)
@@ -171,7 +174,9 @@ namespace MessengerScreenshare.Server
                 if (_subscribers.TryGetValue(clientId, out SharedClientScreen? client))
                 {
                     _subscribers.Remove(clientId);
-
+                    DataPacket confirmationPacket = new(clientId, clientName, ServerDataHeader.Stop.ToString(), 0, 0, "");
+                    string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
+                    _communicator.Broadcast(Utils.ServerIdentifier, serializedConfirmationPacket);
                     NotifyUX();
                     NotifyUX(clientId, client.Name, start: false);
 
@@ -200,7 +205,7 @@ namespace MessengerScreenshare.Server
                 }
             }
         }
-        private void PutImage(int clientId, string data, int fragmentOffset, int imgCount)
+        private void PutImage(int clientId, string data)
         {
             lock (_subscribers)
             {
@@ -208,7 +213,7 @@ namespace MessengerScreenshare.Server
                 {
                     try
                     {
-                        // Dictionary to store image fragments for each image
+                        /*// Dictionary to store image fragments for each image
                         client.ImageFragments ??= new Dictionary<int, StringBuilder>();
 
                         // If the image fragment container doesn't exist, create it
@@ -249,7 +254,9 @@ namespace MessengerScreenshare.Server
                         {
                             // Handle the case where the same fragmentOffset comes twice
                             Trace.WriteLine(Utils.GetDebugMessage($"Duplicate image packet {fragmentOffset} received from the client with Id: {clientId}", withTimeStamp: true));
-                        }
+                        }*/
+                        client.PutImage(data, client.TaskId);
+                        Trace.WriteLine(Utils.GetDebugMessage($"Successfully received image of the client with Id: {clientId}", withTimeStamp: true));
                     }
                     catch (Exception e)
                     {
@@ -311,7 +318,7 @@ namespace MessengerScreenshare.Server
                 {
                     try
                     {
-                        client.UpdateTimer(client._timer!);
+                        client._timer!.Interval = 20000;
                         BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
 
                         Trace.WriteLine(Utils.GetDebugMessage($"Timer updated for the client with Id: {clientId}", withTimeStamp: true));
@@ -329,10 +336,10 @@ namespace MessengerScreenshare.Server
         }
 
 
-        public void OnTimeOut(object? source, int clientId, ElapsedEventArgs e)
+        public void OnTimeOut(object? source, int clientId, string clientName, ElapsedEventArgs e)
         {
 
-            DeregisterClient(clientId);
+            DeregisterClient(clientId, clientName);
             Trace.WriteLine(Utils.GetDebugMessage($"Timeout occurred for the client with id: {clientId}", withTimeStamp: true));
         }
 
@@ -355,7 +362,7 @@ namespace MessengerScreenshare.Server
                     // Deregister all the clients.
                     foreach (SharedClientScreen client in sharedClientScreens)
                     {
-                        DeregisterClient(client.Id);
+                        DeregisterClient(client.Id, client.Name);
                     }
                 }
 

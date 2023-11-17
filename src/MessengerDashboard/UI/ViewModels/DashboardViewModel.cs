@@ -251,5 +251,17 @@ namespace MessengerDashboard.UI.ViewModels
             return analysisCloud;
         }
 
+        private System.Collections.IEnumerable _timeStampChatCountEntries1;
+
+        public System.Collections.IEnumerable _timeStampChatCountEntries { get => _timeStampChatCountEntries1; set => SetProperty(ref _timeStampChatCountEntries1, value); }
+
+        private System.Collections.IEnumerable timeStampChatCountEntries;
+
+        public System.Collections.IEnumerable TimeStampChatCountEntries { get => timeStampChatCountEntries; set => SetProperty(ref timeStampChatCountEntries, value); }
+
+        private string sessionSummary;
+
+        public string SessionSummary { get => sessionSummary; set => SetProperty(ref sessionSummary, value); }
+
     }
 }

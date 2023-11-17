@@ -73,6 +73,19 @@ namespace MessengerWhiteboard
             }
         }
 
+        public bool IsServer
+        {
+            get { return isServer; }
+            set
+            {
+                if (isServer != value)
+                {
+                    isServer = value;
+                    OnPropertyChanged(nameof(IsServer));
+                }
+            }
+        }
+
         public void AddShape(ShapeItem shape)
         {
             //Debug.WriteLine("Inside AddShape");

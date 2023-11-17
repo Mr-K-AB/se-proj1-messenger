@@ -173,6 +173,13 @@ namespace MessengerNetworking.Communicator
             string ipString = "127.0.0.1";
             foreach (IPAddress address in hostEntry.AddressList)
             {
+                if (address.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    ipString = address.ToString();
+                }
+            }            
+            foreach (IPAddress address in hostEntry.AddressList)
+            {
                 if (address.AddressFamily == AddressFamily.InterNetwork && IsIPLocalhost(address.ToString()))
                 {
                     ipString = address.ToString();

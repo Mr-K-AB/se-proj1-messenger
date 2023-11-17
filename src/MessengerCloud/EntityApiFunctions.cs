@@ -44,7 +44,7 @@ namespace MessengerCloud
             Entity value = new(info);
             Debug.WriteLine("val inside api ",value);
             await entityTable.AddAsync(value);
-            log.LogInformation($"New entity created Id = {value.Id}.strings are ", value.Sentences[0]);
+            //log.LogInformation($"New entity created Id = {value.Id}.strings are ", value.Sentences[0]);
 
             Trace.WriteLine("[EntityApi]: entity created");
             return new OkObjectResult(value);

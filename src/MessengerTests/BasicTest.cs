@@ -27,7 +27,7 @@ namespace MessengerTests
         
         private AnalysisCloud _analysisCloud;
         readonly List<string> _sentences = new() { "Hi", "Hello", "Wow" };
-        private readonly LocalSave _save = new();
+        //private readonly LocalSave _save = new();
         public BasicTest()
         {
             _analysisCloud = new(
@@ -85,8 +85,8 @@ namespace MessengerTests
                 info
             };
 
-            _save.AddEntity(info);
-            List<EntityInfoWrapper> res = _save.ReadFromFile();
+            LocalSave.AddEntity(info);
+            List<EntityInfoWrapper> res = LocalSave.ReadFromFile();
             Assert.AreEqual(JsonSerializer.Serialize(infos[0].Sentences), JsonSerializer.Serialize(res[0].Sentences));
         }
 

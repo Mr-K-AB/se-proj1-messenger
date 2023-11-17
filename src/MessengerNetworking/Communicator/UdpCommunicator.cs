@@ -105,21 +105,102 @@ namespace MessengerNetworking.Communicator
 
         public string IpAddress { get; private set; }
 
+        private bool IsIP10Range(string ipAddress)
+        {
+            IPAddress ip;
+            if (IPAddress.TryParse(ipAddress, out ip))
+            {
+                byte[] bytes = ip.GetAddressBytes();
+                if (bytes[0] == 10)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsIP172Dot16_12Range(string ipAddress)
+        {
+            IPAddress ip;
+            if (IPAddress.TryParse(ipAddress, out ip))
+            {
+                byte[] bytes = ip.GetAddressBytes();
+                if (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsIP192Dot168(string ipAddress)
+        {
+            IPAddress ip;
+            if (IPAddress.TryParse(ipAddress, out ip))
+            {
+                byte[] bytes = ip.GetAddressBytes();
+
+                // Check for private IP address ranges
+                if (bytes[0] == 192 && bytes[1] == 168)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsIPLocalhost(string ipAddress)
+        {
+            IPAddress ip;
+            if (IPAddress.TryParse(ipAddress, out ip))
+            {
+                // Check for localhost
+                if (ip.Equals(IPAddress.Loopback))
+                {
+                    return true; // Localhost
+                }
+            }
+            return false;
+        }
 
         private string getIPAddress()
         {
             string hostName = Dns.GetHostName();
             IPHostEntry hostEntry = Dns.GetHostEntry(hostName);
+            string ipString = "127.0.0.1";
             foreach (IPAddress address in hostEntry.AddressList)
             {
-                if (address.AddressFamily == AddressFamily.InterNetwork)
+                if (address.AddressFamily == AddressFamily.InterNetwork && IsIPLocalhost(address.ToString()))
                 {
-                    Trace.TraceInformation("Networking IP returned :" + address.ToString());
-                    return address.ToString();
+                    ipString = address.ToString();
                 }
             }
-            Trace.TraceWarning("Networking : IP returned as 127.0.0.1");
-            return "127.0.0.1";
+            foreach (IPAddress address in hostEntry.AddressList)
+            {
+                if (address.AddressFamily == AddressFamily.InterNetwork && IsIP192Dot168(address.ToString()))
+                {
+                    ipString = address.ToString();
+                }
+            }
+            foreach (IPAddress address in hostEntry.AddressList)
+            {
+                if (address.AddressFamily == AddressFamily.InterNetwork && IsIP172Dot16_12Range(address.ToString()))
+                {
+                    ipString = address.ToString();
+                }
+            }
+            foreach (IPAddress address in hostEntry.AddressList)
+            {
+                if (address.AddressFamily == AddressFamily.InterNetwork && IsIP10Range(address.ToString()))
+                {
+                    ipString = address.ToString();
+                }
+            }
+            Trace.TraceWarning("Networking : IP returned as " + ipString);
+            return ipString;
         }
 
         /// <inheritdoc />

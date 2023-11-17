@@ -20,10 +20,10 @@ namespace MessengerApp.Commands
 
         //private readonly string 
 
-        public NavigateClientDashboardCommand(NavigationStore navigationStore)
+        public NavigateClientDashboardCommand(NavigationStore navigationStore, DashboardMemberViewModel dashboardMemberViewModel)
         {
             _navigationStore = navigationStore;
-            _dashboardMemberViewModel = new DashboardMemberViewModel();
+            _dashboardMemberViewModel = dashboardMemberViewModel;
         }
 
         public override void Execute(object parameter)

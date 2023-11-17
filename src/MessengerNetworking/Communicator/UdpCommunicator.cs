@@ -233,7 +233,7 @@ namespace MessengerNetworking.Communicator
 
             foreach (KeyValuePair<string, INotificationHandler> subscriber in _subscribers)
             {
-                subscriber.Value.OnClientJoined(ipAddress, port);
+                //subscriber.Value.OnClientJoined(ipAddress, port);
             }
             Trace.TraceInformation("Networking client added with ip and port " + ipAddress + port.ToString());
         }
@@ -247,7 +247,7 @@ namespace MessengerNetworking.Communicator
 
             foreach (KeyValuePair<string, INotificationHandler> subscriber in _subscribers)
             {
-                subscriber.Value.OnClientLeft(ipAddress, port);
+                //subscriber.Value.OnClientLeft(ipAddress, port);
             }
             Trace.TraceInformation("Networking client removed with ip and port " + ipAddress + port.ToString());
         }

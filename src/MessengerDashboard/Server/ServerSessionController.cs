@@ -50,6 +50,7 @@ namespace MessengerDashboard.Server
             _communicator = communicator;
             _communicator.AddSubscriber(_serverModuleIdentifier, this);
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
+            _telemetry.SubscribeToServerSessionController(this);
         }
 
         public ServerSessionController()
@@ -57,6 +58,7 @@ namespace MessengerDashboard.Server
             _communicator = Factory.GetInstance();
             _communicator.AddSubscriber(_serverModuleIdentifier, this);
             ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
+            _telemetry.SubscribeToServerSessionController(this);
         }
 
         public event EventHandler<SessionUpdatedEventArgs> SessionUpdated;
@@ -237,6 +239,7 @@ namespace MessengerDashboard.Server
                 SessionUpdated?.Invoke(this, new(SessionInfo));
                 _communicator.AddClient(clientPayload.IpAddress, clientPayload.Port);
                 SendPayloadToClient(Operation.AddClientACK, clientPayload.IpAddress, clientPayload.Port, SessionInfo, null, null, user);
+                BroadcastPayloadToClients(Operation.SessionUpdated, SessionInfo);
                 Trace.WriteLine("Dashboard Server: Added new user");
             }
         }
@@ -253,7 +256,7 @@ namespace MessengerDashboard.Server
         {
             Trace.WriteLine("Dashboard: Sending telemetry to clients");
             Analysis analysis = CalculateAnalysis();
-            BroadcastPayloadToClients(Operation.GetSentiment, SessionInfo, null, analysis);
+            BroadcastPayloadToClients(Operation.GetTelemetryAnalysis, SessionInfo, null, analysis);
             Trace.WriteLine("Dashboard: Sent telemetry to clients");
         }
 
@@ -261,7 +264,7 @@ namespace MessengerDashboard.Server
         {
             Trace.WriteLine("Dashboard: Sending summary to clients");
             TextSummary summaryData = CalculateSummary();
-            BroadcastPayloadToClients(Operation.GetSentiment, SessionInfo, summaryData);
+            BroadcastPayloadToClients(Operation.GetSummary, SessionInfo, summaryData);
             Trace.WriteLine("Dashboard: Sent summary to clients");
         }
 
@@ -289,6 +292,8 @@ namespace MessengerDashboard.Server
 
         private void RemoveClient(ClientPayload clientPayload)
         {
+            SessionInfo.Users.Clear();
+            SessionUpdated?.Invoke(this, new(SessionInfo));
             TextSummary summary = CalculateSummary();
             SentimentResult sentiment = CalculateSentiment();
             Analysis analysis = CalculateAnalysis();
@@ -309,6 +314,7 @@ namespace MessengerDashboard.Server
                 }
                 SendPayloadToClient(Operation.RemoveClient, clientPayload.IpAddress, clientPayload.Port, SessionInfo, summary, analysis, null, sentiment);
                 _communicator.RemoveClient(clientPayload.IpAddress, clientPayload.Port);
+                BroadcastPayloadToClients(Operation.SessionUpdated, SessionInfo);
                 Trace.WriteLine("Dashboard: Removed Client");
             }
         }

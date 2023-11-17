@@ -18,19 +18,24 @@ namespace MessengerApp.ViewModels
         public ICommand NavigateHomeCommand { get; }
         public ICommand NavigateClientDashboardCommand { get; }
 
-        public DashboardViewModel SubViewModel;
+        public DashboardViewModel SubViewModel => _navigationStore.SubViewModel;
+
+        private readonly DashboardMemberViewModel _dashboardViewModel;
+
 
         private readonly IClientSessionController _client = DashboardFactory.GetClientSessionController();
         public int Port { get; set; }
         public string IP { get; set; }
 
+        private readonly NavigationStore _navigationStore;
 
         public ClientMeetViewModel(NavigationStore navigationStore)
         {
-            SubViewModel = navigationStore.SubViewModel;
+            _dashboardViewModel = new DashboardMemberViewModel();
+            _navigationStore = navigationStore;
             navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
-            NavigateClientDashboardCommand = new NavigateClientDashboardCommand(navigationStore);
+            NavigateClientDashboardCommand = new NavigateClientDashboardCommand(navigationStore, _dashboardViewModel);
         }
 
         private void NavigationStore_SubViewModelChanged()

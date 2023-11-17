@@ -84,6 +84,8 @@ namespace MessengerDashboard.Client
 
         public event EventHandler<SentimentChangedEventArgs> SentimentChanged;
 
+        public event EventHandler<SessionModeChangedEventArgs> SessionModeChanged;
+
         public Analysis? AnalysisResults { get; private set; }
 
         public TextSummary? ChatSummary { get; private set; }
@@ -181,9 +183,6 @@ namespace MessengerDashboard.Client
                 {
 
                     case Operation.ExamMode:
-                        UpdateSessionData(serverPayload);
-                        return;
-
                     case Operation.LabMode:
                         UpdateSessionData(serverPayload);
                         return;
@@ -195,14 +194,17 @@ namespace MessengerDashboard.Client
 
                     case Operation.GetSummary:
                         UpdateSummary(serverPayload);
+                        UpdateSessionData(serverPayload);
                         return;
 
                     case Operation.GetTelemetryAnalysis:
                         UpdateTelemetryAnalysis(serverPayload);
+                        UpdateSessionData(serverPayload);
                         return;
 
                     case Operation.GetSentiment:
                         UpdateSentiment(serverPayload);
+                        UpdateSessionData(serverPayload);
                         return;
 
                     case Operation.RemoveClient:
@@ -212,6 +214,10 @@ namespace MessengerDashboard.Client
                         UpdateSentiment(serverPayload);
                         UpdateSessionData(serverPayload);
                         ExitSession();
+                        return;
+
+                    case Operation.SessionUpdated:
+                        UpdateSessionData(serverPayload);
                         return;
 
                     default:
@@ -321,13 +327,18 @@ namespace MessengerDashboard.Client
 
         private void UpdateSessionData(ServerPayload receivedData)
         {
-
             SessionInfo? receivedSessionData = receivedData.SessionInfo;
+            bool modeChanged = false;
             lock (this)
             {
+                modeChanged = receivedSessionData.SessionMode != SessionInfo.SessionMode;
                 SessionInfo = receivedSessionData;
             }
             SessionChanged?.Invoke(this, new ClientSessionChangedEventArgs(SessionInfo));
+            if (modeChanged)
+            {
+                SessionModeChanged?.Invoke(this, new SessionModeChangedEventArgs(SessionInfo.SessionMode));
+            }
         }
     }
 }

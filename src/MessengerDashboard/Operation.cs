@@ -17,6 +17,7 @@ namespace MessengerDashboard
         GetSentiment,
         RemoveClient,
         ID,
-        AddClientACK
+        AddClientACK,
+        SessionUpdated
     }
 }

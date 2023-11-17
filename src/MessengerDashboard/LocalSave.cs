@@ -45,6 +45,7 @@ namespace MessengerDashboard
         {
             try
             {
+                Trace.WriteLine("Reading from" + s_path);
                 using StreamReader reader = new(s_path);
                 string jsonString = reader.ReadToEnd();
                 var serializer = new DataContractJsonSerializer(typeof(List<EntityInfoWrapper>));

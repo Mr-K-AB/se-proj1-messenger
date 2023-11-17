@@ -36,7 +36,7 @@
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0" Grid.ColumnSpan="2" Margin="3">
                     <Border CornerRadius="10" BorderThickness="5" BorderBrush="Gray" Background="Gray">
-                        <TextBlock Background="Gray" Text="Binding Mode" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="18"/>
+                        <TextBlock Background="Gray" Text="{Binding Mode}" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="18"/>
                     </Border>
                 </Grid>
                 <Grid Grid.Column="1">
@@ -63,7 +63,7 @@
 
             <Grid Grid.Column="2" >
                 <Border CornerRadius="10" BorderThickness="1" BorderBrush="Gray" Background="DarkGray" Margin="5">
-                    <CheckBox VerticalAlignment="Center">
+                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsCloudSavingEnabled}">
                         <TextBlock FontWeight="Bold" FontStyle="Italic">
                             Cloud Save
                         </TextBlock>
@@ -73,7 +73,7 @@
 
             <Grid Grid.Column="3" >
                 <Border CornerRadius="10" BorderThickness="1" BorderBrush="Gray" Background="DarkGray" Margin="5">
-                    <CheckBox VerticalAlignment="Center">
+                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsLocalSavingEnabled}">
                         <TextBlock FontWeight="Bold" FontStyle="Italic">
                             Local Save
                         </TextBlock>
@@ -145,7 +145,7 @@
                                     <RowDefinition Height="1*" />
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Total Chats" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding Users.Count}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
+                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding TotalChatCount}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
                             </Grid>
                         </Border>
                     </Grid>
@@ -157,7 +157,7 @@
                                     <RowDefinition Height="1*" />
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Positive Chats" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding Users.Count}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
+                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding PositiveChatCount}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
                             </Grid>
                         </Border>
                     </Grid>
@@ -169,7 +169,7 @@
                                     <RowDefinition Height="1*" />
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Negative Chats" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding Users.Count}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
+                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding NegativeChatCount}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
                             </Grid>
                         </Border>
                     </Grid>
@@ -181,7 +181,7 @@
                                     <RowDefinition Height="1*" />
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Overall Sentiment" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding Users.Count}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
+                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding OverallSentiment}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
                             </Grid>
                         </Border>
                     </Grid>
@@ -196,17 +196,10 @@
                     <Border BorderThickness="5" BorderBrush="White" CornerRadius="10" Margin="0 2 0 2">
                         <lvc:CartesianChart Background="White">
                             <lvc:CartesianChart.Series>
-                                <lvc:LineSeries  Title="Users" Values="{Binding UserCountList}" StrokeThickness="3" Stroke="Gray">
-                                    <lvc:LineSeries.Fill>
-                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                                            <GradientStop Color="Gray" Offset="0"/>
-                                            <GradientStop Color="White" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </lvc:LineSeries.Fill>
-                                </lvc:LineSeries>
+                                <lvc:LineSeries  Title="Users" Values="{Binding UserCounts}" StrokeThickness="3" Stroke="Gray"/>
                             </lvc:CartesianChart.Series>
                             <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Time" Labels="{Binding TimeStampsList}">
+                                <lvc:Axis Title="Time" Labels="{Binding DateTimes}">
                                     <lvc:Axis.Separator>
                                         <lvc:Separator StrokeThickness="0" Step="1"/>
                                     </lvc:Axis.Separator>
@@ -226,11 +219,10 @@
                         <Border BorderThickness="5" BorderBrush="White" CornerRadius="10" Margin="0 2 0 5">
                          <lvc:CartesianChart Background="White">
                             <lvc:CartesianChart.Series>
-                                <!--<lvc:StackedColumnSeries Title="Chat Count" Values="{Binding ChatCountListForUserName}"/>-->
-                                <lvc:ColumnSeries Title="Chat Count" Values="10,220,30,40,50"/>
+                                <lvc:ColumnSeries Title="Chat Count" Values="{Binding UserChatCounts}"/>
                             </lvc:CartesianChart.Series>
                             <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Users"  Labels="{Binding UserNameList}">
+                                <lvc:Axis Title="Users"  Labels="{Binding UserNames}">
                                     <lvc:Axis.Separator>
                                         <lvc:Separator Step="1" StrokeThickness="0"/>
                                     </lvc:Axis.Separator>

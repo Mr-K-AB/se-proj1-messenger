@@ -18,20 +18,23 @@ namespace MessengerDashboard.Telemetry
 
         public event EventHandler AnalysisChanged;
 
-        internal void SubscribeToServerSessionController(ServerSessionController serverSessionController)
+        public void SubscribeToServerSessionController(ServerSessionController serverSessionController)
         {
             serverSessionController.SessionUpdated += SessionUpdatedHandler;
         }
 
         private void SessionUpdatedHandler(object? sender, Server.Events.SessionUpdatedEventArgs e)
         {
-            DateTime currentTime = DateTime.Now;
-            Trace.WriteLine("Dashboard: Updating Telemetry");
-            UpdateUserCountHistory(e.Session, currentTime);
-            UpdateJoiningTimeOfUsers(e.Session, currentTime);
-            UpdateLeavingTimeOfUsers(e.Session, currentTime);
-            Trace.WriteLine("Dashboard: Updated Telemetry");
-        }
+            lock (this)
+            {
+                DateTime currentTime = DateTime.Now;
+                Trace.WriteLine("Dashboard: Updating Telemetry");
+                UpdateUserCountHistory(e.Session, currentTime);
+                UpdateJoiningTimeOfUsers(e.Session, currentTime);
+                UpdateLeavingTimeOfUsers(e.Session, currentTime);
+                Trace.WriteLine("Dashboard: Updated Telemetry");
+            }
+       }
 
         private bool AddUserIfNotPresent(UserInfo userInfo, DateTime currentTime)
         {
@@ -55,27 +58,30 @@ namespace MessengerDashboard.Telemetry
 
         public Analysis UpdateAnalysis(Dictionary<int, Tuple<UserInfo, List<string>>> userIdToUserInfoAndChatMap)
         {
-            DateTime currentTime = DateTime.Now;
-            foreach (Tuple<UserInfo, List<string>> userInfoAndChat in userIdToUserInfoAndChatMap.Values)
+            lock (this)
             {
-                UserInfo userInfo = userInfoAndChat.Item1;
-                AddUserIfNotPresent(userInfo, currentTime);
-                UserActivity userActivity = _userIdToUserActivityMap[userInfo.UserId];
-                userActivity.UserChatCount += userInfoAndChat.Item2.Count;
+                DateTime currentTime = DateTime.Now;
+                foreach (Tuple<UserInfo, List<string>> userInfoAndChat in userIdToUserInfoAndChatMap.Values)
+                {
+                    UserInfo userInfo = userInfoAndChat.Item1;
+                    AddUserIfNotPresent(userInfo, currentTime);
+                    UserActivity userActivity = _userIdToUserActivityMap[userInfo.UserId];
+                    userActivity.UserChatCount += userInfoAndChat.Item2.Count;
+                }
+
+                int totalChatCount = 0;
+                int totalUsers = 0;
+
+                foreach (UserActivity userActivity in _userIdToUserActivityMap.Values)
+                {
+                    totalChatCount += userActivity.UserChatCount;
+                    totalUsers++;
+                }
+
+                Analysis sessionAnalytics = new(_userIdToUserActivityMap, _timeStampToUserCountMap, totalUsers, totalChatCount);
+                return sessionAnalytics;
             }
-
-            int totalChatCount = 0;
-            int totalUsers = 0;
-
-            foreach (UserActivity userActivity in _userIdToUserActivityMap.Values)
-            {
-                totalChatCount += userActivity.UserChatCount;
-                totalUsers++;
-            }
-
-            Analysis sessionAnalytics = new(_userIdToUserActivityMap, _timeStampToUserCountMap, totalUsers, totalChatCount);
-            return sessionAnalytics;
-        }
+       }
 
         private void UpdateUserCountHistory(SessionInfo sessionData, DateTime currentTime)
         {

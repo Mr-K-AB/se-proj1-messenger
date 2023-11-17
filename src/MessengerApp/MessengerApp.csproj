@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\end-meet.png" />
+    <None Remove="Images\refresh.png" />
     <None Remove="Images\restore.png" />
     <None Remove="Images\save.png" />
     <None Remove="Images\text.png" />
@@ -27,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\" />
     <None Remove="Images\bucket.png" />
     <None Remove="Images\clear.png" />
     <None Remove="Images\color.png" />
@@ -48,6 +49,11 @@
     <None Remove="Images\size.png" />
     <None Remove="Images\triangle.png" />
     <None Remove="Images\undo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\end-meet.png" />
+    <EmbeddedResource Include="Images\refresh.png" />
   </ItemGroup>
 
   <ItemGroup>

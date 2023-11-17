@@ -15,7 +15,7 @@ namespace MessengerTestUI.ViewModels
     {
         public ICommand NavigateHomeCommand { get; }
 
-        public ServerSessionController Server { get; } = DashboardFactory.GetServerSessionController();
+        public IServerSessionController Server { get; } = DashboardFactory.GetServerSessionController();
         public int Port { get; set; }
         public string IP { get; set; }
 

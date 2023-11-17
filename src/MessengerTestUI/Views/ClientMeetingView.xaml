@@ -6,18 +6,19 @@
              xmlns:local="clr-namespace:MessengerTestUI.Views"
              xmlns:dashboard="clr-namespace:MessengerDashboard;assembly=MessengerDashboard"
              xmlns:views="clr-namespace:MessengerTestUI.Views"
+             xmlns:viewmodels="clr-namespace:MessengerTestUI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <!-- Navigation Bar -->
         <Grid.Resources>
-            <DataTemplate DataType="{x:Type dashboard:DashboardViewModel}">
-                <views:DashboardControl/>
+            <DataTemplate DataType="{x:Type viewmodels:DashboardClientViewModel}">
+                <views:DashboardClientControl/>
             </DataTemplate>
         </Grid.Resources>
 
         <Menu>
-            <MenuItem Header="Dashboard" Command="{Binding NavigateDashboardCommand}"/>
+            <MenuItem Header="Dashboard" Command="{Binding NavigateClientDashboardCommand}"/>
             <MenuItem Header="Whiteboard"/>
             <MenuItem Header="Screenshare"/>
             <MenuItem Header="Participants"/>

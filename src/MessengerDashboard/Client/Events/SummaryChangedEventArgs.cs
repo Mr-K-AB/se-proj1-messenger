@@ -15,6 +15,11 @@ namespace MessengerDashboard.Client.Events
 {
     public class SummaryChangedEventArgs
     {
-        public TextSummary? Summary { get; set; }
+        public TextSummary? Summary { get; }
+
+        public SummaryChangedEventArgs(TextSummary? summary)
+        {
+            Summary = summary;
+        }
     }
 }

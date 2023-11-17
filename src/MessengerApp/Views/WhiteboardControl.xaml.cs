@@ -176,6 +176,13 @@ namespace MessengerApp.Views
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 
+        public void LineMode(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ChangeTool("Line");
+            _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
+            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
+        }
+
         public void TextMode(object sender, RoutedEventArgs e)
         {
             _viewModel.ChangeTool("Text");
@@ -240,18 +247,37 @@ namespace MessengerApp.Views
 
         private void ChangeStrokeColor(object sender, RoutedEventArgs e)
         {
-            Debug.Print((e.Source as Button).Name);
-            string bcolor = (e.Source as Button).Name;
+            //Debug.Print((e.Source as Button).Name);
+            Brush bcolor = (e.Source as RadioButton).Background;
             _viewModel.ChangeStrokeBrush(bcolor);
         }
 
         private void ChangeFillColor(object sender, RoutedEventArgs e)
         {
             //Debug.Print((e.Source as Button).ToolTip);
-            string bcolor = (e.Source as Button).ToolTip.ToString();
+            Brush bcolor = (e.Source as RadioButton).Background;
             _viewModel.ChangeFillBrush(bcolor);
         }
 
+        private void ClearScreen(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ClearScreen();
+        }
+
+        private void Undo(object sender, RoutedEventArgs e)
+        {
+            _viewModel.CallUndo();
+        }
+
+        private void Redo(object sender, RoutedEventArgs e)
+        {
+            _viewModel.CallRedo();
+        }
+
+        //private void SaveMode(object sender, RoutedEventArgs e)
+        //{
+        //    _viewModel.SaveSession(new Random());
+        //}
 
     }
 }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MessengerDashboard.Client.Events
 {
-    public class ClientSessionChangedEventArgs
+    public class ClientSessionChangedEventArgs : EventArgs
     {
         public ClientSessionChangedEventArgs(SessionInfo sessionInfo)
         {

@@ -1,16 +1,21 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Media;
+using MessengerWhiteboard.Interfaces;
+using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
 {
     public partial class ViewModel : INotifyPropertyChanged
     {
         public BindingList<ShapeItem> ShapeItems { get; set; }
+        public BindingList<string> SavedSessions { get; set; }
         public ShapeItem? _tempShape;
 
         private string _userID = "tempUser";
+        public bool isServer = true;
 
         //public string shapeMode = "Rectangle";
         public string activeTool = "Select";
@@ -32,7 +37,7 @@ namespace MessengerWhiteboard
         //shape attributes
         public Brush fillBrush = Brushes.Transparent;
         public Brush strokeBrush = Brushes.Black;
-        public float StrokeThickness = 1;
+        public double StrokeThickness { get; set; }
         //Brush borderBrush;                                 // stores color of the border
         int _strokeWidth;                                       // thickness of the stroke
         public IShapeReceiver machine;
@@ -48,6 +53,7 @@ namespace MessengerWhiteboard
             //this.fillBrush = null;                                            // stores color of the object (fill colour)
             //this.borderBrush = Brushes.Black;                                 // stores color of the border
             _strokeWidth = 1;
+            StrokeThickness = 1;
         }
 
         private static ViewModel? s_instance;
@@ -76,6 +82,7 @@ namespace MessengerWhiteboard
         {
             //Debug.WriteLine("Inside AddShape");
             ShapeItems.Add(shape);
+            Debug.Print(ShapeItems[^1].points.First().ToString());
         }
 
         public void RemoveShape(ShapeItem shape)
@@ -105,7 +112,18 @@ namespace MessengerWhiteboard
         {
             _userID = _userid.ToString();
             //_userID = GetUserID();
-            machine = ClientState.Instance;
+            if(_userid == 1)
+            {
+                isServer = false;
+            }
+            if(isServer)
+            {
+                machine = ServerState.Instance;
+            }
+            else
+            {
+                machine = ClientState.Instance;
+            }
             machine.SetUserId(_userID);
         }
 
@@ -116,18 +134,24 @@ namespace MessengerWhiteboard
             //this.UpdateStrokeWidth();
         }
 
-        public void ChangeStrokeBrush(string bcolour)
+        public void ChangeStrokeBrush(Brush bcolour)
         {
-            strokeBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(bcolour));
+            strokeBrush = bcolour;
             Trace.WriteLine("Whiteboard View Model :: border colour changed to : " + bcolour);
             //this.UpdateBorderBrush();
         }
 
-        public void ChangeFillBrush(string fcolour)
+        public void ChangeFillBrush(Brush fcolour)
         {
-            fillBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(fcolour)); ;
+            fillBrush = fcolour;
             Trace.WriteLine("Whiteboard View Model :: fill colour changed to : " + fcolour);
             //this.UpdateFillBrush();
+        }
+
+        public void ClearScreen()
+        {
+            ShapeItems.Clear();
+            machine.OnShapeReceived(null, Operation.Clear);
         }
 
         //public void UpdateStrokeWidth()

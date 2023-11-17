@@ -1,16 +1,4 @@
-﻿/******************************************************************************
- * Filename    = ChatMessengerUnitTests.cs
- *
- * Author      = Ramaswamy Krishnan-Chittur
- *
- * Product     = GuiAndDistributedDemo
- * 
- * Project     = UnitTesting
- *
- * Description = Unit tests for the chat messenger.
- *****************************************************************************/
-/*
-using MessengerNetworking.Communicator;
+﻿using MessengerNetworking.Communicator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using MessengerNetworking.NotificationHandler;
@@ -108,7 +96,7 @@ namespace MessengerTests.MessengerNetworkingTest
 
 
     }
-        *//*
+        */
 
         /// <summary>
         /// Processor for chat messages.
@@ -168,4 +156,4 @@ namespace MessengerTests.MessengerNetworkingTest
         }
     }
 }
-*/
+

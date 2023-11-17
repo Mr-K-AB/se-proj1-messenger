@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using MessengerApp.Stores;
 using MessengerApp.ViewModels;
 using MessengerDashboard;
+using MessengerDashboard.Client;
+using MessengerDashboard.Server;
 
 namespace MessengerApp.Commands
 {
@@ -13,13 +15,34 @@ namespace MessengerApp.Commands
     {
         private readonly NavigationStore _navigationStore;
 
+        private readonly IClientSessionController _client;
+
+        private readonly IServerSessionController _server;
+
+        private bool _connected = false;
+
         public NavigateServerMeetCommand(NavigationStore navigationStore)
         {
             _navigationStore = navigationStore;
+            _client = DashboardFactory.GetClientSessionController();
+            _server = DashboardFactory.GetServerSessionController();
         }
         public override async void Execute(object parameter)
         {
-            _navigationStore.CurrentViewModel = new ServerMeetViewModel(_navigationStore);
+            string ip = _server.ConnectionDetails.IpAddress;
+            int port = _server.ConnectionDetails.Port;
+            _connected = _client.ConnectToServer(
+                ip,
+                port,
+                15000,
+                _navigationStore.AuthResult.UserName,
+                _navigationStore.AuthResult.UserEmail,
+                _navigationStore.AuthResult.UserImage);
+
+            if (_connected)
+            {
+                _navigationStore.CurrentViewModel = new ServerMeetViewModel(_navigationStore);
+            }
         }
     }
 }

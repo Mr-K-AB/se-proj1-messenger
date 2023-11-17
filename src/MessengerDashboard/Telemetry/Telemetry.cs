@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using MessengerDashboard.Client;
+using MessengerDashboard.Server;
 
 namespace MessengerDashboard.Telemetry
 {
@@ -11,160 +12,113 @@ namespace MessengerDashboard.Telemetry
 
     public class TelemetryManager : ITelemetry
     {
-        private readonly int _timeThreshold = 30;
-
         private readonly Dictionary<DateTime, int> _timeStampToUserCountMap = new();
-        private readonly Dictionary<int, DateTime> _userToJoiningTimeMap = new();
-        private readonly Dictionary<int, DateTime> _userLeavingTimeMap = new();
-        private readonly Dictionary<int, int> _userChatCountMap = new();
-        private readonly Dictionary<int, string> _userIdToEmailMap = new();
-        private readonly Dictionary<string, string> _emailToUsernameMap = new();
-        private readonly Dictionary<string, int> _usernameToChatCountMap = new();
+        private readonly Dictionary<int, UserActivity> _userIdToUserActivityMap = new();
         private readonly DateTime _sessionStartTime = DateTime.Now;
 
         public event EventHandler AnalysisChanged;
 
-        public void UpdateUsernameToChatCount()
+        public void SubscribeToServerSessionController(ServerSessionController serverSessionController)
         {
-            _usernameToChatCountMap.Clear();
+            serverSessionController.SessionUpdated += SessionUpdatedHandler;
+        }
 
-            foreach (KeyValuePair<int, int> chatCountEntry in _userChatCountMap)
+        private void SessionUpdatedHandler(object? sender, Server.Events.SessionUpdatedEventArgs e)
+        {
+            lock (this)
             {
-                string userEmail = _userIdToEmailMap[chatCountEntry.Key];
-                string username = _emailToUsernameMap[userEmail];
+                DateTime currentTime = DateTime.Now;
+                Trace.WriteLine("Dashboard: Updating Telemetry");
+                UpdateUserCountHistory(e.Session, currentTime);
+                UpdateJoiningTimeOfUsers(e.Session, currentTime);
+                UpdateLeavingTimeOfUsers(e.Session, currentTime);
+                Trace.WriteLine("Dashboard: Updated Telemetry");
+            }
+       }
 
-                if (!_usernameToChatCountMap.ContainsKey(username))
+        private bool AddUserIfNotPresent(UserInfo userInfo, DateTime currentTime)
+        {
+            if (!_userIdToUserActivityMap.ContainsKey(userInfo.UserId))
+            {
+                UserActivity userActivity = new()
                 {
-                    _usernameToChatCountMap[username] = chatCountEntry.Value;
-                }
-                else
-                {
-                    _usernameToChatCountMap[username] += chatCountEntry.Value;
-                }
+                    UserName = userInfo.UserName,
+                    UserEmail = userInfo.UserEmail,
+                    EntryTime = currentTime,
+                    UserChatCount = 0
+                };
+                _userIdToUserActivityMap.Add(userInfo.UserId, userActivity);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
-        public Analysis Analyze(List<string> chatData)
+        public Analysis UpdateAnalysis(Dictionary<int, Tuple<UserInfo, List<string>>> userIdToUserInfoAndChatMap)
         {
-            //DateTime currentTime = DateTime.Now;
-            UpdateUserIdToChatCount();
-            UpdateUsernameToChatCount();
-            int totalChatCount = 0;
-            int totalUsers = 0;
-
-            foreach (KeyValuePair<int, int> userChatCount in _userChatCountMap)
+            lock (this)
             {
-                totalChatCount += userChatCount.Value;
-                totalUsers++;
-            }
-
-            Analysis sessionAnalytics = new(_userChatCountMap, new(), new(), new(), new());
-            {
-                /*
-                    ChatCountPerUserID = UserChatCount,
-                    UserCountAtTimeStamp = UserCountHistory,
-                    UserNameToChatCount = UsernameToChatCount,
-                    InsincereMembers = ActiveMembers,
-                */
-            };
-
-            ;
-            sessionAnalytics.TotalChatCount = totalChatCount;
-            sessionAnalytics.TotalUserCount = totalUsers;
-            return sessionAnalytics;
-        }
-
-        // TODO: Saving Analysis
-        public void SaveAnalytics()
-        {
-            // SessionAnalytics sessionAnalytics = GetTelemetryAnalytics();
-            // TODO: Save the analytics to a persistent storage or cloud
-        }
-
-        // TODO: Integrate with chat module
-        public void UpdateUserIdToChatCount()
-        {
-            /*
-            UserChatCount.Clear();
-            foreach (string chatMessage in chatData)
-            {
-                if (UserChatCount.ContainsKey(chatMessage.SenderID))
+                DateTime currentTime = DateTime.Now;
+                foreach (Tuple<UserInfo, List<string>> userInfoAndChat in userIdToUserInfoAndChatMap.Values)
                 {
-                    UserChatCount[chatMessage.SenderID]++;
+                    UserInfo userInfo = userInfoAndChat.Item1;
+                    AddUserIfNotPresent(userInfo, currentTime);
+                    UserActivity userActivity = _userIdToUserActivityMap[userInfo.UserId];
+                    userActivity.UserChatCount += userInfoAndChat.Item2.Count;
                 }
-                else
+
+                int totalChatCount = 0;
+                int totalUsers = 0;
+
+                foreach (UserActivity userActivity in _userIdToUserActivityMap.Values)
                 {
-                    UserChatCount.Add(chatMessage.SenderID, 1);
+                    totalChatCount += userActivity.UserChatCount;
+                    totalUsers++;
                 }
+
+                Analysis sessionAnalytics = new(_userIdToUserActivityMap, _timeStampToUserCountMap, totalUsers, totalChatCount);
+                return sessionAnalytics;
             }
-            */
-        }
+       }
 
-        //TODO:Add Comments
-        public void UpdateEmailToUsername(SessionInfo sessionData)
-        {
-            foreach (UserInfo user in sessionData.Users)
-            {
-                if (!_emailToUsernameMap.ContainsKey(user.UserEmail))
-                {
-                    _emailToUsernameMap[user.UserEmail] = user.UserName;
-                }
-            }
-        }
-
-        public void OnAnalyticsChanged(SessionInfo sessionData, DateTime currentTime)
-        {
-            Trace.WriteLine("Dashboard: Updating Telemetry");
-            UpdateUserCountHistory(sessionData, currentTime);
-            UpdateJoiningTimeOfUsers(sessionData, currentTime);
-            UpdateLeavingTimeOfUsers(sessionData, currentTime);
-            UpdateEmailToUsername(sessionData);
-            Trace.WriteLine("Dashboard: Updated Telemetry");
-        }
-
-        //TODO: AddComments
-        public void UpdateUserCountHistory(SessionInfo sessionData, DateTime currentTime)
+        private void UpdateUserCountHistory(SessionInfo sessionData, DateTime currentTime)
         {
             _timeStampToUserCountMap[currentTime] = sessionData.Users.Count;
         }
 
-
-        //TODO: Add Comments
-        public void UpdateJoiningTimeOfUsers(SessionInfo sessionData, DateTime currentTime)
+        private void UpdateJoiningTimeOfUsers(SessionInfo sessionData, DateTime currentTime)
         {
-            foreach (UserInfo user in sessionData.Users)
+            foreach (UserInfo userInfo in sessionData.Users)
             {
-                if (!_userToJoiningTimeMap.ContainsKey(user.UserId))
+                AddUserIfNotPresent(userInfo, currentTime);
+            }
+        }
+
+        private void UpdateLeavingTimeOfUsers(SessionInfo sessionData, DateTime currentTime)
+        {
+            foreach (int userId in _userIdToUserActivityMap.Keys)
+            {
+                
+                if (!SessionContainsUserId(sessionData, userId) && _userIdToUserActivityMap[userId].ExitTime != DateTime.MinValue)
                 {
-                    _userToJoiningTimeMap[user.UserId] = currentTime;
+                    _userIdToUserActivityMap[userId].ExitTime = currentTime;
                 }
             }
         }
 
-        //TODO: Add Comments
-        public void UpdateLeavingTimeOfUsers(SessionInfo sessionData, DateTime currentTime)
+        private bool SessionContainsUserId(SessionInfo sessionInfo, int userId)
         {
-            foreach (KeyValuePair<int, DateTime> userEntry in _userToJoiningTimeMap)
+            bool contains = false;
+            foreach (UserInfo user in sessionInfo.Users)
             {
-                bool contains1 = false;
-                foreach (UserInfo user in sessionData.Users)
+                if (user.UserId == userId)
                 {
-                    if (user.UserId == userEntry.Key)
-                    {
-                        contains1 = true;
-                    }
-                }
-                if (!contains1 && !_userLeavingTimeMap.ContainsKey(userEntry.Key))
-                {
-                    _userLeavingTimeMap[userEntry.Key] = currentTime;
+                    contains = true;
                 }
             }
+            return contains;
         }
-
-        public Analysis GetTelemetryAnalytics()
-        {
-            return new Analysis(new(), new(), new(), 1, 1);
-        }
-
     }
 }

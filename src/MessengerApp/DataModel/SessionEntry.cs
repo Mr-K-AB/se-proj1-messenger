@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessengerDashboard
+namespace MessengerApp
 {
-    public class User
+    public class SessionEntry
     {
-        public string UserName
+        public string SessionName
         {
             get; set;
-
+            
         }
-        public string UserPicturePath { get; set; }
+        public string Summary { get; set; }
     }
 }

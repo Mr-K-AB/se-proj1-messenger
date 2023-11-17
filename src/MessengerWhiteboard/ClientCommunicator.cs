@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using MessengerNetworking.Communicator;
 using MessengerNetworking.Factory;
+using MessengerWhiteboard.Interfaces;
+using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
 {
@@ -10,6 +12,7 @@ namespace MessengerWhiteboard
         private static Serializer s_serializer;
         private static ICommunicator s_communicator;
         private static readonly string s_moduleID = "whiteboard";
+        private static Tuple<string, int> s_serverInfo;
 
         public static ClientCommunicator Instance
         {
@@ -24,6 +27,11 @@ namespace MessengerWhiteboard
                 }
                 return s_instance;
             }
+        }
+
+        public void InitializeServerInfo(string ipAddr, int port)
+        {
+            s_serverInfo = new Tuple<string, int>(ipAddr, port);
         }
 
         public void SendToServer(WBShape shape)

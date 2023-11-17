@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Net.Sockets;
 using System.Security.AccessControl;
 using MessengerNetworking.Communicator;
@@ -31,7 +32,7 @@ namespace MessengerNetworking.Factory
         
         public static ICommunicator GetInstance()
         {
-
+            Trace.TraceInformation("Networking get instance called");
             return s_communicator;
         }
     }

@@ -26,18 +26,7 @@
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2.7*" />
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" Grid.ColumnSpan="2">
-                    <TextBlock Width="auto" Background="Gray" Text="{Binding Mode}" TextAlignment="Left" Margin="5 5 5 5 " />
-                </Grid>
-                <Grid Grid.Column="1">
-                    <Button Width="auto" Content="Switch" Background="Red" Margin="5 7 7 7 "   Command="{Binding SwitchModeCommand}"/>
-                </Grid>
-
-
+                <TextBlock Width="auto" Background="Gray" Text="{Binding Mode}" TextAlignment="Left" Margin="5 5 5 5 " />
             </Grid>
 
             <Grid Grid.Column="2" >

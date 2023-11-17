@@ -23,7 +23,7 @@ namespace MessengerContent.Client
         /// <summary>
         /// Module identifier for communicator
         /// </summary>
-        private readonly string _moduleIdentifier = "Content";
+        private readonly string _moduleIdentifier = "ContentServer";
         private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
 
@@ -51,19 +51,21 @@ namespace MessengerContent.Client
         /// </summary>
         public int UserID { get; set; }
 
+        public string UserName { get; set; }
+
         /// <summary>
         /// Serializes the ChatData object and send it to the server via networking module. 
         /// </summary>
         /// <param name="
         /// ">Instance of SendChatData class</param>
         /// <param name="eventType">Type of message event as string</param>
-        private void SerializeAndSendToServer(ChatData chatData, string eventType)
+        private void SerializeAndSendToServer(ChatData chatData, string eventType, string ip, int port)
         {
             try
             {
                 string xml = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[File Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.Broadcast(_moduleIdentifier, xml);
+                _communicator.SendMessage(ip, port, _moduleIdentifier, xml);
             }
             catch (Exception e)
             {
@@ -76,7 +78,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="sendContent">Instance of the SendChatData class</param>
         /// <exception cref="ArgumentException"></exception>
-        public void SendFile(SendChatData sendContent)
+        public void SendFile(SendChatData sendContent, string ip, int port)
         {
             // check message type
             if (sendContent.Type != MessageType.File)
@@ -96,12 +98,13 @@ namespace MessengerContent.Client
                 //ReceiverIDs = sendContent.ReceiverIDs,
                 ReplyThreadID = -1,
                 SenderID = UserID,
+                SenderName = UserName,
                 SentTime = DateTime.Now,
                 Starred = false,
                 Event = MessageEvent.New,
                 FileData = new SendFileData(sendContent.Data)
             };
-            SerializeAndSendToServer(sendData, "New");
+            SerializeAndSendToServer(sendData, "New", ip, port);
         }
 
         /// <summary>
@@ -109,7 +112,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="messageID">ID of the message</param>
         /// <param name="savePath">Path to which the file will be downloaded</param>
-        public void DownloadFile(int messageID, string savePath)
+        public void DownloadFile(int messageID, string savePath, string ip, int port)
         {
             // check for savePath
             if (savePath == null || savePath == "")
@@ -125,7 +128,7 @@ namespace MessengerContent.Client
                 Event = MessageEvent.Download,
                 FileData = null
             };
-            SerializeAndSendToServer(sendData, "Download");
+            SerializeAndSendToServer(sendData, "Download", ip, port);
         }
     }
 }

@@ -117,7 +117,7 @@ namespace MessengerContent.Client
             {
                 [MessageEvent.New] = NewMessageHandler,
                 [MessageEvent.Edit] = EditMessageHandler,
-                [MessageEvent.Delete] = DeleteMessageHandler,
+                [MessageEvent.Delete] = DeleteMessageHandler, 
                 [MessageEvent.Star] = StarMessageHandler,
                 [MessageEvent.Download] = DownloadMessageHandler
             };

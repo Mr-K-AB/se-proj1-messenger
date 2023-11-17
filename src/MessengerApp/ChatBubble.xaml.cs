@@ -60,8 +60,19 @@ namespace MessengerApp
                 MsgData = "Hello",
                 ReplyMessage = null,
                 isCurrentUser = true
-        };
+            };
+            ChatMessage c2 = new()
+            {
+                MessageID = 1,
+                Sender = "surya",
+                Time = DateTime.Now.ToShortTimeString(),
+                MessageType = true,
+                MsgData = "Hello",
+                ReplyMessage = "yo!",
+                isCurrentUser = false
+            };
             _msgCollection.Add(c1);
+            _msgCollection.Add(c2);
             MainChat.ItemsSource = _msgCollection; // Binding all the messages to the MainChat (ListBox)
         }
 

@@ -57,8 +57,6 @@ namespace MessengerNetworking.Communicator
             };
             _listenThread.Start();
             _senderThread.Start();
-            _endPoint = new(IPAddress.Parse(IpAddress), ListenPort);
-
         }
         public UdpCommunicator()
         {
@@ -82,7 +80,6 @@ namespace MessengerNetworking.Communicator
             };
             _listenThread.Start();
             _senderThread.Start();
-            _endPoint = new(IPAddress.Parse(IpAddress), ListenPort);
         }
 
         /// <inheritdoc />
@@ -200,7 +197,6 @@ namespace MessengerNetworking.Communicator
 
         public void Broadcast(string senderId, string message, int priority = 0)
         {
-            Trace.WriteLine("Broadcasting message to : " + _clients.Count);
             foreach (Tuple<string, int> client in _clients)
             {
                 SendMessage(client.Item1, client.Item2, senderId, message, priority);

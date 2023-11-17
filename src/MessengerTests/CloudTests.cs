@@ -1,8 +1,15 @@
-﻿using System;
+﻿/// <credits>
+/// <author>
+/// <name>Shubh Pareek</name>
+/// <rollnumber>112001039</rollnumber>
+/// </author>
+/// </credits>
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using MessengerCloud;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
@@ -15,12 +22,24 @@ namespace MessengerTests
     {
         private const string BaseUrl = @"http://localhost:7166/api/entity";
         private readonly RestClient _restClient;
+        private readonly AnalysisCloud _analysisCloud;
         readonly List<string> _sentences = new() { "Hi", "Hello", "Wow" };
 
 
         public CloudTests()
         {
             _restClient = new(BaseUrl);
+            _analysisCloud = new(
+                 new()
+                ,
+                 new()
+                ,
+                 2
+                ,
+                 2
+                );
+            _analysisCloud.TimeStampToUserCountMap.Add(DateTime.Now, 3);
+            _analysisCloud.UserIdToUserActivityMap.Add(4, new UserActivityCloud() { EntryTime = DateTime.Now, ExitTime = DateTime.Now, UserEmail = "hello", UserChatCount = 2, UserName = "shubh" });
         }
 
         /// <summary>
@@ -35,7 +54,7 @@ namespace MessengerTests
 
             // Create an entity.
             Logger.LogMessage("Create an entity.");
-            var info = new EntityInfoWrapper(_sentences, 1, 2, true, "-1");
+            var info = new EntityInfoWrapper(_sentences, 1, 2, true, "-1", _analysisCloud);
             Entity? postEntity = await _restClient.PostEntityAsync(info);
             // Get the entity.
             Logger.LogMessage("Get the entity.");
@@ -67,6 +86,10 @@ namespace MessengerTests
                 Assert.Fail($"Unexpected exception type. Message = {ex.Message}");
             }
         }
+        /// <summary>
+        /// adds entities, deletes them 
+        /// </summary>
+        /// <returns>nothing</returns>
         [TestMethod]
         public async Task TestDeleteAllAndGetAll()
         {
@@ -76,9 +99,9 @@ namespace MessengerTests
 
             // Create three entities.
             Logger.LogMessage("Create three entities.");
-            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, true, "-1"));
-            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, true, "0"));
-            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, true, "1"));
+            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, true, "-1", _analysisCloud));
+            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, true, "0", _analysisCloud));
+            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, true, "1", _analysisCloud));
 
             // Validate.
             Logger.LogMessage("Validate.");

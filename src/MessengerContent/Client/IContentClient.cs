@@ -5,12 +5,12 @@ namespace MessengerContent.Client
 {
     public interface IContentClient
     {
-        public void SetUser(int id, string name);
+        public void SetUser(int id, string name, string ip, int port);
         /// <summary>
         /// Sends chat or file data to clients
         /// </summary>
         /// <param name="chatData">Instance of SendChatData class</param>
-        void ClientSendData(SendChatData chatData);
+        void ClientSendData(SendChatData chatData, string ip, int port);
 
         /// <summary>
         /// Lets client subscribe to notifications from this class
@@ -23,26 +23,26 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="messageID">ID of the message</param>
         /// <param name="newMessage">Edited message</param>
-        void ClientEdit(int messageID, string newMessage);
+        void ClientEdit(int messageID, string newMessage, string ip, int port);
 
         /// <summary>
         /// Delete a previous chat message
         /// </summary>
         /// <param name="messageID">ID of the message</param>
-        void ClientDelete(int messageID);
+        void ClientDelete(int messageID, string ip, int port);
 
         /// <summary>
         /// Download file to specific path on client machine
         /// </summary>
         /// <param name="messageID">ID of the message</param>
         /// <param name="savePath">Path to which the file will be downloaded</param>
-        void ClientDownload(int messageID, string savePath);
+        void ClientDownload(int messageID, string savePath, string ip, int port);
 
         /// <summary>
         /// Star message for it to be included in the dashboard summary
         /// </summary>
         /// <param name="messageID"></param>
-        void ClientStar(int messageID);
+        void ClientStar(int messageID, string ip, int port);
 
         /// <summary>
         /// Get message thread corresponding to thread ID
@@ -58,5 +58,9 @@ namespace MessengerContent.Client
         int GetUserID();
 
         string GetUserName();
+
+        string GetIP();
+
+        int GetPort();
     }
 }

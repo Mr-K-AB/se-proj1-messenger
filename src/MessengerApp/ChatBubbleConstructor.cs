@@ -60,7 +60,7 @@ namespace MessengerApp
             {
                 if(message.MessageType == true)
                 {
-                    return (message.ReplyMessage != null) ? SentChatMessageTemplate : SentChatMessageNotReplyTemplate;
+                    return (message.ReplyMessage != null && message.ReplyMessage != "") ? SentChatMessageTemplate : SentChatMessageNotReplyTemplate;
                 }
                 return SentFileMessageTemplate;
             }

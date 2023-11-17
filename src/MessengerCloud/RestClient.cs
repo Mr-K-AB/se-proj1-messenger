@@ -1,10 +1,18 @@
-﻿using System.Diagnostics;
+﻿/// <credits>
+/// <author>
+/// <name>Shubh Pareek</name>
+/// <rollnumber>112001039</rollnumber>
+/// </author>
+/// </credits>
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using MessengerCloud;
 
-namespace MessengerTests
+namespace MessengerCloud
 {
     public class RestClient
     {

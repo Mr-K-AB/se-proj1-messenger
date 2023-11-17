@@ -51,7 +51,7 @@
             </Grid>
 
             <Grid Grid.Column="1" >
-                <Button Width="auto" Content="Refreah" Background="#00ad11" Command="{Binding RefreshCommand}" BorderThickness="0" Click="Button_Click" ToolTip="Refresh" Margin="5 5 5 5" FontWeight="Bold" FontStyle="Italic">
+                <Button Width="auto" Content="Refresh" Background="#00ad11" Command="{Binding RefreshCommand}" BorderThickness="0" Click="Button_Click" ToolTip="Refresh" Margin="5 5 5 5" FontWeight="Bold" FontStyle="Italic">
                     <!--<Image Source="../Images/refresh.png" Height="23" />-->
                     <Button.Resources>
                         <Style TargetType="Border">

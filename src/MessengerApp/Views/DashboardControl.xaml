@@ -51,8 +51,8 @@
             </Grid>
 
             <Grid Grid.Column="1" >
-                <Button Width="auto" Background="#00ad11" Command="{Binding RefreshCommand}" BorderThickness="0" Click="Button_Click" ToolTip="Refresh" Margin="5 5 5 5">
-                    <Image Source="../Images/refresh.png" Height="23" />
+                <Button Width="auto" Content="Refreah" Background="#00ad11" Command="{Binding RefreshCommand}" BorderThickness="0" Click="Button_Click" ToolTip="Refresh" Margin="5 5 5 5" FontWeight="Bold" FontStyle="Italic">
+                    <!--<Image Source="../Images/refresh.png" Height="23" />-->
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="10"></Setter>
@@ -82,8 +82,8 @@
             </Grid>
 
             <Grid Grid.Column="5" >
-                <Button Width="auto" Background="Red" Command="{Binding EndMeetCommand}"  ToolTip="End Meet" Margin="5 5 5 5">
-                    <Image Source="../Images/end-meet.png" Width="40"/>
+                <Button Width="auto" Content="End Meet" Background="Red" Command="{Binding EndMeetCommand}"  ToolTip="End Meet" Margin="5 5 5 5" FontWeight="Bold" FontStyle="Italic" >
+                    <!--<Image Source="../Images/end-meet.png" Width="40"/>-->
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="10"></Setter>

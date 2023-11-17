@@ -9,6 +9,7 @@ using Azure;
 using MessengerCloud;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using ITableEntity = Azure.Data.Tables.ITableEntity;
 
@@ -34,6 +35,7 @@ namespace MessengerCloud
             IsOverallSentimentPositive = info.IsOverallSentimentPositive;
             Sentences = info.Sentences;
             Analysis = info.Analysis;
+            Trace.WriteLine("[Entity]: new entity created ");
         }
 
         public Entity()   { }

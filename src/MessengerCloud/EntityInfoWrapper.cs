@@ -6,6 +6,7 @@
 /// </credits>
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -24,6 +25,7 @@ namespace MessengerCloud
             SessionId = sessionId;
 
             Analysis = obj;
+            Trace.WriteLine("[EntityInfoWrapper]: wrapper created");
         }
         public EntityInfoWrapper(){}
         [JsonInclude]

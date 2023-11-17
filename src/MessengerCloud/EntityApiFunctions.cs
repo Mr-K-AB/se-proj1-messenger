@@ -37,6 +37,7 @@ namespace MessengerCloud
                 [Table(TableName, Connection = ConnectionName)] IAsyncCollector<Entity> entityTable,
                 ILogger log)
         {
+            Trace.WriteLine("[EntityApi]: create entity called");
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             Debug.WriteLine("request Body is ",requestBody);
             EntityInfoWrapper info= JsonSerializer.Deserialize<EntityInfoWrapper>(requestBody);
@@ -45,6 +46,7 @@ namespace MessengerCloud
             await entityTable.AddAsync(value);
             log.LogInformation($"New entity created Id = {value.Id}.strings are ", value.Sentences[0]);
 
+            Trace.WriteLine("[EntityApi]: entity created");
             return new OkObjectResult(value);
         }
 
@@ -55,12 +57,14 @@ namespace MessengerCloud
         ILogger log,
         string id)
         {
+            Trace.WriteLine("[EntityApi]: get entity called");
             log.LogInformation($"Getting entity {id}");
             if (entity == null)
             {
                 log.LogInformation($"Entity {id} not found");
                 return new NotFoundResult();
             }
+            Trace.WriteLine("[EntityApi]: entity sent");
 
             return new OkObjectResult(entity);
         }
@@ -71,8 +75,10 @@ namespace MessengerCloud
         [Table(TableName, Connection = ConnectionName)] TableClient tableClient,
         ILogger log)
         {
+            Trace.WriteLine("[EntityApi]: get entities called");
             log.LogInformation("Getting all entity items");
             Page<Entity> page = await tableClient.QueryAsync<Entity>().AsPages().FirstAsync();
+            Trace.WriteLine("[EntityApi]: entities returned");
             return new OkObjectResult(page.Values);
         }
 
@@ -84,6 +90,7 @@ namespace MessengerCloud
         ILogger log,
         string id)
         {
+            Trace.WriteLine("[EntityApi]: Delete entity called");
             log.LogInformation($"Deleting entity by {id}");
             try
             {
@@ -94,6 +101,7 @@ namespace MessengerCloud
                 return new NotFoundResult();
             }
 
+            Trace.WriteLine("[EntityApi]: Deleted entity ");
             return new OkResult();
         }
 
@@ -103,6 +111,7 @@ namespace MessengerCloud
         [Table(TableName, ConnectionName)] TableClient entityClient,
         ILogger log)
         {
+            Trace.WriteLine("[EntityApi]: Delete all called ");
             log.LogInformation($"Deleting all entity items");
             try
             {
@@ -112,6 +121,7 @@ namespace MessengerCloud
             {
                 return new NotFoundResult();
             }
+            Trace.WriteLine("[EntityApi]: Deleted all ");
 
             return new OkResult();
         }

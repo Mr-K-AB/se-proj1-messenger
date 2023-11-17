@@ -46,7 +46,7 @@ namespace MessengerContent.Server
             _fileServer = new FileServer(_contentDatabase);
             _chatServer = new ChatServer(_contentDatabase);
             _serializer = new ContentSerializer();
-            _communicator.AddSubscriber("Content", _notificationHandler);
+            _communicator.AddSubscriber("ContentServer", _notificationHandler);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace MessengerContent.Server
         public void Send(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            Communicator.Broadcast("Content", message);
+            _communicator.Broadcast("ContentClient", message);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace MessengerContent.Server
         public void SendFile(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            Communicator.SendMessage(_communicator.IpAddress, _communicator.ListenPort, "Content", message);
+            _communicator.SendMessage(_communicator.IpAddress, _communicator.ListenPort, "ContentClient", message);
         }
 
         /// <summary>

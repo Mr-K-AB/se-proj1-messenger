@@ -108,7 +108,10 @@ namespace MessengerApp.ViewModels
             {
                 MsgToSend.ReplyThreadID = ThreadIds[replyMsgId];
             }
-
+            UserId = _model.GetUserID();
+            UserName = _model.GetUserName();
+            ServerIP = _model.GetIP();
+            ServerPort = _model.GetPort();
             _model.ClientSendData(MsgToSend, ServerIP, ServerPort);
         }
 
@@ -185,6 +188,8 @@ namespace MessengerApp.ViewModels
         /// <param name="contentData"> </param>
         public void OnMessageReceived(ReceiveChatData contentData)
         {
+            int senderID = contentData.SenderID;
+            string? senderName = contentData.SenderName;
             _ = ApplicationMainThreadDispatcher.BeginInvoke(
                       DispatcherPriority.Normal,
                       new Action<ReceiveChatData>(contentData =>
@@ -197,12 +202,6 @@ namespace MessengerApp.ViewModels
                                   Messages.Add(contentData.MessageID, contentData.Data);
                                   ThreadIds.Add(contentData.MessageID, contentData.ReplyThreadID);
 
-
-                                  UserId = _model.GetUserID();
-                                  UserName = _model.GetUserName();
-                                  ServerIP = _model.GetIP();
-                                  ServerPort = _model.GetPort();
-
                                   ReceivedMsg = new()
                                   {
 
@@ -210,7 +209,7 @@ namespace MessengerApp.ViewModels
                                       MessageType = contentData.Type == MessageType.Chat,
                                       MsgData = Path.GetFileName(contentData.Data),
                                       Time = contentData.SentTime.ToString("hh:mm tt"),
-                                      Sender = UserName,
+                                      Sender = senderName,
                                       isCurrentUser = UserId == contentData.SenderID,
                                       ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID]
                                   };
@@ -220,12 +219,6 @@ namespace MessengerApp.ViewModels
                               else if (contentData.Event == MessengerContent.Enums.MessageEvent.Edit || contentData.Event == MessengerContent.Enums.MessageEvent.Delete)
                               {
 
-                                  UserId = _model.GetUserID();
-                                  UserName = _model.GetUserName();
-                                  ServerIP = _model.GetIP();
-                                  ServerPort = _model.GetPort();
-
-
                                   // Creating object for the received message
                                   // Message object, ReceivedMsg, will modify the current user's _allmessages list upon property changed event
                                   ReceivedMsg = new()
@@ -234,7 +227,7 @@ namespace MessengerApp.ViewModels
                                       MessageType = contentData.Type == MessageType.Chat,
                                       MsgData = contentData.Data,
                                       Time = contentData.SentTime.ToString("hh:mm tt"),
-                                      Sender = UserName,
+                                      Sender = senderName,
                                       //Sender = contentData.SenderID,
                                       isCurrentUser = UserId == contentData.SenderID,
                                       ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID],

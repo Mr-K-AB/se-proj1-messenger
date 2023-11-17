@@ -57,6 +57,8 @@ namespace MessengerContent.DataModels
         /// </summary>
         public int SenderID;
 
+        public string? SenderName;
+
         /// <summary>
         /// Time at which the message was sent
         /// </summary>
@@ -82,6 +84,7 @@ namespace MessengerContent.DataModels
             ReplyMessageID = -1;
             ReplyThreadID = -1;
             SenderID = -1;
+            SenderName = null;
             SentTime = new DateTime();
             Starred = false;
         }

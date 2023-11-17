@@ -18,7 +18,7 @@ namespace MessengerApp.ViewModels
         public ICommand NavigateHomeCommand { get; }
         public ICommand NavigateClientDashboardCommand { get; }
 
-        public DashboardViewModel SubViewModel => _navigationStore.SubViewModel;
+        public object SubViewModel => _navigationStore.SubViewModel;
 
         private readonly DashboardMemberViewModel _dashboardViewModel;
 

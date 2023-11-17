@@ -21,8 +21,8 @@ namespace MessengerApp.Stores
             }
         }
 
-        private DashboardViewModel _subViewModel;
-        public DashboardViewModel SubViewModel
+        private object _subViewModel;
+        public object SubViewModel
         {
             get => _subViewModel;
             set

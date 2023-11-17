@@ -12,8 +12,12 @@ namespace MessengerDashboard.UI.ViewModels
 {
     public class SessionsViewModel : ViewModel
     {
-        public SessionsViewModel()
+        protected readonly string _cloudUrl = @"http://localhost:7166/api/entity"; 
+
+        public SessionsViewModel() 
         {
+            LocalCommand = new LocalCommand(this);
+            CloudCommand = new CloudCommand(_cloudUrl, this);
         }
 
         private List<TimeStampChatCountEntry> _timeStampChatCountEntries;
@@ -87,5 +91,8 @@ namespace MessengerDashboard.UI.ViewModels
             set => SetProperty(ref _overallSentiment, value);
         }
 
+        public ICommand LocalCommand { get; set; }
+
+        public ICommand CloudCommand { get; set; }
     }
 }

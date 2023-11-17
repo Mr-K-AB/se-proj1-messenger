@@ -16,11 +16,19 @@ namespace MessengerDashboard.UI.ViewModels
     {
         public DashboardMemberViewModel()
         {
-            _client.SessionChanged += HandleSessionChanged;
-            _client.TelemetryAnalysisChanged += HandleTelemetryAnalysisChanged;
-            _client.SummaryChanged += HandleSummaryChanged;
-            _client.SentimentChanged += HandleSentimentChanged;
-            Mode = (_client.SessionInfo.SessionMode == SessionMode.Exam) ? "Exam" : "Lab";
+            _client.SessionExited += HandleSessionExited;
+        }
+
+        protected void HandleSessionExited(object? sender, Client.Events.SessionExitedEventArgs e)
+        {
+            lock (this)
+            {
+                EntityInfoWrapper entity = CreateSessionSaveData(e.Summary, e.Sentiment, e.TelemetryAnalysis);
+                if (IsLocalSavingEnabled)
+                {
+                    SaveSessionToLocalStorage(entity);
+                }
+            }
         }
     }
 }

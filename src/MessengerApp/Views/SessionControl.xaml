@@ -65,15 +65,25 @@
                     </Grid>
                     <Grid Grid.Row="1">
                         <Border BorderBrush="LightGray" BorderThickness="5" CornerRadius="10" Margin="3 3 3 0">
-                            <ListView Grid.Column="0" x:Name="ContactsLV" Background="LightGray" ItemsSource="{Binding Enteries}" d:ItemsSource="{d:SampleData ItemCount=2}" BorderThickness="0" >
+                            <ListView Grid.Column="0" x:Name="ContactsLV" Background="LightGray" ItemsSource="{Binding Sessions}" d:ItemsSource="{d:SampleData ItemCount=2}" BorderThickness="0" >
                                 <ListView.ItemTemplate>
-
                                     <DataTemplate>
-
                                         <Grid Margin="5, 10, 0, 10">
-                                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"  Text="{Binding SessionName}" Foreground="White" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Width="160" />
+                                            <Button Command="{Binding ExpandCommand}">
+                                                <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"  Text="{Binding SessionName}" VerticalAlignment="Center" TextAlignment="center" FontSize="15">
+                                                    <TextBlock.Resources>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="BorderThickness" Value="0"/>
+                                                        </Style>
+                                                    </TextBlock.Resources>
+                                                </TextBlock>
+                                                <Button.Resources>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="BorderThickness" Value="0"/>
+                                                    </Style>
+                                                </Button.Resources>
+                                            </Button>
                                         </Grid>
-
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
@@ -84,14 +94,14 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Width="auto" Content="Local" Background="LightGray" Command="{Binding SessionRefreshCommand}" BorderThickness="0" Margin="3 3 3 0">
+                        <Button Width="auto" Content="Local" Background="LightGray" Command="{Binding LocalCommand}" BorderThickness="0" Margin="3 3 3 0">
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="15"></Setter>
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        <Button Grid.Column="1" Width="auto" Content="Cloud" Background="LightGray" Command="{Binding SessionRefreshCommand}" BorderThickness="0" Margin="3 3 3 0">
+                        <Button Grid.Column="1" Width="auto" Content="Cloud" Background="LightGray" Command="{Binding CloudCommand}" BorderThickness="0" Margin="3 3 3 0">
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="15"></Setter>

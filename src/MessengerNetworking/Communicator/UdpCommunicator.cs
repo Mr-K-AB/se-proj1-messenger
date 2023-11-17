@@ -147,7 +147,7 @@ namespace MessengerNetworking.Communicator
 
             foreach (KeyValuePair<string, INotificationHandler> subscriber in _subscribers)
             {
-                subscriber.Value.OnClientJoined(ipAddress, port);
+                //subscriber.Value.OnClientJoined(ipAddress, port);
             }
         }
 
@@ -160,7 +160,7 @@ namespace MessengerNetworking.Communicator
 
             foreach (KeyValuePair<string, INotificationHandler> subscriber in _subscribers)
             {
-                subscriber.Value.OnClientLeft(ipAddress, port);
+                //subscriber.Value.OnClientLeft(ipAddress, port);
             }
         }
 

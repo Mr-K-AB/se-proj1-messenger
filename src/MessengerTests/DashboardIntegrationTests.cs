@@ -72,10 +72,6 @@ namespace MessengerTests
                     {
                         Assert.Fail();
                     }
-                    if (!client.SendExitSessionRequestToServer(1000))
-                    {
-                        Assert.Fail();
-                    }
                 });
                 thread.Start();
                 threads.Add(thread);

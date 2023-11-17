@@ -1,4 +1,17 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = ChatBubble.xaml.cs
+*
+* Author      = M V Nagasurya
+*
+* Product     = Messenger
+* 
+* Project     = MessengerApp
+*
+* Description = Helper functions
+*****************************************************************************/
+
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -38,6 +51,17 @@ namespace MessengerApp
             DataContext = viewModel;
 
             _msgCollection = new ObservableCollection<ChatMessage>();
+            ChatMessage c1 = new()
+            {
+                MessageID = 1,
+                Sender = "surya",
+                Time = DateTime.Now.ToShortTimeString(),
+                MessageType = true,
+                MsgData = "Hello",
+                ReplyMessage = null,
+                isCurrentUser = true
+        };
+            _msgCollection.Add(c1);
             MainChat.ItemsSource = _msgCollection; // Binding all the messages to the MainChat (ListBox)
         }
 

@@ -83,6 +83,8 @@ namespace MessengerScreenshare.Server
                 int clientId = packet.Id;
                 string clientName = packet.Name;
                 ClientDataHeader header = Enum.Parse<ClientDataHeader>(packet.Header);
+                int imgCount = packet.ImgCount;
+                int fragmentOffset = packet.Offset;
                 string clientData = packet.Data;
                 Trace.WriteLine(Utils.GetDebugMessage(header.ToString()));
                 switch (header)
@@ -94,7 +96,7 @@ namespace MessengerScreenshare.Server
                         DeregisterClient(clientId);
                         break;
                     case ClientDataHeader.Image:
-                        PutImage(clientId, clientData);
+                        PutImage(clientId, clientData, fragmentOffset, imgCount);
                         break;
                     case ClientDataHeader.Confirmation:
                         UpdateTimer(clientId);
@@ -198,7 +200,7 @@ namespace MessengerScreenshare.Server
                 }
             }
         }
-        private void PutImage(int clientId, string image)
+        private void PutImage(int clientId, string data, int fragmentOffset, int imgCount)
         {
             lock (_subscribers)
             {
@@ -206,8 +208,48 @@ namespace MessengerScreenshare.Server
                 {
                     try
                     {
-                        client.PutImage(image, client.TaskId);
-                        Trace.WriteLine(Utils.GetDebugMessage($"Successfully received image of the client with Id: {clientId}", withTimeStamp: true));
+                        // Dictionary to store image fragments for each image
+                        client.ImageFragments ??= new Dictionary<int, StringBuilder>();
+
+                        // If the image fragment container doesn't exist, create it
+                        if (!client.ImageFragments.TryGetValue(imgCount, out StringBuilder imageFragmentContainer))
+                        {
+                            imageFragmentContainer = new StringBuilder();
+                            client.ImageFragments[imgCount] = imageFragmentContainer;
+                        }
+                        if (!imageFragmentContainer.ToString().Contains($"|{fragmentOffset}|"))
+                        {
+                            // Concatenate the received image packet to the StringBuilder for the specific image
+                            imageFragmentContainer.Append($"|{fragmentOffset}|{data}");
+
+                            // Check if all fragments for the current image have been received
+                            if (client.ImageFragments[imgCount].ToString().Split('|').Length - 1 == 500)
+                            {
+                                // Now, imageFragmentContainer contains the complete image as a single string
+                                // You can send or process the complete image here
+
+                                string completeImage = imageFragmentContainer.ToString().Replace($"|{fragmentOffset}|", "");
+
+                                // Clear the StringBuilder for this image
+                                client.PutImage(completeImage, client.TaskId);
+                                client.ImageFragments[imgCount].Clear();
+
+
+                                Trace.WriteLine(Utils.GetDebugMessage($"Successfully received and processed image of the client with Id: {clientId}, Image No: {imgCount}", withTimeStamp: true));
+                            }
+                            
+                            else
+                            {
+                                Trace.WriteLine(Utils.GetDebugMessage($"Received image packet {fragmentOffset} of {imgCount} from the client with Id: {clientId}", withTimeStamp: true));
+                            }
+
+
+                        }
+                        else
+                        {
+                            // Handle the case where the same fragmentOffset comes twice
+                            Trace.WriteLine(Utils.GetDebugMessage($"Duplicate image packet {fragmentOffset} received from the client with Id: {clientId}", withTimeStamp: true));
+                        }
                     }
                     catch (Exception e)
                     {
@@ -250,7 +292,7 @@ namespace MessengerScreenshare.Server
             {
                 int product = numRowsColumns.Rows * numRowsColumns.Cols;
 
-                var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), JsonSerializer.Serialize(product));
+                var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), 0, 0, JsonSerializer.Serialize(product));
                 string packedData = JsonSerializer.Serialize(packet);
 
                 _communicator.Broadcast(Utils.ClientIdentifier, packedData);

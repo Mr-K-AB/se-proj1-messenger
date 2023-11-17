@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -33,7 +34,7 @@ namespace MessengerScreenshare.Server
         /// The data model defining the callback for the timeout.
         /// </summary>
         private readonly ITimer _serverTimeout;
-
+        public Dictionary<int, StringBuilder>? ImageFragments { get; set; }
         /// <summary>
         /// It will store the image receiving from the clients.
         /// </summary>

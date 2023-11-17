@@ -121,7 +121,7 @@ namespace MessengerDashboard.Client
                 UserInfo userInfo = new(clientUsername, -1, clientEmail, clientPhotoUrl);
                 ClientPayload clientPayload = new(Operation.AddClient, ConnectionDetails.IpAddress, ConnectionDetails.Port, userInfo);
                 string serializedMessage = _serializer.Serialize(clientPayload);
-                _communicator.SendMessage(serverIpAddress, serverPort, _serverModuleIdentifier, serializedMessage);
+                _communicator.SendMessage(serverIpAddress, serverPort, _serverModuleIdentifier, serializedMessage, 1);
                 Trace.WriteLine("Dashboard: Sent Connection Request");
             }
             bool connected;

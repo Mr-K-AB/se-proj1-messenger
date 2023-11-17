@@ -130,7 +130,7 @@ namespace MessengerDashboard.Server
             {
                 serverPayload = new ServerPayload(operation, sessionInfo, user, summary, sessionAnalytics, sentiment);
                 string serializedData = _serializer.Serialize(serverPayload);
-                _communicator.SendMessage(ip, port, _clientModuleIdentifier, serializedData);
+                _communicator.SendMessage(ip, port, _clientModuleIdentifier, serializedData, 1);
             }
             Trace.WriteLine("Dashboard: Data sent to specific client");
         }

@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\" />
     <None Remove="Images\bucket.png" />
     <None Remove="Images\clear.png" />
     <None Remove="Images\color.png" />

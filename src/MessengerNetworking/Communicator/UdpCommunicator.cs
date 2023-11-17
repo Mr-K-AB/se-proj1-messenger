@@ -173,6 +173,13 @@ namespace MessengerNetworking.Communicator
             string ipString = "127.0.0.1";
             foreach (IPAddress address in hostEntry.AddressList)
             {
+                if (address.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    ipString = address.ToString();
+                }
+            }            
+            foreach (IPAddress address in hostEntry.AddressList)
+            {
                 if (address.AddressFamily == AddressFamily.InterNetwork && IsIPLocalhost(address.ToString()))
                 {
                     ipString = address.ToString();
@@ -299,6 +306,9 @@ namespace MessengerNetworking.Communicator
             }
             else
             {
+                // set buffer size to 128MB
+                socket.SendBufferSize = 128 * 1024 * 1024;
+                Debug.WriteLine(socket.SendBufferSize);
                 int bytesSent = socket.SendTo(sendBuffer, endPoint);
                 Debug.Assert(bytesSent == sendBuffer.Length);
                 Trace.TraceInformation("Networking bytes sent " +  bytesSent.ToString() + " to endpoint " + endPoint.ToString());

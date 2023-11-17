@@ -103,7 +103,7 @@ namespace MessengerScreenshare.Server
         /// <param name="isDebugging">
         /// If we are in debugging mode.
         /// </param>
-        protected ScreenshareServerViewModel(bool isDebugging)
+        public ScreenshareServerViewModel(bool isDebugging)
         {
             // Get the instance of the underlying data model.
             _model = ScreenshareServer.GetInstance(this, isDebugging);

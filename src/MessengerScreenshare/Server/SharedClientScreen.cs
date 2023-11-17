@@ -34,7 +34,7 @@ namespace MessengerScreenshare.Server
         /// The data model defining the callback for the timeout.
         /// </summary>
         private readonly ITimer _serverTimeout;
-        public Dictionary<int, StringBuilder>? ImageFragments { get; set; }
+        //public Dictionary<int, StringBuilder>? ImageFragments { get; set; }
         /// <summary>
         /// It will store the image receiving from the clients.
         /// </summary>
@@ -133,22 +133,23 @@ namespace MessengerScreenshare.Server
             _tileHeight = 0;
             _tileWidth = 0;
 
-            if (!isDebug)
-            {
-                try
-                {
-                    Timer _timer = new();
-                    _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, e);
+            //if (!isDebug)
+            //{
+                //try
+                //{
+                    _timer = new();
+                    _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, Name, e);
                     _timer.AutoReset = false;
-                    UpdateTimer(_timer);
+                    //UpdateTimer(_timer);
+                    _timer.Interval = 20000;
                     _timer.Enabled = true;
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}", withTimeStamp: true));
-                    throw new Exception("Failed to create the timer", e);
-                }
-            }
+                //}
+                //catch (Exception e)
+                //{
+                    //Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}", withTimeStamp: true));
+                    //throw new Exception("Failed to create the timer", e);
+                //}
+            //}
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully created client with id: {Id} and name: {Name}", withTimeStamp: true));
         }
@@ -163,7 +164,7 @@ namespace MessengerScreenshare.Server
             try
             {
                 Timer _timer = new ();
-                _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, e);
+                _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, Name, e);
                 _timer.AutoReset = false;
                 UpdateTimer(_timer);
                 _timer.Enabled = true;

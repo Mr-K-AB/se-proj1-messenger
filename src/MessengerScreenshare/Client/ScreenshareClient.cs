@@ -40,8 +40,8 @@ namespace MessengerScreenshare.Client
         private readonly ScreenProcessor _processor;
 
         // Name and Id of the current client user
-        public string? _name;
-        public int _id;
+        public string? _name = "SuryaBhai";
+        public int _id = 10;
         // Tokens added to be able to stop the thread execution
         private bool _confirmationCancellationToken;
         private readonly CancellationTokenSource? _imageCancellation;
@@ -129,8 +129,8 @@ namespace MessengerScreenshare.Client
             string serializedData = JsonSerializer.Serialize(dataPacket);
             _communicator.Broadcast(Utils.ServerIdentifier, serializedData);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent REGISTER packet to server", withTimeStamp: true));
-            Task.Run(async () => await StartImageSendingAsync());
-            //await SendConfirmationPacketAsync();
+            //Task.Run(async () => await StartImageSendingAsync());
+            await SendConfirmationPacketAsync();
             Trace.WriteLine(Utils.GetDebugMessage("Started sending confirmation packet", withTimeStamp: true));
         }
 
@@ -221,16 +221,19 @@ namespace MessengerScreenshare.Client
                 //string serializedData = JsonSerializer.Serialize(dataPacket);
 
                 // Split the data into 500 fragments
-                List<string> dataFragments = SplitDataIntoFragments(serializedImg, 500);
+                /*List<string> dataFragments = SplitDataIntoFragments(serializedImg, 500);
                 int fragmentOffset = 1;
                 foreach (string fragment in dataFragments)
                 {
-                    DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), cnt, fragmentOffset, serializedImg);
+                    DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), cnt, fragmentOffset, fragment);
                     string serializedData = JsonSerializer.Serialize(dataPacket);
                     Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} fragment of size {fragment.Length}", withTimeStamp: true));
-                    _communicator.Broadcast(Utils.ServerIdentifier, fragment);
+                    _communicator.Broadcast(Utils.ServerIdentifier, serializedData);
                     fragmentOffset++;
-                }
+                }*/
+                DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), cnt, 0, serializedImg);
+                string serializedData = JsonSerializer.Serialize(dataPacket);
+                _communicator.Broadcast(Utils.ServerIdentifier, serializedData);
                 await Task.Delay(1); // Introduce a small delay for asynchronous behavior
             }
         }

@@ -27,7 +27,7 @@ namespace MessengerTestUI.ViewModels
 
         public ViewModelBase SubViewModel => _navigationStore.SubViewModel;
 
-        private readonly ClientSessionController _client = DashboardFactory.GetClientSessionController();
+        private readonly IClientSessionController _client = DashboardFactory.GetClientSessionController();
 
 
         public int Port { get; set; }

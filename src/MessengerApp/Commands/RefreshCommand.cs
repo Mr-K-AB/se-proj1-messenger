@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using MessengerDashboard.UI.ViewModels;
 
-namespace MessengerDashboard.UI.Commands
+namespace MessengerApp.Commands
 {
-    public class SessionRefreshCommand : ICommand
+    public class RefreshCommand : ICommand
     {
-        public SessionRefreshCommand(SessionsViewModel viewModel) { }
+        public RefreshCommand(object viewModel) { }
 
         public event EventHandler? CanExecuteChanged;
 

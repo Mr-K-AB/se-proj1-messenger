@@ -1,4 +1,4 @@
-using MessengerNetworking.Communicator;
+﻿using MessengerNetworking.Communicator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using MessengerNetworking.NotificationHandler;
@@ -96,7 +96,7 @@ namespace MessengerTests.MessengerNetworkingTest
 
 
     }
-        *//*
+        */
 
         /// <summary>
         /// Processor for chat messages.
@@ -156,4 +156,4 @@ namespace MessengerTests.MessengerNetworkingTest
         }
     }
 }
-*/
+

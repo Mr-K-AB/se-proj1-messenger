@@ -33,7 +33,7 @@ namespace MessengerApp.Views
 
         private void Session_Click(object sender, RoutedEventArgs e)
         {
-
+            MainContent.Content = new SessionControl();
         }
     }
 }

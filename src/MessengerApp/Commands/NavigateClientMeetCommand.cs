@@ -30,14 +30,14 @@ namespace MessengerApp.Commands
 
             _connected = _client.ConnectToServer(_homeViewModel.JoinMeetIP,
                 _homeViewModel.JoinMeetPort,
-                null,
+                10000,
                 _navigationStore.AuthResult.UserName,
                 _navigationStore.AuthResult.UserEmail,
                 _navigationStore.AuthResult.UserImage);
 
             if (_connected)
             {
-                _navigationStore.CurrentViewModel = new ClientMeetViewModel(_navigationStore, _client);
+                _navigationStore.CurrentViewModel = new ClientMeetViewModel(_navigationStore);
 
             }
         }

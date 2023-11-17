@@ -32,6 +32,7 @@
             </Grid>
 
             <Grid Grid.Column="1" >
+
                 <Button Width="auto" Background="#00ad11" Command="{Binding RefreshCommand}" BorderThickness="0" ToolTip="Refresh" Margin="5 5 5 5">
                     <Image Source="../Images/refresh.png" Height="23" />
                     <Button.Resources>
@@ -39,7 +40,7 @@
                             <Setter Property="CornerRadius" Value="10"></Setter>
                         </Style>
                     </Button.Resources>
-                </Button>
+              </Button>
             </Grid>
 
             <Grid Grid.Column="3" >

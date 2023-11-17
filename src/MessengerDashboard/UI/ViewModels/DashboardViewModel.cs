@@ -97,6 +97,22 @@ namespace MessengerDashboard.UI.ViewModels
             protected set => SetProperty(ref _userActivities, value);
         }
 
+        protected List<string> _userNames;
+
+        public List<string> UserNames
+        {
+            get => _userNames;
+            protected set => SetProperty(ref _userNames, value);
+        }
+
+        protected List<int> _userChatCounts;
+
+        public List<int> UserChatCounts
+        {
+            get => _userChatCounts;
+            protected set => SetProperty(ref _userChatCounts, value);
+        }
+
 
 
         public ICommand EndMeetCommand { get; } = new EndMeetCommand();
@@ -129,12 +145,19 @@ namespace MessengerDashboard.UI.ViewModels
             DateTimes = dateTimes;
             UserCounts = userCounts;
             List<UserActivityEntry> userActivities = new();
+            List<string> userNames = new();
+            List<int> userChatCounts = new();
             foreach (KeyValuePair<int, UserActivity> item in e.AnalysisResults.UserIdToUserActivityMap)
             {
-                userActivities .Add(new(item.Key, item.Value.UserChatCount,item.Value.UserName, item.Value.UserEmail,
+                userNames.Add(item.Value.UserName);
+                userChatCounts.Add(item.Value.UserChatCount);
+
+                userActivities.Add(new(item.Key, item.Value.UserChatCount, item.Value.UserName, item.Value.UserEmail,
                                 item.Value.EntryTime, item.Value.ExitTime));
             }
             UserActivities = userActivities;
+            UserNames = userNames;
+            UserChatCounts = userChatCounts;
         }
 
         protected void HandleSessionChanged(object? sender, Client.Events.ClientSessionChangedEventArgs e)

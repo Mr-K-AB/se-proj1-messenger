@@ -465,6 +465,7 @@ namespace MessengerContent.Client
             }
             // check if thread exists
             int key = receivedMessage.ReplyThreadID;
+            int temp = receivedMessage.ReplyMessageID;            
             // if message is a reply, check if message being replied to exists
             if (receivedMessage.ReplyMessageID != -1)
             {

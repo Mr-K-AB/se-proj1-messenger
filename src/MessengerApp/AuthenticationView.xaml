@@ -8,14 +8,20 @@
         Title="AuthenticationView" Height="600" Width="300">
     <Grid>
         <StackPanel VerticalAlignment="Center">
-            <TextBlock Text="App Name" FontSize="20" Margin="0 0 0 20" HorizontalAlignment="Center"/>
+            <TextBlock Text="Messenger App" FontSize="20" Margin="0 0 0 20" HorizontalAlignment="Center"/>
 
             <!-- Your content for the upper half goes here -->
 
             <!-- Empty space to push content to the upper half -->
             <StackPanel Height="50" />
 
-            <Button Content="Google Authenticate" Width="150" Height="40" HorizontalAlignment="Center" Command="{Binding AuthenticateButton_ClickCommand}"/>
+            <Button Content="Google Authenticate" Width="150" Height="40" HorizontalAlignment="Center" Command="{Binding AuthenticateButton_ClickCommand}">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"></Setter>
+                    </Style>
+                </Button.Resources>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

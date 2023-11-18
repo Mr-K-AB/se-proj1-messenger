@@ -130,8 +130,8 @@ namespace MessengerScreenshare.Client
             _communicator.Broadcast(Utils.ServerIdentifier, serializedData);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent REGISTER packet to server", withTimeStamp: true));
             //Task.Run(async () => await StartImageSendingAsync());
-            await SendConfirmationPacketAsync();
             Trace.WriteLine(Utils.GetDebugMessage("Started sending confirmation packet", withTimeStamp: true));
+            await SendConfirmationPacketAsync();
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace MessengerScreenshare.Client
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), cnt, 0, serializedImg);
                 string serializedData = JsonSerializer.Serialize(dataPacket);
                 _communicator.Broadcast(Utils.ServerIdentifier, serializedData);
-                await Task.Delay(1); // Introduce a small delay for asynchronous behavior
+                //await Task.Delay(1); // Introduce a small delay for asynchronous behavior
             }
         }
 

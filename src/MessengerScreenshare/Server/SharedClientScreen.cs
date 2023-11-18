@@ -138,7 +138,7 @@ namespace MessengerScreenshare.Server
                 //try
                 //{
                     _timer = new();
-                    _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, Name, e);
+                    _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, e);
                     _timer.AutoReset = false;
                     //UpdateTimer(_timer);
                     _timer.Interval = 20000;
@@ -164,7 +164,7 @@ namespace MessengerScreenshare.Server
             try
             {
                 Timer _timer = new ();
-                _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, Name, e);
+                _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, e);
                 _timer.AutoReset = false;
                 UpdateTimer(_timer);
                 _timer.Enabled = true;

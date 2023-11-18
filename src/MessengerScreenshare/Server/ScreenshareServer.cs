@@ -94,7 +94,7 @@ namespace MessengerScreenshare.Server
                         RegisterClient(clientId, clientName);
                         break;
                     case ClientDataHeader.Deregister:
-                        DeregisterClient(clientId, clientName);
+                        DeregisterClient(clientId);
                         break;
                     case ClientDataHeader.Image:
                         PutImage(clientId, clientData);
@@ -157,16 +157,16 @@ namespace MessengerScreenshare.Server
                     return; // Early exit.
                 }
             }
-            DataPacket confirmationPacket = new(clientId, clientName, ServerDataHeader.Send.ToString(), 0, 0, "");
-            string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
-            _communicator.Broadcast(Utils.ServerIdentifier, serializedConfirmationPacket);
+            //DataPacket confirmationPacket = new(clientId, clientName, ServerDataHeader.Send.ToString(), 0, 0, "");
+            //string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
+            //_communicator.Broadcast(Utils.ServerIdentifier, serializedConfirmationPacket);
             NotifyUX();
             NotifyUX(clientId, clientName, start: true);
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully registered the client - Id: {clientId}, Name: {clientName}", withTimeStamp: true));
         }
 
-        private void DeregisterClient(int clientId, string clientName)
+        private void DeregisterClient(int clientId)
         {
 
             lock (_subscribers)
@@ -174,9 +174,9 @@ namespace MessengerScreenshare.Server
                 if (_subscribers.TryGetValue(clientId, out SharedClientScreen? client))
                 {
                     _subscribers.Remove(clientId);
-                    DataPacket confirmationPacket = new(clientId, clientName, ServerDataHeader.Stop.ToString(), 0, 0, "");
-                    string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
-                    _communicator.Broadcast(Utils.ServerIdentifier, serializedConfirmationPacket);
+                    //DataPacket confirmationPacket = new(clientId, clientName, ServerDataHeader.Stop.ToString(), 0, 0, "");
+                    //string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
+                    //_communicator.Broadcast(Utils.ServerIdentifier, serializedConfirmationPacket);
                     NotifyUX();
                     NotifyUX(clientId, client.Name, start: false);
 
@@ -336,10 +336,10 @@ namespace MessengerScreenshare.Server
         }
 
 
-        public void OnTimeOut(object? source, int clientId, string clientName, ElapsedEventArgs e)
+        public void OnTimeOut(object? source, int clientId, ElapsedEventArgs e)
         {
 
-            DeregisterClient(clientId, clientName);
+            DeregisterClient(clientId);
             Trace.WriteLine(Utils.GetDebugMessage($"Timeout occurred for the client with id: {clientId}", withTimeStamp: true));
         }
 
@@ -362,7 +362,7 @@ namespace MessengerScreenshare.Server
                     // Deregister all the clients.
                     foreach (SharedClientScreen client in sharedClientScreens)
                     {
-                        DeregisterClient(client.Id, client.Name);
+                        DeregisterClient(client.Id);
                     }
                 }
 

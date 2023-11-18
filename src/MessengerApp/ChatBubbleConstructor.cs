@@ -46,6 +46,9 @@ namespace MessengerApp
         public DataTemplate? SentChatMessageNotReplyTemplate { get; set; }
 
         public DataTemplate? ReceivedChatMessageNotReplyTemplate { get; set; }
+        public DataTemplate? SentFileMessageNotReplyTemplate { get; set; }
+
+        public DataTemplate? ReceivedFileMessageNotReplyTemplate { get; set; }
 
         /// <summary>
         /// Select DataTemplate for the messages which are sent by us and received to us accordingly.
@@ -62,7 +65,7 @@ namespace MessengerApp
                 {
                     return (message.ReplyMessage != null && message.ReplyMessage != "") ? SentChatMessageTemplate : SentChatMessageNotReplyTemplate;
                 }
-                return SentFileMessageTemplate;
+                return (message.ReplyMessage != null && message.ReplyMessage != "") ? SentFileMessageTemplate : SentFileMessageNotReplyTemplate;
             }
             else
             {
@@ -70,7 +73,7 @@ namespace MessengerApp
                 {
                     return (message.ReplyMessage != null) ? ReceivedChatMessageTemplate : ReceivedChatMessageNotReplyTemplate;
                 }
-                return ReceivedFileMessageTemplate;
+                return (message.ReplyMessage != null) ? ReceivedFileMessageTemplate : ReceivedFileMessageNotReplyTemplate;
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -161,11 +161,13 @@ namespace MessengerApp.Views
         {
             _viewModel.ChangeMode(ViewModel.WBModes.SelectMode);
             _viewModel.ChangeTool("Select");
+            Cursor = Cursors.Arrow;
         }
         public void RectangleMode(object sender, RoutedEventArgs e)
         {
             _viewModel.ChangeTool("Rectangle");
             _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
+            Cursor = Cursors.Cross;
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 
@@ -173,6 +175,7 @@ namespace MessengerApp.Views
         {
             _viewModel.ChangeTool("Ellipse");
             _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
+            Cursor = Cursors.Cross;
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 
@@ -180,6 +183,7 @@ namespace MessengerApp.Views
         {
             _viewModel.ChangeTool("Line");
             _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
+            Cursor = Cursors.Cross;
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 
@@ -187,6 +191,7 @@ namespace MessengerApp.Views
         {
             _viewModel.ChangeTool("Text");
             _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
+            Cursor = Cursors.IBeam;
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 
@@ -208,6 +213,7 @@ namespace MessengerApp.Views
         {
             _viewModel.ChangeTool("Curve");
             _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
+            Cursor = Cursors.Pen;
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 

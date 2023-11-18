@@ -13,11 +13,11 @@ using MessengerDashboard.Telemetry;
 
 namespace MessengerDashboard.Client.Events
 {
-    public class AnalyticsChangedEventArgs
+    public class AnalysisChangedEventArgs : EventArgs
     {
         public Analysis? AnalysisResults { get; set; }
 
-        public AnalyticsChangedEventArgs(Analysis? analysisResults)
+        public AnalysisChangedEventArgs(Analysis? analysisResults)
         {
             AnalysisResults = analysisResults;
         }

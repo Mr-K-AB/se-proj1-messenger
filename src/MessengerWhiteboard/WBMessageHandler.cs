@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Threading;
 using MessengerNetworking.NotificationHandler;
+using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
 {
@@ -41,7 +42,7 @@ namespace MessengerWhiteboard
                         case Operation.Creation:
                             //foreach(ShapeItem shape in shapes)
                             //{
-                            Trace.WriteLine("HandleData: {0}", shapes[0].Geometry.ToString());
+                            Trace.WriteLine($"HandleData: {shapes[0].Id}");
                             CreateIncomingShape(shapes[0]);
                             serverState.OnShapeReceived(shapes[0], Operation.Creation);
                             //}
@@ -60,6 +61,12 @@ namespace MessengerWhiteboard
                                 serverState.OnShapeReceived(shape, Operation.Deletion);
                             }
                             break;
+                        case Operation.Clear:
+                            ClearIncomingShapes();
+                            serverState.OnShapeReceived(null, Operation.Clear);
+                            break;
+                            break;
+
                     }
                 }
                 catch (Exception e)
@@ -72,30 +79,31 @@ namespace MessengerWhiteboard
             {
                 try
                 {
+                    Debug.WriteLine("Inside Client HandleData");
                     WBShape deserializedData = serializer.DeserializeWBShape(data);
                     List<ShapeItem> shapes = serializer.DeserializeShapes(deserializedData.ShapeItems);
                     switch (deserializedData.Op)
                     {
                         case Operation.Creation:
-                            foreach (ShapeItem shape in shapes)
-                            {
-                                CreateIncomingShape(shape);
-                                serverState.OnShapeReceived(shape, Operation.Creation);
-                            }
+                            //foreach (ShapeItem shape in shapes)
+                            //{
+                            CreateIncomingShape(shapes[0]);
+                            //}
                             break;
                         case Operation.ModifyShape:
                             foreach (ShapeItem shape in shapes)
                             {
                                 ModifyIncomingShape(shape);
-                                serverState.OnShapeReceived(shape, Operation.ModifyShape);
                             }
                             break;
                         case Operation.Deletion:
                             foreach (ShapeItem shape in shapes)
                             {
                                 DeleteIncomingShape(shape);
-                                serverState.OnShapeReceived(shape, Operation.Deletion);
                             }
+                            break;
+                        case Operation.Clear:
+                            ClearIncomingShapes();
                             break;
                     }
                 }

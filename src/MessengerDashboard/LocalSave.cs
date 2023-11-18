@@ -13,14 +13,15 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using MessengerCloud;
+using System.Diagnostics;
 
 namespace MessengerDashboard
 {
-    public class LocalSave
+    public static class LocalSave
     {
-        private readonly string _path = "./savedInfo";
+        private static readonly string s_path = "./savedInfo";
 
-        public LocalSave()
+        static LocalSave()
         {
             string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string appDataFolder = Path.Combine(localAppData, "Messenger");
@@ -30,22 +31,22 @@ namespace MessengerDashboard
                 Directory.CreateDirectory(appDataFolder);
             }
 
-            _path = Path.Combine(appDataFolder, "sessionInfo.txt");
-
+            s_path = Path.Combine(appDataFolder, "sessionInfo.txt");
         }
 
-        public void AddEntity(EntityInfoWrapper entity)
+        public static void AddEntity(EntityInfoWrapper entity)
         {
             List<EntityInfoWrapper> res = ReadFromFile();
             res.Add(entity);
             SaveToFile(res);
         }
 
-        public List<EntityInfoWrapper> ReadFromFile()
+        public static List<EntityInfoWrapper> ReadFromFile()
         {
             try
             {
-                using StreamReader reader = new(_path);
+                Trace.WriteLine("Reading from" + s_path);
+                using StreamReader reader = new(s_path);
                 string jsonString = reader.ReadToEnd();
                 var serializer = new DataContractJsonSerializer(typeof(List<EntityInfoWrapper>));
                 using MemoryStream stream = new(System.Text.Encoding.UTF8.GetBytes(jsonString));
@@ -53,20 +54,18 @@ namespace MessengerDashboard
             }
             catch (FileNotFoundException)
             {
-                Console.WriteLine("File not found. Returning an empty list.");
+                Trace.WriteLine("File not found. Returning an empty list.");
                 return new List<EntityInfoWrapper>();
             }
         }
 
-        public void SaveToFile(List<EntityInfoWrapper> entities)
+        public static void SaveToFile(List<EntityInfoWrapper> entities)
         {
             var serializer = new DataContractJsonSerializer(typeof(List<EntityInfoWrapper>));
             using MemoryStream stream = new();
             serializer.WriteObject(stream, entities);
-            File.WriteAllText(_path, System.Text.Encoding.UTF8.GetString(stream.ToArray()));
+            File.WriteAllText(s_path, System.Text.Encoding.UTF8.GetString(stream.ToArray()));
         }
-
-
     }
 }
 

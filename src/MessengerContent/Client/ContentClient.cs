@@ -95,7 +95,7 @@ namespace MessengerContent.Client
             // subscribe to network module
             try
             {
-                _communicator.AddSubscriber("Content", _notificationHandler);
+                _communicator.AddSubscriber("ContentClient", _notificationHandler);
             }
             catch (Exception e)
             {
@@ -134,7 +134,7 @@ namespace MessengerContent.Client
                 _communicator = value;
                 try
                 {
-                    _communicator.AddSubscriber("Content", _notificationHandler);
+                    _communicator.AddSubscriber("ContentClient", _notificationHandler);
                 }
                 catch (Exception e)
                 {
@@ -152,12 +152,14 @@ namespace MessengerContent.Client
         {
             _userID = id;
             _chatHandler.UserID = id;
+            _chatHandler.UserName = name;
             _fileHandler.UserID = id;
+            _fileHandler.UserName = name;
             _name = name;
             _serverIP = ip;
             _serverPort = port;
         }
-
+           
 
         /// <summary>
         /// Check for valid reply message ID 

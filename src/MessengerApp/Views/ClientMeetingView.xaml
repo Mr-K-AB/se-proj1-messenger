@@ -4,14 +4,25 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MessengerApp.Views"
+             xmlns:viewmodels="clr-namespace:MessengerDashboard.UI.ViewModels;assembly=MessengerDashboard"
+             xmlns:screenshare="clr-namespace:MessengerScreenshare.Client;assembly=MessengerScreenshare"
+             xmlns:views="clr-namespace:MessengerApp.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <!-- Navigation Bar -->
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type viewmodels:DashboardMemberViewModel}">
+                <views:DashboardMemberControl/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type screenshare:ScreenshareClientViewModel}">
+                <views:ScreenshareClientControl/>
+            </DataTemplate>
+        </Grid.Resources>
         <Menu>
-            <MenuItem Header="Dashboard" Click="Dashboard_Click"/>
-            <MenuItem Header="Whiteboard" Click="WhiteBoard_Click"/>
-            <MenuItem Header="Screenshare" Click="ClientScreenshare_Click"/>
+            <MenuItem Header="Dashboard" Command="{Binding NavigateClientDashboardCommand}"/>
+            <MenuItem Header="Whiteboard"/>
+            <MenuItem Header="Screenshare" Command="{Binding NavigateClientScreenshareCommand}"/>
             <MenuItem Header="Participants"/>
             <MenuItem Header="Chat" Click="Chat_Click"/>
             <TextBlock Text="{Binding IP}"></TextBlock>
@@ -25,7 +36,7 @@
         <Button Content="Leave Meeting" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>
 
         <!-- Content Control for Dynamic Content -->
-        <ContentControl x:Name="MainContent" Margin="0,25,0,0"/>
+        <ContentControl Content="{Binding SubViewModel}" Margin="0,25,0,0"/>
 
     </Grid>
 </UserControl>

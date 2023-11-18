@@ -15,14 +15,12 @@ namespace MessengerTestUI.ViewModels
     {
         public ICommand NavigateHomeCommand { get; }
 
-        public  ServerSessionController Server { get; set; }
+        public IServerSessionController Server { get; } = DashboardFactory.GetServerSessionController();
         public int Port { get; set; }
         public string IP { get; set; }
 
         public DashboardServerViewModel(NavigationStore navigationStore)
         {
-            NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
-            Server = new();
             Server.SetDetails(navigationStore.AuthResult.UserName, navigationStore.AuthResult.UserEmail, navigationStore.AuthResult.UserImage);
 
             Port = Server.ConnectionDetails.Port;
@@ -30,15 +28,15 @@ namespace MessengerTestUI.ViewModels
 
             Server.SessionUpdated += Server_SessionUpdated;
 
-            //SwitchModeCommand = new SwitchModeCommand(this);
+            SwitchModeCommand = new SwitchModeCommand(this);
 
             RefreshCommand = new RefreshCommand(this);
             EndMeetCommand = new EndMeetCommand(this);
 
             List<User> users = new();
-            Server.SessionInfo.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
+            Server._sessionInfo.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
             Users = users;
-            Mode = (Server.SessionInfo.SessionMode == SessionMode.Exam) ? "Exam" : "Lab";
+            Mode = (Server._sessionInfo.SessionMode == SessionMode.Exam) ? "Exam" : "Lab";
         }
 
         private void Server_SessionUpdated(object? sender, MessengerDashboard.Server.Events.SessionUpdatedEventArgs e)
@@ -46,7 +44,7 @@ namespace MessengerTestUI.ViewModels
             List<User> users = new();
             e.Session.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
             Users = users;
-            Mode = Server.SessionInfo.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
+            Mode = Server._sessionInfo.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
         }
 
         private List<User> _users;

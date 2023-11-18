@@ -213,6 +213,7 @@
                                             </StackPanel>
 
                                             <!--<ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke" ItemsSource="{Binding CheckList}">
+
                                         </ListBox>-->
 
                                         </Grid>
@@ -235,6 +236,7 @@
                             </StackPanel>
                             
                         </Border>
+
 
                         <!--<StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" >
 
@@ -366,6 +368,7 @@
                                     <Image Source="../Images/line.png" Style="{StaticResource ImageStyle}" />
                                 </ToggleButton>
                                 <Popup IsOpen="{Binding IsChecked, ElementName=Line}" 
+
                             PlacementTarget="{Binding ElementName=Line}"
                             Placement="Right"
                             StaysOpen="False" AllowsTransparency="True" 
@@ -548,6 +551,7 @@
                                                 </Popup>
                                             </Grid>
                                             <!--<Grid Grid.Row="1">
+
                                             <ToggleButton Name="Size" ToolTip="Size" Style="{StaticResource ToggleButtonStyle}">
                                                 <Image Source="../Images/size.png" Style="{StaticResource ImageStyle}" />
                                             </ToggleButton>
@@ -646,10 +650,12 @@
                                                 </Button>
                                             </Grid>
                                             <!--<Grid Grid.Row="4">
+
                                             <Button Name="Triangle" ToolTip="Triangle" Style="{StaticResource ButtonStyle}">
                                                 <Image Source="../Images/triangle.png" Style="{StaticResource ImageStyle}" />
                                             </Button>
                                         </Grid>-->
+
                                         </Grid>
                                     </Border>
                                 </Popup>
@@ -662,6 +668,7 @@
                                     <Image Source="../Images/clear.png" Style="{StaticResource ImageStyle}" />
                                 </Button>
 
+
                             </StackPanel>
                         </Border>
 
@@ -672,12 +679,14 @@
                             <StackPanel Orientation="Vertical" Background="White" Margin="10">
 
 
+
                                 <Button Name="UndoButton" ToolTip="Undo" Style="{StaticResource ButtonStyle}" Click="Undo">
                                     <Image Source="../Images/undo.png" Style="{StaticResource ImageStyle}" />
                                 </Button>
 
                                 <Button Name="RedoButton" ToolTip="Redo" Style="{StaticResource ButtonStyle}" Click="Redo">
                                     <Image Source="../Images/redo.png" Style="{StaticResource ImageStyle}" />
+
 
                                 </Button>
 
@@ -687,6 +696,7 @@
                     </StackPanel>
 
                 </Grid>
+
 
                 
 

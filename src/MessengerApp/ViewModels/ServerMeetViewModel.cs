@@ -25,7 +25,7 @@ namespace MessengerApp.ViewModels
 
         private readonly NavigationStore _navigationStore;
 
-        public DashboardViewModel SubViewModel => _navigationStore.SubViewModel;
+        private DashboardViewModel _subViewModel => _navigationStore.SubViewModel;
 
         public ServerMeetViewModel(NavigationStore navigationStore)
         {
@@ -41,7 +41,7 @@ namespace MessengerApp.ViewModels
 
         private void NavigationStore_SubViewModelChanged()
         {
-            OnPropertyChanged(nameof(SubViewModel));
+            OnPropertyChanged(nameof(_subViewModel));
         }
     }
 }

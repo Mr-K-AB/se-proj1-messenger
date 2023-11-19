@@ -59,9 +59,15 @@ namespace MessengerScreenshare.Server
         /// Client may sends only a 'diff' instead of full image to server.
         /// So to retrieve full image using diff, this function is called.
         /// </summary>
-        /// <param name="curr">The 'diff' current image</param>
-        /// <param name="prev">Previous image</param>
-        /// <returns>Current image meant to be displayed</returns>
+        /// <param name="curr">
+        /// The 'diff' current image
+        /// </param>
+        /// <param name="prev">
+        /// Previous image
+        /// </param>
+        /// <returns>
+        /// Current image meant to be displayed
+        /// </returns>
         public static unsafe Bitmap Process(Bitmap curr, Bitmap prev)
         {
             BitmapData currData = curr.LockBits(new Rectangle(0, 0, curr.Width, curr.Height), ImageLockMode.ReadOnly, curr.PixelFormat);
@@ -101,8 +107,12 @@ namespace MessengerScreenshare.Server
         /// <summary>
         /// Method to decompress a byte array compressed by processor.
         /// </summary>
-        /// <param name="data">Byte array compressed using GZipStream</param>
-        /// <returns>Decompressed byte array</returns>
+        /// <param name="data">
+        /// Byte array compressed using GZipStream
+        /// </param>
+        /// <returns>
+        /// Decompressed byte array
+        /// </returns>
         public static byte[] DecompressByteArray(byte[] data)
         {
             using MemoryStream input = new(data);
@@ -191,7 +201,6 @@ namespace MessengerScreenshare.Server
 
         }
 
-
         /// <summary>
         /// Stitch new frame over prior image is implemented. Data received
         /// from client has '1' in front then new image has arrived hence 
@@ -201,7 +210,9 @@ namespace MessengerScreenshare.Server
         /// </summary>
         /// <param name="priorImage"></param>
         /// <param name="newFrame"></param>
-        /// <returns>New image after stitching</returns>
+        /// <returns>
+        /// New image after stitching
+        /// </returns>
         private Bitmap Stitch(Bitmap priorImage, string newFrame)
         {
             char isCompleteFrame = newFrame[newFrame.Length - 1];

@@ -183,7 +183,7 @@
                     <Border BorderThickness="5" BorderBrush="White" CornerRadius="10" Margin="0 2 0 2">
                         <lvc:CartesianChart Background="White">
                             <lvc:CartesianChart.Series>
-                                <lvc:LineSeries  Title="Users" Values="{Binding UserCounts}" StrokeThickness="3" Stroke="Gray"/>
+                                <lvc:LineSeries  Title="Users" Values="{Binding UserCounts}" StrokeThickness="2" Stroke="Gray" LineSmoothness="0"/>
                             </lvc:CartesianChart.Series>
                             <lvc:CartesianChart.AxisX>
                                 <lvc:Axis Title="Time" Labels="{Binding DateTimes}">

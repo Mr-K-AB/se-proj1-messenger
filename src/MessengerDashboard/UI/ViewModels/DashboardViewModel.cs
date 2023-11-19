@@ -22,9 +22,7 @@ namespace MessengerDashboard.UI.ViewModels
         public DashboardViewModel()
         {
             _client.SessionChanged += HandleSessionChanged;
-            _client.TelemetryAnalysisChanged += HandleTelemetryAnalysisChanged;
-            _client.SummaryChanged += HandleSummaryChanged;
-            _client.SentimentChanged += HandleSentimentChanged;
+            _client.Refreshed += HandleRefreshed;
             List<User> users = new();
             _client.SessionInfo.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
             Users = users;
@@ -104,6 +102,14 @@ namespace MessengerDashboard.UI.ViewModels
             set => SetProperty(ref _userCounts, value);
         }
 
+        int _maxUserCount = 5;
+        public int MaxUserCount 
+        {
+            get => _maxUserCount ;
+            set => SetProperty(ref _maxUserCount , value);
+        }
+
+
         protected List<UserActivityEntry> _userActivities;
         public List<UserActivityEntry> UserActivities
         {
@@ -139,43 +145,28 @@ namespace MessengerDashboard.UI.ViewModels
 
         public ICommand RefreshCommand { get; } = new RefreshCommand();
 
-
-        protected void HandleSentimentChanged(object? sender, Client.Events.SentimentChangedEventArgs e)
+        protected void HandleRefreshed(object? sender, Client.Events.RefreshedEventArgs e)
         {
             lock (this)
             {
-                OverallSentiment = e.Sentiment.IsOverallSentimentPositive ? "Positive" : "Negative";
-                PositiveChatCount = e.Sentiment.PositiveChatCount;
-                NegativeChatCount = e.Sentiment.NegativeChatCount;
-            }
-       }
-
-        protected void HandleSummaryChanged(object? sender, Client.Events.SummaryChangedEventArgs e)
-        {
-            lock (this)
-            {
-                Summary = string.Join(Environment.NewLine, e.Summary.Sentences);
-            }
-        }
-
-        protected void HandleTelemetryAnalysisChanged(object? sender, Client.Events.AnalysisChangedEventArgs e)
-        {
-            lock (this)
-            {
-                TotalChatCount = e.AnalysisResults.TotalChatCount;
+                TotalChatCount = e.TelemetryAnalysis.TotalChatCount;
                 List<string> dateTimes = new();
                 ChartValues<int> userCounts = new();
-                foreach (KeyValuePair<DateTime, int> item in e.AnalysisResults.TimeStampToUserCountMap)
+                int maxUserCount = 5;
+                foreach (KeyValuePair<DateTime, int> item in e.TelemetryAnalysis.TimeStampToUserCountMap)
                 {
                     dateTimes.Add(item.Key.ToString("HH:mm:ss"));
                     userCounts.Add(item.Value);
+                    maxUserCount = Math.Max(maxUserCount, item.Value + 3);
                 }
                 DateTimes = dateTimes;
                 UserCounts = userCounts;
+                MaxUserCount = maxUserCount;
+
                 List<UserActivityEntry> userActivities = new();
                 List<string> userNames = new();
                 ChartValues<int> userChatCounts = new();
-                foreach (KeyValuePair<int, UserActivity> item in e.AnalysisResults.UserIdToUserActivityMap)
+                foreach (KeyValuePair<int, UserActivity> item in e.TelemetryAnalysis.UserIdToUserActivityMap)
                 {
                     userNames.Add(item.Value.UserName);
                     userChatCounts.Add(item.Value.UserChatCount);
@@ -186,6 +177,17 @@ namespace MessengerDashboard.UI.ViewModels
                 UserActivities = userActivities;
                 UserNames = userNames;
                 UserChatCounts = userChatCounts;
+
+                Summary = string.Join(Environment.NewLine, e.Summary.Sentences);
+
+                OverallSentiment = e.Sentiment.IsOverallSentimentPositive ? "Positive" : "Negative";
+                PositiveChatCount = e.Sentiment.PositiveChatCount;
+                NegativeChatCount = e.Sentiment.NegativeChatCount;
+
+                List<User> users = new();
+                e.SessionInfo.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
+                Users = users;
+                Mode = e.SessionInfo.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
             }
         }
 
@@ -198,7 +200,7 @@ namespace MessengerDashboard.UI.ViewModels
                 Users = users;
                 Mode = e.Session.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
             }
-       }
+        }
 
         public EntityInfoWrapper CreateSessionSaveData(TextSummary textSummary, SentimentResult sentimentResult, Analysis analysis)
         {
@@ -250,18 +252,5 @@ namespace MessengerDashboard.UI.ViewModels
             AnalysisCloud analysisCloud = new(userIdToUserActivityMap, analysis.TimeStampToUserCountMap, analysis.TotalUserCount, analysis.TotalChatCount);
             return analysisCloud;
         }
-
-        private System.Collections.IEnumerable _timeStampChatCountEntries1;
-
-        public System.Collections.IEnumerable _timeStampChatCountEntries { get => _timeStampChatCountEntries1; set => SetProperty(ref _timeStampChatCountEntries1, value); }
-
-        private System.Collections.IEnumerable timeStampChatCountEntries;
-
-        public System.Collections.IEnumerable TimeStampChatCountEntries { get => timeStampChatCountEntries; set => SetProperty(ref timeStampChatCountEntries, value); }
-
-        private string sessionSummary;
-
-        public string SessionSummary { get => sessionSummary; set => SetProperty(ref sessionSummary, value); }
-
     }
 }

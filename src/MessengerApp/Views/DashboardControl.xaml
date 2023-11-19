@@ -215,17 +215,17 @@
                     <Border BorderThickness="5" BorderBrush="White" CornerRadius="10" Margin="0 2 0 2">
                         <lvc:CartesianChart Background="White">
                             <lvc:CartesianChart.Series>
-                                <lvc:LineSeries  Title="Users" Values="{Binding UserCounts}" StrokeThickness="3" Stroke="Gray"/>
+                                <lvc:LineSeries  Title="Users" Values="{Binding UserCounts}" StrokeThickness="2" Stroke="Gray" LineSmoothness="0"/>
                             </lvc:CartesianChart.Series>
                             <lvc:CartesianChart.AxisX>
                                 <lvc:Axis Title="Time" Labels="{Binding DateTimes}">
                                     <lvc:Axis.Separator>
-                                        <lvc:Separator StrokeThickness="0" Step="1"/>
+                                        <lvc:Separator StrokeThickness="0"/>
                                     </lvc:Axis.Separator>
                                 </lvc:Axis>
                             </lvc:CartesianChart.AxisX>
                             <lvc:CartesianChart.AxisY>
-                                <lvc:Axis Title="Users" MinValue="0">
+                                <lvc:Axis Title="Users" MinValue="0" MaxValue="{Binding MaxUserCount}">
                                     <lvc:Axis.Separator>
                                         <lvc:Separator StrokeThickness="1"/>
                                     </lvc:Axis.Separator>
@@ -243,7 +243,7 @@
                             <lvc:CartesianChart.AxisX>
                                 <lvc:Axis Title="Users"  Labels="{Binding UserNames}">
                                     <lvc:Axis.Separator>
-                                        <lvc:Separator Step="1" StrokeThickness="0"/>
+                                        <lvc:Separator StrokeThickness="0"/>
                                     </lvc:Axis.Separator>
                                 </lvc:Axis>
                             </lvc:CartesianChart.AxisX>

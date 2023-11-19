@@ -23,15 +23,11 @@ namespace MessengerDashboard.Client
     public interface IClientSessionController : INotificationHandler
     {
 
-        event EventHandler<AnalysisChangedEventArgs> TelemetryAnalysisChanged;
+        event EventHandler<RefreshedEventArgs> Refreshed;
 
         event EventHandler<ClientSessionChangedEventArgs> SessionChanged;
 
         event EventHandler<SessionExitedEventArgs> SessionExited;
-
-        event EventHandler<SummaryChangedEventArgs> SummaryChanged;
-
-        event EventHandler<SentimentChangedEventArgs> SentimentChanged;
 
         Analysis? AnalysisResults { get; }
 
@@ -54,11 +50,7 @@ namespace MessengerDashboard.Client
             string clientPhotoUrl
         );
 
-        void SendTelemetryAnalysisRequestToServer();
-
-        void SendSummaryRequestToServer();
-
-        void SendSentimentRequestToServer();
+        void SendRefreshRequestToServer();
 
         void SendExitSessionRequestToServer();
 

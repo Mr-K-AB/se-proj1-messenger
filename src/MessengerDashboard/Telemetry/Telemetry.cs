@@ -9,7 +9,6 @@ namespace MessengerDashboard.Telemetry
     /// <summary>
     /// This class manages user data and telemetry analytics.
     /// </summary>
-
     public class TelemetryManager : ITelemetry
     {
         private readonly Dictionary<DateTime, int> _timeStampToUserCountMap = new();
@@ -28,13 +27,13 @@ namespace MessengerDashboard.Telemetry
             lock (this)
             {
                 DateTime currentTime = DateTime.Now;
-                Trace.WriteLine("Dashboard: Updating Telemetry");
+                Trace.WriteLine("Dashboard Server >>> Updating telemetry after session got updated");
                 UpdateUserCountHistory(e.Session, currentTime);
                 UpdateJoiningTimeOfUsers(e.Session, currentTime);
                 UpdateLeavingTimeOfUsers(e.Session, currentTime);
-                Trace.WriteLine("Dashboard: Updated Telemetry");
+                Trace.WriteLine("Dashboard Server >>> Updated telemetry after session got updated.");
             }
-       }
+        }
 
         private bool AddUserIfNotPresent(UserInfo userInfo, DateTime currentTime)
         {

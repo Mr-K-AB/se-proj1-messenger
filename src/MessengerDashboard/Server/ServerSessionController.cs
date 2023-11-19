@@ -41,6 +41,16 @@ namespace MessengerDashboard.Server
 
         private readonly Dictionary<int, UserInfo> _userIdToUserInfoMap = new();
 
+        private readonly List<UserInfo> _notConfirmedClients = new();
+
+        private readonly Dictionary<string, int> _clientSessionControllerIdsToUserIdMap = new();
+
+        private TextSummary? _textSummary;
+
+        private Analysis? _telemetryAnalysis;
+
+        private SentimentResult? _sentiment;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerSessionController"/> with the provided <see cref="ICommunicator"/> instance.
         /// </summary>
@@ -63,14 +73,17 @@ namespace MessengerDashboard.Server
 
         public event EventHandler<SessionUpdatedEventArgs> SessionUpdated;
 
-        //     Returns the credentials required to Join the meeting
+        /// <summary>
+        ///  the credentials required to Join the meeting
+        /// </summary>
         public ConnectionDetails ConnectionDetails { get; private set; } = null;
 
         public SessionInfo SessionInfo = new();
 
         public void BroadcastPayloadToClients(Operation operation, SessionInfo? sessionInfo, TextSummary? summary = null,
-                                                      Analysis? sessionAnalytics = null, UserInfo? user = null, SentimentResult? sentiment = null)
+                                                      Analysis? sessionAnalytics = null, SentimentResult? sentiment = null, UserInfo? user = null)
         {
+            Trace.WriteLine("Dashboard Server >>> Broadcasting data");
             ServerPayload serverPayload;
             lock (this)
             {
@@ -78,47 +91,64 @@ namespace MessengerDashboard.Server
                 string serializedData = _serializer.Serialize(serverPayload);
                 _communicator.Broadcast(_clientModuleIdentifier, serializedData);
             }
-            Trace.WriteLine("Dashboard: Data sent to specific client");
+            Trace.WriteLine("Dashboard Server >>> Broadcasted data");
         }
 
-        public SentimentResult CalculateSentiment()
+        public void CalculateSentiment()
         {
-            Trace.WriteLine("Dashboard: Getting chats for sentiment");
-            List<ChatThread> chatThreads = _contentServer.GetAllMessages();
-            List<string> chats = new();
-            foreach(ChatThread chatThread in chatThreads)
+            try
             {
-                foreach(ReceiveChatData receiveChatData in chatThread.MessageList)
+                Trace.WriteLine("Dashboard Server >>> Getting chats for sentiment");
+                List<ChatThread> chatThreads = _contentServer.GetAllMessages();
+                Trace.WriteLine("Dashboard Server >>> Got chats for summary");
+                List<string> chats = new();
+                foreach (ChatThread chatThread in chatThreads)
                 {
-                    if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                    foreach (ReceiveChatData receiveChatData in chatThread.MessageList)
                     {
-                        chats.Add(receiveChatData.Data);
+                        if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                        {
+                            chats.Add(receiveChatData.Data);
+                        }
                     }
                 }
+                Trace.WriteLine("Dashboard Server >>> Received " + chats.Count + " chat(s).");
+                _sentiment = _sentimentAnalyzer.AnalyzeSentiment(chats.ToArray());
+                Trace.WriteLine("Dashboard Server >>> Calculated sentiment");
             }
-            SentimentResult sentiment = _sentimentAnalyzer.AnalyzeSentiment(chats.ToArray());
-            return sentiment;
+            catch (Exception e)
+            {
+                Trace.WriteLine("Dashboard Server >>> Exception in CalculateSentiment " + e.Message);
+            }
         }
 
-        public TextSummary CalculateSummary()
+        public void CalculateSummary()
         {
-            Trace.WriteLine("Dashboard: Getting chats");
-            List<ChatThread> chatThreads = _contentServer.GetAllMessages();
-            List<string> chats = new();
-            foreach(ChatThread chatThread in chatThreads)
+            try
             {
-                foreach(ReceiveChatData receiveChatData in chatThread.MessageList)
+                Trace.WriteLine("Dashboard Server >>> Getting chats for summary");
+                List<ChatThread> chatThreads = _contentServer.GetAllMessages();
+                Trace.WriteLine("Dashboard Server >>> Got chats for summary");
+                List<string> chats = new();
+                foreach (ChatThread chatThread in chatThreads)
                 {
-                    if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                    foreach (ReceiveChatData receiveChatData in chatThread.MessageList)
                     {
-                        chats.Add(receiveChatData.Data);
+                        if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                        {
+                            chats.Add(receiveChatData.Data);
+                        }
                     }
                 }
+                Trace.WriteLine("Dashboard Server >>> Received " + chats.Count + "chats.");
+                TextSummarizationOptions options = new();
+                _textSummary = _textSummarizer.Summarize(chats.ToArray(), options);
+                Trace.WriteLine("Dashboard Server >>> Created Summary");
             }
-            TextSummarizationOptions options = new();
-            TextSummary chatSummary = _textSummarizer.Summarize(chats.ToArray(), options);
-            Trace.WriteLine("Dashboard: Created Summary");
-            return chatSummary;
+            catch (Exception e)
+            {
+                Trace.WriteLine("Dashboard Server >>> Exception in Calculate Summary " + e.Message);
+            }
         }
 
         public void SendPayloadToClient(Operation operation, string ip, int port, SessionInfo? sessionInfo,
@@ -130,13 +160,9 @@ namespace MessengerDashboard.Server
             {
                 serverPayload = new ServerPayload(operation, sessionInfo, user, summary, sessionAnalytics, sentiment);
                 string serializedData = _serializer.Serialize(serverPayload);
-                _communicator.SendMessage(ip, port, _clientModuleIdentifier, serializedData, 1);
+                _communicator.SendMessage(ip, port, _clientModuleIdentifier, serializedData);
             }
-            Trace.WriteLine("Dashboard: Data sent to specific client");
-        }
-
-        public void EndSession()
-        {
+            Trace.WriteLine("Dashboard Server >>> Data sent to client");
         }
 
         public void OnClientJoined(string ip, int port)
@@ -147,39 +173,42 @@ namespace MessengerDashboard.Server
         {
         }
 
+        private  ClientPayload? DeserializeData(string serializedData)
+        {
+            if (string.IsNullOrEmpty(serializedData))
+            {
+                Trace.WriteLine("Dashboard Server >>> Null data received from communicator");
+                return null;
+            }
+            ClientPayload clientPayload = _serializer.Deserialize<ClientPayload>(serializedData);
+            if (clientPayload == null || clientPayload.UserInfo == null || string.IsNullOrEmpty(clientPayload.UserInfo.UserName)
+                || string.IsNullOrEmpty(clientPayload.IpAddress))
+            {
+                Trace.WriteLine("Dashboard Server >>> Null user received from communicator");
+                clientPayload = null;
+            }
+            return clientPayload;
+        }
+
         public void OnDataReceived(string serializedData)
         {
-            Trace.WriteLine("Dashboard Server: Data received from communicator");
             try
             {
-                if (serializedData == null)
+                Trace.WriteLine("Dashboard Server >>> Data received from communicator");
+                ClientPayload? clientPayload = DeserializeData(serializedData);
+                if (clientPayload == null)
                 {
-                    Trace.WriteLine("Dashboard Server: Null data received from communicator");
-                    return;
-                }
-                ClientPayload clientPayload = _serializer.Deserialize<ClientPayload>(serializedData);
-                if (clientPayload == null || clientPayload.UserInfo.UserName == null)
-                {
-                    Trace.WriteLine("Dashboard Server: Null user received from communicator");
                     return;
                 }
                 Operation operationType = clientPayload.Operation;
                 switch (operationType)
                 {
                     case Operation.AddClient:
-                        AddClient(clientPayload);
+                        SendAddClientAcknowledgement(clientPayload);
                         return;
 
-                    case Operation.GetSummary:
-                        SendSummaryToClients();
-                        return;
-
-                    case Operation.GetTelemetryAnalysis:
-                        SendTelemetryAnalysisToClients();
-                        return;
-
-                    case Operation.GetSentiment:
-                        SendSentimentToClients();
+                    case Operation.AddClientConfirmation:
+                        AddClientToSession(clientPayload);
                         return;
 
                     case Operation.RemoveClient:
@@ -191,24 +220,62 @@ namespace MessengerDashboard.Server
                         ChangeSessionMode(clientPayload);
                         return;
 
+                    case Operation.Refresh:
+                        Refresh();
+                        return;
+
                     default:
                         return;
                 }
             }
             catch (Exception e)
             {
-                Trace.WriteLine("Dashboard Server: Exception" + e);
+                Trace.WriteLine("Dashboard Server >>> Exception: " + e);
             }
+        }
+
+        private void Refresh()
+        {
+            Trace.WriteLine("Dashboard Server >>> Started refresh");
+            CalculateSummary();
+            CalculateTelemetryAnalysis();
+            CalculateSentiment();
+            BroadcastPayloadToClients(Operation.RefreshAcknowledgement, SessionInfo, _textSummary, _telemetryAnalysis, _sentiment);
+            Trace.WriteLine("Dashboard Server >>> Done refresh");
+        }
+
+        private void AddClientToSession(ClientPayload clientPayload)
+        {
+
+            Trace.WriteLine("Dashboard Server >>> Adding Client to session");
+            string clientSessionControllerId = clientPayload.ClientSessionControllerId;
+            if (!_clientSessionControllerIdsToUserIdMap.ContainsKey(clientSessionControllerId))
+            {
+                return;
+            }
+            int userId = _clientSessionControllerIdsToUserIdMap[clientSessionControllerId];
+            if (userId != clientPayload.UserInfo.UserId)
+            {
+                return;
+            }
+            SessionInfo.Users.RemoveAll(user =>  user.UserId == userId);
+            SessionInfo.Users.Add(clientPayload.UserInfo);
+            _userIdToUserInfoMap[userId] = clientPayload.UserInfo;
+            SessionUpdated?.Invoke(this, new (SessionInfo));
+            _communicator.AddClient(clientPayload.IpAddress, clientPayload.Port);
+            Refresh();
+            Trace.WriteLine("Dashboard Server >>> Added Client to session");
         }
 
         private void ChangeSessionMode(ClientPayload clientPayload)
         {
             if (clientPayload.UserInfo.UserId == 1) // The leader or instructor
             {
-                Trace.WriteLine("Dashboard Server: Changing session mode");
+                Trace.WriteLine("Dashboard Server >>> Changing session mode");
                 SessionInfo.SessionMode = (clientPayload.Operation == Operation.ExamMode) ? SessionMode.Exam : SessionMode.Lab;
+                SessionUpdated.Invoke(this, new (SessionInfo));
                 BroadcastPayloadToClients(clientPayload.Operation, SessionInfo);
-                Trace.WriteLine("Dashboard Server: Changed session mode");
+                Trace.WriteLine("Dashboard Server >>> Changed session mode");
             }
         }
 
@@ -226,96 +293,88 @@ namespace MessengerDashboard.Server
             BroadcastPayloadToClients(Operation.LabMode, SessionInfo);
         }
 
-        private void AddClient(ClientPayload clientPayload)
+        private void SendAddClientAcknowledgement(ClientPayload clientPayload)
         {
             lock (this)
             {
-                Trace.WriteLine("Dashboard Server: Adding new user");
-                _clientCount += 1;
-                int id = _clientCount;
-                UserInfo user = new() { UserEmail = clientPayload.UserInfo.UserEmail, UserId = id, UserName = clientPayload.UserInfo.UserName,
+                Trace.WriteLine("Dashboard Server >>> Sending add client acknowledgement to " + 
+                                ((clientPayload.UserInfo == null) ? "" : clientPayload.UserInfo.UserName ?? ""));
+                int userId;
+                string clientSessionControllerId = clientPayload.ClientSessionControllerId;
+                if (_clientSessionControllerIdsToUserIdMap.ContainsKey(clientSessionControllerId))
+                {
+                    userId = _clientSessionControllerIdsToUserIdMap[clientSessionControllerId];
+                }
+                else
+                {
+                    _clientCount += 1;
+                    userId = _clientCount;
+                    _clientSessionControllerIdsToUserIdMap[clientSessionControllerId] = userId;
+                }
+                UserInfo user = new() { UserEmail = clientPayload.UserInfo.UserEmail, UserId = userId, UserName = clientPayload.UserInfo.UserName,
                                         UserPhotoUrl = clientPayload.UserInfo.UserPhotoUrl};
-                SessionInfo.Users.Add(user);
-                SessionUpdated?.Invoke(this, new(SessionInfo));
-                _communicator.AddClient(clientPayload.IpAddress, clientPayload.Port);
-                SendPayloadToClient(Operation.AddClientACK, clientPayload.IpAddress, clientPayload.Port, SessionInfo, null, null, user);
-                BroadcastPayloadToClients(Operation.SessionUpdated, SessionInfo);
-                Trace.WriteLine("Dashboard Server: Added new user");
+                _notConfirmedClients.Add(user);
+                SendPayloadToClient(Operation.AddClientAcknowledgement, clientPayload.IpAddress, clientPayload.Port, SessionInfo, null, null, user);
+                Trace.WriteLine("Dashboard Server >>> Sent add client acknowledgement");
             }
         }
         
-        private void SendSentimentToClients()
+        private void CalculateTelemetryAnalysis()
         {
-            Trace.WriteLine("Dashboard: Sending sentiment to clients");
-            SentimentResult sentiment = CalculateSentiment();
-            BroadcastPayloadToClients(Operation.GetSentiment, SessionInfo, null, null, null, sentiment);
-            Trace.WriteLine("Dashboard: Sending sentiment to clients");
-        }
-
-        private void SendTelemetryAnalysisToClients()
-        {
-            Trace.WriteLine("Dashboard: Sending telemetry to clients");
-            Analysis analysis = CalculateAnalysis();
-            BroadcastPayloadToClients(Operation.GetTelemetryAnalysis, SessionInfo, null, analysis);
-            Trace.WriteLine("Dashboard: Sent telemetry to clients");
-        }
-
-        private void SendSummaryToClients()
-        {
-            Trace.WriteLine("Dashboard: Sending summary to clients");
-            TextSummary summaryData = CalculateSummary();
-            BroadcastPayloadToClients(Operation.GetSummary, SessionInfo, summaryData);
-            Trace.WriteLine("Dashboard: Sent summary to clients");
-        }
-
-        private Analysis CalculateAnalysis()
-        {
-            List<ChatThread> chatThreads = _contentServer.GetAllMessages();
-            Dictionary<int, Tuple<UserInfo, List<string>>> userIdToUserInfoAndChatMap = new();
-            foreach(ChatThread chatThread in chatThreads)
+            try
             {
-                foreach(ReceiveChatData receiveChatData in chatThread.MessageList)
+                Trace.WriteLine("Dashboard Server: Calculating telemetry analysis.");
+                List<ChatThread> chatThreads = _contentServer.GetAllMessages();
+                Dictionary<int, Tuple<UserInfo, List<string>>> userIdToUserInfoAndChatMap = new();
+                foreach(ChatThread chatThread in chatThreads)
                 {
-                    if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                    foreach(ReceiveChatData receiveChatData in chatThread.MessageList)
                     {
-                        if (!userIdToUserInfoAndChatMap.ContainsKey(receiveChatData.SenderID))
+                        if (receiveChatData.Type == MessengerContent.MessageType.Chat)
                         {
-                            userIdToUserInfoAndChatMap[receiveChatData.SenderID] = new(_userIdToUserInfoMap[receiveChatData.SenderID], new());
-                            userIdToUserInfoAndChatMap[receiveChatData.SenderID].Item2.Add(receiveChatData.Data);
+                            if (!userIdToUserInfoAndChatMap.ContainsKey(receiveChatData.SenderID))
+                            {
+                                userIdToUserInfoAndChatMap[receiveChatData.SenderID] = new(_userIdToUserInfoMap[receiveChatData.SenderID], new());
+                                userIdToUserInfoAndChatMap[receiveChatData.SenderID].Item2.Add(receiveChatData.Data);
+                            }
                         }
                     }
                 }
+                _telemetryAnalysis = _telemetry.UpdateAnalysis(userIdToUserInfoAndChatMap);
+                Trace.WriteLine("Dashboard Server: Calculated telemetry analysis.");
             }
-            Analysis analysis = _telemetry.UpdateAnalysis(userIdToUserInfoAndChatMap);
-            return analysis;
-        }
+            catch (Exception e)
+            {
+                Trace.WriteLine("Dashboard Server: Exception in CalculateTelemetryAnalysis " + e.ToString());
+            }
+       }
 
         private void RemoveClient(ClientPayload clientPayload)
         {
-            SessionInfo.Users.Clear();
-            SessionUpdated?.Invoke(this, new(SessionInfo));
-            TextSummary summary = CalculateSummary();
-            SentimentResult sentiment = CalculateSentiment();
-            Analysis analysis = CalculateAnalysis();
+            CalculateSummary();
+            CalculateSentiment();
+            CalculateTelemetryAnalysis();
             if (clientPayload.UserInfo.UserId == 1) // The leader or instructor
             {
-                Trace.WriteLine("Ending the session");
-                BroadcastPayloadToClients(Operation.EndSession, SessionInfo, summary, analysis, null, sentiment);
+                SessionInfo.Users.Clear();
+                SessionUpdated?.Invoke(this, new(SessionInfo));
+                Trace.WriteLine("Dashboard Server >>> Ending the session");
+                BroadcastPayloadToClients(Operation.EndSession, SessionInfo, _textSummary, _telemetryAnalysis, _sentiment);
                 _communicator.RemoveSubscriber(_serverModuleIdentifier);
-                Trace.WriteLine("Ended the session");
+                Trace.WriteLine("Dashboard Server >>> Ended the session");
             }
             else // The member or student
             {
-                Trace.WriteLine("Dashboard Server: Removing Client");
+                Trace.WriteLine("Dashboard Server >>> Removing Client");
                 int removedCount = SessionInfo.Users.RemoveAll(user => user.UserId == clientPayload.UserInfo.UserId);
                 if (removedCount != 0)
                 {
                     SessionUpdated?.Invoke(this, new(SessionInfo));
                 }
-                SendPayloadToClient(Operation.RemoveClient, clientPayload.IpAddress, clientPayload.Port, SessionInfo, summary, analysis, null, sentiment);
+                SendPayloadToClient(Operation.RemoveClient, clientPayload.IpAddress, clientPayload.Port, SessionInfo, _textSummary, _telemetryAnalysis, null, _sentiment);
                 _communicator.RemoveClient(clientPayload.IpAddress, clientPayload.Port);
                 BroadcastPayloadToClients(Operation.SessionUpdated, SessionInfo);
-                Trace.WriteLine("Dashboard: Removed Client");
+                Trace.WriteLine("Dashboard Server >>> Removed Client");
             }
         }
     }

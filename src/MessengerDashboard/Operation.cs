@@ -1,23 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MessengerDashboard
+﻿namespace MessengerDashboard
 {
     public enum Operation
     {
+        AddClient, /* Request to server for adding client */ 
+        AddClientAcknowledgement, /* Acknowledgement by server for adding client */
+        AddClientConfirmation, /* Confirmation by client for getting added */
+        Refresh,
+        RefreshAcknowledgement,
         EndSession,
-        ExamMode,
+        ExamMode, 
         LabMode,
-        AddClient,
-        GetSummary,
-        GetTelemetryAnalysis,
-        GetSentiment,
         RemoveClient,
-        ID,
-        AddClientACK,
-        SessionUpdated
+        SessionUpdated,
     }
 }

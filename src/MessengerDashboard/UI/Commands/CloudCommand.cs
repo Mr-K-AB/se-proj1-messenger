@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using MessengerCloud;
@@ -34,20 +35,26 @@ namespace MessengerDashboard.UI.Commands
         {
             try
             {
-                Task<IReadOnlyList<Entity>?> task = _restClient.GetEntitiesAsync();
-                task.Wait();
-                IReadOnlyList<Entity> results = task.Result;
-                List<EntityInfoWrapper> entities = new();
-                foreach (Entity entity in results)
+                Thread something = new(() =>
                 {
-                    entities.Add(new(entity.Sentences, entity.PositiveChatCount, entity.NegativeChatCount, entity.IsOverallSentimentPositive, entity.SessionId, entity.Analysis));
-                }
-                List<SessionEntry> sessions = new();
-                foreach (EntityInfoWrapper entity in entities)
-                {
-                    sessions.Add(new SessionEntry(entity.SessionId, new ExpandCommand(_sessionsViewModel, entity)));
-                }
-                _sessionsViewModel.Sessions = sessions;
+                    Task<IReadOnlyList<Entity>?> task = _restClient.GetEntitiesAsync();
+                    task.Wait();
+                    IReadOnlyList<Entity> results = task.Result;
+                    List<EntityInfoWrapper> entities = new();
+                    foreach (Entity entity in results)
+                    {
+                        entities.Add(new(entity.Sentences, entity.PositiveChatCount, entity.NegativeChatCount, entity.IsOverallSentimentPositive, entity.SessionId, entity.Analysis));
+                    }
+                    List<SessionEntry> sessions = new();
+                    foreach (EntityInfoWrapper entity in entities)
+                    {
+                        sessions.Add(new SessionEntry(entity.SessionId, new ExpandCommand(_sessionsViewModel, entity)));
+                    }
+                    _sessionsViewModel.Sessions = sessions;
+
+                })
+                { IsBackground = true };
+            something.Start();
 
             }
             catch(Exception e)

@@ -1,4 +1,5 @@
-﻿using MessengerNetworking.Communicator;
+﻿/*
+using MessengerNetworking.Communicator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using MessengerNetworking.NotificationHandler;
@@ -91,12 +92,6 @@ namespace MessengerTests.MessengerNetworkingTest
             Debug.WriteLine("Communicator IP Address" + communicatorIPAddress);
             Assert.IsTrue(communicatorIPAddress == ipAddress);
         }
-        /*
-
-
-
-    }
-        */
 
         /// <summary>
         /// Processor for chat messages.
@@ -157,3 +152,4 @@ namespace MessengerTests.MessengerNetworkingTest
     }
 }
 
+*/

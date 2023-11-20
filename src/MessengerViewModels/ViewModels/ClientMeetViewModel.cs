@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MessengerDashboard.Server;
-using MessengerApp.Commands;
-using MessengerApp.Stores;
+using MessengerViewModels.Commands;
+using MessengerViewModels.Stores;
 using System.Windows.Input;
 using MessengerDashboard.Client;
 using MessengerDashboard;
 using MessengerDashboard.UI.ViewModels;
 using MessengerScreenshare.Client;
 
-namespace MessengerApp.ViewModels
+namespace MessengerViewModels.ViewModels
 {
-    internal class ClientMeetViewModel : ViewModelBase
+    public class ClientMeetViewModel : ViewModelBase
     {
         public ICommand NavigateHomeCommand { get; }
         public ICommand NavigateClientDashboardCommand { get; }

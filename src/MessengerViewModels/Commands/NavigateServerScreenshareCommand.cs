@@ -3,25 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MessengerApp.Stores;
-using MessengerApp.ViewModels;
+using MessengerViewModels.Stores;
+using MessengerViewModels.ViewModels;
 using MessengerDashboard.UI;
 using System.Diagnostics;
 //using MessengerDashboard.Client;
 //using MessengerDashboard.UI.ViewModels;
-using MessengerScreenshare.Client;
+using MessengerScreenshare.Server;
 
-namespace MessengerApp.Commands
+namespace MessengerViewModels.Commands
 {
-    internal class NavigateClientScreenshareCommand : CommandBase
+    public class NavigateServerScreenshareCommand : CommandBase
     {
         private readonly NavigationStore _navigationStore;
 
-        private readonly ScreenshareClientViewModel _screenshareViewModel;
+        private readonly ScreenshareServerViewModel _screenshareViewModel;
 
         //private readonly string 
 
-        public NavigateClientScreenshareCommand(NavigationStore navigationStore, ScreenshareClientViewModel screenshareViewModel)
+        public NavigateServerScreenshareCommand(NavigationStore navigationStore, ScreenshareServerViewModel screenshareViewModel)
         {
             _navigationStore = navigationStore;
             _screenshareViewModel = screenshareViewModel;

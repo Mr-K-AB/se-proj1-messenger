@@ -24,6 +24,7 @@ namespace MessengerDashboard.Client
         }
 
         public int SessionID { get; set; }
+
         public SessionMode SessionMode { get; set; }
 
         public List<UserInfo> Users { get; set; }

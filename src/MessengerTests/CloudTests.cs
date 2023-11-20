@@ -6,6 +6,7 @@
 /// </credits>
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -110,6 +111,14 @@ namespace MessengerTests
             // Delete any existing entities.
             Logger.LogMessage("Delete any existing entities.");
             await _restClient.DeleteEntitiesAsync();
+        }
+        [TestMethod]
+        public void GetAll()
+        {
+            Task <IReadOnlyList<Entity>?> entities = _restClient.GetEntitiesAsync();
+            entities.Wait();
+            Assert.AreEqual(entities.Result?.Count, 3);
+
         }
 
 

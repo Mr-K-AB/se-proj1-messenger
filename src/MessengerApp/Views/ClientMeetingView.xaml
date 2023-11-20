@@ -25,8 +25,8 @@
             <MenuItem Header="Screenshare" Command="{Binding NavigateClientScreenshareCommand}"/>
             <MenuItem Header="Participants"/>
             <MenuItem Header="Chat" Click="Chat_Click"/>
-            <TextBlock Text="{Binding IP}"></TextBlock>
-            <TextBlock Text="{Binding Port}"></TextBlock>
+            <!--<TextBlock Text="{Binding IP}"></TextBlock>
+            <TextBlock Text="{Binding Port}"></TextBlock>-->
         </Menu>
         <Grid x:Name="OverlayPanel" Panel.ZIndex="1000" Visibility="Collapsed" HorizontalAlignment="Right" Width="300" Background="AliceBlue">
             <ContentControl x:Name="OverlayContent"/>

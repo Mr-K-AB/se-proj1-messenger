@@ -23,9 +23,7 @@ namespace MessengerDashboard.UI.Commands
 
         public void Execute(object? parameter)
         {
-            _client.SendSentimentRequestToServer();
-            _client.SendSummaryRequestToServer();
-            _client.SendTelemetryAnalysisRequestToServer();
+            _client.SendRefreshRequestToServer();
         }
     }
 }

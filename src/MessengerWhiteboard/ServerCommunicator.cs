@@ -2,6 +2,8 @@
 using System.Windows.Shapes;
 using MessengerNetworking.Communicator;
 using MessengerNetworking.Factory;
+using MessengerWhiteboard.Interfaces;
+using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
 {
@@ -32,7 +34,7 @@ namespace MessengerWhiteboard
             try
             {
                 string serializedShape = s_serializer.SerializeWBShape(wBShape);
-                //Trace.WriteLine("Broadcast: {0}", serializedShape);
+                Debug.Print("Broadcast: WBShape {0}", serializedShape);
                 s_communicator.Broadcast(s_moduleID, serializedShape);
             }
             catch (Exception)

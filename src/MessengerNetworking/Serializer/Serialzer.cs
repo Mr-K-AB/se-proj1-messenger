@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.Xml;
+using System.Diagnostics;
 
 namespace MessengerNetworking.Serializer
 {
@@ -20,6 +21,7 @@ namespace MessengerNetworking.Serializer
                 {
                     serializer.Serialize( xmlWriter , data );
                 }
+                Trace.TraceInformation("Networking Serialised");
                 return stringWriter.ToString();
             }
             catch (Exception ex)
@@ -35,6 +37,7 @@ namespace MessengerNetworking.Serializer
                 var serializer = new XmlSerializer( typeof( type ) );
                 using var stringReader = new StringReader( serializedData );
                 using var xmlReader = XmlReader.Create( stringReader );
+                Trace.TraceInformation("Networking Deserialised");
                 return (type)serializer.Deserialize( xmlReader );
             }
             catch (Exception ex)

@@ -6,21 +6,29 @@
              xmlns:local="clr-namespace:MessengerApp.Views"
              xmlns:viewmodels="clr-namespace:MessengerDashboard.UI.ViewModels;assembly=MessengerDashboard"
              xmlns:views="clr-namespace:MessengerApp.Views"
+             xmlns:whiteboard="clr-namespace:MessengerWhiteboard;assembly=MessengerWhiteboard"
+             xmlns:screenshare="clr-namespace:MessengerScreenshare.Server;assembly=MessengerScreenshare"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <!-- Navigation Bar -->
 
-        <!--<Grid.Resources>
+        <Grid.Resources>
             <DataTemplate DataType="{x:Type viewmodels:DashboardInstructorViewModel}">
                 <views:DashboardControl/>
             </DataTemplate>
-        </Grid.Resources>-->
+            <!--<DataTemplate DataType="{x:Type whiteboard:ViewModel}">
+                <views:WhiteboardControl/>
+            </DataTemplate>-->
+            <DataTemplate DataType="{x:Type screenshare:ScreenshareServerViewModel}">
+                <views:ScreenshareServerControl/>
+            </DataTemplate>
+        </Grid.Resources>            
 
-            <Menu>
-            <MenuItem Header="Dashboard" Click="{Binding NavigateServerDashboardCommand}"/>
-            <MenuItem Header="Whiteboard" />
-            <MenuItem Header="Screenshare" />
+        <Menu>
+            <MenuItem Header="Dashboard" Command="{Binding NavigateServerDashboardCommand}"/>
+            <MenuItem Header="Whiteboard" Command="{Binding NavigateServerWhiteboardCommand}"/>
+            <MenuItem Header="Screenshare" Command="{Binding NavigateServerScreenshareCommand}" />
             <MenuItem Header="Chat" Click="Chat_Click"/>
             <TextBlock Text="{Binding IP}"></TextBlock>
             <TextBlock Text="{Binding Port}"></TextBlock>
@@ -31,8 +39,7 @@
         <!-- Profile Information -->
         <Button Content="End Meeting" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>
 
-        <!-- Content Control for Dynamic Content -->
-        <!--<ContentControl Content="{Binding SubViewModel}" Margin="0,25,0,0"/>-->
+        <ContentControl Content="{Binding SubViewModel}" Margin="0,25,0,0"/>
 
     </Grid>
 </UserControl>

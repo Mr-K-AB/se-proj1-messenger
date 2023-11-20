@@ -29,7 +29,7 @@ namespace MessengerContent.Client
         /// <summary>
         /// Module identifier for communicator
         /// </summary>
-        private readonly string _moduleIdentifier = "Content";
+        private readonly string _moduleIdentifier = "ContentServer";
         private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
 
@@ -56,6 +56,8 @@ namespace MessengerContent.Client
         /// </summary>
         public int UserID { get; set; }
 
+        public string UserName { get; set; }
+
         // helper functions
 
         /// <summary>
@@ -74,6 +76,7 @@ namespace MessengerContent.Client
                 ReplyMessageID = sendChatData.ReplyMessageID,
                 ReplyThreadID = sendChatData.ReplyThreadID,
                 SenderID = UserID,
+                SenderName = UserName,
                 SentTime = DateTime.Now,
                 Starred = false,
                 Event = eventType
@@ -140,6 +143,7 @@ namespace MessengerContent.Client
                 MessageID = messageID,
                 ReplyThreadID = replyThreadID,
                 SenderID = UserID,
+                SenderName = UserName,
                 Event = MessageEvent.Edit
             };
             SerializeAndSendToServer(sendData, "Edit", ip, port);
@@ -159,6 +163,7 @@ namespace MessengerContent.Client
                 MessageID = messageID,
                 ReplyThreadID = replyThreadID,
                 SenderID = UserID,
+                SenderName = UserName,
                 Event = MessageEvent.Delete
             };
             SerializeAndSendToServer(sendData, "Delete", ip, port);
@@ -177,6 +182,7 @@ namespace MessengerContent.Client
                 MessageID = messageID,
                 ReplyThreadID = replyThreadID,
                 SenderID = UserID,
+                SenderName = UserName,
                 Event = MessageEvent.Star
             };
             SerializeAndSendToServer(sendData, "Star", ip, port);

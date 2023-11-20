@@ -1,4 +1,4 @@
-﻿/// <author>Mayank Singla</author>
+﻿/// <author>Likith Reddy</author>
 /// <summary>
 /// Defines the "ScreenshareServerViewModel" class which represents the
 /// view model for screen sharing on the server side machine.

@@ -12,7 +12,7 @@ namespace MessengerDashboard.Server
 {
     public class ServerPayload
     {
-        public UserInfo? User { get; set; }
+        public UserInfo? UserInfo { get; set; }
 
         public Operation Operation { get; set; }
 
@@ -34,7 +34,7 @@ namespace MessengerDashboard.Server
         )
         {
             Operation = operation;
-            User = user;
+            UserInfo = user;
             SessionInfo = sessionInfo;
             Summary = summary;
             SessionAnalysis = telemetryAnalysis;

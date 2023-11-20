@@ -187,13 +187,6 @@ namespace MessengerApp.Views
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
 
-        public void LineMode(object sender, RoutedEventArgs e)
-        {
-            _viewModel.ChangeTool("Line");
-            _viewModel.ChangeMode(ViewModel.WBModes.CreateMode);
-            Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
-        }
-
         public void TextMode(object sender, RoutedEventArgs e)
         {
             _viewModel.ChangeTool("Text");

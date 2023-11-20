@@ -1,4 +1,4 @@
-﻿/*using MessengerNetworking.Communicator;
+﻿using MessengerNetworking.Communicator;
 using MessengerScreenshare.Client;
 using MessengerScreenshare;
 using Moq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text.Json;
 using SSUtils = MessengerScreenshare.Utils;
 
-namespace PlexShareTests.ScreenshareTests
+namespace MessengerTests.ScreenshareTests
 {
     [TestClass]
     public class ScreenshareClientTest
@@ -27,12 +27,12 @@ namespace PlexShareTests.ScreenshareTests
             var communicatorMock = new Mock<ICommunicator>();
             screenshareClient.SetPrivate("_communicator", communicatorMock.Object);
 
-            string argString = "";
-            communicatorMock.Setup(p => p.Broadcast(It.IsAny<string>(), SSUtils.ModuleIdentifier, 0))
-                .Callback((string s, string s2, string s3) => { if (argString == "") { argString = s; } });
-
             screenshareClient.SetUser(0, "name");
-            screenshareClient.StartScreensharingAsync();
+            Task.Run(async() => await screenshareClient.StartScreensharingAsync());
+
+            string argString = "";
+            communicatorMock.Setup(p => p.Broadcast(SSUtils.ClientIdentifier, It.IsAny<string>(), 0))
+                .Callback((string s, string s2, int s3) => { if (argString == "") { argString = s; } });
 
             DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(argString);
 
@@ -50,12 +50,12 @@ namespace PlexShareTests.ScreenshareTests
             var communicatorMock = new Mock<ICommunicator>();
             screenshareClient.SetPrivate("_communicator", communicatorMock.Object);
 
-            screenshareClient.SetUser("id", "name");
-            screenshareClient.StartScreensharing();
+            screenshareClient.SetUser(0, "name");
+            Task.Run(async () => await screenshareClient.StartScreensharingAsync());
 
             bool isImagePacketSent = false;
-            communicatorMock.Setup(p => p.Send(It.IsAny<string>(), SSUtils.ModuleIdentifier, null))
-                .Callback((string s, string s2, string s3) =>
+            communicatorMock.Setup(p => p.Broadcast(SSUtils.ClientIdentifier, It.IsAny<string>(), 0))
+                .Callback((string s, string s2, int s3) =>
                 {
                     DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(s);
                     if (packet?.Header == ClientDataHeader.Image.ToString())
@@ -64,7 +64,7 @@ namespace PlexShareTests.ScreenshareTests
                     }
                 });
 
-            DataPacket packet = new("id", "name", ServerDataHeader.Send.ToString(), "10");
+            DataPacket packet = new(0, "name", ServerDataHeader.Send.ToString(), "10");
             string serializedData = JsonSerializer.Serialize(packet);
 
             screenshareClient.OnDataReceived(serializedData);
@@ -83,12 +83,12 @@ namespace PlexShareTests.ScreenshareTests
             var communicatorMock = new Mock<ICommunicator>();
             screenshareClient.SetPrivate("_communicator", communicatorMock.Object);
 
-            screenshareClient.SetUser("id", "name");
-            screenshareClient.StartScreensharing();
+            screenshareClient.SetUser(0, "name");
+            Task.Run(async () => await screenshareClient.StartScreensharingAsync());
 
             bool isImagePacketSent = false;
-            communicatorMock.Setup(p => p.Send(It.IsAny<string>(), SSUtils.ModuleIdentifier, null))
-                .Callback((string s, string s2, string s3) =>
+            communicatorMock.Setup(p => p.Broadcast(SSUtils.ClientIdentifier, It.IsAny<string>(), 0))
+                .Callback((string s, string s2, int s3) =>
                 {
                     DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(s);
                     if (packet?.Header == ClientDataHeader.Image.ToString())
@@ -97,7 +97,7 @@ namespace PlexShareTests.ScreenshareTests
                     }
                 });
 
-            DataPacket packet = new("id", "name", ServerDataHeader.Send.ToString(), "10");
+            DataPacket packet = new(0, "name", ServerDataHeader.Send.ToString(), "10");
             string serializedData = JsonSerializer.Serialize(packet);
 
             screenshareClient.OnDataReceived(serializedData);
@@ -106,7 +106,7 @@ namespace PlexShareTests.ScreenshareTests
 
             Assert.IsTrue(isImagePacketSent);
 
-            packet = new("id", "name", ServerDataHeader.Stop.ToString(), "10");
+            packet = new(0, "name", ServerDataHeader.Stop.ToString(), "10");
             serializedData = JsonSerializer.Serialize(packet);
 
             screenshareClient.OnDataReceived(serializedData);
@@ -132,4 +132,4 @@ namespace PlexShareTests.ScreenshareTests
 // test stop ss
 // test StopConfirmationSending
 // 
-*/
+

@@ -1,11 +1,11 @@
-﻿using MessengerApp.Services;
-using MessengerApp.Stores;
-using MessengerApp.ViewModels;
+﻿using MessengerViewModels.Services;
+using MessengerViewModels.Stores;
+using MessengerViewModels.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MessengerApp.Commands
+namespace MessengerViewModels.Commands
 {
     public class NavigateCommand : CommandBase
     {

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -27,13 +28,13 @@ namespace MessengerScreenshare.Server
         /// received from the client and tells that the client is still
         /// presenting the screen.
         /// </summary>
-        private readonly Timer? _timer;
+        public readonly Timer? _timer;
 
         /// <summary>
         /// The data model defining the callback for the timeout.
         /// </summary>
         private readonly ITimer _serverTimeout;
-
+        //public Dictionary<int, StringBuilder>? ImageFragments { get; set; }
         /// <summary>
         /// It will store the image receiving from the clients.
         /// </summary>
@@ -132,10 +133,23 @@ namespace MessengerScreenshare.Server
             _tileHeight = 0;
             _tileWidth = 0;
 
-            if (!isDebug)
-            {
-               SetupTimer();
-            }
+            //if (!isDebug)
+            //{
+                //try
+                //{
+                    _timer = new();
+                    _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, e);
+                    _timer.AutoReset = false;
+                    //UpdateTimer(_timer);
+                    _timer.Interval = 20000;
+                    _timer.Enabled = true;
+                //}
+                //catch (Exception e)
+                //{
+                    //Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}", withTimeStamp: true));
+                    //throw new Exception("Failed to create the timer", e);
+                //}
+            //}
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully created client with id: {Id} and name: {Name}", withTimeStamp: true));
         }
@@ -152,7 +166,7 @@ namespace MessengerScreenshare.Server
                 Timer _timer = new ();
                 _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, e);
                 _timer.AutoReset = false;
-                UpdateTimer();
+                UpdateTimer(_timer);
                 _timer.Enabled = true;
             }
             catch (Exception e)
@@ -544,14 +558,14 @@ namespace MessengerScreenshare.Server
         /// Resets the time of the timer object.
         /// </summary>
         /// <exception cref="Exception"></exception>
-        public void UpdateTimer()
+        public void UpdateTimer(Timer _timer)
         {
             Debug.Assert(_timer != null, Utils.GetDebugMessage("_timer is found null"));
 
             try
             {
                 // It will reset the timer to start again.
-                _timer.Interval = SharedClientScreen.Timeout;
+                _timer.Interval = Timeout;
             }
             catch (Exception e)
             {

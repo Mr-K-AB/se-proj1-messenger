@@ -71,6 +71,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MessengerDashboard\MessengerDashboard.csproj" />
     <ProjectReference Include="..\MessengerScreenshare\MessengerScreenshare.csproj" />
+    <ProjectReference Include="..\MessengerViewModels\MessengerViewModels.csproj" />
     <ProjectReference Include="..\MessengerWhiteboard\MessengerWhiteboard.csproj" />
   </ItemGroup>
 
@@ -102,6 +103,7 @@
 
   <ItemGroup>
     <Resource Include="Images\whiteboard.png" />
+    <Resource Include="ScreenshareIcons\NotSharedScreenBackground.png" />
 
     <Resource Include="ScreenshareIcons\PinButton.png" />
     <Resource Include="ScreenshareIcons\SharedScreenBackground.png" />

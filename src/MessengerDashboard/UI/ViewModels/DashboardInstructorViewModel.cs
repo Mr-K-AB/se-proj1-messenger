@@ -16,6 +16,12 @@ namespace MessengerDashboard.UI.ViewModels
 {
     public class DashboardInstructorViewModel : DashboardViewModel
     {
+        public DashboardInstructorViewModel()
+        {
+            _client.SessionExited += HandleSessionExited;
+            IsCloudSavingEnabled = true;
+        }
+
         protected bool _isCloudSavingEnabled;
 
         public bool IsCloudSavingEnabled
@@ -26,12 +32,6 @@ namespace MessengerDashboard.UI.ViewModels
 
 
         public ICommand SwitchModeCommand { get; } = new SwitchModeCommand();
-
-        public DashboardInstructorViewModel()
-        {
-            _client.SessionExited += HandleSessionExited;
-            IsCloudSavingEnabled = true;
-        }
 
         public void SaveSessionToCloud(EntityInfoWrapper entityInfo)
         {

@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MessengerApp.Stores;
-using MessengerApp.ViewModels;
+using MessengerViewModels.Stores;
+using MessengerViewModels.ViewModels;
 using MessengerDashboard.UI;
 using MessengerDashboard;
 using System.Diagnostics;
 using MessengerDashboard.UI.ViewModels;
 
-namespace MessengerApp.Commands
+namespace MessengerViewModels.Commands
 {
-    internal class NavigateClientDashboardCommand : CommandBase
+    public class NavigateClientDashboardCommand : CommandBase
     {
         private readonly NavigationStore _navigationStore;
         private readonly DashboardMemberViewModel _dashboardMemberViewModel;

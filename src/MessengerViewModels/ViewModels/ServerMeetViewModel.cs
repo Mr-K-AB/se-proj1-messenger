@@ -1,5 +1,5 @@
-﻿using MessengerApp.Stores;
-using MessengerApp.Commands;
+﻿using MessengerViewModels.Stores;
+using MessengerViewModels.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +12,9 @@ using MessengerDashboard.UI.ViewModels;
 using MessengerWhiteboard;
 using MessengerScreenshare.Server;
 
-namespace MessengerApp.ViewModels
+namespace MessengerViewModels.ViewModels
 {
-    internal class ServerMeetViewModel : ViewModelBase
+    public class ServerMeetViewModel : ViewModelBase
     {
         public ICommand NavigateHomeCommand { get; }
         public ICommand NavigateServerDashboardCommand { get; }

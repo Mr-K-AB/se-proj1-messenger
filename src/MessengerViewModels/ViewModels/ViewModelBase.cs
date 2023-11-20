@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessengerApp.ViewModels
+namespace MessengerViewModels.ViewModels
 {
     public class ViewModelBase : INotifyPropertyChanged, IDisposable
     {

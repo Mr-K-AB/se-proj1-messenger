@@ -101,7 +101,7 @@
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        <Button Grid.Column="1" Width="auto" Content="Cloud" Background="LightGray" Command="{Binding CloudCommand}" BorderThickness="0" Margin="3 3 3 0">
+                        <Button Grid.Column="1" Width="auto" Content="Cloud" Background="LightGray" Command="{Binding CloudCommand}"  BorderThickness="0" Margin="3 3 3 0">
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="15"></Setter>

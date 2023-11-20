@@ -22,7 +22,7 @@
             Cursor="ArrowCD"
             ToolTip="Start Screen Share">
 
-                <Image Width="63" Source="ScreenshareIcons/StartShare.png" />
+                <Image Width="63" Source="../ScreenshareIcons/StartShare.png" />
                 <Button.Resources>
                     <Style TargetType="Button">
                         <Setter Property="Background" Value="DodgerBlue" />
@@ -54,7 +54,7 @@
                 <Image
                 Width="63"
                 Height="25"
-                Source="ScreenshareIcons/StopShare.png"/>
+                Source="../ScreenshareIcons/StopShare.png"/>
                 <Button.Resources>
                     <Style TargetType="Button">
                         <Setter Property="Background" Value="DodgerBlue" />
@@ -81,7 +81,7 @@
             Name="Main"
             Width="484"
             Height="248"
-            Source="ScreenshareIcons/NotSharedScreenBackground.png"
+            Source="../ScreenshareIcons/NotSharedScreenBackground.png"
             Margin="20"/>
             <TextBlock
             x:Name="MainText"
@@ -110,7 +110,7 @@
         x:Name="SharedScreen"
         Grid.Row="0"
         Orientation="Vertical">
-            <Image Height="400" Source="ScreenshareIcons/SharedScreenBackground.png" />
+            <Image Height="400" Source="../ScreenshareIcons/SharedScreenBackground.png" />
             <TextBlock
             HorizontalAlignment="Center"
             FontFamily="Comic Sans MS"

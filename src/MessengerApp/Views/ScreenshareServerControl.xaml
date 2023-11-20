@@ -63,7 +63,7 @@
                 <ItemsControl x:Name="Items" ItemsSource="{Binding CurrentWindowClients, Mode=OneWay}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid Columns="{Binding CurrentPageColumns, Mode=OneWay}" Rows="{Binding CurrentPageRows, Mode=OneWay}" />
+                            <WrapPanel/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
@@ -100,7 +100,7 @@
                                             Width="23"
                                             Height="23"
                                             Margin="0,3,0,0"
-                                            Source="ScreenshareIcons/PinButton.png" />
+                                            Source="../ScreenshareIcons/PinButton.png" />
 
                                         <Button.Resources>
                                             <Style TargetType="{x:Type Button}">
@@ -138,7 +138,7 @@
                                         <Image
                                             Width="25"
                                             Height="25"
-                                            Source="ScreenshareIcons/UnpinButton.png" />
+                                            Source="../ScreenshareIcons/UnpinButton.png" />
 
                                         <Button.Resources>
                                             <Style TargetType="{x:Type Button}">

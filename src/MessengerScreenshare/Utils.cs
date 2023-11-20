@@ -35,7 +35,8 @@ namespace MessengerScreenshare
         /// <summary>
         /// The string representing the module identifier for screen share.
         /// </summary>
-        public const string ModuleIdentifier = "ScreenShare";
+        public const string ServerIdentifier = "ScreenShareServer";
+        public const string ClientIdentifier = "ScreenShareClient";
 
         /// <summary>
         /// Static method to get a nice debug message wrapped with useful information.

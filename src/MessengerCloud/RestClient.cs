@@ -1,9 +1,17 @@
-﻿/// <credits>
-/// <author>
-/// <name>Shubh Pareek</name>
-/// <rollnumber>112001039</rollnumber>
-/// </author>
-/// </credits>
+﻿/******************************************************************************
+* Filename    = RestClient.cs
+*
+* Author      = Shubh Pareek
+*
+* Roll Number = 112001039
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerCloud
+*
+* Description = A class for Azure functions.
+*****************************************************************************/
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;

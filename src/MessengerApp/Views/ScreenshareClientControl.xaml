@@ -7,88 +7,68 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <!--  Create a grid to show our content  -->
-    <Grid>
+    <Grid Background="#FFD9D9D9">
         <Grid.RowDefinitions>
-            <RowDefinition Height="10*" />
-            <RowDefinition />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <DockPanel Grid.Row="1" HorizontalAlignment="Center">
-            <Button
-            x:Name="StartScreenShare"
-            Grid.Row="1"
-            Width="60"
-            BorderThickness="0"
-            Click="StartScreenShare_Click"
-            Cursor="ArrowCD"
-            ToolTip="Start Screen Share">
-
+        <Grid Grid.Row="0" Background="#FF410CDA"/>
+        <Grid Grid.Row="1" Background="#FFD9D9D9"/>
+        <Grid Grid.Row="2" Background="#FFD9D9D9"/>
+        <Viewbox>
+            <TextBlock Grid.Row="0" HorizontalAlignment="Center" TextAlignment="Center" FontSize="40" FontWeight="Bold" Background="#410CDA" TextWrapping="Wrap" Width="800" VerticalAlignment="Top" FontFamily="Reem Kufi" Foreground="White"><Run Language="en-in" Text="SCREEN SHARE"/></TextBlock>
+        </Viewbox>
+        <DockPanel Grid.Row="2" LastChildFill="False" HorizontalAlignment="Center" >
+            <Button x:Name="StartScreenShare" Click="StartScreenShare_Click" Cursor="Hand" ToolTip="Start Screen Share" Width="65" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF410DCA">
                 <Image Width="63" Source="../ScreenshareIcons/StartShare.png" />
                 <Button.Resources>
                     <Style TargetType="Button">
-                        <Setter Property="Background" Value="DodgerBlue" />
+                        <Setter Property="IsEnabled" Value="True"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
                                 <Setter Property="IsHitTestVisible" Value="False" />
-                                <Setter Property="Background" Value="Navy" />
+                                <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>
-                    </Style>
 
+                    </Style>
                     <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="50" />
+                        <Setter Property="CornerRadius" Value="50"/>
                     </Style>
                 </Button.Resources>
             </Button>
 
-            <Separator Width="10" Background="Transparent" />
+            <Separator Width="30"/>
 
-            <Button
-            x:Name="StopScreenShare"
-            Grid.Row="1"
-            Width="60"
-            BorderThickness="0"
-            Click="StopScreenShare_Click"
-            Cursor="ArrowCD"
-            ToolTip="Stop Screen Share">
-
-                <Image
-                Width="63"
-                Height="25"
-                Source="../ScreenshareIcons/StopShare.png"/>
+            <Button x:Name="StopScreenShare" Click="StopScreenShare_Click" Cursor="Hand" ToolTip="Stop Screen Share" Width="65" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF410DCA">
+                <Image Width="63" Height="25" Source="../ScreenshareIcons/StopShare.png" />
                 <Button.Resources>
                     <Style TargetType="Button">
-                        <Setter Property="Background" Value="DodgerBlue" />
+                        <Setter Property="IsEnabled" Value="False"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="False">
+                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
                                 <Setter Property="IsHitTestVisible" Value="False" />
-                                <Setter Property="Background" Value="Navy" />
+                                <Setter Property="IsEnabled" Value="True"/>
                             </DataTrigger>
                         </Style.Triggers>
-                    </Style>
 
+                    </Style>
                     <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="50" />
+                        <Setter Property="CornerRadius" Value="50"/>
                     </Style>
                 </Button.Resources>
             </Button>
-        </DockPanel>
 
-        <StackPanel
-        x:Name="NotSharedScreen"
-        Grid.Row="0"
-        Orientation="Vertical">
-            <Image
-            Name="Main"
-            Width="484"
-            Height="248"
-            Source="../ScreenshareIcons/NotSharedScreenBackground.png"
-            Margin="20"/>
+        </DockPanel>
+        <StackPanel Grid.Row="1" x:Name="NotSharedScreen" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Image Name="Main" Width="377" Height="165" Source="../ScreenshareIcons/NotSharedScreenBackground.png" Margin="20"/>
             <TextBlock
             x:Name="MainText"
             HorizontalAlignment="Center"
-            FontFamily="Arial"
-            FontSize="50"
-            Foreground="White"
+            FontFamily="Segoe UI Semibold"
+            FontSize="32"
+            Foreground="#FF410CDA"
             Text="Your Screen is not being shared."
             TextAlignment="Center"
             TextWrapping="WrapWithOverflow" />
@@ -106,18 +86,16 @@
 
         </StackPanel>
 
-        <StackPanel
-        x:Name="SharedScreen"
-        Grid.Row="0"
-        Orientation="Vertical">
-            <Image Height="400" Source="../ScreenshareIcons/SharedScreenBackground.png" />
+        <StackPanel Grid.Row="1" x:Name="SharedScreen" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Image Width="428" Height="205" Source="../ScreenshareIcons/SharedScreenBackground.png" Margin="20"/>
             <TextBlock
-            HorizontalAlignment="Center"
-            FontFamily="Comic Sans MS"
-            FontSize="60"
-            Foreground="IndianRed"
-            Text="You are sharing your screen"
-            TextWrapping="WrapWithOverflow" />
+                HorizontalAlignment="Center"
+                FontFamily="Segoe UI Semibold"
+                FontSize="32"
+                Foreground="#FF410CDA"
+                Text="You are sharing your Screen."
+                TextAlignment="Center"
+                TextWrapping="WrapWithOverflow" />
 
             <StackPanel.Resources>
                 <Style TargetType="StackPanel">
@@ -131,5 +109,6 @@
             </StackPanel.Resources>
 
         </StackPanel>
+
     </Grid>
 </UserControl>

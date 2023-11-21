@@ -15,13 +15,10 @@ namespace MessengerDashboard.Client
 {
     public class ClientPayload
     {
-        public ClientPayload(Operation eventName, string ipAddress, int port, UserInfo? userInfo, string clientSessionControllerId)
+        public ClientPayload(Operation eventName, UserInfo? userInfo)
         {
             Operation = eventName;
-            IpAddress = ipAddress;
-            Port = port;
             UserInfo = userInfo;
-            ClientSessionControllerId = clientSessionControllerId;
         }
 
         public ClientPayload()
@@ -29,14 +26,8 @@ namespace MessengerDashboard.Client
 
         }
 
-        public string? IpAddress { get; set; }
-        
         public Operation Operation { get; set; }
 
-        public int Port { get; set; } = -1;
-
-        public UserInfo? UserInfo { get; set; }
-
-        public string ClientSessionControllerId { get; set; }
+        public UserInfo UserInfo { get; set; } = new ();
     }
 }

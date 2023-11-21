@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessengerDashboard.Telemetry
+namespace MessengerCloud
 {
     public class Analysis
     {
@@ -28,13 +28,13 @@ namespace MessengerDashboard.Telemetry
 
         public Analysis() { }
 
-        public Dictionary<int, UserActivity> UserIdToUserActivityMap { get; set; } = new();
+        public Dictionary<int, UserActivity> UserIdToUserActivityMap { get; set; }
 
-        public Dictionary<DateTime, int> TimeStampToUserCountMap { get; set; } = new();
+        public Dictionary<DateTime, int> TimeStampToUserCountMap { get; set; }
 
-        public int TotalUserCount { get; set; } = 0;
+        public int TotalUserCount { get; set; }
 
-        public int TotalChatCount { get; set; } = 0;
+        public int TotalChatCount { get; set; }
     }
 }
 

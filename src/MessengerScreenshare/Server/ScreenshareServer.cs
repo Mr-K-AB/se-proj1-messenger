@@ -33,10 +33,10 @@ namespace MessengerScreenshare.Server
             if (!isDebugging)
             {
                 // Get an instance of a communicator object.
-                _communicator = Factory.GetInstance();
+                _communicator = CommunicationFactory.GetCommunicator(false);
 
                 // Subscribe to the networking module for packets.
-               _communicator.AddSubscriber(Utils.ServerIdentifier, this);
+               _communicator.Subscribe(Utils.ServerIdentifier, this);
             }
 
             // Initialize the rest of the fields.
@@ -302,7 +302,10 @@ namespace MessengerScreenshare.Server
                 var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), 0, 0, JsonSerializer.Serialize(product));
                 string packedData = JsonSerializer.Serialize(packet);
 
-                _communicator.Broadcast(Utils.ClientIdentifier, packedData);
+                foreach (int clientId in clientIds)
+                {
+                    _communicator.Send(packedData, Utils.ClientIdentifier, clientId.ToString());
+                }
             }
             catch (Exception e)
             {

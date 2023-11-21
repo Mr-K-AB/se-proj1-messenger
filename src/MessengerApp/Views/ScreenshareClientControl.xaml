@@ -20,7 +20,14 @@
             <TextBlock Grid.Row="0" HorizontalAlignment="Center" TextAlignment="Center" FontSize="40" FontWeight="Bold" Background="#410CDA" TextWrapping="Wrap" Width="800" VerticalAlignment="Top" FontFamily="Reem Kufi" Foreground="White"><Run Language="en-in" Text="SCREEN SHARE"/></TextBlock>
         </Viewbox>
         <DockPanel Grid.Row="2" LastChildFill="False" HorizontalAlignment="Center" >
-            <Button x:Name="StartScreenShare" Click="StartScreenShare_Click" Cursor="Hand" ToolTip="Start Screen Share" Width="65" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF410DCA">
+            <Button x:Name="StartScreenShare" 
+                    Click="StartScreenShare_Click" 
+                    Cursor="Hand" 
+                    ToolTip="Start Screen Share" 
+                    Width="65" Height="65" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Background="#FF410DCA">
                 <Image Width="63" Source="../ScreenshareIcons/StartShare.png" />
                 <Button.Resources>
                     <Style TargetType="Button">
@@ -41,15 +48,24 @@
 
             <Separator Width="30"/>
 
-            <Button x:Name="StopScreenShare" Click="StopScreenShare_Click" Cursor="Hand" ToolTip="Stop Screen Share" Width="65" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF410DCA">
+            <Button x:Name="StopScreenShare" 
+                    Click="StopScreenShare_Click" 
+                    Cursor="Hand" 
+                    ToolTip="Stop Screen Share" 
+                    Width="65" 
+                    Height="65" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Background="#FF410DCA">
+                
                 <Image Width="63" Height="25" Source="../ScreenshareIcons/StopShare.png" />
                 <Button.Resources>
                     <Style TargetType="Button">
-                        <Setter Property="IsEnabled" Value="False"/>
+                        <Setter Property="IsEnabled" Value="True"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
+                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="False">
                                 <Setter Property="IsHitTestVisible" Value="False" />
-                                <Setter Property="IsEnabled" Value="True"/>
+                                <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>
 

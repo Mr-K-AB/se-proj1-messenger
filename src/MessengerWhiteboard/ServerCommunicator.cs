@@ -22,8 +22,8 @@ namespace MessengerWhiteboard
                 {
                     s_instance = new ServerCommunicator();
                     s_serializer = new Serializer();
-                    s_communicator = Factory.GetInstance();
-                    s_communicator.AddSubscriber(s_moduleID, ViewModel.Instance);
+                    s_communicator = CommunicationFactory.GetCommunicator(false);
+                    s_communicator.Subscribe(s_moduleID, ViewModel.Instance);
                 }
                 return s_instance;
             }
@@ -35,7 +35,7 @@ namespace MessengerWhiteboard
             {
                 string serializedShape = s_serializer.SerializeWBShape(wBShape);
                 Debug.Print("Broadcast: WBShape {0}", serializedShape);
-                s_communicator.Broadcast(s_moduleID, serializedShape);
+                s_communicator.Send(serializedShape, s_moduleID, null);
             }
             catch (Exception)
             {

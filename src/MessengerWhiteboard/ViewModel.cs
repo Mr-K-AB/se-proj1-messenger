@@ -1,7 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Windows.Media;
 using MessengerWhiteboard.Interfaces;
 using MessengerWhiteboard.Models;
@@ -125,11 +123,11 @@ namespace MessengerWhiteboard
         {
             _userID = _userid.ToString();
             //_userID = GetUserID();
-            if(_userid == 1)
+            if (_userid == 1)
             {
                 isServer = false;
             }
-            if(isServer)
+            if (isServer)
             {
                 machine = ServerState.Instance;
             }

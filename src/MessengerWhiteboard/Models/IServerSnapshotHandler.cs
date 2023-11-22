@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MessengerWhiteboard.Models
+﻿namespace MessengerWhiteboard.Models
 {
     public interface IServerSnapshotHandler
     {

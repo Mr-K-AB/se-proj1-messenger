@@ -16,16 +16,16 @@ namespace MessengerWhiteboard
             {
                 geometry = new RectangleGeometry(boundingBox);
             }
-            else if(shapeType == "Ellipse")
+            else if (shapeType == "Ellipse")
             {
                 //Debug.WriteLine("inside createshape Ellipse");
                 geometry = new EllipseGeometry(boundingBox);
             }
-            else if(shapeType == "Curve")
+            else if (shapeType == "Curve")
             {
                 geometry = new PathGeometry();
             }
-            else if(shapeType == "Line")
+            else if (shapeType == "Line")
             {
                 geometry = new LineGeometry(start, end);
             }
@@ -54,7 +54,7 @@ namespace MessengerWhiteboard
                 Fill = fillBrush,
                 Stroke = borderBrush,
                 Id = Guid.NewGuid(),
-                points = new List<Point>{start, end},
+                points = new List<Point> { start, end },
                 TextString = textData,
             };
 
@@ -101,9 +101,9 @@ namespace MessengerWhiteboard
                     machine.OnShapeReceived(_tempShape, Operation.ModifyShape);
 
                 }
-                else if(activeTool == "Delete")
+                else if (activeTool == "Delete")
                 {
-                    if(_tempShape != null)
+                    if (_tempShape != null)
                     {
                         machine.OnShapeReceived(_tempShape, Operation.Deletion);
                         ShapeItems.Remove(_tempShape);

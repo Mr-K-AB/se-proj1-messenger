@@ -33,7 +33,7 @@ namespace MessengerWhiteboard
         {
             get
             {
-                if(s_instance == null)
+                if (s_instance == null)
                 {
                     s_instance = new ServerState();
                     s_communicator = ServerCommunicator.Instance;
@@ -233,7 +233,7 @@ namespace MessengerWhiteboard
         {
             try
             {
-                if(_mapping.ContainsKey(shapeId))
+                if (_mapping.ContainsKey(shapeId))
                 {
                     return;
                 }
@@ -242,7 +242,7 @@ namespace MessengerWhiteboard
                 Trace.WriteLine("[White-Board] " + "inside AddShapeToServerList" + shapeItem.Geometry.GetType().Name);
                 BroadcastToClients(shapeItem, operation);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Trace.WriteLine("[White-Board] Error Occured in ServerSide: AddShapeToServerSide");
                 Trace.WriteLine("exception: ", e.Message);

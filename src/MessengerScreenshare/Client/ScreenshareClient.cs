@@ -50,7 +50,7 @@ namespace MessengerScreenshare.Client
         private ScreenshareClientViewModel? _viewModel;
 
         private readonly System.Timers.Timer? _timer;
-        public static double Timeout { get; } = 20 * 1000;
+        public static double Timeout { get; } = 200 * 1000;
 
 
         /// <summary>

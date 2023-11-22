@@ -214,7 +214,7 @@ namespace MessengerScreenshare.Server
         /// the timeout for the arrival of the packet from the client with 
         /// the confirmation header.
         /// </summary>
-        public static double Timeout { get; } = 20 * 1000;
+        public static double Timeout { get; } = 200 * 1000;
 
         /// <summary>
         /// Gets the id of the current image sending task.

@@ -1,4 +1,16 @@
-﻿using System.Diagnostics;
+﻿/***************************
+* Filename    = WBMessageHandler.cs
+*
+* Author      = Syed Abdul Mateen
+*
+* Product     = Messenger
+* 
+* Project     = White-Board
+*
+* Description = This file handles the implementation of
+*              the message handler for the whiteboard.
+***************************/
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Threading;
@@ -64,7 +76,6 @@ namespace MessengerWhiteboard
                         case Operation.Clear:
                             ClearIncomingShapes();
                             serverState.OnShapeReceived(null, Operation.Clear);
-                            break;
                             break;
 
                     }

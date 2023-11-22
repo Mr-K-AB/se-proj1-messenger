@@ -34,11 +34,9 @@ namespace MessengerContent.Client
 
         public void OnClientJoined(TcpClient socket)
         {
-            throw new NotImplementedException();
         }
         public void OnClientLeft(string clientId)
         {
-            throw new NotImplementedException();
         }
 
         public void OnDataReceived(string data)

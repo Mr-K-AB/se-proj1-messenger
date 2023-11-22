@@ -16,7 +16,7 @@ using MessengerCloud;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 
 
-namespace MessengerTests
+namespace MessengerTests.CloudTests
 {
     [TestClass]
     public class CloudTests

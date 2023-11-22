@@ -16,7 +16,7 @@ using MessengerContent.Client;
 using MessengerContent.DataModels;
 using MessengerTests.ContentTests;
 
-namespace MessnegerTests.ContentTests
+namespace MessengerTests.ContentTests.Client
 {
     [TestClass]
     public class ChatClientTests
@@ -60,7 +60,7 @@ namespace MessnegerTests.ContentTests
             ChatData deserializedData = serializer.Deserialize<ChatData>(serializedData);
 
             //Assert.isType<ChatData>(deserializedData);
-            Assert.AreEqual(chatData.Type, deserializedData.Type);  
+            Assert.AreEqual(chatData.Type, deserializedData.Type);
             Assert.AreEqual(chatData.Data, deserializedData.Data);
             Assert.AreEqual(chatData.ReplyThreadID, deserializedData.ReplyThreadID);
             Assert.AreEqual(chatData.FileData, deserializedData.FileData);

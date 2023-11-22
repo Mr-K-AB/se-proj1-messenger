@@ -36,18 +36,7 @@ namespace MessengerContent.Client
         {
             throw new NotImplementedException();
         }
-
-        public void OnClientJoined(string ipAddress, int port)
-        {
-            throw new NotImplementedException();
-        }
-
         public void OnClientLeft(string clientId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnClientLeft(string ipAddress, int port)
         {
             throw new NotImplementedException();
         }

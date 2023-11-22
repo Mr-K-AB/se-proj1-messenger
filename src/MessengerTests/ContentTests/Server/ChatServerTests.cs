@@ -1,7 +1,7 @@
 ﻿/******************************************************************************
  * Filename    = ChatServerTests.cs
  *
- * Author      = Anurag Jha
+ * Author      = Manikanta Gudipudi
  *
  * Product     = PlexShare
  * 

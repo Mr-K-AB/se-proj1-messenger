@@ -70,6 +70,12 @@ namespace MessengerContent.Server
             }
         }
 
+        public void SendAllMessagesToClient(int userId)
+        {
+            string allMessagesSerialized = _serializer.Serialize(GetAllMessages());
+            _communicator.Send(allMessagesSerialized, "Content", userId.ToString());
+        }
+
 
         /// <summary>
         /// Receives data from ContentServerNotificationHandler and processes it
@@ -107,10 +113,10 @@ namespace MessengerContent.Server
                         receivedMessageData = _fileServer.Receive(messageData);
                         break;
 
-                    /*case MessageType.HistoryRequest:
+                    case MessageType.HistoryRequest:
                         Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SendAllMessagesToClient");
                         SendAllMessagesToClient(messageData.SenderID);
-                        return;*/
+                        return;
 
                     default:
                         Trace.WriteLine("[ContentServer] MessageType is Unknown");

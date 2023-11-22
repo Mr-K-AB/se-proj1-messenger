@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -22,17 +22,15 @@ namespace MessengerApp.Views
     /// </summary>
     public partial class WhiteboardControl : UserControl
     {
-        readonly ViewModel _viewModel;
+        ViewModel _viewModel => ViewModel.Instance;
         private bool _buildingShape = false;
 
-        public WhiteboardControl(int serverID)
+        public WhiteboardControl()
         {
             InitializeComponent();
 
-            _viewModel = ViewModel.Instance;
+            DataContext = ViewModel.Instance;
             _viewModel.ShapeItems = new();
-            DataContext = _viewModel;
-            _viewModel.SetUserID(serverID);
         }
 
         //private void SampleRectangleClick(object sender, RoutedEventArgs e)

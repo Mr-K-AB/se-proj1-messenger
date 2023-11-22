@@ -1,4 +1,4 @@
-﻿///<author>Likhit5th Reddy</author>
+﻿///<author>Likhith Reddy</author>
 ///<summary> 
 ///This file contains tests for ScreenCapturer Class.  
 ///</summary>

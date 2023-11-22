@@ -40,8 +40,8 @@ namespace MessengerScreenshare.Client
         private readonly ScreenProcessor _processor;
 
         // Name and Id of the current client user
-        public string? _name = "SuryaBhai";
-        public int _id = 10;
+        public string? _name;
+        public int _id;
         // Tokens added to be able to stop the thread execution
         private bool _confirmationCancellationToken;
         private readonly CancellationTokenSource? _imageCancellation;
@@ -97,7 +97,7 @@ namespace MessengerScreenshare.Client
         {
             StopScreensharing();
             _viewModel.SharingScreen = false;
-            Trace.WriteLine(Utils.GetDebugMessage($"Timeout occurred", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage($"Timeout occurred [from client side]", withTimeStamp: true));
         }
 
         /// <summary>
@@ -227,13 +227,13 @@ namespace MessengerScreenshare.Client
                 {
                     DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), cnt, fragmentOffset, fragment);
                     string serializedData = JsonSerializer.Serialize(dataPacket);
-                    Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} fragment of size {fragment.Length}", withTimeStamp: true));
                     _communicator.Broadcast(Utils.ServerIdentifier, serializedData);
                     fragmentOffset++;
                 }*/
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), cnt, 0, serializedImg);
                 string serializedData = JsonSerializer.Serialize(dataPacket);
                 _communicator.Send(serializedData, Utils.ServerIdentifier, null);
+                Trace.WriteLine(Utils.GetDebugMessage($"Sent Image: {cnt} to server", withTimeStamp: true));
                 //await Task.Delay(1); // Introduce a small delay for asynchronous behavior
             }
         }
@@ -349,6 +349,7 @@ namespace MessengerScreenshare.Client
                 while (!_confirmationCancellationToken)
                 {
                     _communicator.Send(serializedConfirmationPacket, Utils.ServerIdentifier, null);
+                    Trace.WriteLine(Utils.GetDebugMessage($"Sent cofirmation packet to server", withTimeStamp: true));
                     await Task.Delay(5000);
                 }
             });

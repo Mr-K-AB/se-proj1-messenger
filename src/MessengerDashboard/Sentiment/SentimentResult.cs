@@ -14,24 +14,16 @@ namespace MessengerDashboard.Sentiment
         /// <summary>
         /// Gets or sets the count of chat messages with positive sentiment.
         /// </summary>
-        public int PositiveChatCount { get; set; } = 0;
+        public int PositiveChatCount { get; set; }
 
         /// <summary>
         /// Gets or sets the count of chat messages with negative sentiment.
         /// </summary>
-        public int NegativeChatCount { get; set; } = 0;
+        public int NegativeChatCount { get; set; }
 
         /// <summary>
-        /// Gets or sets the count of chat messages with negative sentiment.
+        /// Gets or sets a value indicating whether the overall sentiment of the chat messages is positive.
         /// </summary>
-        public int NeutralChatCount { get; set; } = 0;
-
-        /// <summary>
-        /// Gets or sets a value indicating the overall sentiment.
-        /// </summary>
-        /// <remarks>
-        /// Can be Positive, Negative or Neutral.
-        /// </remarks>
-        public string OverallSentiment { get; set; } = "Positive";
+        public bool IsOverallSentimentPositive { get; set; }
     }
 }

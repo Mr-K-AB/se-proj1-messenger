@@ -1,24 +1,34 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MessengerNetworking.NotificationHandler
 {
-    public interface INotificationHandler
-    {
+    /// <summary>
+    /// Interface has functions for events such as data recieved, client joined, client left
+    /// </summary>
+     public interface INotificationHandler
+    { 
         /// <summary>
-        /// Called when data of a particular module appears in the receiving queue
+        /// Function will be called when some module will get message
         /// </summary>
+        /// <param name="serializedData"></param>
         public void OnDataReceived(string serializedData);
 
         /// <summary>
-        /// Called on the server when a new client joins
+        /// Server will call function when new client connects
         /// </summary>
-        public void OnClientJoined(TcpClient socket)
-        { }
+        /// <param name="socket"></param>
+        public void OnClientJoined(string ipAddress, int port);
 
         /// <summary>
-        /// Called on the server when a client leaves
+        /// Server will call function when a client disconnects
         /// </summary>
-        public void OnClientLeft(string clientId)
-        { }
+        /// <param name="clientId"></param>
+        public void OnClientLeft(string ipAddress, int port);
+    
     }
 }

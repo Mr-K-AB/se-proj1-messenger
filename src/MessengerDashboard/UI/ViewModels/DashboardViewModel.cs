@@ -16,8 +16,8 @@ namespace MessengerDashboard.UI.ViewModels
     public class DashboardViewModel : ViewModel
     {
         protected readonly IClientSessionController _client = DashboardFactory.GetClientSessionController();
-
-        protected readonly string _cloudUrl = @"http://localhost:7166/api/entity";
+        
+        protected readonly string _cloudUrl = @"http://localhost:7166/api/entity"; 
 
         public DashboardViewModel()
         {
@@ -54,53 +54,20 @@ namespace MessengerDashboard.UI.ViewModels
             set => SetProperty(ref _mode, value);
         }
 
-        protected ChartValues<int> _positiveChatCount = new() { 0 };
+        protected int _positiveChatCount;
 
-        public ChartValues<int> PositiveChatCount
+        public int PositiveChatCount
         {
             get => _positiveChatCount;
             set => SetProperty(ref _positiveChatCount, value);
         }
 
-        protected ChartValues<int> _negativeChatCount = new() { 0 };
+        protected int _negativeChatCount;
 
-        public ChartValues<int> NegativeChatCount
+        public int NegativeChatCount
         {
             get => _negativeChatCount;
             protected set => SetProperty(ref _negativeChatCount, value);
-        }
-
-        protected ChartValues<int> _neutralChatCount = new() { 0 };
-
-        public ChartValues<int> NeutralChatCount
-        {
-            get => _neutralChatCount;
-            protected set => SetProperty(ref _negativeChatCount, value);
-        }
-
-        public Func<ChartPoint, string> LabelPoint => chartPoint => string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
-
-        protected string _positiveLabel = "Hello";
-        public string PositiveLabel
-        {
-            get =>  _positiveLabel;
-            set => SetProperty(ref  _positiveLabel, value);
-        }
-
-        protected string  _negativeLabel = "Hello";
-
-        public string NegativeLabel
-        {
-            get => _negativeLabel;
-            protected set => SetProperty(ref _negativeLabel, value);
-        }
-
-        protected string _neutralLabel = "Hello";
-
-        public string NeutralLabel 
-        {
-            get => _neutralLabel;
-            protected set => SetProperty(ref _neutralLabel, value);
         }
 
         protected string _overallSentiment;
@@ -199,7 +166,7 @@ namespace MessengerDashboard.UI.ViewModels
                 List<UserActivityEntry> userActivities = new();
                 List<string> userNames = new();
                 ChartValues<int> userChatCounts = new();
-                foreach (KeyValuePair<int, Telemetry.UserActivity> item in e.TelemetryAnalysis.UserIdToUserActivityMap)
+                foreach (KeyValuePair<int, UserActivity> item in e.TelemetryAnalysis.UserIdToUserActivityMap)
                 {
                     userNames.Add(item.Value.UserName);
                     userChatCounts.Add(item.Value.UserChatCount);
@@ -207,21 +174,15 @@ namespace MessengerDashboard.UI.ViewModels
                     userActivities.Add(new(item.Key, item.Value.UserChatCount, item.Value.UserName, item.Value.UserEmail,
                                     item.Value.EntryTime, item.Value.ExitTime));
                 }
-
                 UserActivities = userActivities;
                 UserNames = userNames;
                 UserChatCounts = userChatCounts;
 
                 Summary = string.Join(Environment.NewLine, e.Summary.Sentences);
 
-                OverallSentiment = e.Sentiment.OverallSentiment;
-                PositiveChatCount =  new () { e.Sentiment.PositiveChatCount };
-                NegativeChatCount = new () { e.Sentiment.NegativeChatCount };
-                NeutralChatCount = new () { e.Sentiment.NeutralChatCount };
-                double total = e.Sentiment.PositiveChatCount + e.Sentiment.NegativeChatCount + e.Sentiment.NeutralChatCount;
-                PositiveLabel = e.Sentiment.PositiveChatCount.ToString() + " " + (e.Sentiment.PositiveChatCount / total).ToString(".0");
-                NegativeLabel = e.Sentiment.NegativeChatCount.ToString() + " " + (e.Sentiment.NegativeChatCount / total).ToString(".0");
-                NeutralLabel = e.Sentiment.NeutralChatCount.ToString() + " " + (e.Sentiment.NeutralChatCount / total).ToString(".0");
+                OverallSentiment = e.Sentiment.IsOverallSentimentPositive ? "Positive" : "Negative";
+                PositiveChatCount = e.Sentiment.PositiveChatCount;
+                NegativeChatCount = e.Sentiment.NegativeChatCount;
 
                 List<User> users = new();
                 e.SessionInfo.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
@@ -241,9 +202,9 @@ namespace MessengerDashboard.UI.ViewModels
             }
         }
 
-        public EntityInfoWrapper CreateSessionSaveData(TextSummary textSummary, SentimentResult sentimentResult, Telemetry.Analysis analysis)
+        public EntityInfoWrapper CreateSessionSaveData(TextSummary textSummary, SentimentResult sentimentResult, Analysis analysis)
         {
-            foreach(KeyValuePair<int, Telemetry.UserActivity> x in analysis.UserIdToUserActivityMap)
+            foreach(KeyValuePair<int, UserActivity> x in analysis.UserIdToUserActivityMap)
             {
                 if(x.Value.EntryTime <= DateTime.MinValue || x.Value.EntryTime >= DateTime.MaxValue)
                 {
@@ -256,7 +217,7 @@ namespace MessengerDashboard.UI.ViewModels
                 }
             }
             EntityInfoWrapper entityInfo = new(textSummary.Sentences, sentimentResult.PositiveChatCount,
-                                               sentimentResult.NegativeChatCount, sentimentResult.NeutralChatCount, sentimentResult.OverallSentiment,
+                                               sentimentResult.NegativeChatCount, sentimentResult.IsOverallSentimentPositive,
                                                Guid.NewGuid().ToString(), ConvertToCloudObject(analysis));
             return entityInfo;
         }
@@ -273,12 +234,12 @@ namespace MessengerDashboard.UI.ViewModels
             }
         }
 
-        protected MessengerCloud.Analysis ConvertToCloudObject(Telemetry.Analysis analysis)
+        protected AnalysisCloud ConvertToCloudObject(Analysis analysis)
         {
-            Dictionary<int, MessengerCloud.UserActivity> userIdToUserActivityMap = new();
-            foreach(KeyValuePair<int, Telemetry.UserActivity> keyValuePair in analysis.UserIdToUserActivityMap)
+            Dictionary<int, UserActivityCloud> userIdToUserActivityMap = new();
+            foreach(KeyValuePair<int, UserActivity> keyValuePair in analysis.UserIdToUserActivityMap)
             {
-                MessengerCloud.UserActivity userActivity = new()
+                UserActivityCloud userActivity = new()
                 {
                     ExitTime = keyValuePair.Value.ExitTime,
                     EntryTime = keyValuePair.Value.EntryTime,
@@ -288,7 +249,7 @@ namespace MessengerDashboard.UI.ViewModels
                 };
                 userIdToUserActivityMap.Add(keyValuePair.Key, userActivity);
             }
-            MessengerCloud.Analysis analysisCloud = new(userIdToUserActivityMap, analysis.TimeStampToUserCountMap, analysis.TotalUserCount, analysis.TotalChatCount);
+            AnalysisCloud analysisCloud = new(userIdToUserActivityMap, analysis.TimeStampToUserCountMap, analysis.TotalUserCount, analysis.TotalChatCount);
             return analysisCloud;
         }
     }

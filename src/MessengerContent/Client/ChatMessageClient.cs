@@ -90,14 +90,14 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="chatData">Instance of SendChatData class</param>
         /// <param name="eventType">Type of message event as string</param>
-        private void SerializeAndSendToServer(ChatData chatData, string eventType)
+        private void SerializeAndSendToServer(ChatData chatData, string eventType, string ip, int port)
         {
             try
             {
                 string serializedStr = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[Chat Client] Setting event as '{eventType}' and sending object to server.");
                 Debug.Assert(1 == 1, "debugg");
-                _communicator.Send(serializedStr, _moduleIdentifier, "ContentServer");
+                _communicator.SendMessage(ip, port, _moduleIdentifier, serializedStr);
             }
             catch (Exception e)
             {
@@ -120,7 +120,7 @@ namespace MessengerContent.Client
             }
             ChatData convertedData = ChatDataFromSendData(sendChat, MessageEvent.New);
             convertedData.MessageID = -1;
-            SerializeAndSendToServer(convertedData, "New");
+            SerializeAndSendToServer(convertedData, "New", ip, port);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace MessengerContent.Client
                 SenderName = UserName,
                 Event = MessageEvent.Edit
             };
-            SerializeAndSendToServer(sendData, "Edit");
+            SerializeAndSendToServer(sendData, "Edit", ip, port);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace MessengerContent.Client
                 SenderName = UserName,
                 Event = MessageEvent.Delete
             };
-            SerializeAndSendToServer(sendData, "Delete");
+            SerializeAndSendToServer(sendData, "Delete", ip, port);
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace MessengerContent.Client
                 SenderName = UserName,
                 Event = MessageEvent.Star
             };
-            SerializeAndSendToServer(sendData, "Star");
+            SerializeAndSendToServer(sendData, "Star", ip, port);
         }
 
     }

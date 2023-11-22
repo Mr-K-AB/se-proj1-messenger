@@ -34,7 +34,10 @@ namespace MessengerTests.ScreenshareTests
             byte[] compressedByte = CompressByteArray(arr);
 
             byte[] decompressedByte = ScreenStitcher.DecompressByteArray(compressedByte);
-            Assert.Equals(arr, decompressedByte);
+
+            string expected = BitConverter.ToString(arr);
+            string actual = BitConverter.ToString(decompressedByte);
+            Assert.IsTrue(string.Equals(expected, actual));
         }
 
         /// <summary>

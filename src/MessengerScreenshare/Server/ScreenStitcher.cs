@@ -117,11 +117,11 @@ namespace MessengerScreenshare.Server
         {
             using MemoryStream input = new(data);
             using MemoryStream output = new();
-            using GZipStream gzipStream = new(input, CompressionMode.Decompress);
+            using (DeflateStream dstream = new(input, CompressionMode.Decompress))
             {
-                gzipStream.CopyTo(output);
-                return output.ToArray();
+                dstream.CopyTo(output);
             }
+            return output.ToArray();
         }
 
         /// <summary>

@@ -424,7 +424,7 @@ namespace MessengerScreenshare.Server
         /// <param name="image">
         /// Image to be inserted.
         /// </param>
-        /// /// <param name="taskId">
+        /// <param name="taskId">
         /// Id of the task in which this function is called.
         /// </param>
         public void PutFinalImage(Bitmap image, int taskId)

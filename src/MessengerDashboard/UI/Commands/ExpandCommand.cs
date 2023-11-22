@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using MessengerCloud;
 using MessengerDashboard.Summarization;
 using MessengerDashboard.Telemetry;
 using MessengerDashboard.UI.DataModels;
 using MessengerDashboard.UI.ViewModels;
+using MessengerCloud;
 
 namespace MessengerDashboard.UI.Commands
 {
@@ -40,15 +40,16 @@ namespace MessengerDashboard.UI.Commands
             }
 
             List<UserActivityEntry> userActivities = new();
-            foreach (KeyValuePair<int, UserActivityCloud> item in _entity.Analysis.UserIdToUserActivityMap)
+            foreach (KeyValuePair<int, MessengerCloud.UserActivity> item in _entity.Analysis.UserIdToUserActivityMap)
             {
                 userActivities.Add(new(item.Key, item.Value.UserChatCount, item.Value.UserName, item.Value.UserEmail,
                                 item.Value.EntryTime, item.Value.ExitTime));
             }
             _sessionsViewModel.PositiveChatCount = _entity.PositiveChatCount;
             _sessionsViewModel.NegativeChatCount = _entity.NegativeChatCount;
+            _sessionsViewModel.NeutralChatCount = _entity.NeutralChatCount;
             _sessionsViewModel.TotalChatCount = _entity.Analysis.TotalChatCount;
-            _sessionsViewModel.OverallSentiment = _entity.IsOverallSentimentPositive ? "Positive" : "Negative";
+            _sessionsViewModel.OverallSentiment = _entity.OverallSentiment;
             _sessionsViewModel.TotalUserCount = _entity.Analysis.TotalUserCount;
             _sessionsViewModel.SessionSummary = string.Join(Environment.NewLine, _entity.Sentences);
             _sessionsViewModel.TimeStampChatCountEntries = timeStampChatCountEntries;

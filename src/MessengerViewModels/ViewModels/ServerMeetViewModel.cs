@@ -28,6 +28,8 @@ namespace MessengerViewModels.ViewModels
 
         private readonly DashboardInstructorViewModel _dashboardViewModel;
         private readonly MessengerWhiteboard.ViewModel _whiteboardViewModel;
+        
+
         private readonly MessengerScreenshare.Server.ScreenshareServerViewModel _screenshareServerViewModel;
 
         public int Port { get; set; }
@@ -48,6 +50,10 @@ namespace MessengerViewModels.ViewModels
             navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
             Port = _server.ConnectionDetails.Port;
             IP = _server.ConnectionDetails.IpAddress;
+
+            _whiteboardViewModel = MessengerWhiteboard.ViewModel.Instance;
+            _whiteboardViewModel.SetUserID(0);
+
             NavigateServerDashboardCommand = new NavigateServerDashboardCommand(navigationStore, _dashboardViewModel);
             NavigateServerWhiteboardCommand = new NavigateServerWhiteboardCommand(navigationStore, _whiteboardViewModel);
             NavigateServerScreenshareCommand = new NavigateServerScreenshareCommand(navigationStore, _screenshareServerViewModel);

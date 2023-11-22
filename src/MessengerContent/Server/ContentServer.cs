@@ -58,6 +58,7 @@ namespace MessengerContent.Server
         public void ServerSubscribe(IMessageListener subscriber)
         {
             _subscribers.Add(subscriber);
+            //
         }
 
         /// <inheritdoc />

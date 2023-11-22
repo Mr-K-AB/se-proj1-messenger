@@ -92,7 +92,7 @@ namespace MessengerContent.Server
             ChatData receivedMessageData;
             Trace.WriteLine("[ContentServer] Received MessageData from ContentServerNotificationHandler");
 
-            // lock to prevent multiple threads from modifying the messages at once.
+            // lock to prevent multiple threads from modifying the messages at once
             lock (s_lock)
             {
                 switch (messageData.Type)

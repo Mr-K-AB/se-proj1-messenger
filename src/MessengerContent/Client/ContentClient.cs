@@ -298,10 +298,6 @@ namespace MessengerContent.Client
                     Trace.WriteLine("[ContentClient] Using file handler to send event to server");
                     _fileHandler.SendFile(chatData, ip, port);
                     break;
-                case MessageType.HistoryRequest:
-                    Trace.WriteLine("[ContentClient] Requesting server for Message History");
-                    _chatHandler.NewChat(chatData, ip, port);
-                    break;
                 default:
                     throw new ArgumentException($"Invalid Message Field Type : {chatData.Type}");
             }

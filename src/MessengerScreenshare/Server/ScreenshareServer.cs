@@ -156,6 +156,7 @@ namespace MessengerScreenshare.Server
                     Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
                     return; // Early exit.
                 }
+                //BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
             }
             //DataPacket confirmationPacket = new(clientId, clientName, ServerDataHeader.Send.ToString(), 0, 0, "");
             //string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
@@ -302,10 +303,10 @@ namespace MessengerScreenshare.Server
                 var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), 0, 0, JsonSerializer.Serialize(product));
                 string packedData = JsonSerializer.Serialize(packet);
 
-                foreach (int clientId in clientIds)
-                {
-                    _communicator.Send(packedData, Utils.ClientIdentifier, clientId.ToString());
-                }
+               //foreach (int clientId in clientIds)
+                //{
+                    _communicator.Send(packedData, Utils.ClientIdentifier, null);
+                //}
             }
             catch (Exception e)
             {

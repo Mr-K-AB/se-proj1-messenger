@@ -1,4 +1,16 @@
-﻿using System;
+﻿/***************************
+* Filename    = NetworkOperations.cs
+*
+* Author      = Syed Abdul Mateen
+*
+* Product     = Messenger
+* 
+* Project     = White-Board
+*
+* Description = This file contains all the operations that can be executed on
+*               incoming shapes from network.
+***************************/
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;

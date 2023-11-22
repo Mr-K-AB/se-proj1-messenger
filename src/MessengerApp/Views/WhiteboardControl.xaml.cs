@@ -359,7 +359,7 @@ namespace MessengerApp.Views
         /// <param name="e"></param>
         private void ClearScreen(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Do you want to close this window?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Do you want to clear board?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 _viewModel.ClearScreen();
             }

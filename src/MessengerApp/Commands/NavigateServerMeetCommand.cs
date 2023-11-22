@@ -34,7 +34,6 @@ namespace MessengerApp.Commands
             _connected = _client.ConnectToServer(
                 ip,
                 port,
-                15000,
                 _navigationStore.AuthResult.UserName,
                 _navigationStore.AuthResult.UserEmail,
                 _navigationStore.AuthResult.UserImage);

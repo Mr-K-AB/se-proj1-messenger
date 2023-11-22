@@ -68,6 +68,7 @@ namespace MessengerContent.Server
                 Trace.WriteLine("[ChatServer] MessageEvent is Update, Updating message in existing Thread");
                 receivedMsg = DeleteMessage(msg.ReplyThreadID, msg.MessageID);
             }
+            //If messageevent is corrupted
             else
             {
                 Trace.WriteLine($"[ChatServer] Invalid MessageEvent");
@@ -141,6 +142,5 @@ namespace MessengerContent.Server
             message.Data = "Message Deleted.";
             return message;
         }
-
     }
 }

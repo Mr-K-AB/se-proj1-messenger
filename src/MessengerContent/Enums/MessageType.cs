@@ -18,7 +18,6 @@ namespace MessengerContent
     public enum MessageType
     {
         File,
-        Chat,
-        HistoryRequest
+        Chat
     }
 }

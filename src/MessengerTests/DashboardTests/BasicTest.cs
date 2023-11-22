@@ -1,9 +1,16 @@
-﻿/// <credits>
-/// <author>
-/// <name>Shubh Pareek</name>
-/// <rollnumber>112001039</rollnumber>
-/// </author>
-/// </credits>
+﻿/******************************************************************************
+* Filename    = RestClient.cs
+*
+* Author      = Shubh Pareek
+*
+* Roll Number = 112001039
+*
+* Product     = Messenger 
+* 
+* Project     = Messenger Tests
+*
+* Description =   Basic tests for small methods .
+* * *****************************************************************************/
 using System;
 using System.Collections.Generic;
 using System.Linq;

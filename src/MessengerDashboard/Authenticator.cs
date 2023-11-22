@@ -1,9 +1,16 @@
-﻿/// <credits>
-/// <author>
-/// <name>Shubh Pareek</name>
-/// <rollnumber>112001039</rollnumber>
-/// </author>
-/// </credits>
+﻿/******************************************************************************
+* Filename    = RestClient.cs
+*
+* Author      = Shubh Pareek
+*
+* Roll Number = 112001039
+*
+* Product     = Messenger 
+* 
+* Project     = Dashboard
+*
+* Description = for authentication of user .
+* *****************************************************************************/
 
 using Microsoft.Extensions.Configuration;
 using System;

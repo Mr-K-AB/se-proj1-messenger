@@ -23,7 +23,7 @@ namespace MessengerContent.Client
         /// <summary>
         /// Module identifier for communicator
         /// </summary>
-        private readonly string _moduleIdentifier = "ContentServer";
+        private readonly string _moduleIdentifier = "Content";
         private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
 
@@ -65,7 +65,7 @@ namespace MessengerContent.Client
             {
                 string xml = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[File Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.Send(xml, _moduleIdentifier, "ContentServer");
+                _communicator.Send(xml, _moduleIdentifier, "Content");
             }
             catch (Exception e)
             {

@@ -46,7 +46,7 @@ namespace MessengerContent.Server
             _fileServer = new FileServer(_contentDatabase);
             _chatServer = new ChatServer(_contentDatabase);
             _serializer = new ContentSerializer();
-            _communicator.Subscribe("ContentServer", _notificationHandler);
+            _communicator.Subscribe("Content", _notificationHandler);
         }
 
         /// <summary>
@@ -69,12 +69,6 @@ namespace MessengerContent.Server
             }
         }
 
-        /// <inheritdoc />
-        /*public void SendAllMessagesToClient(int userId)
-        {
-            string allMessagesSerialized = _serializer.Serialize(GetAllMessages());
-            Communicator.Broadcast(allMessagesSerialized, "Content", userId.ToString());
-        }*/
 
         /// <summary>
         /// Receives data from ContentServerNotificationHandler and processes it
@@ -162,7 +156,7 @@ namespace MessengerContent.Server
         public void Send(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            _communicator.Send(message, "ContentClient", null);
+            _communicator.Send(message, "Content", null);
         }
 
         /// <summary>
@@ -172,7 +166,7 @@ namespace MessengerContent.Server
         public void SendFile(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            _communicator.Send(message, "ContentClient", messageData.SenderID.ToString());
+            _communicator.Send(message, "Content", messageData.SenderID.ToString());
         }
 
         /// <summary>

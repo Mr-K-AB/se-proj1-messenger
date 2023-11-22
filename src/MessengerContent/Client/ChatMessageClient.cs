@@ -115,12 +115,16 @@ namespace MessengerContent.Client
         /// <exception cref="ArgumentException"></exception>
         public void NewChat(SendChatData sendChat, string ip, int port)
         {
+            ChatData convertedData = ChatDataFromSendData(sendChat, MessageEvent.New);
+            convertedData.MessageID = -1;
+            if (sendChat.Type == MessageType.HistoryRequest)
+            {
+                SerializeAndSendToServer(convertedData, "HistoryRequest");
+            }
             if (string.IsNullOrEmpty(sendChat.Data))
             {
                 throw new ArgumentException("Invalid message string.");
             }
-            ChatData convertedData = ChatDataFromSendData(sendChat, MessageEvent.New);
-            convertedData.MessageID = -1;
             SerializeAndSendToServer(convertedData, "New");
         }
 

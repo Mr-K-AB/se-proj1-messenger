@@ -7,6 +7,10 @@ using MessengerNetworking.Communicator;
 using MessengerNetworking.Factory;
 using MessengerDashboard.Server;
 using MessengerDashboard.Client;
+using MessengerContent.Client;
+using MessengerContent.Server;
+using MessengerContent.DataModels;
+using MessengerContent;
 
 namespace MessengerTests
 {
@@ -65,10 +69,6 @@ namespace MessengerTests
                 {
                     ClientSessionController client = new(new UdpCommunicator());
                     if (!client.ConnectToServer(connectionDetails.IpAddress, connectionDetails.Port, 5000, "helo", "heko", "helo"))
-                    {
-                        Assert.Fail();
-                    }
-                    if (!client.RequestServerToRemoveClient(1000))
                     {
                         Assert.Fail();
                     }

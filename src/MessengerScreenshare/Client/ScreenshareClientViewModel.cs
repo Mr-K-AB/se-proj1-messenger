@@ -5,6 +5,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -61,6 +62,8 @@ namespace MessengerScreenshare.Client
 
                 if (value)
                 {
+                    string userName = _model.GetUserName();
+                    Trace.WriteLine(Utils.GetDebugMessage($"**************Failed to get the name: {userName}*****************", withTimeStamp: true));
                     Task.Run(async () => await _model.StartScreensharingAsync());
                 }
                 else
@@ -76,7 +79,7 @@ namespace MessengerScreenshare.Client
         /// </summary>
         public ScreenshareClientViewModel()
         {
-            _model = ScreenshareClient.GetInstance(false);
+            _model = ScreenshareClient.GetInstance(this, false);
             _sharingScreen = false;
         }
 

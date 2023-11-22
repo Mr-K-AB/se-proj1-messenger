@@ -5,31 +5,46 @@
 /// </author>
 /// </credits>
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MessengerDashboard.Client.Events;
+using MessengerDashboard.Sentiment;
+using MessengerDashboard.Summarization;
+using MessengerDashboard.Telemetry;
 
 namespace MessengerDashboard.Client
 {
-    public interface IClientSessionController
+    public interface IClientSessionController 
     {
 
-        bool AddUser();
+        event EventHandler<RefreshedEventArgs> Refreshed;
 
-        void ToggleSessionType();
+        event EventHandler<ClientSessionChangedEventArgs> SessionChanged;
 
-        void RemoveUser();
+        event EventHandler<SessionExitedEventArgs> SessionExited;
 
-        void EndMeeting();
+        Analysis? AnalysisResults { get; }
 
-        void GetSummary();
+        TextSummary? ChatSummary { get; }
 
-        void GetAnalytics();
+        bool IsConnectedToServer { get; }
 
-        UserInfo GetUser();
+        SessionInfo SessionInfo { get; }
 
-        SessionInfo GetSessionInfo();
+        SentimentResult SentimentResult { get; }
 
+        bool ConnectToServer(
+            string serverIpAddress,
+            int serverPort,
+            string clientUsername,
+            string clientEmail,
+            string clientPhotoUrl
+        );
+
+        void SendRefreshRequestToServer();
+
+        void SendExitSessionRequestToServer();
+
+        void SendLabModeRequestToServer();
+
+        void SendExamModeRequestToServer();
     }
 }

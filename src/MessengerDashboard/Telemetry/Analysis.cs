@@ -14,29 +14,27 @@ namespace MessengerDashboard.Telemetry
     public class Analysis
     {
         public Analysis(
-            Dictionary<int, int> userIdToChatCountMap,
-            Dictionary<int, string> userIdToName,
+            Dictionary<int, UserActivity> userIdToUserActivity,
             Dictionary<DateTime, int> timeStampToUserIdMap,
             int totalUserCount,
             int totalChatCount
         )
         {
-            UserIdToChatCountMap = userIdToChatCountMap;
-            UserIdToName = userIdToName;
-            TimeStampToUserCount = timeStampToUserIdMap;
+            UserIdToUserActivityMap = userIdToUserActivity;
+            TimeStampToUserCountMap = timeStampToUserIdMap;
             TotalUserCount = totalUserCount;
             TotalChatCount = totalChatCount;
         }
 
-        public Dictionary<int, int> UserIdToChatCountMap { get; set; }
+        public Analysis() { }
 
-        public Dictionary<int, string> UserIdToName { get; set; }
+        public Dictionary<int, UserActivity> UserIdToUserActivityMap { get; set; } = new();
 
-        public Dictionary<DateTime, int> TimeStampToUserCount { get; set; }
+        public Dictionary<DateTime, int> TimeStampToUserCountMap { get; set; } = new();
 
-        public int TotalUserCount { get; set; }
+        public int TotalUserCount { get; set; } = 0;
 
-        public int TotalChatCount { get; set; }
+        public int TotalChatCount { get; set; } = 0;
     }
 }
 

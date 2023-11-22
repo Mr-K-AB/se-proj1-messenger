@@ -6,34 +6,39 @@ using System.Threading.Tasks;
 using MessengerDashboard.Telemetry;
 using MessengerDashboard.Summarization;
 using MessengerDashboard.Client;
+using MessengerDashboard.Sentiment;
 
 namespace MessengerDashboard.Server
 {
     public class ServerPayload
     {
-        public UserInfo User { get; set; }
+        public UserInfo? UserInfo { get; set; }
 
         public Operation Operation { get; set; }
 
-        public Analysis SessionAnalysis { get; set; }
+        public Analysis? SessionAnalysis { get; set; }
 
-        public SessionInfo SessionInfo { get; set; }
+        public SessionInfo? SessionInfo { get; set; }
 
-        public TextSummary Summary { get; set; }
+        public TextSummary? Summary { get; set; }
+
+        public SentimentResult? Sentiment { get; set; }
 
         public ServerPayload(
-            Operation eventName,
-            SessionInfo sessionDataToSend,
-            TextSummary summaryDataToSend,
-            Analysis sessionAnalyticsToSend,
-            UserInfo user
+            Operation operation,
+            SessionInfo? sessionInfo = null,
+            UserInfo? user = null,
+            TextSummary? summary = null,
+            Analysis? telemetryAnalysis = null,
+            SentimentResult? sentiment = null
         )
         {
-            Operation = eventName;
-            User = user;
-            SessionInfo = sessionDataToSend;
-            Summary = summaryDataToSend;
-            SessionAnalysis = sessionAnalyticsToSend;
+            Operation = operation;
+            UserInfo = user;
+            SessionInfo = sessionInfo;
+            Summary = summary;
+            SessionAnalysis = telemetryAnalysis;
+            Sentiment = sentiment;
         }
 
         public ServerPayload()

@@ -15,8 +15,10 @@
             </TabItem>
             <TabItem Header="Join meeting">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox HorizontalAlignment="Center" Margin="0,-100,0,0" TextWrapping="Wrap" Text="{Binding JoinMeetIP}" VerticalAlignment="Center" Width="150"/>
-                    <TextBox HorizontalAlignment="Center" TextWrapping="Wrap" Text="{Binding JoinMeetPort}" VerticalAlignment="Center" Margin="0,-30,0,0" Width="150"/>
+                    <Label Content="Meeting IP" HorizontalAlignment="Center" Margin="0,-100,250,0" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding JoinMeetIP}" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0,-100,0,0" VerticalAlignment="Center" Width="150"/>
+                    <Label Content="Meeting Port" HorizontalAlignment="Center" Margin="0,-30,250,0" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding JoinMeetPort}" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0,-30,0,0" VerticalAlignment="Center" Width="150"/>
                     <Button Content="Join Meeting" Command="{Binding NavigateClientMeetCommand}" HorizontalAlignment="Center" Margin="0,30,0,0" VerticalAlignment="Center" Width="Auto"/>
                 </Grid>
             </TabItem>

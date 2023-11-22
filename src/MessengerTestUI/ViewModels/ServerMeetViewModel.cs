@@ -14,75 +14,34 @@ namespace MessengerTestUI.ViewModels
     public class ServerMeetViewModel : ViewModelBase
     {
         public ICommand NavigateHomeCommand { get; }
+        public ICommand NavigateServerDashboardCommand { get; }
 
-        public  ServerSessionController Server { get; set; }
+        private readonly NavigationStore _navigationStore;
+
+        private readonly DashboardServerViewModel _dashboardViewModel;
+
+        public ViewModelBase SubViewModel => _navigationStore.SubViewModel;
+
+        private IServerSessionController _server { get; } = DashboardFactory.GetServerSessionController();
         public int Port { get; set; }
         public string IP { get; set; }
 
         public ServerMeetViewModel(NavigationStore navigationStore)
         {
-            NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
-            Server = new();
-            Server.SetDetails(navigationStore.AuthResult.UserName, navigationStore.AuthResult.UserEmail, navigationStore.AuthResult.UserImage);
+                _navigationStore = navigationStore;
+                NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
+                _dashboardViewModel = new DashboardServerViewModel(navigationStore);
+                _server.SetDetails(navigationStore.AuthResult.UserName, navigationStore.AuthResult.UserEmail, navigationStore.AuthResult.UserImage);
+                navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
+                NavigateServerDashboardCommand = new NavigateServerDashboardCommand(navigationStore, _dashboardViewModel);
 
-            Port = Server.ConnectionDetails.Port;
-            IP = Server.ConnectionDetails.IpAddress;
-
-            Server.SessionUpdated += Server_SessionUpdated;
-
-            SwitchModeCommand = new SwitchModeCommand(this);
-
-            RefreshCommand = new RefreshCommand(this);
-            EndMeetCommand = new EndMeetCommand(this);
-
-            List<User> users = new();
-            Server.SessionInfo.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
-            Users = users;
-            Mode = (Server.SessionInfo.SessionMode == SessionMode.Exam) ? "Exam" : "Lab";
+            Port = _server.ConnectionDetails.Port;
+            IP = _server.ConnectionDetails.IpAddress;
         }
 
-        private void Server_SessionUpdated(object? sender, MessengerDashboard.Server.Events.SessionUpdatedEventArgs e)
+        private void NavigationStore_SubViewModelChanged()
         {
-            List<User> users = new();
-            e.Session.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });
-            Users = users;
-            Mode = Server.SessionInfo.SessionMode == SessionMode.Exam ? "Exam" : "Lab";
+            OnPropertyChanged(nameof(SubViewModel));
         }
-
-        private List<User> _users;
-        public List<User> Users
-        {
-            get => _users;
-            set
-            {
-                _users = value;
-                OnPropertyChanged(nameof(Users));
-            }
-        }
-        private string _summary;
-        public string Summary
-        {
-            get => _summary;
-            set
-            {
-                _summary = value;
-                OnPropertyChanged(nameof(Summary));
-            }
-        }
-        private string _mode;
-        public string Mode
-        {
-            get => _mode;
-            set
-            {
-                _mode = value;
-                OnPropertyChanged(nameof(Mode));
-            }
-        }
-
-        public ICommand SwitchModeCommand { get; set; }
-
-        public ICommand EndMeetCommand { get; set; }
-        public ICommand RefreshCommand { get; set; }
     }
 }

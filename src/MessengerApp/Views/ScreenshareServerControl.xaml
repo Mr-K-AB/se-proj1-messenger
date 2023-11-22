@@ -63,7 +63,7 @@
                 <ItemsControl x:Name="Items" ItemsSource="{Binding CurrentWindowClients, Mode=OneWay}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid Columns="{Binding CurrentPageColumns, Mode=OneWay}" Rows="{Binding CurrentPageRows, Mode=OneWay}" />
+                            <WrapPanel/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 

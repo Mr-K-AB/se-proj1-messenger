@@ -98,7 +98,7 @@ namespace MessengerContent.Client
                 string serializedStr = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[Chat Client] Setting event as '{eventType}' and sending object to server.");
                 Debug.Assert(1 == 1, "debugg");
-                _communicator.Send(serializedStr, _moduleIdentifier, "Content");
+                _communicator.Send(serializedStr, _moduleIdentifier, null);
             }
             catch (Exception e)
             {

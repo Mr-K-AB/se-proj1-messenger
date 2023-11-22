@@ -40,7 +40,7 @@ namespace MessengerContent.Server
         public ContentServer()
         {
             _subscribers = new List<IMessageListener>();
-            _communicator = CommunicationFactory.GetCommunicator();
+            _communicator = CommunicationFactory.GetCommunicator(false);
             _contentDatabase = new ContentDataBase();
             _notificationHandler = new ContentServerNotificationHandler(this);
             _fileServer = new FileServer(_contentDatabase);

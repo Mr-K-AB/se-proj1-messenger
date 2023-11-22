@@ -65,7 +65,7 @@ namespace MessengerContent.Client
             {
                 string xml = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[File Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.Send(xml, _moduleIdentifier, "Content");
+                _communicator.Send(xml, _moduleIdentifier, null);
             }
             catch (Exception e)
             {

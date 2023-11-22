@@ -33,7 +33,7 @@ namespace MessengerContent.Client
         /// </summary>
         private readonly INotificationHandler _notificationHandler;
         private ICommunicator _communicator;
-        //private readonly IContentSerializer _serializer;
+        private readonly IContentSerializer _serializer;
 
         /// <summary>
         /// List of subscribers
@@ -91,7 +91,7 @@ namespace MessengerContent.Client
             // instantiate requried network parameters
             _notificationHandler = new ContentClientNotificationHandler(this);
             _communicator = CommunicationFactory.GetCommunicator();
-            //_serializer = new ContentSerializer();
+            _serializer = new ContentSerializer();
             // subscribe to network module
             try
             {
@@ -158,6 +158,7 @@ namespace MessengerContent.Client
             _name = name;
             _serverIP = ip;
             _serverPort = port;
+            RequestMessageHistory();
         }
            
 
@@ -683,6 +684,28 @@ namespace MessengerContent.Client
             }
             Trace.WriteLine("[ContentClient] Received message from server");
             _messageEventHandler[receivedMessage.Event](receivedMessage);
+        }
+        /// <summary>
+        /// Sends a request to server asking for all messages received on server
+        /// </summary>
+        public void RequestMessageHistory()
+        {
+            var message = new ChatData
+            {
+                SenderID = _userID,
+                Type = MessageType.HistoryRequest
+            };
+            try
+            {
+                // serialize message and send to server via network
+                string serializedMessage = _serializer.Serialize(message);
+                Trace.WriteLine($"[ContentClient] Sending request for message history to server for user ID = {_userID}");
+                _communicator.Send(serializedMessage, "Content", null);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[ContentClient] Exception occurred during sending message history request.\n{e.GetType()} : {e.Message}");
+            }
         }
     }
 }

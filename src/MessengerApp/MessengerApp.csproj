@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <None Remove="Images\end-meet.png" />
+    <None Remove="Images\file-attach.png" />
     <None Remove="Images\refresh.png" />
     <None Remove="Images\restore.png" />
     <None Remove="Images\save.png" />
@@ -73,6 +74,7 @@
   <ItemGroup>
     <Resource Include="Images\cursor.png" />
     <Resource Include="Images\eraser.png" />
+    <Resource Include="Images\file-attach.png" />
     <Resource Include="Images\line.png" />
     <Resource Include="Images\minus.png" />
     <Resource Include="Images\pen.png" />

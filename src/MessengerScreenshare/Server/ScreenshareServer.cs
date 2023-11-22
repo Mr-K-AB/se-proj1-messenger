@@ -84,8 +84,6 @@ namespace MessengerScreenshare.Server
                 int clientId = packet.Id;
                 string clientName = packet.Name;
                 ClientDataHeader header = Enum.Parse<ClientDataHeader>(packet.Header);
-                int imgCount = packet.ImgCount;
-                int fragmentOffset = packet.Offset;
                 string clientData = packet.Data;
                 Trace.WriteLine(Utils.GetDebugMessage(header.ToString()));
                 switch (header)
@@ -300,13 +298,13 @@ namespace MessengerScreenshare.Server
             {
                 int product = numRowsColumns.Rows * numRowsColumns.Cols;
 
-                var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), 0, 0, JsonSerializer.Serialize(product));
+                var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), JsonSerializer.Serialize(product));
                 string packedData = JsonSerializer.Serialize(packet);
 
-               //foreach (int clientId in clientIds)
-                //{
-                    _communicator.Send(packedData, Utils.ClientIdentifier, null);
-                //}
+                foreach (int clientId in clientIds)
+                {
+                    _communicator.Send(packedData, Utils.ClientIdentifier, clientId.ToString());
+                }
             }
             catch (Exception e)
             {

@@ -67,7 +67,6 @@ namespace MessengerNetworking.Communicator
             // this thread listens to connect requests from clients
             _clientConnectReuqestAcceptorThread = new Thread(
                 AcceptClientConnectRequests);
-            _clientConnectReuqestAcceptorThread.IsBackground = true;
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace MessengerTests
     {
         private const string BaseUrl = @"http://localhost:7166/api/entity";
         private readonly RestClient _restClient;
-        private readonly Analysis _analysisCloud;
+        private readonly AnalysisCloud _analysisCloud;
         readonly List<string> _sentences = new() { "Hi", "Hello", "Wow" };
 
 
@@ -40,7 +40,7 @@ namespace MessengerTests
                  2
                 );
             _analysisCloud.TimeStampToUserCountMap.Add(DateTime.Now, 3);
-            _analysisCloud.UserIdToUserActivityMap.Add(4, new UserActivity() { EntryTime = DateTime.Now, ExitTime = DateTime.Now, UserEmail = "hello", UserChatCount = 2, UserName = "shubh" });
+            _analysisCloud.UserIdToUserActivityMap.Add(4, new UserActivityCloud() { EntryTime = DateTime.Now, ExitTime = DateTime.Now, UserEmail = "hello", UserChatCount = 2, UserName = "shubh" });
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace MessengerTests
 
             // Create an entity.
             Logger.LogMessage("Create an entity.");
-            var info = new EntityInfoWrapper(_sentences, 1, 2, 3, "Positive", "-1", _analysisCloud);
+            var info = new EntityInfoWrapper(_sentences, 1, 2, true, "-1", _analysisCloud);
             Entity? postEntity = await _restClient.PostEntityAsync(info);
             // Get the entity.
             Logger.LogMessage("Get the entity.");
@@ -100,9 +100,9 @@ namespace MessengerTests
 
             // Create three entities.
             Logger.LogMessage("Create three entities.");
-            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, 3, "Neutral", "-1", _analysisCloud));
-            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, 4, "Negative", "0", _analysisCloud));
-            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, 5, "Positive", "1", _analysisCloud));
+            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, true, "-1", _analysisCloud));
+            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, true, "0", _analysisCloud));
+            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, true, "1", _analysisCloud));
 
             // Validate.
             Logger.LogMessage("Validate.");
@@ -112,6 +112,17 @@ namespace MessengerTests
             Logger.LogMessage("Delete any existing entities.");
             await _restClient.DeleteEntitiesAsync();
         }
+        [TestMethod]
+        public void GetAll()
+        {
+            Task <IReadOnlyList<Entity>?> entities = _restClient.GetEntitiesAsync();
+            entities.Wait();
+            Assert.AreEqual(entities.Result?.Count, 3);
+
+        }
+
+
+
     }
 
 

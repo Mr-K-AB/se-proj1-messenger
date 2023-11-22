@@ -1,16 +1,9 @@
-﻿/******************************************************************************
-* Filename    = EntityApiFunctions.cs
-*
-* Author      = Shubh Pareek
-*
-* Roll Number = 112001039
-*
-* Product     = Messenger 
-* 
-* Project     = MessengerCloud
-*
-* Description = A class for Azure functions.
-*****************************************************************************/
+﻿/// <credits>
+/// <author>
+/// <name>Shubh Pareek</name>
+/// <rollnumber>112001039</rollnumber>
+/// </author>
+/// </credits>
 
 using Azure;
 using Azure.Data.Tables;
@@ -46,10 +39,10 @@ namespace MessengerCloud
         {
             Trace.WriteLine("[EntityApi]: create entity called");
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            Debug.WriteLine("request Body is ", requestBody);
-            EntityInfoWrapper info = JsonSerializer.Deserialize<EntityInfoWrapper>(requestBody);
+            Debug.WriteLine("request Body is ",requestBody);
+            EntityInfoWrapper info= JsonSerializer.Deserialize<EntityInfoWrapper>(requestBody);
             Entity value = new(info);
-            Debug.WriteLine("val inside api ", value);
+            Debug.WriteLine("val inside api ",value);
             await entityTable.AddAsync(value);
             //log.LogInformation($"New entity created Id = {value.Id}.strings are ", value.Sentences[0]);
 

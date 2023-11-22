@@ -26,15 +26,13 @@ namespace MessengerDashboard.Telemetry
             TotalChatCount = totalChatCount;
         }
 
-        public Analysis() { }
+        public Dictionary<int, UserActivity> UserIdToUserActivityMap { get; set; }
 
-        public Dictionary<int, UserActivity> UserIdToUserActivityMap { get; set; } = new();
+        public Dictionary<DateTime, int> TimeStampToUserCountMap { get; set; }
 
-        public Dictionary<DateTime, int> TimeStampToUserCountMap { get; set; } = new();
+        public int TotalUserCount { get; set; }
 
-        public int TotalUserCount { get; set; } = 0;
-
-        public int TotalChatCount { get; set; } = 0;
+        public int TotalChatCount { get; set; }
     }
 }
 

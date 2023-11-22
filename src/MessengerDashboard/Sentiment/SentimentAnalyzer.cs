@@ -1,5 +1,9 @@
-﻿using System.Text;
-using VaderSharp2;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SentimentAnalyzer;
 
 namespace MessengerDashboard.Sentiment
 {
@@ -11,54 +15,30 @@ namespace MessengerDashboard.Sentiment
     /// </remarks>
     public class SentimentAnalyzer : ISentimentAnalyzer
     {
-        readonly SentimentIntensityAnalyzer _sentimentAnalyzer = new();
-
         public SentimentResult AnalyzeSentiment(string[] chats) 
         {
             int positiveChatCount = 0;
             int negativeChatCount = 0;
-            int neutralChatCount = 0;
-            double score;
             StringBuilder sb = new();
             for (int i = 0; i < chats.Length; i++)
             {
-                score = _sentimentAnalyzer.PolarityScores(chats[i]).Compound;
-                string sentiment = SentimentFromScore(score);
-                if (sentiment == "Positive")
+                sb.Append(chats[i]);
+                if (Sentiments.Predict(chats[i]).Prediction)
                 {
                     positiveChatCount++;
                 }
-                else if (sentiment == "Negative")
+                else
                 {
                     negativeChatCount++;
                 }
-                else
-                {
-                    neutralChatCount++;
-                }
-                sb.Append(chats[i]);
             }
-            score = _sentimentAnalyzer.PolarityScores(sb.ToString()).Compound;
+            bool isOverallSentimentPositive = Sentiments.Predict(sb.ToString()).Prediction;
             return new SentimentResult()
             {
                 PositiveChatCount = positiveChatCount,
                 NegativeChatCount = negativeChatCount,
-                NeutralChatCount = neutralChatCount,
-                OverallSentiment = SentimentFromScore(score) 
+                IsOverallSentimentPositive = isOverallSentimentPositive
             };
-        }
-
-        private static string SentimentFromScore(double score)
-        {
-            if (score > 0.05)
-            {
-                return "Positive";
-            }
-            if (score < -0.05)
-            {
-                return "Negative";
-            }
-            return "Neutral";
         }
     }
 }

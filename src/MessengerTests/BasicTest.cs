@@ -25,7 +25,7 @@ namespace MessengerTests
     {
         
         
-        private Analysis _analysisCloud;
+        private AnalysisCloud _analysisCloud;
         readonly List<string> _sentences = new() { "Hi", "Hello", "Wow" };
         //private readonly LocalSave _save = new();
         public BasicTest()
@@ -40,7 +40,7 @@ namespace MessengerTests
                  2
                 );
             _analysisCloud.TimeStampToUserCountMap.Add(DateTime.Now, 3);
-            _analysisCloud.UserIdToUserActivityMap.Add(4, new UserActivity() { EntryTime = DateTime.Now, ExitTime = DateTime.Now, UserEmail = "hello", UserChatCount = 2, UserName = "shubh" });
+            _analysisCloud.UserIdToUserActivityMap.Add(4, new UserActivityCloud() { EntryTime = DateTime.Now, ExitTime = DateTime.Now, UserEmail = "hello", UserChatCount = 2, UserName = "shubh" });
         }
         /// <summary>
         /// checking if the class is serializable or not  
@@ -58,9 +58,9 @@ namespace MessengerTests
                  2
                 );
             //_analysisCloud.TimeStampToUserCountMap.Add(DateTime.Now, 3);
-            _analysisCloud.UserIdToUserActivityMap.Add(4, new UserActivity() { /*EntryTime = DateTime.Now, ExitTime = DateTime.Now, */UserEmail = "hello", UserChatCount = 2, UserName = "shubh" });
+            _analysisCloud.UserIdToUserActivityMap.Add(4, new UserActivityCloud() { /*EntryTime = DateTime.Now, ExitTime = DateTime.Now, */UserEmail = "hello", UserChatCount = 2, UserName = "shubh" });
             string ans = JsonSerializer.Serialize( _analysisCloud );
-            Analysis res = JsonSerializer.Deserialize<Analysis>(ans);
+            AnalysisCloud res = JsonSerializer.Deserialize<AnalysisCloud>(ans);
             Assert.IsTrue( res != null );
 
 
@@ -75,11 +75,11 @@ namespace MessengerTests
         public async Task LocalSaveTesting()
         {
             // delete all 
-            Logger.LogMessage("Deleting all entries from our Azure table storage.");
+            Logger.LogMessage("Deleting all entries from our Azure tddable storage.");
 
             // Create an entity.
             Logger.LogMessage("Create an entity.");
-            var info = new EntityInfoWrapper(_sentences, 1, 2, 3, "Positive", "-1", _analysisCloud);
+            var info = new EntityInfoWrapper(_sentences, 1, 2, true, "-1", _analysisCloud);
             List<EntityInfoWrapper> infos = new()
             {
                 info

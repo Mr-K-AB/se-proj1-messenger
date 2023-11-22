@@ -1,16 +1,9 @@
-﻿/******************************************************************************
-* Filename    = UserInfo.cs
-*
-* Author      = Shailab Chauhan 
-*
-* Roll number = 112001038
-*
-* Product     = Messenger 
-* 
-* Project     = MessengerDashboard
-*
-* Description = 
-*****************************************************************************/
+﻿/// <credits>
+/// <author>
+/// <name>Shailab Chauhan</name>
+/// <rollnumber>112001038</rollnumber>
+/// </author>
+/// </credits>
 
 using System;
 
@@ -18,7 +11,10 @@ namespace MessengerDashboard.Client
 {
     public class UserInfo
     {
-        public UserInfo() { }
+        public UserInfo()
+        {
+
+        }
 
         public UserInfo(
             string userName,
@@ -33,13 +29,13 @@ namespace MessengerDashboard.Client
             UserPhotoUrl = userPhotoUrl;
         }
 
-        public string UserEmail { get; set; } = "";
+        public string? UserEmail { get; set; }
 
-        public int UserId { get; set; } = -1;
+        public int UserId { get; set; }
 
-        public string UserName { get; set; } = "";
+        public string? UserName { get; set; }
 
-        public string UserPhotoUrl { get; set; } = "";
+        public string? UserPhotoUrl { get; set; }
 
         public bool Equals(UserInfo client)
         {

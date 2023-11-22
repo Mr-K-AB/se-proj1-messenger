@@ -90,12 +90,12 @@ namespace MessengerContent.Client
         {
             // instantiate requried network parameters
             _notificationHandler = new ContentClientNotificationHandler(this);
-            _communicator = CommunicationFactory.GetCommunicator();
+            _communicator = Factory.GetInstance();
             //_serializer = new ContentSerializer();
             // subscribe to network module
             try
             {
-                _communicator.Subscribe("ContentClient", _notificationHandler);
+                _communicator.AddSubscriber("ContentClient", _notificationHandler);
             }
             catch (Exception e)
             {
@@ -134,7 +134,7 @@ namespace MessengerContent.Client
                 _communicator = value;
                 try
                 {
-                    _communicator.Subscribe("ContentClient", _notificationHandler);
+                    _communicator.AddSubscriber("ContentClient", _notificationHandler);
                 }
                 catch (Exception e)
                 {
@@ -618,6 +618,33 @@ namespace MessengerContent.Client
                 _messageIDMap = new Dictionary<int, int>();
             }
         }
+
+        /// <summary>
+        /// Set all messages of in the internal data strcutures
+        /// </summary>
+        /// <param name="allMessages">List of threads containing all messages</param>
+        /*private void SetAllMessages(List<ChatThread> allMessages)
+        {
+            // lock before updating data strcutures
+            lock (_lock)
+            {
+                _threadIDMap = new Dictionary<int, int>();
+                _messageIDMap = new Dictionary<int, int>();
+                AllMessages = allMessages;
+                // update the internal data structures
+                for (int i = 0; i < AllMessages.Count; i++)
+                {
+                    ChatThread thread = AllMessages[i];
+                    int threadID = thread.ThreadID;
+                    _threadIDMap.Add(threadID, i);
+                    foreach (ReceiveChatData message in thread.MessageList)
+                    {
+                        _messageIDMap.Add(message.MessageID, threadID);
+                    }
+                }
+            }
+        }*/
+
         /// <summary>
         /// Handles received messages from network
         /// </summary>
@@ -632,5 +659,59 @@ namespace MessengerContent.Client
             Trace.WriteLine("[ContentClient] Received message from server");
             _messageEventHandler[receivedMessage.Event](receivedMessage);
         }
+
+        /// <summary>
+        /// Handles all messages received at once 
+        /// </summary>
+        /// <param name="allMessages">List of threads containing all messages</param>
+        /// <exception cref="ArgumentException"></exception>
+        //public void OnReceive(List<ChatThread> allMessages)
+        //{
+        //    if (allMessages is null)
+        //    {
+        //        throw new ArgumentException("Received null argument!");
+        //    }
+        //    Trace.WriteLine("[ContentClient] Received message history from server");
+        //    // update the internal data strcutures using the received history
+        //    SetAllMessages(allMessages);
+        //    Notify(allMessages);
+        //}
+
+        /// <summary>
+        /// Notify all subscribers of received entire message history
+        /// </summary>
+        /// <param name="allMessages"></param>
+        /// <exception cref="ArgumentException"></exception>
+        //private void Notify(List<ChatThread> allMessages)
+        //{
+        //    Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared");
+        //    foreach (IMessageListener subscriber in _subscribers)
+        //    {
+        //        _ = Task.Run(() => { subscriber.OnAllMessagesReceived(allMessages); });
+        //    }
+        //}
+
+        /// <summary>
+        /// Sends a request to server asking for all messages received on server
+        /// </summary>
+        /*public void RequestMessageHistory()
+        {
+            ReceiveChatData? message = new ChatData
+            {
+                SenderID = UserID,
+                Type = MessageType.HistoryRequest
+            }
+            try
+            {
+                // serialize message and send to server via network
+                string serializedMessage = _serializer.Serialize(message);
+                Trace.WriteLine($"[ContentClient] Sending request for message history to server for user ID = {UserID}");
+                _communicator.Broadcast("Dashboard", serializedMessage);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[ContentClient] Exception occurred during sending message history request.\n{e.GetType()} : {e.Message}");
+            }
+        }*/
     }
 }

@@ -45,7 +45,7 @@ namespace MessengerTests
             else
             {
                 SentimentResult result = sentimentAnalyzer.AnalyzeSentiment(new string[] { "Very good man", "I don't like that", "Never go there" });
-                if (result.PositiveChatCount != 1 || result.NegativeChatCount != 2 || result.OverallSentiment == "Postitive")
+                if (result.PositiveChatCount != 1 || result.NegativeChatCount != 2 || result.IsOverallSentimentPositive == true)
                 {
                     Assert.Fail();
                 }

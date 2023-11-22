@@ -43,7 +43,7 @@ namespace MessengerDashboard.UI.Commands
                     List<EntityInfoWrapper> entities = new();
                     foreach (Entity entity in results)
                     {
-                        entities.Add(new(entity.Sentences, entity.PositiveChatCount, entity.NegativeChatCount, entity.NeutralChatCount, entity.OverallSentiment, entity.SessionId, entity.Analysis));
+                        entities.Add(new(entity.Sentences, entity.PositiveChatCount, entity.NegativeChatCount, entity.IsOverallSentimentPositive, entity.SessionId, entity.Analysis));
                     }
                     List<SessionEntry> sessions = new();
                     foreach (EntityInfoWrapper entity in entities)

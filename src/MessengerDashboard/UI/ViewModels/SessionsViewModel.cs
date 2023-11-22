@@ -84,14 +84,6 @@ namespace MessengerDashboard.UI.ViewModels
             set => SetProperty(ref  _negativeChatCount, value);
         }
 
-        private int _neutralChatCount;
-
-        public int NeutralChatCount
-        {
-            get => _neutralChatCount;
-            set => SetProperty(ref  _neutralChatCount, value);
-        }
-
         private string _overallSentiment;
         public string OverallSentiment
         {

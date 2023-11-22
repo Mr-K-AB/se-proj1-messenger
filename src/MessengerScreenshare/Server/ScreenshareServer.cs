@@ -301,10 +301,10 @@ namespace MessengerScreenshare.Server
                 var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), JsonSerializer.Serialize(product));
                 string packedData = JsonSerializer.Serialize(packet);
 
-               //foreach (int clientId in clientIds)
-                //{
-                    _communicator.Send(packedData, Utils.ClientIdentifier, null);
-                //}
+                foreach (int clientId in clientIds)
+                {
+                    _communicator.Send(packedData, Utils.ClientIdentifier, clientId.ToString());
+                }
             }
             catch (Exception e)
             {

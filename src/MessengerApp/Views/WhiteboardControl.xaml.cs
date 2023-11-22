@@ -286,6 +286,7 @@ namespace MessengerApp.Views
         {
             _viewModel.ChangeTool("Delete");
             _viewModel.ChangeMode(ViewModel.WBModes.DeleteMode);
+            Cursor = Cursors.Arrow;
             Trace.WriteLine("Whiteboard View Model :: Active tool changed to : " + _viewModel.activeTool);
         }
         
@@ -358,7 +359,10 @@ namespace MessengerApp.Views
         /// <param name="e"></param>
         private void ClearScreen(object sender, RoutedEventArgs e)
         {
-            _viewModel.ClearScreen();
+            if (MessageBox.Show("Do you want to close this window?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                _viewModel.ClearScreen();
+            }
         }
         
         /// <summary>

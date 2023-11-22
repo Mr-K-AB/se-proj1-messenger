@@ -1,17 +1,28 @@
-﻿using System.Diagnostics;
+﻿/******************************************************************************
+* Filename    = SentimentAndSummarizerTests.cs
+*
+* Author      = Pratham Ravindra Nagpure 
+*
+* Roll number = 112001054
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerTests
+*
+* Description = A class to test the sentiment and the summarizer.
+*****************************************************************************/
+
+using System.Diagnostics;
 using System.Xml.Serialization;
 using MessengerDashboard.Summarization;
 using MessengerDashboard;
 using MessengerDashboard.Sentiment;
 
-namespace MessengerTests
+namespace MessengerTests.DashboardTests
 {
     [TestClass]
-    public class DashboardTests
+    public class SentimentAndSummarizerTests
     {
-        //[TestMethod]
-        //public void ForMessengerCloud
-
         [TestMethod]
         public void TextSummarizerFactoryTest()
         {

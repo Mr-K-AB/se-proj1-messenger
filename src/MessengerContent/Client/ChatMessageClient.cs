@@ -34,6 +34,15 @@ namespace MessengerContent.Client
         private ICommunicator _communicator;
 
         /// <summary>
+        /// Auto-implemented UserID property.
+        /// </summary>
+        public int UserID { get; set; }
+        /// <summary>
+        /// Auto-implemented UserName property.
+        /// </summary>
+        public string UserName { get; set; }
+
+        /// <summary>
         /// Constructor that instantiates a communicator and serializer.
         /// </summary>
         /// <param name="communicator">Object implementing the ICommunicator interface</param>
@@ -50,14 +59,6 @@ namespace MessengerContent.Client
         {
             set => _communicator = value;
         }
-
-        /// <summary>
-        /// Auto-implemented UserID property.
-        /// </summary>
-        public int UserID { get; set; }
-
-        public string UserName { get; set; }
-
         // helper functions
 
         /// <summary>
@@ -187,6 +188,5 @@ namespace MessengerContent.Client
             };
             SerializeAndSendToServer(sendData, "Star");
         }
-
     }
 }

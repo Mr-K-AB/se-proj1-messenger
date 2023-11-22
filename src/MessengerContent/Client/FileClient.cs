@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = Handles the client side of sending and downloading files
  *****************************************************************************/
 using MessengerContent.DataModels;
 using System.Diagnostics;

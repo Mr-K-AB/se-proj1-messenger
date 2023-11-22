@@ -14,6 +14,6 @@ namespace MessengerDashboard.Server
     public interface IServerSessionController : INotificationHandler
     {
         public ConnectionDetails ConnectionDetails { get; }
-        public event EventHandler<SessionUpdatedEventArgs>? SessionUpdated;
+        public event EventHandler<SessionUpdatedEventArgs> SessionUpdated;
     }
 }

@@ -1,14 +1,9 @@
-﻿/******************************************************************************
-* Filename    = Entity.cs
-*
-* Author      = Shubh Pareek
-*
-* Product     = Messenger 
-* 
-* Project     = MessengerCloud
-*
-* Description = A custom Azure Table Entity.
-*****************************************************************************/
+﻿/// <credits>
+/// <author>
+/// <name>Shubh Pareek</name>
+/// <rollnumber>112001039</rollnumber>
+/// </author>
+/// </credits>
 
 using Azure;
 using MessengerCloud;
@@ -29,7 +24,7 @@ namespace MessengerCloud
 
         public Entity(EntityInfoWrapper info)
         {
-            if (info == null) { return; }
+            if(info == null){return; }
             PartitionKey = PartitionKeyName;
             RowKey = info.SessionId;
             Id = RowKey;
@@ -37,59 +32,51 @@ namespace MessengerCloud
             Timestamp = DateTime.Now;
             PositiveChatCount = info.PositiveChatCount;
             NegativeChatCount = info.NegativeChatCount;
-            NeutralChatCount = info.NeutralChatCount;
-            OverallSentiment = info.OverallSentiment;
+            IsOverallSentimentPositive = info.IsOverallSentimentPositive;
             Sentences = info.Sentences;
             Analysis = info.Analysis;
             Trace.WriteLine("[Entity]: new entity created ");
         }
 
-        public Entity() { }
+        public Entity()   { }
 
         [JsonInclude]
-        [JsonPropertyName(nameof(SessionId))] //Unique id for the session conducted
+        [JsonPropertyName("SessionId")] //Unique id for the session conducted
         public string SessionId { get; set; }
 
 
         [JsonInclude]
-        [JsonPropertyName(nameof(Sentences))]
-        public List<string> Sentences { get; set; }
+        [JsonPropertyName("Sentences")]
+        public List<string> Sentences;
 
         [JsonInclude]
-        [JsonPropertyName(nameof(PositiveChatCount))]
+        [JsonPropertyName("PositiveChatCount")]
         public int PositiveChatCount { get; set; }
-
         [JsonInclude]
-        [JsonPropertyName(nameof(NegativeChatCount))]
+        [JsonPropertyName("NegativeChatCount")]
         public int NegativeChatCount { get; set; }
+        [JsonInclude]
+        [JsonPropertyName("IsOverallSentinmentPositive")]
+        public bool IsOverallSentimentPositive { get; set; }
 
         [JsonInclude]
-        [JsonPropertyName(nameof(NeutralChatCount))]
-        public int NeutralChatCount { get; set; }
-
-        [JsonInclude]
-        [JsonPropertyName(nameof(OverallSentiment))]
-        public string OverallSentiment { get; set; }
-
-        [JsonInclude]
-        [JsonPropertyName(nameof(Id))]
+        [JsonPropertyName("Id")]
         public string Id { get; set; }
 
         [JsonInclude]
-        [JsonPropertyName(nameof(PartitionKey))]
+        [JsonPropertyName("PartitionKey")]
         public string PartitionKey { get; set; }
 
         [JsonInclude]
-        [JsonPropertyName(nameof(RowKey))]
+        [JsonPropertyName("RowKey")]
         public string RowKey { get; set; }
 
         [JsonInclude]
-        [JsonPropertyName(nameof(Timestamp))]
+        [JsonPropertyName("Timestamp")]
         public DateTimeOffset? Timestamp { get; set; }
-
         [JsonInclude]
-        [JsonPropertyName(nameof(Analysis))]
-        public Analysis Analysis { get; set; }
+        [JsonPropertyName("Analysis")]
+        public AnalysisCloud Analysis { get; set; }
 
         [JsonIgnore]
         public ETag ETag { get; set; }

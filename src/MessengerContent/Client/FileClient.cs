@@ -59,13 +59,13 @@ namespace MessengerContent.Client
         /// <param name="
         /// ">Instance of SendChatData class</param>
         /// <param name="eventType">Type of message event as string</param>
-        private void SerializeAndSendToServer(ChatData chatData, string eventType)
+        private void SerializeAndSendToServer(ChatData chatData, string eventType, string ip, int port)
         {
             try
             {
                 string xml = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[File Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.Send(xml, _moduleIdentifier, "ContentServer");
+                _communicator.SendMessage(ip, port, _moduleIdentifier, xml);
             }
             catch (Exception e)
             {
@@ -104,7 +104,7 @@ namespace MessengerContent.Client
                 Event = MessageEvent.New,
                 FileData = new SendFileData(sendContent.Data)
             };
-            SerializeAndSendToServer(sendData, "New");
+            SerializeAndSendToServer(sendData, "New", ip, port);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace MessengerContent.Client
                 Event = MessageEvent.Download,
                 FileData = null
             };
-            SerializeAndSendToServer(sendData, "Download");
+            SerializeAndSendToServer(sendData, "Download", ip, port);
         }
     }
 }

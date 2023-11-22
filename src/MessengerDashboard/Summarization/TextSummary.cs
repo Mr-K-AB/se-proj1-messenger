@@ -14,7 +14,7 @@ namespace MessengerDashboard.Summarization
         /// <summary>
         /// Gets a list of sentences that make up the text summary.
         /// </summary>
-        public List<string> Sentences { get; set; } = new();
+        public List<string> Sentences { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextSummary"/> class with the provided sentences.
@@ -24,7 +24,5 @@ namespace MessengerDashboard.Summarization
         {
             Sentences = sentences;
         }
-
-        public TextSummary() { }
     }
 }

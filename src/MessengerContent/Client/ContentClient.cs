@@ -446,7 +446,55 @@ namespace MessengerContent.Client
             }
         }
 
-        // event handler functions
+        /// <summary>
+        /// Notify all subscribers of received entire message history
+        /// </summary>
+        /// <param name="allMessages"></param>
+        /// <exception cref="ArgumentException"></exception>
+        private void Notify(List<ChatThread> allMessages)
+        {
+            Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared");
+            foreach (IMessageListener subscriber in _subscribers)
+            {
+                _ = Task.Run(() => { subscriber.OnAllMessagesReceived(allMessages); });
+            }
+        }
+        public void OnReceive(List<ChatThread> allMessages)
+        {
+            if (allMessages is null)
+            {
+                throw new ArgumentException("Received null argument!");
+            }
+            Trace.WriteLine("[ContentClient] Received message history from server");
+            // update the internal data strcutures using the received history
+            SetAllMessages(allMessages);
+            Notify(allMessages);
+        }
+        /// <summary>
+        /// Set all messages of in the internal data strcutures
+        /// </summary>
+        /// <param name="allMessages">List of threads containing all messages</param>
+        private void SetAllMessages(List<ChatThread> allMessages)
+        {
+            // lock before updating data strcutures
+            lock (_lock)
+            {
+                _threadIDMap = new Dictionary<int, int>();
+                _messageIDMap = new Dictionary<int, int>();
+                AllMessages = allMessages;
+                // update the internal data structures
+                for (int i = 0; i < AllMessages.Count; i++)
+                {
+                    ChatThread thread = AllMessages[i];
+                    int threadID = thread.ThreadID;
+                    _threadIDMap.Add(threadID, i);
+                    foreach (ReceiveChatData message in thread.MessageList)
+                    {
+                        _messageIDMap.Add(message.MessageID, threadID);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Handles the new message event - checks the message data and 

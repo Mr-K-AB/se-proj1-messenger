@@ -17,6 +17,7 @@ using System.Windows.Threading;
 using MessengerDashboard;
 using System.Windows;
 using MessengerDashboard.Client;
+using SharpDX.Direct3D11;
 
 namespace MessengerApp.ViewModels
 {
@@ -239,6 +240,62 @@ namespace MessengerApp.ViewModels
                           }
                       }),
                       contentData);
+        }
+
+        /// <summary>
+        ///     When a new user joins, they receive the list of messages upto then
+        /// </summary>
+        /// <param name="allMessages"> List of all messages upto now </param>
+        public void OnAllMessagesReceived(List<ChatThread> allMessages)
+        {
+            // Execute the call on the application's main thread.
+            //
+            // Also note that we may execute the call asynchronously as the calling
+            // thread is not dependent on the callee thread finishing this method call.
+            // Hence we may call the dispatcher's BeginInvoke method which kicks off
+            // execution async as opposed to Invoke which does it synchronously.
+
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
+                      DispatcherPriority.Normal,
+                      new Action<List<ChatThread>>(allMessages =>
+                      {
+                          lock (this)
+                          {
+                              // clearing existing data entries
+                              Messages.Clear();
+                              ThreadIds.Clear();
+                              // updating the Threads and Messages dictionary and displaying the chat upto now in the listbox in view
+                              foreach (ChatThread messageList in allMessages)
+                              {
+                                  foreach (ReceiveChatData message in messageList.MessageList)
+                                  {
+                                      Trace.WriteLine("[ChatPageViewModel] All messages have been received.");
+                                      Messages.Add(message.MessageID, message.Data);
+                                      ThreadIds.Add(message.MessageID, message.ReplyThreadID);
+
+                                      UserId = _model.GetUserID();
+
+                                      // Creating object for the received message
+                                      // Message object, ReceivedMsg, to be added to the new user's _allmessages
+                                      // list upon property changed event
+                                      ReceivedMsg = new()
+                                      {
+                                          MessageID = message.MessageID,
+                                          MessageType = message.Type == MessageType.Chat,
+                                          MsgData = message.Data,
+                                          Time = message.SentTime.ToString("hh:mm tt"),
+                                          Sender = Users.ContainsKey(message.SenderID) ? Users[message.SenderID] : "Anonymous",
+                                          isCurrentUser = UserId == message.SenderID,
+                                          ReplyMessage = message.ReplyMessageID == -1 ? "" : Messages[message.ReplyMessageID]
+                                      };
+
+                                      // Propery Changed Event raised for updating View with current session's chat
+                                      OnPropertyChanged("ReceivedAllMsgs");
+                                  }
+                              }
+                          }
+                      }),
+                      allMessages);
         }
     }
 }

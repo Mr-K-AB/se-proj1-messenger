@@ -87,8 +87,8 @@
 
             <Grid Grid.Column="0" >
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="6*" />
-                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="4*" />
+                    <RowDefinition Height="3*" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" >
                     <Border BorderBrush="Wheat" BorderThickness="5" CornerRadius="10" Margin="3 3 3 0">
@@ -110,70 +110,36 @@
                     </Border>
                 </Grid>
                 <Grid Grid.Row="1" >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                    </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0">
-                        <Viewbox Stretch="Fill">
-                            <Border CornerRadius="5" BorderThickness="4" BorderBrush="Teal" Margin="3" Background="Teal">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="1*" />
-                                        <RowDefinition Height="1*" />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Total Chats" TextAlignment="Center" Margin="1 4 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                    <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding TotalChatCount}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
-                                </Grid>
-                            </Border>
-                        </Viewbox>
-                    </Grid>
-                    <Grid Grid.Column="1">
-                        <Viewbox Stretch="Fill">
-                            <Border CornerRadius="5" BorderThickness="4" BorderBrush="Teal" Margin="3" Background="Teal">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="1*" />
-                                        <RowDefinition Height="1*" />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Positive Chats" TextAlignment="Center" Margin="1 5 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                    <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding PositiveChatCount}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
-                                </Grid>
-                            </Border>
-                        </Viewbox>
-                    </Grid>
-                    <Grid Grid.Column="2">
-                        <Viewbox Stretch="Fill">
-                            <Border CornerRadius="5" BorderThickness="4" BorderBrush="Teal" Margin="3" Background="Teal">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="1*" />
-                                        <RowDefinition Height="1*" />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Negative Chats" TextAlignment="Center" Margin="1 6 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                    <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding NegativeChatCount}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
-                                </Grid>
-                            </Border>
-                        </Viewbox>
-                    </Grid>
-                    <Grid Grid.Column="3">
-                        <Viewbox Stretch="Fill">
-                            <Border CornerRadius="5" BorderThickness="4" BorderBrush="Teal" Margin="3" Background="Teal">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="1*" />
-                                        <RowDefinition Height="1*" />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Overall Sentiment" TextAlignment="Center" Margin="1 8 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                    <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding OverallSentiment}" TextAlignment="Center" Margin="1 0 1 6" FontSize="10" />
-                                </Grid>
-                            </Border>
-                        </Viewbox>
+                        <lvc:PieChart>
+                            <lvc:PieChart.Series>
+                                <lvc:PieSeries Values="{Binding PositiveChatCount}"
+                                               Title="Positive"
+                                               Fill="Green"
+                                               FontSize="13"
+                                               LabelPoint="{Binding LabelPoint}"
+                                               DataLabels="True">
+                                </lvc:PieSeries>
+                                <lvc:PieSeries Values="{Binding NegativeChatCount}"
+                                               Title="Negative"
+                                               Fill="Red"
+                                               FontSize="13"
+                                               LabelPoint="{Binding LabelPoint}"
+                                               DataLabels="True">
+                                </lvc:PieSeries>
+                                <lvc:PieSeries Values="{Binding NeutralChatCount}"
+                                               Title="Neutral"
+                                               Fill="Yellow"
+                                               FontSize="13"
+                                               LabelPoint="{Binding LabelPoint}"
+                                               DataLabels="True">
+                                </lvc:PieSeries>
+                            </lvc:PieChart.Series>
+                        </lvc:PieChart>
                     </Grid>
                 </Grid>
-            </Grid>
+
+                </Grid>
             <Grid Grid.Column="1" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />

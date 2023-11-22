@@ -5,22 +5,14 @@
 /// </author>
 /// </credits>
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MessengerDashboard.Client.Events;
 using MessengerDashboard.Sentiment;
-using MessengerDashboard.Server;
 using MessengerDashboard.Summarization;
 using MessengerDashboard.Telemetry;
-using MessengerNetworking.Communicator;
-using MessengerNetworking.NotificationHandler;
 
 namespace MessengerDashboard.Client
 {
-    public interface IClientSessionController : INotificationHandler
+    public interface IClientSessionController 
     {
 
         event EventHandler<RefreshedEventArgs> Refreshed;
@@ -33,8 +25,6 @@ namespace MessengerDashboard.Client
 
         TextSummary? ChatSummary { get; }
 
-        ConnectionDetails ConnectionDetails { get; }
-
         bool IsConnectedToServer { get; }
 
         SessionInfo SessionInfo { get; }
@@ -44,7 +34,6 @@ namespace MessengerDashboard.Client
         bool ConnectToServer(
             string serverIpAddress,
             int serverPort,
-            int? timeoutInMilliseconds,
             string clientUsername,
             string clientEmail,
             string clientPhotoUrl

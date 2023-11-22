@@ -18,22 +18,12 @@ namespace MessengerTests.ContentTests
 {
     public class MockCommunicator : ICommunicator
     {
-        public int ListenPort => throw new NotImplementedException();
 
         public string IpAddress => throw new NotImplementedException();
         private string _sendSerializedStr;
 
-        public void AddClient(string ipAddress, int port)
-        {
-            throw new NotImplementedException();
-        }
 
-        public void AddSubscriber(string id, INotificationHandler subscriber)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Broadcast(string senderId, string message, int priority = 0)
+        public void Send(string message, string senderId, string recieverid)
         {
             _sendSerializedStr=message;
         }
@@ -41,17 +31,28 @@ namespace MessengerTests.ContentTests
         {
             return _sendSerializedStr;
         }
-        public void RemoveClient(string ipAddress, int port)
+
+        public string Start(string serverIP = null, string serverPort = null)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveSubscriber(string id)
+        public void Stop()
         {
             throw new NotImplementedException();
         }
 
-        public void SendMessage(string ipAddress, int port, string senderId, string message, int priority = 0)
+        public void AddClient(string clientId, TcpClient socket)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveClient(string clientId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Subscribe(string moduleName, INotificationHandler notificationHandler, bool isHighPriority = false)
         {
             throw new NotImplementedException();
         }

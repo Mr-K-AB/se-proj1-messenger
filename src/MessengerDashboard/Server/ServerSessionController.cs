@@ -29,9 +29,7 @@ namespace MessengerDashboard.Server
         
         private readonly ISentimentAnalyzer _sentimentAnalyzer = SentimentAnalyzerFactory.GetSentimentAnalyzer();
 
-        private readonly string _clientModuleIdentifier = "DashboardClient";
-
-        private readonly string _serverModuleIdentifier = "DashboardServer";
+        private readonly string _moduleName = "Dashboard";
 
         private readonly Serializer _serializer = new();
 
@@ -57,7 +55,7 @@ namespace MessengerDashboard.Server
         {
             _telemetry.SubscribeToServerSessionController(this);
             _communicator = communicator;
-            _communicator.Subscribe(_serverModuleIdentifier, this);
+            _communicator.Subscribe(_moduleName, this);
             string ipAndPort = _communicator.Start();
             string[] separator = { "," };
             string[] ipAndPortArray = ipAndPort.Split(separator, 2, StringSplitOptions.RemoveEmptyEntries);
@@ -68,7 +66,7 @@ namespace MessengerDashboard.Server
         {
             _telemetry.SubscribeToServerSessionController(this);
             _communicator = CommunicationFactory.GetCommunicator(false);
-            _communicator.Subscribe(_serverModuleIdentifier, this);
+            _communicator.Subscribe(_moduleName, this);
             string ipAndPort = _communicator.Start();
             string[] separator = { ":" };
             string[] ipAndPortArray = ipAndPort.Split(separator, 2, StringSplitOptions.RemoveEmptyEntries);
@@ -93,7 +91,7 @@ namespace MessengerDashboard.Server
             {
                 serverPayload = new ServerPayload(operation, sessionInfo, user, summary, sessionAnalytics, sentiment);
                 string serializedData = _serializer.Serialize(serverPayload);
-                _communicator.Send(serializedData, _clientModuleIdentifier, null);
+                _communicator.Send(serializedData, _moduleName, null);
             }
             Trace.WriteLine("Dashboard Server >>> Broadcasted data");
         }
@@ -164,7 +162,7 @@ namespace MessengerDashboard.Server
             {
                 serverPayload = new ServerPayload(operation, sessionInfo, userInfo, summary, sessionAnalytics, sentiment);
                 string serializedData = _serializer.Serialize(serverPayload);
-                _communicator.Send(serializedData, _clientModuleIdentifier, userId.ToString());
+                _communicator.Send(serializedData, _moduleName, userId.ToString());
             }
             Trace.WriteLine("Dashboard Server >>> Data sent to client");
         }
@@ -270,7 +268,7 @@ namespace MessengerDashboard.Server
                 Trace.WriteLine("Dashboard Server >>> Changing session mode");
                 SessionInfo.SessionMode = (clientPayload.Operation == Operation.ExamMode) ? SessionMode.Exam : SessionMode.Lab;
                 SessionUpdated?.Invoke(this, new (SessionInfo));
-                BroadcastPayloadToClients(clientPayload.Operation, SessionInfo);
+                BroadcastPayloadToClients(Operation.SessionUpdated, SessionInfo);
                 Trace.WriteLine("Dashboard Server >>> Changed session mode");
             }
         }

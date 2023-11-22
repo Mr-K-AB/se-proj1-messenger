@@ -29,9 +29,18 @@ namespace MessengerContent.Client
         /// <summary>
         /// Module identifier for communicator
         /// </summary>
-        private readonly string _moduleIdentifier = "ContentServer";
+        private readonly string _moduleIdentifier = "Content";
         private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
+
+        /// <summary>
+        /// Auto-implemented UserID property.
+        /// </summary>
+        public int UserID { get; set; }
+        /// <summary>
+        /// Auto-implemented UserName property.
+        /// </summary>
+        public string UserName { get; set; }
 
         /// <summary>
         /// Constructor that instantiates a communicator and serializer.
@@ -50,14 +59,6 @@ namespace MessengerContent.Client
         {
             set => _communicator = value;
         }
-
-        /// <summary>
-        /// Auto-implemented UserID property.
-        /// </summary>
-        public int UserID { get; set; }
-
-        public string UserName { get; set; }
-
         // helper functions
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace MessengerContent.Client
                 string serializedStr = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[Chat Client] Setting event as '{eventType}' and sending object to server.");
                 Debug.Assert(1 == 1, "debugg");
-                _communicator.Send(serializedStr, _moduleIdentifier, "ContentServer");
+                _communicator.Send(serializedStr, _moduleIdentifier, null);
             }
             catch (Exception e)
             {
@@ -187,6 +188,5 @@ namespace MessengerContent.Client
             };
             SerializeAndSendToServer(sendData, "Star");
         }
-
     }
 }

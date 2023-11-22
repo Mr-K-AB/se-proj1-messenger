@@ -9,7 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace PlexShareNetwork.Communication
+namespace MessengerNetworking.Communicator
 {
     public class CommunicatorServer : ICommunicator
     {
@@ -67,6 +67,7 @@ namespace PlexShareNetwork.Communication
             // this thread listens to connect requests from clients
             _clientConnectReuqestAcceptorThread = new Thread(
                 AcceptClientConnectRequests);
+            _clientConnectReuqestAcceptorThread.IsBackground = true;
         }
 
         /// <summary>

@@ -34,9 +34,7 @@ namespace MessengerDashboard.Client
 
         private readonly IContentClient _contentClient = ContentClientFactory.GetInstance();
 
-        private readonly string _serverModuleIdentifier = "DashboardServer";
-
-        private readonly string _clientModuleIdentifier = "DashboardClient";
+        private readonly string _moduleName = "Dashboard";
 
         private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
 
@@ -52,20 +50,20 @@ namespace MessengerDashboard.Client
         {
             Trace.WriteLine("Dashboard Client >>> Creating Client Session Manager");
             _communicator = CommunicationFactory.GetCommunicator(true);
-            _communicator.Subscribe(_clientModuleIdentifier, this);
+            _communicator.Subscribe(_moduleName, this);
             Trace.WriteLine("Dashboard Client >>> Created Client Session Manager");
         }
 
         public ClientSessionController(ICommunicator communicator)
         {
             _communicator = communicator;
-            _communicator.Subscribe(_clientModuleIdentifier, this);
+            _communicator.Subscribe(_moduleName, this);
         }
 
         public ClientSessionController(ICommunicator communicator, IContentClient contentClient)
         {
             _communicator = communicator;
-            _communicator.Subscribe(_clientModuleIdentifier, this);
+            _communicator.Subscribe(_moduleName, this);
             _contentClient = contentClient;
         }
 
@@ -242,7 +240,7 @@ namespace MessengerDashboard.Client
             {
                 ClientPayload clientPayload = new(operation, _userInfo);
                 string serializedData = _serializer.Serialize(clientPayload);
-                _communicator.Send(serializedData, _serverModuleIdentifier, null);
+                _communicator.Send(serializedData, _moduleName, null);
             }
             Trace.WriteLine("Dashboard Client >>> Data sent to server.");
         }

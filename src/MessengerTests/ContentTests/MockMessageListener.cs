@@ -15,7 +15,7 @@ using Messenger.Client;
 using MessengerContent.Client;
 using MessengerContent.DataModels;
 
-namespace PlexShareTests.ContentTests
+namespace MessengerTests.ContentTests
 {
     public class FakeContentListener : IMessageListener
     {
@@ -44,6 +44,11 @@ namespace PlexShareTests.ContentTests
         public ReceiveChatData GetReceivedMessage()
         {
             return _receivedMessage;
+        }
+
+        public void OnAllMessagesReceived(List<ChatThread> allMessages)
+        {
+            throw new NotImplementedException();
         }
     }
 }

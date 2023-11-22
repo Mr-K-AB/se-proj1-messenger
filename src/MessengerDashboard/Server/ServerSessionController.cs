@@ -53,19 +53,19 @@ namespace MessengerDashboard.Server
         /// <param name="communicator">An <see cref="ICommunicator "/> implementation for server communication.</param>
         public ServerSessionController(ICommunicator communicator)
         {
-            _telemetry.SubscribeToServerSessionController(this);
             _communicator = communicator;
-            _communicator.Subscribe(_moduleName, this);
-            string ipAndPort = _communicator.Start();
-            string[] separator = { "," };
-            string[] ipAndPortArray = ipAndPort.Split(separator, 2, StringSplitOptions.RemoveEmptyEntries);
-            ConnectionDetails = new(ipAndPortArray[0], int.Parse(ipAndPortArray[1]));
+            SetupServer();
         }
 
-        public ServerSessionController()
+        public ServerSessionController() 
+        {
+            _communicator = CommunicationFactory.GetCommunicator(false);
+            SetupServer();
+        }
+
+        private void SetupServer()
         {
             _telemetry.SubscribeToServerSessionController(this);
-            _communicator = CommunicationFactory.GetCommunicator(false);
             _communicator.Subscribe(_moduleName, this);
             string ipAndPort = _communicator.Start();
             string[] separator = { ":" };
@@ -78,7 +78,7 @@ namespace MessengerDashboard.Server
         /// <summary>
         ///  the credentials required to Join the meeting
         /// </summary>
-        public ConnectionDetails ConnectionDetails { get; }
+        public ConnectionDetails ConnectionDetails { get; private set; }
 
         public SessionInfo SessionInfo = new();
 
@@ -312,6 +312,7 @@ namespace MessengerDashboard.Server
                 SessionUpdated?.Invoke(this, new(SessionInfo));
                 BroadcastPayloadToClients(Operation.EndSession, SessionInfo, _textSummary, _telemetryAnalysis, _sentiment);
                 _communicator.RemoveClient(userId.ToString());
+                _communicator.Stop();
                 Trace.WriteLine("Dashboard Server >>> Ended the session");
             }
             else // The member or student

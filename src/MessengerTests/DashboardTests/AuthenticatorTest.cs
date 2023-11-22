@@ -1,9 +1,17 @@
-﻿/// <credits>
-/// <author>
-/// <name>Shubh Pareek</name>
-/// <rollnumber>112001039</rollnumber>
-/// </author>
-/// </credits>
+﻿/******************************************************************************
+* Filename    = AuthenticatorTest.cs
+*
+* Author      = Shubh Pareek 
+*
+* Roll number = 112001039
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerTests
+*
+* Description = A class to test the Google authenticator.
+*****************************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +19,13 @@ using System.Text;
 using System.Threading.Tasks;
 using MessengerDashboard;
 
-namespace MessengerTests
+namespace MessengerTests.DashboardTests
 {
     [TestClass]
     public class AuthenticatorTest
     {
         /// <summary>
-        /// checks if authentication is working or not .
+        /// Checks if authentication is working or not .
         /// </summary>
         [TestMethod]
         public void AuthenticationTest()
@@ -29,8 +37,6 @@ namespace MessengerTests
             {
                 Assert.Fail("Authentication Failed");
             }
-
         }
-
     }
 }

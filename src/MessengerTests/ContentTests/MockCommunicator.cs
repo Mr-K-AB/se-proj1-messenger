@@ -1,7 +1,7 @@
 ﻿/******************************************************************************
- * Filename    = MokCommunicator.cs
+ * Filename    = MockCommunicator.cs
  *
- * Author      = Manikanta
+ * Author      = Rapeti Siddhu Neehal
  *
  * Product     = Messenger
  * 
@@ -18,8 +18,6 @@ namespace MessengerTests.ContentTests
 {
     public class MockCommunicator : ICommunicator
     {
-
-        public string IpAddress => throw new NotImplementedException();
         private string _sendSerializedStr;
 
 

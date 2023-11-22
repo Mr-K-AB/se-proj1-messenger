@@ -13,7 +13,6 @@
 using MessengerContent.DataModels;
 using Messenger.Client;
 using MessengerContent.Client;
-using MessengerContent.DataModels;
 
 namespace PlexShareTests.ContentTests
 {
@@ -44,6 +43,11 @@ namespace PlexShareTests.ContentTests
         public ReceiveChatData GetReceivedMessage()
         {
             return _receivedMessage;
+        }
+
+        public void OnAllMessagesReceived(List<ChatThread> allMessages)
+        {
+            throw new NotImplementedException();
         }
     }
 }

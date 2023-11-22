@@ -303,10 +303,10 @@ namespace MessengerScreenshare.Server
                 var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), 0, 0, JsonSerializer.Serialize(product));
                 string packedData = JsonSerializer.Serialize(packet);
 
-               //foreach (int clientId in clientIds)
-                //{
+                foreach (int clientId in clientIds)
+                {
                     _communicator.Send(packedData, Utils.ClientIdentifier, null);
-                //}
+                }
             }
             catch (Exception e)
             {

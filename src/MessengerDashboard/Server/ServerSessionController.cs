@@ -70,7 +70,7 @@ namespace MessengerDashboard.Server
             _communicator = CommunicationFactory.GetCommunicator(false);
             _communicator.Subscribe(_serverModuleIdentifier, this);
             string ipAndPort = _communicator.Start();
-            string[] separator = { "," };
+            string[] separator = { ":" };
             string[] ipAndPortArray = ipAndPort.Split(separator, 2, StringSplitOptions.RemoveEmptyEntries);
             ConnectionDetails = new(ipAndPortArray[0], int.Parse(ipAndPortArray[1]));
         }

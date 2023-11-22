@@ -12,6 +12,7 @@
     <None Remove="Images\refresh.png" />
     <None Remove="Images\restore.png" />
     <None Remove="Images\save.png" />
+    <None Remove="Images\sendButton.png" />
     <None Remove="Images\text.png" />
     <None Remove="Images\whiteboard.png" />
     <None Remove="ScreenshareIcons\NextPageButton.png" />
@@ -80,6 +81,7 @@
     <Resource Include="Images\redo.png" />
     <Resource Include="Images\restore.png" />
     <Resource Include="Images\save.png" />
+    <Resource Include="Images\sendButton.png" />
     <Resource Include="Images\shapes.png" />
     <Resource Include="Images\size.png" />
     <Resource Include="Images\text.png" />

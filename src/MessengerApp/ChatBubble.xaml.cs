@@ -1,4 +1,4 @@
-﻿/******************************************************************************
+/******************************************************************************
 * Filename    = ChatBubble.xaml.cs
 *
 * Author      = M V Nagasurya
@@ -22,6 +22,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -29,7 +30,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LiveCharts.Maps;
 using MessengerApp.ViewModels;
+using MessengerContent;
 using MessengerContent.DataModels;
 using Microsoft.Win32;
 
@@ -51,28 +54,29 @@ namespace MessengerApp
             DataContext = viewModel;
 
             _msgCollection = new ObservableCollection<ChatMessage>();
-            ChatMessage c1 = new()
-            {
-                MessageID = 1,
-                Sender = "surya",
-                Time = DateTime.Now.ToShortTimeString(),
-                MessageType = true,
-                MsgData = "Hello",
-                ReplyMessage = null,
-                isCurrentUser = true
-            };
-            ChatMessage c2 = new()
-            {
-                MessageID = 1,
-                Sender = "surya",
-                Time = DateTime.Now.ToShortTimeString(),
-                MessageType = true,
-                MsgData = "Hello",
-                ReplyMessage = "yo!",
-                isCurrentUser = false
-            };
-            _msgCollection.Add(c1);
-            _msgCollection.Add(c2);
+        //    ChatMessage c1 = new()
+        //    {
+        //        MessageID = 0,
+        //        Sender = "surya",
+        //        Time = DateTime.Now.ToShortTimeString(),
+        //        MessageType = false,
+        //        ReplyMessage = null,
+        //        MsgData = "The_Avengers_5.txt",
+        //        isCurrentUser = false
+        //};
+        //    ChatMessage c2 = new()
+        //    {
+        //        MessageID = 0,
+        //        Sender = "surya",
+        //        Time = DateTime.Now.ToShortTimeString(),
+        //        MessageType = false,
+        //        ReplyMessage = "cool!",
+        //        MsgData = "The_Avengers_5.txt",
+        //        isCurrentUser = false
+        //    };
+        //    _msgCollection.Add(c1);
+        //    _msgCollection.Add(c2);
+
             MainChat.ItemsSource = _msgCollection; // Binding all the messages to the MainChat (ListBox)
         }
 
@@ -80,6 +84,12 @@ namespace MessengerApp
         ///     Replied message's Message ID 
         /// </summary>
         public int ReplyMsgId
+        {
+            get;
+            set;
+        }
+
+        public ToggleButton ReplyObject
         {
             get;
             set;
@@ -99,6 +109,10 @@ namespace MessengerApp
 
             if (propertyName == "ReceivedMsg")
             {
+                if(viewModel.ReceivedMsg.ReplyMessage == "")
+                {
+                    viewModel.ReceivedMsg.ReplyMessage = null;
+                }
                 _msgCollection.Add(viewModel.ReceivedMsg); // Adding the received message into the collection (_msgCollection)
                 UpdateScrollBar(MainChat);
             }
@@ -188,10 +202,12 @@ namespace MessengerApp
                 else // If the replyTextBox has some msg, then pass the MsgId
                 {
                     viewModel.SendMessage(msg, ReplyMsgId, "Chat");
+                    ReplyObject.IsChecked = false;
+                    //toggleReply.IsChecked = false;
                 }
-
                 SendTextBox.Text = string.Empty; // clear the textbox
                 ReplyTextBox.Text = string.Empty;
+
             }
             return;
         }
@@ -203,20 +219,21 @@ namespace MessengerApp
         /// <param name="e"> Routed Event Data </param>
         private void ReplyHandler(object sender, RoutedEventArgs e)
         {
-            if ((sender is Button senderButton) && (senderButton.DataContext is ChatMessage msg))
+            if ((sender is ToggleButton senderButton) && (senderButton.DataContext is ChatMessage msg))
             {
-
+                
                 string? message = msg.MsgData;
-                if (message != "Message deleted.") // Can't reply to the deleted messages
+                if (message != "Message Deleted.") // Can't reply to the deleted messages
                 {
                     if (message.Length > 10) // Showing only the short view of the msg
                     {
                         message = message.Substring(0, 10);
                         message += "...";
                     }
-                    string senderBox = msg.Sender + ": " + message;
+                    string senderBox = "@" + msg.Sender + ": " + message;
                     ReplyTextBox.Text = senderBox;
                     ReplyMsgId = msg.MessageID;
+                    ReplyObject = senderButton;
                 }
             }
             return;
@@ -267,7 +284,7 @@ namespace MessengerApp
         /// <param name="e"> </param>
         private void UndoReplyHandler(object sender, RoutedEventArgs e)
         {
-            if (sender is Button)
+            if (sender is ToggleButton)
             {
                 ReplyTextBox.Text = null;
             }
@@ -281,7 +298,8 @@ namespace MessengerApp
         /// <param name="e"> Routed Event Data </param>
         private void UploadHandler(object sender, RoutedEventArgs e)
         {
-            if (ReplyTextBox.Text == string.Empty)
+            //string? replyMsgText = ReplyTextBox.Text;
+            if (true)
             {
                 var viewModel = DataContext as ChatPageViewModel;
 
@@ -308,10 +326,12 @@ namespace MessengerApp
                     }
                     if (string.IsNullOrEmpty(ReplyTextBox.Text))
                     {
+                        //MessageBox.Show("-1");
                         viewModel.SendMessage(openFileDialog.FileName, -1, "File");
                     }
                     else
                     {
+                        //MessageBox.Show($"{ReplyMsgId}");
                         viewModel.SendMessage(openFileDialog.FileName, ReplyMsgId, "File");
                     }
 
@@ -359,7 +379,7 @@ namespace MessengerApp
         private void StarHandler(object sender, RoutedEventArgs e)
         {
             var viewModel = DataContext as ChatPageViewModel;
-            if ((sender is RadioButton senderRadioBtn) && (senderRadioBtn.DataContext is ChatMessage msg))
+            if ((sender is ToggleButton senderRadioBtn) && (senderRadioBtn.DataContext is ChatMessage msg))
             {
                 viewModel.StarChatMsg(msg.MessageID);
             }

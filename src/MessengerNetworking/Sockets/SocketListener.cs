@@ -58,7 +58,6 @@ namespace MessengerNetworking.Sockets
                 _socketListenerThread = new Thread(() =>
                 _socket.BeginReceive(buffer, 0, bufferSize, 0,
                 ReceiveCallback, null));
-                _socketListenerThread.IsBackground = true;
                 _socketListenerThread.Start();
                 Trace.WriteLine("[Networking] SocketListener thread " +
                     "started.");

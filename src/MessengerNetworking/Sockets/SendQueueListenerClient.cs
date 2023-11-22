@@ -44,7 +44,6 @@ namespace MessengerNetworking.Sockets
                 "SendQueueListenerClient.Start() function called.");
             _runSendQueueListenerThread = true;
             _sendQueueListenerThread = new Thread(Listen);
-            _sendQueueListenerThread.IsBackground = true;
             _sendQueueListenerThread.Start();
             Trace.WriteLine("[Networking] SendQueueListenerClient " +
                 "thread started.");

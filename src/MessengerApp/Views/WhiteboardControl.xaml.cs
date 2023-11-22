@@ -3,7 +3,7 @@
 *
 *Author   = Thogata Jagadeesh
 *
-* Product     = Plex Share
+* Product     = Messenger
 * 
 * Project     = White Board
 *

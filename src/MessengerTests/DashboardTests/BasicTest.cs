@@ -15,7 +15,7 @@ using MessengerDashboard;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 
-namespace MessengerTests
+namespace MessengerTests.DashboardTests.DashboardTests
 {
     /// <summary>
     /// Basic tests for small methods .
@@ -23,8 +23,8 @@ namespace MessengerTests
     [TestClass]
     public class BasicTest
     {
-        
-        
+
+
         private Analysis _analysisCloud;
         readonly List<string> _sentences = new() { "Hi", "Hello", "Wow" };
         //private readonly LocalSave _save = new();
@@ -59,9 +59,9 @@ namespace MessengerTests
                 );
             //_analysisCloud.TimeStampToUserCountMap.Add(DateTime.Now, 3);
             _analysisCloud.UserIdToUserActivityMap.Add(4, new UserActivity() { /*EntryTime = DateTime.Now, ExitTime = DateTime.Now, */UserEmail = "hello", UserChatCount = 2, UserName = "shubh" });
-            string ans = JsonSerializer.Serialize( _analysisCloud );
+            string ans = JsonSerializer.Serialize(_analysisCloud);
             Analysis res = JsonSerializer.Deserialize<Analysis>(ans);
-            Assert.IsTrue( res != null );
+            Assert.IsTrue(res != null);
 
 
         }

@@ -1,4 +1,16 @@
-﻿using System;
+﻿/***************************
+* Filename    = WBSnapshotHandler.cs
+*
+* Author      = Syed Abdul Mateen
+*
+* Product     = Messenger
+* 
+* Project     = White-Board
+*
+* Description = This file handles the implementation of
+*               snapshot handling for whiteboard.
+***************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

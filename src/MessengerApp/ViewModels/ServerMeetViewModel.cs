@@ -48,6 +48,8 @@ namespace MessengerApp.ViewModels
             navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
             Port = _server.ConnectionDetails.Port;
             IP = _server.ConnectionDetails.IpAddress;
+            _whiteboardViewModel = MessengerWhiteboard.ViewModel.Instance;
+            _whiteboardViewModel.SetUserID(0);
             NavigateServerDashboardCommand = new NavigateServerDashboardCommand(navigationStore, _dashboardViewModel);
             NavigateServerWhiteboardCommand = new NavigateServerWhiteboardCommand(navigationStore, _whiteboardViewModel);
             NavigateServerScreenshareCommand = new NavigateServerScreenshareCommand(navigationStore, _screenshareServerViewModel);

@@ -15,14 +15,14 @@ namespace MessengerWhiteboard
     public partial class ViewModel
     {
         private static readonly Random s_random = new();
-        public void SaveSnapshot()
+        public void SaveSnapshot(string snapshotName)
         {
             string s;
             if (isServer)
             {
                 if (machine is ServerState && machine != null)
                 {
-                    s = (machine as ServerState).OnSaveMessage(s_random.Next().ToString());
+                    s = (machine as ServerState).OnSaveMessage(snapshotName);
                     SavedSessions.Add(s);
                 }
             }

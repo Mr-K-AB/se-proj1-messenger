@@ -197,9 +197,24 @@
                             </Border.BitmapEffect>
                             <StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" >
 
-                                <Button Name="Save" ToolTip="Save Session" Click="SaveMode" Style="{StaticResource ButtonStyle}" Visibility="{Binding IsServer, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <!-- Save Session -->
+                                <ToggleButton Name="Save" ToolTip="Save Session" Style="{StaticResource ToggleButtonStyle}" Visibility="{Binding IsServer, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Image Source="../Images/save.png" Style="{StaticResource ImageStyle}" />
-                                </Button>
+                                </ToggleButton>
+                                <Popup IsOpen="{Binding IsChecked, ElementName=Save}" 
+                                PlacementTarget="{Binding ElementName=Save}"
+                                Placement="Bottom"
+                                StaysOpen="False" AllowsTransparency="True" 
+                                PopupAnimation="Fade"
+                                HorizontalOffset="0"
+                                VerticalOffset="5">
+                                    <Border Background="Gray" Height="auto" Width="auto" Padding="5">
+                                        <StackPanel Orientation="Vertical">
+                                            <TextBox Name="SaveSessionText" Width="150" Height="30" FontSize="16"/>
+                                            <Button Name="SaveSessionButton" Click="SaveMode">Submit</Button>
+                                        </StackPanel>
+                                    </Border>
+                                </Popup>
 
                                 <!-- Restore Session -->
                                 <ToggleButton Name="Restore" ToolTip="Restore Session" Style="{StaticResource ToggleButtonStyle}" Visibility="{Binding IsServer, Converter={StaticResource BooleanToVisibilityConverter}}">

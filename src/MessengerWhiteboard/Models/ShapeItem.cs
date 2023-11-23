@@ -1,4 +1,20 @@
-﻿using System.Windows;
+﻿/***************************
+* Filename    = ShapeItem.cs
+*
+* Author      = Sanjh Maheshwari
+*
+* Product     = Messenger
+* 
+* Project     = White-Board
+*
+* Description = This file defines the ShapeItem class, which is fundamental to Whiteboard. The 
+                class represents a drawable shape with various properties such as type, geometry,
+                boundary, color, and appearance attributes like fill and stroke. It provides 
+                methods to edit, move, resize, and clone shapes,catering to diverse shapes like 
+                rectangles, ellipses, curves, and lines. 
+***************************/
+
+using System.Windows;
 using System.Windows.Media;
 
 

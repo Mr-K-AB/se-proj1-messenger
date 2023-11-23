@@ -1,4 +1,17 @@
-﻿using System;
+﻿/***************************
+* Filename    = WhiteboardViewModel.cs
+*
+* Author      = Sanjh Maheshwari
+*
+* Product     = Messenger
+* 
+* Project     = White-Board
+*
+* Description = This is for testing ViewModel.cs and ShapeOperations file.
+*               It contains all the test cases to check the functioning of the 2 files.
+***************************/
+
+using System;
 using MessengerWhiteboard;
 using System.Collections.Generic;
 using System.Linq;

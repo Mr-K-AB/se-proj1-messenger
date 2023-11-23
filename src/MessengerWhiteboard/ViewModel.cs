@@ -1,4 +1,23 @@
-﻿using System.ComponentModel;
+﻿/***************************
+* Filename    = ViewModel.cs
+*
+* Author      = Sanjh Maheshwari
+*
+* Product     = Messenger
+* 
+* Project     = White-Board
+*
+* Description = This class acts as the ViewModel in the MVVM architecture for the Messenger 
+                Whiteboard application.
+                The ViewModel interacts with various shapes on the whiteboard, manages user 
+                sessions, and maintains the state of the canvas. 
+                It supports different modes of operation (like Create, View, Delete) and controls
+                user interactions on the whiteboard. The class also implements 
+                INotifyPropertyChanged to update the UI in response to data changes.
+***************************/
+
+
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Media;
 using MessengerWhiteboard.Interfaces;

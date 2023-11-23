@@ -1,4 +1,22 @@
-﻿using System.Diagnostics;
+﻿/***************************
+* Filename    = ShapeOperations.cs
+*
+* Author      = Sanjh Maheshwari
+*
+* Product     = Messenger
+* 
+* Project     = White-Board
+*
+* Description = It encapsulates managing the creation, selection, transformation, and deletion of
+                various shape items. This class facilitates user interactions with the whiteboard,
+                offering functionalities like drawing, resizing,and moving shapes, as well as 
+                managing shape selections and subsequent highlighting of resize handlers. 
+                Overall, this class is crucial for the interactive and functional aspects of the 
+                whiteboard, providing a seamless user experience in graphical manipulation and 
+                collaboration.
+***************************/
+
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;

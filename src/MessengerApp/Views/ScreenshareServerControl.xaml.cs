@@ -33,7 +33,37 @@ namespace MessengerApp.Views
 
             Debug.WriteLine(viewModel.CurrentWindowClients.Count);
         }
-        private void PinButtonClicked(object sender, RoutedEventArgs e)
+        private void OnNextPageButtonClicked(object sender, RoutedEventArgs e)
+        {
+            ScreenshareServerViewModel? viewModel = DataContext as ScreenshareServerViewModel;
+            Debug.Assert(viewModel != null, Utils.GetDebugMessage("View Model could not be created"));
+            viewModel.RecomputeCurrentWindowClients(viewModel.CurrentPage + 1);
+
+            Trace.WriteLine(Utils.GetDebugMessage("Next Page Button Clicked", withTimeStamp: true));
+        }
+
+        /// <summary>
+        /// This function decreases the current page number by 1
+        /// If on the first page, previous button is not accessible and so is this function 
+        /// </summary>
+        /// <param name="sender"> default </param>
+        /// <param name="e"> default </param>
+        private void OnPreviousPageButtonClicked(object sender, RoutedEventArgs e)
+        {
+            ScreenshareServerViewModel? viewModel = DataContext as ScreenshareServerViewModel;
+            Debug.Assert(viewModel != null, Utils.GetDebugMessage("View Model could not be created"));
+            viewModel.RecomputeCurrentWindowClients(viewModel.CurrentPage - 1);
+
+            Trace.WriteLine(Utils.GetDebugMessage("Previous Page Button Clicked", withTimeStamp: true));
+        }
+
+        /// <summary>
+        /// This function calls the OnPin function of the viewModel which pins the tile on which the user has clicked 
+        /// The argument given to OnPin is the ClientID of user which has to be pinned, stored in Command Parameter 
+        /// </summary>
+        /// <param name="sender"> default </param>
+        /// <param name="e"> default </param>
+        private void OnPinButtonClicked(object sender, RoutedEventArgs e)
         {
             if (sender is Button pinButton)
             {
@@ -49,7 +79,13 @@ namespace MessengerApp.Views
             Trace.WriteLine(Utils.GetDebugMessage("Pin Button Clicked", withTimeStamp: true));
         }
 
-        private void UnpinButtonClicked(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// This function calls the OnUnpin function of the ViewModel which will unpin the tile the user clicked on
+        /// The argument given to Unpin function is the Client ID which has to be unpinned, stored in the Command Parameter 
+        /// </summary>
+        /// <param name="sender"> default </param>
+        /// <param name="e"> default </param>
+        public void OnUnpinButtonClicked(object sender, RoutedEventArgs e)
         {
             if (sender is Button someButton)
             {

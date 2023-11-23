@@ -13,22 +13,29 @@
             <RowDefinition Height="3*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Background="#FF410CDA"/>
+        <Grid Grid.Row="0" Background="#FF005375"/>
         <Grid Grid.Row="1" Background="#FFD9D9D9"/>
         <Grid Grid.Row="2" Background="#FFD9D9D9"/>
         <Viewbox>
-            <TextBlock Grid.Row="0" HorizontalAlignment="Center" TextAlignment="Center" FontSize="40" FontWeight="Bold" Background="#410CDA" TextWrapping="Wrap" Width="800" VerticalAlignment="Top" FontFamily="Reem Kufi" Foreground="White"><Run Language="en-in" Text="SCREEN SHARE"/></TextBlock>
+            <TextBlock Grid.Row="0" HorizontalAlignment="Center" TextAlignment="Center" FontSize="40" FontWeight="Bold" Background="#FF005375" TextWrapping="Wrap" Width="800" VerticalAlignment="Top" FontFamily="Reem Kufi" Foreground="White"><Run Language="en-in" Text="SCREEN SHARE"/></TextBlock>
         </Viewbox>
         <DockPanel Grid.Row="2" LastChildFill="False" HorizontalAlignment="Center" >
-            <Button x:Name="StartScreenShare" Click="StartScreenShare_Click" Cursor="Hand" ToolTip="Start Screen Share" Width="65" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF410DCA">
+            <Button x:Name="StartScreenShare" 
+                    Click="StartScreenShare_Click" 
+                    Cursor="Hand" 
+                    ToolTip="Start Sharing" 
+                    Width="65" Height="65" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Background="#FF005375">
                 <Image Width="63" Source="../ScreenshareIcons/StartShare.png" />
                 <Button.Resources>
                     <Style TargetType="Button">
-                        <Setter Property="IsEnabled" Value="True"/>
+                        <Setter Property="Visibility" Value="Visible"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
                                 <Setter Property="IsHitTestVisible" Value="False" />
-                                <Setter Property="IsEnabled" Value="False"/>
+                                <Setter Property="Visibility" Value="Collapsed"/>
                             </DataTrigger>
                         </Style.Triggers>
 
@@ -39,17 +46,24 @@
                 </Button.Resources>
             </Button>
 
-            <Separator Width="30"/>
-
-            <Button x:Name="StopScreenShare" Click="StopScreenShare_Click" Cursor="Hand" ToolTip="Stop Screen Share" Width="65" Height="65" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF410DCA">
+            <Button x:Name="StopScreenShare" 
+                    Click="StopScreenShare_Click" 
+                    Cursor="Hand" 
+                    ToolTip="Stop Sharing" 
+                    Width="65" 
+                    Height="65" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Background="#FF005375">
+                
                 <Image Width="63" Height="25" Source="../ScreenshareIcons/StopShare.png" />
                 <Button.Resources>
                     <Style TargetType="Button">
-                        <Setter Property="IsEnabled" Value="False"/>
+                        <Setter Property="Visibility" Value="Visible"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="True">
+                            <DataTrigger Binding="{Binding SharingScreen, Mode=OneWay}" Value="False">
                                 <Setter Property="IsHitTestVisible" Value="False" />
-                                <Setter Property="IsEnabled" Value="True"/>
+                                <Setter Property="Visibility" Value="Collapsed"/>
                             </DataTrigger>
                         </Style.Triggers>
 
@@ -68,7 +82,7 @@
             HorizontalAlignment="Center"
             FontFamily="Segoe UI Semibold"
             FontSize="32"
-            Foreground="#FF410CDA"
+            Foreground="#FF005375"
             Text="Your Screen is not being shared."
             TextAlignment="Center"
             TextWrapping="WrapWithOverflow" />
@@ -92,7 +106,7 @@
                 HorizontalAlignment="Center"
                 FontFamily="Segoe UI Semibold"
                 FontSize="32"
-                Foreground="#FF410CDA"
+                Foreground="#FF005375"
                 Text="You are sharing your Screen."
                 TextAlignment="Center"
                 TextWrapping="WrapWithOverflow" />

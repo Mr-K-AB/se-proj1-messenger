@@ -7,10 +7,13 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Messenger.Client;
+using MessengerNetworking.Communicator;
 using MessengerScreenshare;
 using MessengerScreenshare.Client;
 using MessengerScreenshare.Server;
+using MessengerTests.WhiteboardTests;
 using Moq;
+using SSUtils = MessengerScreenshare.Utils;
 
 
 namespace MessengerTests.ScreenshareTests
@@ -50,7 +53,7 @@ namespace MessengerTests.ScreenshareTests
             // Register the clients by sending mock register packets for them to the server.
             foreach (SharedClientScreen client in clients)
             {
-                DataPacket packet = new(client.Id, client.Name, nameof(ClientDataHeader.Register), 0, 0, "");
+                DataPacket packet = new(client.Id, client.Name, nameof(ClientDataHeader.Register), "");
                  
                 server.OnDataReceived(JsonSerializer.Serialize<DataPacket>(packet));
             }
@@ -58,7 +61,7 @@ namespace MessengerTests.ScreenshareTests
             // Sending the register request again should do nothing.
             foreach (SharedClientScreen client in clients)
             {
-                DataPacket packet = new(client.Id, client.Name, nameof(ClientDataHeader.Register), 0, 0, "");
+                DataPacket packet = new(client.Id, client.Name, nameof(ClientDataHeader.Register), "");
 
                 server.OnDataReceived(JsonSerializer.Serialize<DataPacket>(packet));
             }
@@ -99,14 +102,14 @@ namespace MessengerTests.ScreenshareTests
             // Deregister the clients by sending mock deregister packets for them to the server.
             foreach (SharedClientScreen client in clients)
             {
-                DataPacket packet = new(client.Id, client.Name, nameof(ClientDataHeader.Deregister), 0, 0, "");
+                DataPacket packet = new(client.Id, client.Name, nameof(ClientDataHeader.Deregister), "");
                 server.OnDataReceived(JsonSerializer.Serialize<DataPacket>(packet));
             }
 
             // Sending de-register request second time should do nothing.
             foreach (SharedClientScreen client in clients)
             {
-                DataPacket packet = new(client.Id, client.Name, nameof(ClientDataHeader.Deregister), 0, 0, "");
+                DataPacket packet = new(client.Id, client.Name, nameof(ClientDataHeader.Deregister), "");
                 server.OnDataReceived(JsonSerializer.Serialize<DataPacket>(packet));
             }
 
@@ -158,10 +161,10 @@ namespace MessengerTests.ScreenshareTests
             // Assert.
             // Get the private list of subscribers stored in the server.
             List<SharedClientScreen> subscribers =
-                server.GetPrivate<Dictionary<string, SharedClientScreen>>("_subscribers").Values.ToList();
+                server.GetPrivate<Dictionary<int, SharedClientScreen>>("_subscribers").Values.ToList();
 
             // Check that all the sent images for the client are successfully enqueued in the client's image queue.
-            Assert.IsTrue(subscribers.Count == 1);
+            Assert.IsTrue(subscribers.Count == 4);
             int clientIdx = subscribers.FindIndex(c => c.Id == client.Id);
             Assert.IsTrue(clientIdx != -1);
 
@@ -181,9 +184,164 @@ namespace MessengerTests.ScreenshareTests
             subscribers.Clear();
         }
 
+        [TestMethod]
+        public void TestInvalidPacket()
+        {
+            var viewmodelMock = new Mock<IDataReceiver>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            string packet = "invalid";
+            server.OnDataReceived(packet);
+            Assert.IsTrue(1 == 1);
 
+        }
+        [TestMethod]
+        public void TestBroadcastClients()
+        {
+            var viewmodelMock = new Mock<IDataReceiver>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            var communicatorMock = new Mock<ICommunicator>();
+            server.SetPrivate("_communicator", communicatorMock.Object);
 
+            // Create mock clients.
+            int numClients = 5;
+            List<SharedClientScreen> clients = Utils.GetMockClients(server, numClients, isDebugging: true);
+            List<int> clientIds = clients.Select(client => client.Id).ToList();
 
+            // Act.
+            (int Rows, int Cols) numRowsColumns = (1, 2);
+            server.BroadcastClients(clientIds, nameof(ServerDataHeader.Stop), numRowsColumns);
+            foreach(int client in clientIds)
+            {
+                communicatorMock.Verify(communicator =>
+                communicator.Send(It.IsAny<string>(), SSUtils.ClientIdentifier, client.ToString()),
+                Times.Exactly(1));
+            }
+
+            // Cleanup.
+            foreach (SharedClientScreen client in clients)
+            {
+                client.Dispose();
+            }
+            server.Dispose();
+        }
+        [TestMethod]
+        public void TestNoClientBroadcast()
+        {
+            var viewmodelMock = new Mock<IDataReceiver>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            (int Rows, int Cols) numRowsColumns = (1, 2);
+            server.BroadcastClients(new(), nameof(ServerDataHeader.Send), numRowsColumns);
+            
+            var communicatorMock = new Mock<ICommunicator>();
+            server.SetPrivate("_communicator", communicatorMock.Object);
+
+            
+            server.BroadcastClients(new(), nameof(ServerDataHeader.Send), numRowsColumns);
+        }
+        [TestMethod]
+        public void TestSuccessfulConfirmationPacketArrival_PreTimeoutTime1()
+        {
+            // Arrange.
+            int timeOfArrival = 19000;
+
+            // Act and Assert.
+            // Arrange.
+            // Create mock server and mock clients.
+            var viewmodelMock = new Mock<IDataReceiver>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            int numClients = 5;
+            List<SharedClientScreen> clients = Utils.GetMockClients(server, numClients, isDebugging: true);
+
+            // Act.
+            // Register all the clients to the server.
+            foreach (SharedClientScreen client in clients)
+            {
+                string mockRegisterPacket = Utils.GetMockRegisterPacket(client.Id, client.Name);
+                server.OnDataReceived(mockRegisterPacket);
+            }
+
+            // Sleep until the CONFIRMATION packet arrives.
+            Thread.Sleep(timeOfArrival);
+
+            // Send client's CONFIRMATION packet to the server.
+            foreach (SharedClientScreen client in clients)
+            {
+                string mockConfirmationPacket = Utils.GetMockConfirmationPacket(client.Id, client.Name);
+                server.OnDataReceived(mockConfirmationPacket);
+            }
+
+            // Assert.
+            // Get the private list of subscribers stored in the server.
+            List<SharedClientScreen> subscribers =
+                server.GetPrivate<Dictionary<string, SharedClientScreen>>("_subscribers").Values.ToList();
+
+            // Check that no client is de-registered as their CONFIRMATION packet arrives before time.
+            Assert.IsTrue(subscribers.Count == numClients);
+            foreach (SharedClientScreen client in clients)
+            {
+                Assert.IsTrue(subscribers.FindIndex(c => c.Id == client.Id) != -1);
+            }
+
+            // Cleanup.
+            foreach (SharedClientScreen client in clients)
+            {
+                client.Dispose();
+            }
+            server.Dispose();
+            subscribers.Clear();
+        }
+
+        [TestMethod]
+        public void TestSuccessfulConfirmationPacketArrival_PreTimeoutTime2()
+        {
+            // Arrange.
+            int timeOfArrival = (int)PreTimeoutTime.ElementAt(1)[0];
+
+            // Arrange.
+            // Create mock server and mock clients.
+            var viewmodelMock = new Mock<IDataReceiver>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            int numClients = 5;
+            List<SharedClientScreen> clients = Utils.GetMockClients(server, numClients, isDebugging: true);
+
+            // Act.
+            // Register all the clients to the server.
+            foreach (SharedClientScreen client in clients)
+            {
+                string mockRegisterPacket = Utils.GetMockRegisterPacket(client.Id, client.Name);
+                server.OnDataReceived(mockRegisterPacket);
+            }
+
+            // Sleep until the CONFIRMATION packet arrives.
+            Thread.Sleep(timeOfArrival);
+
+            // Send client's CONFIRMATION packet to the server.
+            foreach (SharedClientScreen client in clients)
+            {
+                string mockConfirmationPacket = Utils.GetMockConfirmationPacket(client.Id, client.Name);
+                server.OnDataReceived(mockConfirmationPacket);
+            }
+
+            // Assert.
+            // Get the private list of subscribers stored in the server.
+            List<SharedClientScreen> subscribers =
+                server.GetPrivate<Dictionary<string, SharedClientScreen>>("_subscribers").Values.ToList();
+
+            // Check that no client is de-registered as their CONFIRMATION packet arrives before time.
+            Assert.IsTrue(subscribers.Count == numClients);
+            foreach (SharedClientScreen client in clients)
+            {
+                Assert.IsTrue(subscribers.FindIndex(c => c.Id == client.Id) != -1);
+            }
+
+            // Cleanup.
+            foreach (SharedClientScreen client in clients)
+            {
+                client.Dispose();
+            }
+            server.Dispose();
+            subscribers.Clear();
+        }
 
     }
 

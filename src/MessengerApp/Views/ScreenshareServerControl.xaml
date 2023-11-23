@@ -51,131 +51,215 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
     </UserControl.Resources>
-    <Grid Background="#202124">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="16*" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
+    <Grid Background = "#202124">
 
-        <ScrollViewer Grid.Row="0">
-            <StackPanel Margin="4,5,4,5" Orientation="Vertical">
+        <!-- Divide the grid into 2 rows of 16:1 ratio -->
+        <Grid.RowDefinitions >
+            <RowDefinition Height = "16*" />
+            <RowDefinition/>
+        </Grid.RowDefinitions >
 
-                <ItemsControl x:Name="Items" ItemsSource="{Binding CurrentWindowClients, Mode=OneWay}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+        <!-- Create a dock panel at the bottom of the screen -->
+        <DockPanel Grid.Row = "1" HorizontalAlignment = "Center" VerticalAlignment = "Stretch">
 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Vertical">
+            <!-- Create a button for previous page functionality -->
+            <Button Template="{DynamicResource RoundedButton}" Click = "OnPreviousPageButtonClicked" ToolTip = "Previous Page" 
+                Width = "40" Height = "40" BorderThickness="0" Cursor="Hand" Background="#3C4043">
+                <!-- Style the button -->
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <!-- Make the button rounded-->
+                        <Setter Property="CornerRadius" Value="50"/>
+                        <Style.Triggers>
+                            <!-- Collapse the button if the current page is 1 -->
+                            <DataTrigger Binding = "{Binding CurrentPage, Mode=OneWay}" Value = "1">
+                                <Setter Property = "Visibility" Value = "Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+                <!-- Give an icon to the button -->
+                <Image Source = "../ScreenshareIcons/PinButton.png" Height="30"/>
+            </Button>
 
-                                <Grid
-                                    Width="{Binding TileWidth, Mode=OneWay}"
-                                    Height="{Binding TileHeight, Mode=OneWay}"
-                                    Margin="5,3,5,3"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center">
+            <!-- Create a Textblock to write the current page number and total number of pages -->
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent"
+                   Foreground="White" Margin="20,0,20,0" FontWeight="DemiBold" FontSize="14" >
+            <Run Text ="{Binding CurrentPage, Mode=OneWay}"/>
+            <Run Text=" of "/>
+            <Run Text="{Binding TotalPages, Mode=OneWay}"/>
+            
+            <!-- Collapse the textblock when total pages is 0, that is, there is no client -->
+                <TextBlock.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding = "{Binding TotalPages, Mode=OneWay}" Value = "0">
+                                <Setter Property = "Visibility" Value = "Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Resources>
+            </TextBlock>
 
-                                    <Border
-                                        Background="#3C4043"
-                                        BorderThickness="2"
-                                        CornerRadius="5">
-                                        <Image Source="{Binding CurrentImage, Mode=OneWay}" Stretch="Uniform" />
-                                    </Border>
+            <!-- Create a button for next page functionality -->
+            <Button Template="{DynamicResource RoundedButton}" Click = "OnNextPageButtonClicked" ToolTip = "Next Page" Width = "40" 
+                Height = "40" BorderThickness="0" Cursor="Hand" Background="#3C4043">
+                <!-- Style the button -->
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <!-- Make the button rounded-->
+                        <Setter Property="CornerRadius" Value="50"/>
+                        <Style.Triggers>
+                            <!-- Collapse the button when on last page -->
+                            <DataTrigger Binding = "{Binding IsLastPage, Mode=OneWay}" Value = "True">
+                                <Setter Property = "Visibility" Value = "Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
+                <!-- Give an image to the button -->
+                <Image Source = "../ScreenshareIcons/PinButton.png" Height="30"/>
+            </Button >
+        </DockPanel >
 
-                                    <Button
-                                        Width="50"
-                                        Height="50"
-                                        BorderThickness="0"
-                                        Click="PinButtonClicked"
-                                        CommandParameter="{Binding Id, Mode=OneWay}"
-                                        Cursor="Hand"
-                                        Opacity="0.7"
-                                        Template="{DynamicResource RoundedButton}"
-                                        ToolTip="Pin User">
+        <!-- Popup -->
+        <StackPanel Name ="Popupone" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <Popup IsOpen="{Binding IsPopupOpen, Mode=TwoWay}" PlacementTarget="{Binding ElementName=Popupone}" AllowsTransparency="True" 
+               PopupAnimation="Fade" VerticalOffset="-46" StaysOpen="False">
+                <TextBox Text="{Binding PopupText, Mode=OneWay}" Background="#212024" TextAlignment="Center" Padding="20,10,20,10" BorderThickness="2.3" 
+                     Foreground="GhostWhite" FontFamily="Verdana" FontSize="15" Opacity="0.7">
+                    <!-- Design the Textbox shape -->
+                    <TextBox.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="0,30,0,30"/>
+                        </Style>
+                    </TextBox.Resources>
+                </TextBox>
+            </Popup>
+        </StackPanel>
 
-                                        <Image
-                                            Width="23"
-                                            Height="23"
-                                            Margin="0,3,0,0"
-                                            Source="../ScreenshareIcons/PinButton.png" />
+        <!-- Create a stack panel for the screen when no client is sharing screen -->
+        <StackPanel Orientation="Vertical" Grid.Row="0">
 
-                                        <Button.Resources>
-                                            <Style TargetType="{x:Type Button}">
-                                                <Setter Property="Visibility" Value="Hidden" />
-                                                <Setter Property="Background" Value="#3C4043" />
-                                                <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=IsMouseOver}" Value="True" />
-                                                            <Condition Binding="{Binding Pinned, Mode=OneWay}" Value="False" />
-                                                        </MultiDataTrigger.Conditions>
-                                                        <Setter Property="Visibility" Value="Visible" />
-                                                    </MultiDataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
+            <!-- Give an animated GIF -->
+            <Image Source="../ScreenshareIcons/SharedScreenBackground.png" Height="300" VerticalAlignment="Center" 
+               HorizontalAlignment="Center" Margin="0,200,0,20"/>
 
-                                            <Style TargetType="Border">
-                                                <Setter Property="CornerRadius" Value="50" />
-                                            </Style>
-                                        </Button.Resources>
-                                    </Button>
+            <!-- Create a textblock to write a msg -->
+            <TextBlock Text="No One's Here" Foreground="IndianRed" FontSize="60" FontFamily="Comic Sans MS" 
+                   TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" />
 
-                                    <Button
-                                        Width="50"
-                                        Height="50"
-                                        HorizontalAlignment="Center"
-                                        BorderThickness="0"
-                                        Click="UnpinButtonClicked"
-                                        CommandParameter="{Binding Id, Mode=OneWay}"
-                                        Cursor="Hand"
-                                        Opacity="0.7"
-                                        Template="{DynamicResource RoundedButton}"
-                                        ToolTip="Unpin User">
+            <!-- Make this stack panel visible only when no client is sharing their screen -->
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="Visibility" Value="Hidden"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding = "{Binding CurrentWindowClients.Count, Mode=OneWay}" Value = "0">
+                            <Setter Property = "Visibility" Value = "Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
 
-                                        <Image
-                                            Width="25"
-                                            Height="25"
-                                            Source="../ScreenshareIcons/UnpinButton.png" />
+        </StackPanel>
 
-                                        <Button.Resources>
-                                            <Style TargetType="{x:Type Button}">
-                                                <Setter Property="Visibility" Value="Hidden" />
-                                                <Setter Property="Background" Value="#3C4043" />
-                                                <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=IsMouseOver}" Value="True" />
-                                                            <Condition Binding="{Binding Pinned, Mode=OneWay}" Value="True" />
-                                                        </MultiDataTrigger.Conditions>
-                                                        <Setter Property="Visibility" Value="Visible" />
-                                                    </MultiDataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
+        <!-- Make a stack panel to show the tiles of clients -->
+        <StackPanel Orientation="Vertical" Grid.Row="0" Margin="4,5,4,5">
 
-                                            <Style TargetType="Border">
-                                                <Setter Property="CornerRadius" Value="50" />
-                                            </Style>
-                                        </Button.Resources>
-                                    </Button>
+            <!-- Create an ItemsControl which will show all the images in the current window client list -->
+            <ItemsControl x:Name ="Items" ItemsSource="{Binding CurrentWindowClients, Mode=OneWay}">
 
-                                    <TextBlock
-                                        Margin="15,0,0,7"
-                                        VerticalAlignment="Bottom"
-                                        Background="Transparent"
-                                        FontSize="12"
-                                        FontWeight="SemiBold"
-                                        Foreground="AntiqueWhite"
-                                        Text="{Binding Name, Mode=OneWay}" />
+                <!-- This panel will be used to hold the items -->
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <!-- Give the number of rows and columns that should be there in the grid -->
+                        <UniformGrid Rows="{Binding CurrentPageRows, Mode=OneWay}" Columns="{Binding CurrentPageColumns, Mode=OneWay}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-                                </Grid>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+                <!-- Each item will be drawn using this template -->
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <!-- Create a grid to hold the Image, caption, pin and unpin buttons -->
+                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding TileWidth, Mode=OneWay}" Height="{Binding TileHeight, Mode=OneWay}" Margin="5,3,5,3">
+
+                                <!-- Create a border and put the image inside it -->
+                                <Border BorderThickness="2" CornerRadius="5" Background="#3C4043">
+                                    <Image Source="{Binding CurrentImage, Mode=OneWay}" Stretch="Uniform"/>
+                                </Border>
+
+                                <!-- Create a Pin Button -->
+                                <Button Template="{DynamicResource RoundedButton}" CommandParameter="{Binding Id, Mode=OneWay}" Width="50" Height="50" Click="OnPinButtonClicked"
+                                    ToolTip="Pin User" BorderThickness="0" Cursor="Hand" Opacity="0.7">
+
+                                    <!-- Assign an icon to it -->
+                                    <Image Source="../ScreenshareIcons/PinButton.png" Height="23" Width="23" Margin="0,3,0,0"/>
+
+                                    <!-- This button will be shown only when mouse is hovered over the tile -->
+                                    <!-- And the tile should be in unpin state -->
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                            <Setter Property="Background" Value="#3C4043"/>
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Grid}},Path=IsMouseOver}" Value="True" />
+                                                        <Condition Binding="{Binding Pinned,Mode=OneWay}" Value="False" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                        <!-- Make the button rounded -->
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="50"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+
+                                <!-- Create an unpin button -->
+                                <Button Template="{DynamicResource RoundedButton}" Width="50" Height="50" Opacity="0.7" HorizontalAlignment="Center" Cursor="Hand" 
+                                    Click="OnUnpinButtonClicked" ToolTip="Unpin User" BorderThickness="0" CommandParameter ="{Binding Id, Mode=OneWay}">
+
+                                    <!-- Assign an icon to the button -->
+                                    <Image Source="../ScreenshareIcons/UnpinButton.png" Width="25" Height="25"/>
+
+                                    <!-- This button which will be shown only on hovering over the tile -->
+                                    <!-- The tile should be in pinned state -->
+                                    <Button.Resources>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                            <Setter Property="Background" Value="#3C4043"/>
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Grid}},Path=IsMouseOver}" Value="True" />
+                                                        <Condition Binding="{Binding Pinned,Mode=OneWay}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                        <!-- Make the button rounded -->
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="50"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+
+                                <!-- Create a textblock to show the name of the client on the bottom of the tile -->
+                                <TextBlock Text="{Binding Name, Mode=OneWay}" Foreground="AntiqueWhite" FontWeight="SemiBold" Background="Transparent" 
+                                       VerticalAlignment="Bottom" Margin="15,0,0,7" FontSize="12"/>
+
+                                <!-- Close all the open components -->
+                            </Grid>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </Grid >
 </UserControl>

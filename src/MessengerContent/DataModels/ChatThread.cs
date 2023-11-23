@@ -184,10 +184,10 @@ namespace MessengerContent.DataModels
         {
             int index = GetMessageIndex(messageID);
             // check if the message type is chat for editing
-            if (MessageList[index].Type != MessageType.Chat)
-            {
-                throw new ArgumentException("Message requested for update is not chat.");
-            }
+            //if (MessageList[index].Type != MessageType.Chat)
+            //{
+            //    throw new ArgumentException("Message requested for update is not chat.");
+            //}
             MessageList[index].Starred = !MessageList[index].Starred;
         }
     }

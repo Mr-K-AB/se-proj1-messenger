@@ -354,10 +354,10 @@ namespace MessengerContent.Client
             // check if message is empty
             ReceiveChatData? message = GetMessage(messageID) ?? throw new ArgumentException("Message with given message ID to does not exist");
             // check message type
-            if (message.Type != MessageType.Chat)
-            {
-                throw new ArgumentException($"Invalid message type : {message.Type}");
-            }
+            //if (message.Type != MessageType.Chat)
+            //{
+            //    throw new ArgumentException($"Invalid message type : {message.Type}");
+            //}
             Trace.WriteLine("[ContentClient] Using chat handler to send star chat to server");
             _chatHandler.StarChat(messageID, message.ReplyThreadID);
         }

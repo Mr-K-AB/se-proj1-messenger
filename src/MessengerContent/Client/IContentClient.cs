@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
- * Filename    = ContentClient.cs
+ * Filename    = IContentClient.cs
  *
  * Author      = Rapeti Siddhu Neehal
  *

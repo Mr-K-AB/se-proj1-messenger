@@ -48,7 +48,7 @@ namespace MessengerApp.Views
 
             Trace.WriteLine(Utils.GetDebugMessage("Created the ScreenshareServerView Component", withTimeStamp: true));
 
-            Debug.WriteLine(viewModel.CurrentWindowClients.Count);
+            Debug.WriteLine(viewModel.CurrentClients.Count);
         }
 
         /// <summary>

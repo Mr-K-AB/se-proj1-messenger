@@ -66,7 +66,7 @@
                 <Style TargetType="{x:Type StackPanel}">
                     <Setter Property="Visibility" Value="Hidden"/>
                     <Style.Triggers>
-                        <DataTrigger Binding = "{Binding CurrentWindowClients.Count, Mode=OneWay}" Value = "0">
+                        <DataTrigger Binding = "{Binding CurrentClients.Count, Mode=OneWay}" Value = "0">
                             <Setter Property = "Visibility" Value = "Visible" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -79,13 +79,13 @@
         <ScrollViewer Grid.Row="1" Margin="4,5,4,5">
 
             <!-- Make an ItemsControl that will display every picture in the window client list that is now open. -->
-            <ItemsControl x:Name ="Items" ItemsSource="{Binding CurrentWindowClients, Mode=OneWay}">
+            <ItemsControl x:Name ="Items" ItemsSource="{Binding CurrentClients, Mode=OneWay}">
 
                 <!-- This panel will be used to hold the items -->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <!-- Indicate how many rows and columns the grid should have. -->
-                        <UniformGrid Rows="{Binding CurrentPageRows, Mode=OneWay}" Columns="{Binding CurrentPageColumns, Mode=OneWay}" />
+                        <UniformGrid Rows="{Binding CurrentRows, Mode=OneWay}" Columns="{Binding CurrentColumns, Mode=OneWay}" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 

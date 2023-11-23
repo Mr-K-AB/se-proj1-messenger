@@ -1,8 +1,15 @@
-﻿/// <author>Likhith Reddy</author>
-/// <summary>
-/// Defines the enum "ServerDataHeader", which enumerates all the headers
-/// that could be present in the data packet sent by the server.
-/// </summary>
+﻿/***********************************************************************************
+* Filename    = ServerDataHeader.cs
+*
+* Author      = Likhith Reddy
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = Defines the enum "ServerDataHeader", which enumerates all the
+*               headers that could be present in the data packet sent by the server.
+*************************************************************************************/
 
 using System.Runtime.Serialization;
 

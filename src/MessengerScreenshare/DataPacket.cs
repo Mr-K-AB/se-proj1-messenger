@@ -1,8 +1,15 @@
-﻿/// <author>Likhith Reddy</author>
-/// <summary>
-/// Defines the class "DataPacket" which represents the data packet sent
-/// from server to client or the other way.
-/// </summary>
+﻿/************************************************************************
+* Filename    = DataPacket.cs
+*
+* Author      = Likhith Reddy
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = Defines the class "DataPacket" which represents the 
+*               data packet sent from server to client or the other way.
+************************************************************************/
 
 using System.Text.Json.Serialization;
 

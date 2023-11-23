@@ -261,7 +261,6 @@ namespace MessengerScreenshare.Client
         private async Task StartImageSendingAsync()
         {
             CancellationToken cancellationToken = _imageCancellation!.Token;
-            _imageCancellation?.Dispose();
             _capturer.StartCapture();
             _processor?.StartProcessingAsync(1);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully started capturer and processor", withTimeStamp: true));
@@ -283,7 +282,7 @@ namespace MessengerScreenshare.Client
             string serializedDeregisterPacket = JsonSerializer.Serialize(deregisterPacket);
 
             StopImageSending();
-            StopConfirmationSendingAsync().Wait(); // Synchronously wait here for demonstration purposes
+            StopConfirmationSendingAsync();
             _communicator.Send(serializedDeregisterPacket, Utils.ServerIdentifier, null);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
         }
@@ -292,15 +291,24 @@ namespace MessengerScreenshare.Client
         /// Method to stop sending confirmation packets. Will be called only when the client
         /// stops screensharing.
         /// </summary>
-        private async Task StopConfirmationSendingAsync()
+        private void StopConfirmationSendingAsync()
         {
             if (_sendConfirmationTask == null)
             {
                 return;
             }
 
-            _confirmationCancellationToken = true;
-            await _sendConfirmationTask;
+            try
+            {
+                _confirmationCancellationToken = true;
+                _sendConfirmationTask.Wait();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Unable to cancel confirmation sending task: {e.Message}", withTimeStamp: true));
+            }
+
+            _sendConfirmationTask = null;
         }
 
         /// <summary>

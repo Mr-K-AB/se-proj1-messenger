@@ -111,7 +111,6 @@ namespace MessengerScreenshare.Client
             try
             {
                 _cancellationTokenSource?.Cancel();
-                _cancellationTokenSource?.Dispose();
             }
             catch (Exception e)
             {

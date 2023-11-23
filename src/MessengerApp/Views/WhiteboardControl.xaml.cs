@@ -1,11 +1,11 @@
 ﻿/***********************************
-*Filename = WhiteBoardPage.xaml.cs
+*Filename = WhiteboardControl.xaml.cs
 *
 *Author   = Thogata Jagadeesh
 *
 * Product     = Messenger
 * 
-* Project     = White Board
+* Project     = Whiteboard
 *
 * Description = Whiteboard View
 *************************************/

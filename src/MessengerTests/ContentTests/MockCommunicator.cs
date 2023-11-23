@@ -25,7 +25,7 @@ namespace MessengerTests.ContentTests
 
         public void Send(string message, string senderId, string recieverid)
         {
-            _sendSerializedStr=message;
+            _sendSerializedStr =message;
         }
         public string GetSendData()
         {

@@ -24,9 +24,9 @@ namespace MessengerTests.ContentTests.Client
         [TestMethod]
         public void ConvertSendChatData_ValidInput_ReturnsValidChatData()
         {
-            var utility = new MockHelper();
-            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, "This is a message string");
-            var chatClient = new ChatMessageClient(utility.GetMockCommunicator());
+            var helper = new MockHelper();
+            SendChatData sendChatData = helper.GenerateSendChatData(MessageType.Chat, "This is a message string");
+            var chatClient = new ChatMessageClient(helper.GetMockCommunicator());
 
             ChatData chatData = chatClient.ChatDataFromSendData(sendChatData, MessageEvent.New);
 
@@ -41,9 +41,9 @@ namespace MessengerTests.ContentTests.Client
         [TestMethod]
         public void NewChat_ValidInput_ReturnsValidChatData()
         {
-            var utility = new MockHelper();
-            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, "This is a message string");
-            MockCommunicator mockCommunicator = utility.GetMockCommunicator();
+            var helper = new MockHelper();
+            SendChatData sendChatData = helper.GenerateSendChatData(MessageType.Chat, "This is a message string");
+            MockCommunicator mockCommunicator = helper.GetMockCommunicator();
             var serializer = new ContentSerializer();
             int userID = 5;
             string ip = "127.0.0.1";
@@ -71,9 +71,9 @@ namespace MessengerTests.ContentTests.Client
         [TestMethod]
         public void NewChat_EmptyMessageString_ReturnsArgumentException()
         {
-            var utility = new MockHelper();
-            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, "");
-            MockCommunicator mockCommunicator = utility.GetMockCommunicator();
+            var helper = new MockHelper();
+            SendChatData sendChatData = helper.GenerateSendChatData(MessageType.Chat, "");
+            MockCommunicator mockCommunicator = helper.GetMockCommunicator();
             var serializer = new ContentSerializer();
             int userID = 5;
             string ip = "127.0.0.1";
@@ -89,9 +89,9 @@ namespace MessengerTests.ContentTests.Client
         [TestMethod]
         public void NewChat_NullMessageString_ReturnsArgumentException()
         {
-            var utility = new MockHelper();
-            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, null);
-            MockCommunicator mockCommunicator = utility.GetMockCommunicator();
+            var helper = new MockHelper();
+            SendChatData sendChatData = helper.GenerateSendChatData(MessageType.Chat, null);
+            MockCommunicator mockCommunicator = helper.GetMockCommunicator();
             var serializer = new ContentSerializer();
             int userID = 5;
             string ip = "127.0.0.1";
@@ -107,9 +107,9 @@ namespace MessengerTests.ContentTests.Client
         [TestMethod]
         public void EditChat_ValidInput_ReturnsValidContentData()
         {
-            var utility = new MockHelper();
-            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, "This is an edited message");
-            MockCommunicator mockCommunicator = utility.GetMockCommunicator();
+            var helper = new MockHelper();
+            SendChatData sendChatData = helper.GenerateSendChatData(MessageType.Chat, "This is an edited message");
+            MockCommunicator mockCommunicator = helper.GetMockCommunicator();
             var serializer = new ContentSerializer();
             int userID = 5;
             string ip = "127.0.0.1";
@@ -140,9 +140,9 @@ namespace MessengerTests.ContentTests.Client
         [TestMethod]
         public void DeleteChat_ValidInput_ReturnsValidContentData()
         {
-            var utility = new MockHelper();
-            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, "Message Deleted.");
-            MockCommunicator mockCommunicator = utility.GetMockCommunicator();
+            var helper = new MockHelper();
+            SendChatData sendChatData = helper.GenerateSendChatData(MessageType.Chat, "Message Deleted.");
+            MockCommunicator mockCommunicator = helper.GetMockCommunicator();
             var serializer = new ContentSerializer();
             int userID = 5;
             string ip = "127.0.0.1";
@@ -173,9 +173,9 @@ namespace MessengerTests.ContentTests.Client
         [TestMethod]
         public void StarChat_ValidInput_ReturnsValidContentData()
         {
-            var utility = new MockHelper();
-            SendChatData sendChatData = utility.GenerateSendChatData(MessageType.Chat, null);
-            MockCommunicator mockCommunicator = utility.GetMockCommunicator();
+            var helper = new MockHelper();
+            SendChatData sendChatData = helper.GenerateSendChatData(MessageType.Chat, null);
+            MockCommunicator mockCommunicator = helper.GetMockCommunicator();
             var serializer = new ContentSerializer();
             int userID = 5;
             string ip = "127.0.0.1";

@@ -284,7 +284,7 @@ namespace MessengerApp.ViewModels
                                           MessageType = message.Type == MessageType.Chat,
                                           MsgData = message.Data,
                                           Time = message.SentTime.ToString("hh:mm tt"),
-                                          Sender = Users.ContainsKey(message.SenderID) ? Users[message.SenderID] : "Anonymous",
+                                          Sender = message.SenderName,
                                           isCurrentUser = UserId == message.SenderID,
                                           ReplyMessage = message.ReplyMessageID == -1 ? "" : Messages[message.ReplyMessageID]
                                       };

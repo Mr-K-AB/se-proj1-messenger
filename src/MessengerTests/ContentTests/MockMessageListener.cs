@@ -17,7 +17,7 @@ using MessengerContent.DataModels;
 
 namespace MessengerTests.ContentTests
 {
-    public class FakeContentListener : IMessageListener
+    public class MockMessageListener : IMessageListener
     {
         // content listener parameters
         private ReceiveChatData _receivedMessage;
@@ -25,7 +25,7 @@ namespace MessengerTests.ContentTests
         /// <summary>
         /// Constructor to create content listener
         /// </summary>
-        public FakeContentListener()
+        public MockMessageListener()
         {
             _receivedMessage = new ReceiveChatData();
         }

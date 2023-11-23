@@ -58,7 +58,7 @@ namespace MessengerTests.WhiteboardTests
 
             return true;
         }
-        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, string textData = "Text")
+        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, string uid, string textData = "Text")
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;
@@ -103,7 +103,7 @@ namespace MessengerTests.WhiteboardTests
                 ZIndex = 1,
                 Fill = fillBrush,
                 Stroke = borderBrush,
-                Id = Guid.NewGuid(),
+                Id = new(uid),
                 points = new List<Point> { start, end },
                 TextString = textData,
             };
@@ -122,7 +122,7 @@ namespace MessengerTests.WhiteboardTests
             };
             Point start = new(random.Next(0, 100), random.Next(0, 100));
             Point end = new(random.Next(0, 100), random.Next(0, 100));
-            return CreateShape(shapeTypes[random.Next(0, 2)], start, end, Brushes.Black, Brushes.Transparent, 1);
+            return CreateShape(shapeTypes[random.Next(0, 2)], start, end, Brushes.Black, Brushes.Transparent, 1, "hello");
         }
 
         public List<ShapeItem> GenerateRandomBoardShapes(int n)

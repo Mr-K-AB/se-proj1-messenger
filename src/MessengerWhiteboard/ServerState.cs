@@ -55,10 +55,10 @@ namespace MessengerWhiteboard
         ///     This function gives server snap-shot handler for testing purpose.
         /// </summary>
         /// <returns>Snap-shot handler.</returns>
-        //public ServerSnapshotHandler GetSnapshotHandler()
-        //{
-        //    return _serverSnapshotHandler;
-        //}
+        public ServerSnapshotHandler GetSnapshotHandler()
+        {
+            return s_serverSnapshotHandler;
+        }
 
 
         /// <summary>

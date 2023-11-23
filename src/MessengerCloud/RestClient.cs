@@ -9,7 +9,7 @@
 * 
 * Project     = MessengerCloud
 *
-* Description = A class for Azure functions.
+* Description = A rest client class for interacting with entitiy api functions.
 *****************************************************************************/
 
 using System.Collections.Generic;

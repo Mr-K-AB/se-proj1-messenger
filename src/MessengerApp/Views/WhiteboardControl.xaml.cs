@@ -1,28 +1,19 @@
 ﻿/***********************************
-*Filename = WhiteBoardPage.xaml.cs
+*Filename = WhiteboardControl.xaml.cs
 *
 *Author   = Thogata Jagadeesh
 *
 * Product     = Messenger
 * 
-* Project     = White Board
+* Project     = Whiteboard
 *
 * Description = Whiteboard View
 *************************************/
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MessengerWhiteboard;
 
@@ -44,7 +35,7 @@ namespace MessengerApp.Views
             _viewModel.ShapeItems = new();
         }
 
-        
+
         /// <summary>
         /// Mouse Click Event for the WhiteBorad
         /// </summary>
@@ -56,7 +47,7 @@ namespace MessengerApp.Views
             Point p = e.GetPosition(sender as Canvas);
             if (_viewModel.currentMode == ViewModel.WBModes.CreateMode)
             {
-                 // Start creating a new shape at the clicked position.
+                // Start creating a new shape at the clicked position.
                 _viewModel.StartShape(p);
                 _buildingShape = true;
             }
@@ -70,11 +61,11 @@ namespace MessengerApp.Views
 
                 // Perform a hit test to find the UI element at the clicked position.
                 HitTestResult hitTestResult = VisualTreeHelper.HitTest(canvas, p);
-                DependencyObject element = hitTestResult.VisualHit;
+                DependencyObject? element = hitTestResult.VisualHit;
                 //Debug.WriteLine(element);
 
                 // Check if the hit UI element is a Path (shape)
-                if (element is System.Windows.Shapes.Path)
+                if (element is Path)
                 {
                     _viewModel.lastDownPoint = p; // Store the clicked position.
                     //Debug.WriteLine(element.GetValue(UidProperty).ToString());
@@ -93,7 +84,7 @@ namespace MessengerApp.Views
                 HitTestResult hitTestResult = VisualTreeHelper.HitTest(canvas, p);
                 DependencyObject element = hitTestResult.VisualHit;
                 //Debug.WriteLine(element);
-                if (element is System.Windows.Shapes.Path)
+                if (element is Path)
                 {
                     _viewModel.lastDownPoint = p;
                     //Debug.WriteLine(element.GetValue(UidProperty).ToString());
@@ -101,7 +92,7 @@ namespace MessengerApp.Views
                 }
             }
         }
-        
+
         /// <summary>
         /// Event capturing the mouse move
         /// </summary>
@@ -162,20 +153,25 @@ namespace MessengerApp.Views
         private void CanvasMouseUp(object sender, MouseButtonEventArgs e)
         {
             // Check if a shape is currently being built.
+            Point p = e.GetPosition(sender as Canvas);
             if (_buildingShape)
             {
                 //Debug.WriteLine("Mouse Up");
-                Point p = e.GetPosition(sender as Canvas);
                 _viewModel.EndShape(p); // Finalize the shape being built at the current mouse position.
                 e.Handled = true;       // Mark the event as handled to prevent further processing.
                 _buildingShape = false; // This flag indicates shape has been built
             }
-            
+
             // Reset the stored 'last down point' to indicate no active drag operation.
+            if (_viewModel.activeTool == "Select" && _viewModel.lastDownPoint != null)
+            {
+                _viewModel.EndShape(p);
+                e.Handled = true;
+            }
             _viewModel.lastDownPoint = null;
             //Debug.WriteLine(ViewModel.ShapeItems[0].ToString());
         }
-        
+
         /// <summary>
         /// Function corresponding to the select mode
         /// </summary>
@@ -187,7 +183,7 @@ namespace MessengerApp.Views
             _viewModel.ChangeTool("Select");
             Cursor = Cursors.Arrow;
         }
-        
+
         /// <summary>
         /// Function corresponding to the rectangle icon in the toolbar
         /// </summary>
@@ -200,7 +196,7 @@ namespace MessengerApp.Views
             Cursor = Cursors.Cross;
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
-        
+
         /// <summary>
         /// Ellipse icon function in the toolbar
         /// </summary>
@@ -226,7 +222,7 @@ namespace MessengerApp.Views
             Cursor = Cursors.Cross;
             Trace.WriteLine("Whiteboard View Model :: Active shape changed to : " + _viewModel.activeTool);
         }
-        
+
         /// <summary>
         /// Text box click function
         /// </summary>
@@ -263,7 +259,7 @@ namespace MessengerApp.Views
             _viewModel.ChangeMode(ViewModel.WBModes.RedoMode);
             Trace.WriteLine("Whiteboard View Model :: Active tool changed to : " + _viewModel.activeTool);
         }
-        
+
         /// <summary>
         /// FUnction corresponding to the pen icon in the toolbar
         /// </summary>
@@ -286,9 +282,10 @@ namespace MessengerApp.Views
         {
             _viewModel.ChangeTool("Delete");
             _viewModel.ChangeMode(ViewModel.WBModes.DeleteMode);
+            Cursor = Cursors.Arrow;
             Trace.WriteLine("Whiteboard View Model :: Active tool changed to : " + _viewModel.activeTool);
         }
-        
+
         /// <summary>
         /// Function corresponding to the event where the mouse enters the canvas
         /// </summary>
@@ -300,7 +297,7 @@ namespace MessengerApp.Views
             //{
             //    _viewModel.UnselectAll();
             //}
-            
+
             // Change the cursor style based on the active tool in the viewModel.
             // This provides a visual cue to the user about the current mode of operation.
             Cursor = _viewModel.activeTool switch
@@ -335,7 +332,11 @@ namespace MessengerApp.Views
         private void ChangeStrokeColor(object sender, RoutedEventArgs e)
         {
             //Debug.Print((e.Source as Button).Name);
-            Brush bcolor = (e.Source as RadioButton).Background;
+            if (e.Source is not RadioButton radioButton)
+            {
+                return;
+            }
+            Brush bcolor = radioButton.Background;
             _viewModel.ChangeStrokeBrush(bcolor);
         }
 
@@ -347,7 +348,11 @@ namespace MessengerApp.Views
         private void ChangeFillColor(object sender, RoutedEventArgs e)
         {
             //Debug.Print((e.Source as Button).ToolTip);
-            Brush bcolor = (e.Source as RadioButton).Background;
+            if (e.Source is not RadioButton radioButton)
+            {
+                return;
+            }
+            Brush bcolor = radioButton.Background;
             _viewModel.ChangeFillBrush(bcolor);
         }
 
@@ -358,9 +363,12 @@ namespace MessengerApp.Views
         /// <param name="e"></param>
         private void ClearScreen(object sender, RoutedEventArgs e)
         {
-            _viewModel.ClearScreen();
+            if (MessageBox.Show("Do you REALLY want to clear the screen?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                _viewModel.ClearScreen();
+            }
         }
-        
+
         /// <summary>
         /// Undo button function in the toolbar
         /// </summary>
@@ -370,7 +378,7 @@ namespace MessengerApp.Views
         {
             _viewModel.CallUndo();
         }
-        
+
         /// <summary>
         /// Function called when clicking the redo button in the toolbar
         /// </summary>
@@ -386,10 +394,10 @@ namespace MessengerApp.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        //private void SaveMode(object sender, RoutedEventArgs e)
-        //{
-        //    _viewModel.SaveSession(new Random());
-        //}
+        private void SaveMode(object sender, RoutedEventArgs e)
+        {
+            _viewModel.SaveSnapshot();
+        }
 
     }
 }

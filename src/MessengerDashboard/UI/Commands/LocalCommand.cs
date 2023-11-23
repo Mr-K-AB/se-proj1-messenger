@@ -28,6 +28,7 @@ namespace MessengerDashboard.UI.Commands
 
         public void Execute(object? parameter)
         {
+            _sessionsViewModel.IsLocalClicked = true;
             List<EntityInfoWrapper> entities = LocalSave.ReadFromFile();
             List<SessionEntry> sessions = new();
             foreach(EntityInfoWrapper entity in entities)

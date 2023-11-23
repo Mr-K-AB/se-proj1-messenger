@@ -3,6 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Media;
 using MessengerDashboard.UI.ViewModels;
+using MessengerWhiteboard;
 using MessengerWhiteboard.Models;
 
 namespace MessengerTests.WhiteboardTests
@@ -57,7 +58,28 @@ namespace MessengerTests.WhiteboardTests
 
             return true;
         }
-        public static ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, Guid uid, string textData = "Text")
+
+        public bool CompareBoardServerShapes(WBShape shape1, WBShape shape2)
+        {
+            Serializer serializer = new();
+            if (shape1 == null && shape2 == null)
+            {
+                return true;
+            }
+
+            if (shape1.UserId != shape2.UserId|| shape1.Op != shape2.Op || shape1.SnapshotID!= shape2.SnapshotID)
+            {
+                return false;
+            }
+
+            List<ShapeItem> shapeItems1 = serializer.DeserializeShapes(shape1.ShapeItems);
+            List<ShapeItem> shapeItems2 = serializer.DeserializeShapes(shape2.ShapeItems);
+
+            return Compare(shapeItems1, shapeItems2);
+        }
+
+
+        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, string uid, string textData = "Text")
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;

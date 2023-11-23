@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using MessengerNetworking.Communicator;
 
 namespace MessengerApp
 {
@@ -13,5 +14,9 @@ namespace MessengerApp
     /// </summary>
     public partial class App : Application
     {
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+        }
     }
 }

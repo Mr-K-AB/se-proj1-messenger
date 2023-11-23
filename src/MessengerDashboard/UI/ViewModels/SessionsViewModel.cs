@@ -6,18 +6,21 @@ using System.Linq;
 using System.Windows.Input;
 using MessengerDashboard.UI.DataModels;
 using MessengerDashboard.UI.Commands;
+using MessengerCloud;
 
 
 namespace MessengerDashboard.UI.ViewModels
 {
     public class SessionsViewModel : ViewModel
     {
-        protected readonly string _cloudUrl = @"http://localhost:7166/api/entity"; 
+
+        protected readonly RestClient _restClient = new(@"http://localhost:7166/api/entity");
 
         public SessionsViewModel() 
         {
             LocalCommand = new LocalCommand(this);
-            CloudCommand = new CloudCommand(_cloudUrl, this);
+            CloudCommand = new CloudCommand(_restClient, this);
+            DeleteAllCommand = new DeleteAllCommand(_restClient, this);
         }
 
         private List<TimeStampChatCountEntry> _timeStampChatCountEntries;
@@ -99,8 +102,12 @@ namespace MessengerDashboard.UI.ViewModels
             set => SetProperty(ref _overallSentiment, value);
         }
 
+        public bool? IsLocalClicked { get; set; } = null;
+
         public ICommand LocalCommand { get; set; }
 
         public ICommand CloudCommand { get; set; }
+
+        public ICommand DeleteAllCommand { get; set; }
     }
 }

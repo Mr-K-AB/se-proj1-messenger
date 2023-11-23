@@ -21,6 +21,17 @@ namespace MessengerDashboard.UI.ViewModels
 
         public DashboardViewModel()
         {
+            SetViewModel();
+        }
+
+        public DashboardViewModel(IClientSessionController client)
+        {
+            _client = client;
+            SetViewModel();
+        }
+
+        protected void SetViewModel()
+        {
             _client.SessionChanged += HandleSessionChanged;
             _client.Refreshed += HandleRefreshed;
             List<User> users = new();
@@ -141,7 +152,6 @@ namespace MessengerDashboard.UI.ViewModels
             get => _maxUserCount ;
             set => SetProperty(ref _maxUserCount , value);
         }
-
 
         protected List<UserActivityEntry> _userActivities;
         public List<UserActivityEntry> UserActivities

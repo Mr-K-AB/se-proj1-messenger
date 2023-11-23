@@ -1,4 +1,13 @@
-﻿using MessengerNetworking.Queues;
+﻿/******************************************************************************
+ * 
+ * Author      = Vikas Saini
+ *
+ * Roll no     = 112001049
+ *
+ *****************************************************************************/
+
+
+using MessengerNetworking.Queues;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;

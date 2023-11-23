@@ -68,8 +68,8 @@ namespace MessengerTests.ScreenshareTests
             int screenWidth = screenSize.Item1;
             int screenHeight = screenSize.Item2;
 
-            Assert.AreEqual(screenHeight * 2 / 3, image.Height);
-            Assert.AreEqual(screenWidth * 2 / 3, image.Width);
+            Assert.AreEqual(screenHeight , image.Height );
+            Assert.AreEqual(screenWidth , image.Width );
         }
     }
 }

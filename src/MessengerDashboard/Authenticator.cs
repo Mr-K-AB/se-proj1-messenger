@@ -1,9 +1,16 @@
-﻿/// <credits>
-/// <author>
-/// <name>Shubh Pareek</name>
-/// <rollnumber>112001039</rollnumber>
-/// </author>
-/// </credits>
+﻿/******************************************************************************
+* Filename    = RestClient.cs
+*
+* Author      = Shubh Pareek
+*
+* Roll Number = 112001039
+*
+* Product     = Messenger 
+* 
+* Project     = Dashboard
+*
+* Description = for authentication of user .
+* *****************************************************************************/
 
 using Microsoft.Extensions.Configuration;
 using System;
@@ -66,7 +73,7 @@ namespace MessengerDashboard
             // Creating state and redirect URI using port 8080 on Loopback address
             string state = CryptRandomInt(32);
             string codeVerifier = CryptRandomInt(32);
-            string codeChallenge = EncodeInputBuffer(Sha256(codeVerifier));
+            string codeChallenge = EncodedBase64(Sha256(codeVerifier));
             const string codeChallengeMethod = "S256";
             string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, "8080");
             AuthenticationResult result = new();
@@ -160,7 +167,7 @@ namespace MessengerDashboard
 
             Trace.WriteLine("[Authenticator] No Errors Occurred");
             // A new thread to wait for the GetUserData to get all required information
-            Task task = Task.Factory.StartNew(() => GetUserData(code, codeVerifier, redirectURI));
+            Task task = Task.Factory.StartNew(() => FindCallerInfo(code, codeVerifier, redirectURI));
             task.Wait();
 
             result.IsAuthenticated = true;
@@ -174,55 +181,13 @@ namespace MessengerDashboard
             result.UserImage = s_imageName;
             return result;
         }
-
-        /// <summary>
-        /// Creating a non-padded base64 URL encoding
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <returns>String: Encoded Base 64</returns>
-        private static string EncodeInputBuffer(byte[] buffer)
-        {
-            string base64 = Convert.ToBase64String(buffer);
-            // Converts base64 to base64url.
-            base64 = base64.Replace("+", "-");
-            base64 = base64.Replace("/", "_");
-            // Strips padding.
-            base64 = base64.Replace("=", "");
-            return base64;
-        }
-
-        /// <summary>
-        /// For getting the SHA256 hashing of the inputString
-        /// </summary>
-        /// <param name="inputString"></param>
-        /// <returns>Byte Array: Sha256 Hashing</returns>
-        private static byte[] Sha256(string inputString)
-        {
-            byte[] bytes = Encoding.ASCII.GetBytes(inputString);
-            using SHA256 sha256 = SHA256.Create();
-            return sha256.ComputeHash(bytes);
-        }
-
-        /// <summary>
-        /// Generating a random 32 bit cryptographic number.
-        /// </summary>
-        /// <param name="length"></param>
-        /// <returns>Number in base64 representation.</returns>
-        private static string CryptRandomInt(uint length)
-        {
-            byte[] bytes = new byte[length];
-            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
-            rng.GetBytes(bytes);
-            return EncodeInputBuffer(bytes);
-        }
-
         /// <summary>
         /// This function is responsible for connecting to OAuth Client and requesting token to receive Profile Information of User who has authenticated.
         /// </summary>
         /// <param name="code"></param>
         /// <param name="code_verifier"></param>
         /// <param name="redirectURI"></param>
-        private static async void GetUserData(string code, string code_verifier, string redirectURI)
+        private static async void FindCallerInfo(string code, string code_verifier, string redirectURI)
         {
             Trace.WriteLine("[Authenticator] Getting Data From User");
             // Building the  request
@@ -304,5 +269,47 @@ namespace MessengerDashboard
             s_userEmail = json["email"].ToString();
             s_imageName = json["picture"].ToString();
         }
+
+        /// <summary>
+        /// Creating a non-padded base64 URL encoding
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns>String: Encoded Base 64</returns>
+        private static string EncodedBase64(byte[] buffer)
+        {
+            string base64 = Convert.ToBase64String(buffer);
+            // Converts base64 to base64url.
+            base64 = base64.Replace("+", "-");
+            base64 = base64.Replace("/", "_");
+            // Strips padding.
+            base64 = base64.Replace("=", "");
+            return base64;
+        }
+        /// <summary>
+        /// Generating a random 32 bit cryptographic number.
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns>Number in base64 representation.</returns>
+        private static string CryptRandomInt(uint length)
+        {
+            byte[] bytes = new byte[length];
+            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
+            rng.GetBytes(bytes);
+            return EncodedBase64(bytes);
+        }
+
+        /// <summary>
+        /// For getting the SHA256 hashing of the inputString
+        /// </summary>
+        /// <param name="inputString"></param>
+        /// <returns>Byte Array: Sha256 Hashing</returns>
+        private static byte[] Sha256(string inputString)
+        {
+            byte[] bytes = Encoding.ASCII.GetBytes(inputString);
+            using SHA256 sha256 = SHA256.Create();
+            return sha256.ComputeHash(bytes);
+        }
+
+
     }
 }

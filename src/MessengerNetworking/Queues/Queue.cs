@@ -1,4 +1,12 @@
-﻿using System;
+﻿/******************************************************************************
+ * 
+ * Author      = Priyanshu Gupta
+ *
+ * Roll no     = 112001033
+ *
+ *****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -8,7 +16,7 @@ namespace MessengerNetworking.Queues
     public class Queue : IQueue
     {
         // Packets are enqueued to and dequeued from this queue
-        private Queue<Packet> _queue;
+        private readonly Queue<Packet> _queue;
 
         // Lock to ensure mutual exclusion
         private readonly object _lock;
@@ -16,8 +24,8 @@ namespace MessengerNetworking.Queues
         // Empty constructor
         public Queue()
         {
-            this._queue = new Queue<Packet>();
-            this._lock = new object();
+            _queue = new Queue<Packet>();
+            _lock = new object();
         }
 
         /// <summary>
@@ -97,7 +105,7 @@ namespace MessengerNetworking.Queues
         {
             lock (_lock)
             {
-                this._queue.Clear();
+                _queue.Clear();
             }
         }
 
@@ -146,8 +154,7 @@ namespace MessengerNetworking.Queues
         /// </returns>
         public bool WaitForPacket()
         {
-            bool isEmpty = true;
-
+            bool isEmpty;
             while (true)
             {
                 // Sleeping for some time
@@ -156,7 +163,9 @@ namespace MessengerNetworking.Queues
                 isEmpty = IsEmpty();
 
                 if (!isEmpty)
+                {
                     break;
+                }
             }
 
             return isEmpty;

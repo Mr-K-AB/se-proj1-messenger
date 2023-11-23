@@ -1,4 +1,13 @@
-﻿using MessengerNetworking.Queues;
+﻿/******************************************************************************
+ * 
+ * Author      = Vikas Saini
+ *
+ * Roll no     = 112001049
+ *
+ *****************************************************************************/
+
+
+using MessengerNetworking.Queues;
 using MessengerNetworking.NotificationHandler;
 using System;
 using System.Collections.Generic;
@@ -199,9 +208,9 @@ namespace MessengerNetworking.Sockets
                 "TryReconnectingToClient() function called.");
             TcpClient clientSocket = 
                 _clientIdToClientSocketMap[clientId];
-            var isSent = false;
+            bool isSent = false;
             // try to reconnect 3 times
-            for (var i = 0; i < 3 && !isSent; i++)
+            for (int i = 0; i < 3 && !isSent; i++)
             {
                 // wait for some time for client to reconnect
                 Thread.Sleep(100);
@@ -227,12 +236,12 @@ namespace MessengerNetworking.Sockets
             {
                 Trace.WriteLine("[Networking] Client: " + clientId +
                     " has left. Removing client...");
-                foreach (var moduleToNotificationHandler in 
+                foreach (KeyValuePair<string, INotificationHandler> moduleToNotificationHandler in 
                     _moduleToNotificationHandlerMap)
                 {
                     string moduleName = 
                         moduleToNotificationHandler.Key;
-                    var notificationHandler =
+                    INotificationHandler notificationHandler =
                         moduleToNotificationHandler.Value;
                     notificationHandler.OnClientLeft(clientId);
                     Trace.WriteLine("[Networking] Notifed " +

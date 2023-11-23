@@ -10,6 +10,7 @@
   <ItemGroup>
     <None Remove="Images\end-meet.png" />
     <None Remove="Images\file-attach.png" />
+    <None Remove="Images\mode.png" />
     <None Remove="Images\refresh.png" />
     <None Remove="Images\restore.png" />
     <None Remove="Images\save.png" />
@@ -54,6 +55,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Images\mode.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Images\end-meet.png" />
     <EmbeddedResource Include="Images\refresh.png" />
   </ItemGroup>
@@ -68,6 +75,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MessengerDashboard\MessengerDashboard.csproj" />
     <ProjectReference Include="..\MessengerScreenshare\MessengerScreenshare.csproj" />
+    <ProjectReference Include="..\MessengerViewModels\MessengerViewModels.csproj" />
     <ProjectReference Include="..\MessengerWhiteboard\MessengerWhiteboard.csproj" />
   </ItemGroup>
 

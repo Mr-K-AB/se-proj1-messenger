@@ -1,9 +1,16 @@
-﻿/// <credits>
-/// <author>
-/// <name>Shubh Pareek</name>
-/// <rollnumber>112001039</rollnumber>
-/// </author>
-/// </credits>
+﻿/******************************************************************************
+* Filename    = RestClient.cs
+*
+* Author      = Shubh Pareek
+*
+* Roll Number = 112001039
+*
+* Product     = Messenger 
+* 
+* Project     = Messenger Tests
+*
+* Description =   Basic tests for small methods .
+* * *****************************************************************************/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,10 +79,8 @@ namespace MessengerTests.DashboardTests.DashboardTests
         /// Tests creating and getting an local entity.
         /// </summary>
         [TestMethod]
-        public async Task LocalSaveTesting()
+        public void LocalSaveTesting()
         {
-            // delete all 
-            Logger.LogMessage("Deleting all entries from our Azure table storage.");
 
             // Create an entity.
             Logger.LogMessage("Create an entity.");
@@ -88,6 +93,27 @@ namespace MessengerTests.DashboardTests.DashboardTests
             LocalSave.AddEntity(info);
             List<EntityInfoWrapper> res = LocalSave.ReadFromFile();
             Assert.AreEqual(JsonSerializer.Serialize(infos[0].Sentences), JsonSerializer.Serialize(res[0].Sentences));
+        }
+        [TestMethod]
+        public void localSaveDeleteTesting()
+        {
+            Logger.LogMessage("Deleting all entries from our local table storage.");
+
+
+            LocalSave.DeleteFile();
+            // Get the local application data folder
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appDataFolder = Path.Combine(localAppData, "Messenger");
+
+            // Combine the "Messenger" folder with the "sessionInfo.txt" file
+            string path = Path.Combine(appDataFolder, "sessionInfo.txt");
+
+            // Check if the file exists
+            if (File.Exists(path))
+            {
+                Assert.Fail("file exists ");
+            }
+
         }
 
 

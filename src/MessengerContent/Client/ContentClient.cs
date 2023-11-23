@@ -153,7 +153,6 @@ namespace MessengerContent.Client
             _fileHandler.UserID = id;
             _fileHandler.UserName = name;
             _name = name;
-            RequestMessageHistory();
         }
         public int UserID
         {
@@ -323,6 +322,7 @@ namespace MessengerContent.Client
                 // add subscriber to the list of subscribers
                 Trace.WriteLine("[ContentClient] Added new subscriber");
                 _subscribers.Add(subscriber);
+                RequestMessageHistory();
             }
         }
 

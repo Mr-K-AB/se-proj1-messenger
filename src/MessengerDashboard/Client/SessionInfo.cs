@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = ClientSessionController.cs
+* Filename    = SessionInfo.cs
 *
 * Author      = Shailab Chauhan 
 *
@@ -9,7 +9,7 @@
 * 
 * Project     = MessengerDashboard
 *
-* Description = Represents information about the current session in the Messenger Dashboard project.
+* Description = Represents information about the current session .
 *****************************************************************************/
 
 using System;
@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 namespace MessengerDashboard.Client
 {
     /// <summary>
-    /// Represents information about the current session in the Messenger Dashboard project.
+    /// Represents information about the current session.
     /// </summary>
     public class SessionInfo
     {

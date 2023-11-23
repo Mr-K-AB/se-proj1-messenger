@@ -9,7 +9,7 @@
 * 
 * Project     = MessengerDashboard
 *
-* Description = Represents information about a user in the Messenger Dashboard project.
+* Description = Represents information about a user.
 *****************************************************************************/
 
 using System;
@@ -17,7 +17,7 @@ using System;
 namespace MessengerDashboard.Client
 {
     /// <summary>
-    /// Represents information about a user in the Messenger Dashboard project.
+    /// Represents information about a user .
     /// </summary>
     public class UserInfo
     {
@@ -66,22 +66,6 @@ namespace MessengerDashboard.Client
         /// </summary>
         public string UserPhotoUrl { get; set; } = "";
 
-        /// <summary>
-        /// Determines whether the specified <see cref="UserInfo"/> is equal to the current <see cref="UserInfo"/>.
-        /// </summary>
-        /// <param name="client">The <see cref="UserInfo"/> to compare with the current <see cref="UserInfo"/>.</param>
-        /// <returns>True if the specified <see cref="UserInfo"/> is equal to the current <see cref="UserInfo"/>; otherwise, false.</returns>
-        public bool Equals(UserInfo client)
-        {
-            if (client == null)
-            {
-                return false;
-            }
-
-            return UserId.Equals(client.UserId) &&
-                   (ReferenceEquals(UserName, client.UserName) ||
-                    UserName != null && UserName.Equals(client.UserName));
-        }
     }
 }
 

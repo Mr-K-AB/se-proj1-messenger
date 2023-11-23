@@ -1,5 +1,5 @@
-﻿using MessengerApp.Stores;
-using MessengerApp.Commands;
+﻿using MessengerViewModels.Stores;
+using MessengerViewModels.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using MessengerDashboard;
 
-namespace MessengerApp.ViewModels
+namespace MessengerViewModels.ViewModels
 {
-    internal class HomeViewModel : ViewModelBase
+    public class HomeViewModel : ViewModelBase
     {
         public string WelcomeMessage => "Welcome To the home page";
         public string? UserName { get; }

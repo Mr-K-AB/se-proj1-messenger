@@ -9,6 +9,7 @@ using MessengerDashboard.Telemetry;
 using MessengerDashboard.UI.DataModels;
 using MessengerDashboard.UI.ViewModels;
 using MessengerCloud;
+using System.Threading;
 
 namespace MessengerDashboard.UI.Commands
 {
@@ -16,7 +17,7 @@ namespace MessengerDashboard.UI.Commands
     {
 
         private readonly SessionsViewModel _sessionsViewModel;
-        private readonly EntityInfoWrapper _entity;
+        private EntityInfoWrapper _entity;
 
         public ExpandCommand(SessionsViewModel sessionsViewModel, EntityInfoWrapper entity)
         {
@@ -33,27 +34,52 @@ namespace MessengerDashboard.UI.Commands
 
         public void Execute(object? parameter)
         {
-            List<TimeStampChatCountEntry> timeStampChatCountEntries = new();
-            foreach(KeyValuePair<DateTime, int> item in _entity.Analysis.TimeStampToUserCountMap)
+            if(_sessionsViewModel.IsLocalClicked == false)
             {
-                timeStampChatCountEntries.Add(new(item.Key, item.Value));
+                Thread something = new(() =>
+                {
+                    try
+                    {
+                        Task<Entity?> task = _sessionsViewModel.RestClient.GetEntityAsync(_entity.SessionId);
+                        task.Wait();
+                        Entity? result = task.Result;
+                        if (result == null)
+                        {
+                            return;
+                        }
+                        _entity = new EntityInfoWrapper(result.Sentences, result.PositiveChatCount, result.NegativeChatCount,
+                            result.NeutralChatCount, result.OverallSentiment, result.SessionId, result.Analysis);
+                    }
+                    catch (Exception ex) { }
+                })
+                { IsBackground = true };
+                something.Start();
+                something.Join();
             }
+            try
+            {
+                List<TimeStampUserCountEntry> timeStampUserCountEntries = new();
+                foreach(KeyValuePair<DateTime, int> item in _entity.Analysis.TimeStampToUserCountMap)
+                {
+                    timeStampUserCountEntries.Add(new(item.Key, item.Value));
+                }
 
-            List<UserActivityEntry> userActivities = new();
-            foreach (KeyValuePair<int, MessengerCloud.UserActivity> item in _entity.Analysis.UserIdToUserActivityMap)
-            {
-                userActivities.Add(new(item.Key, item.Value.UserChatCount, item.Value.UserName, item.Value.UserEmail,
-                                item.Value.EntryTime, item.Value.ExitTime));
+                List<UserActivityEntry> userActivities = new();
+                foreach (KeyValuePair<int, MessengerCloud.UserActivity> item in _entity.Analysis.UserIdToUserActivityMap)
+                {
+                    userActivities.Add(new(item.Key, item.Value.UserChatCount, item.Value.UserName, item.Value.UserEmail,
+                                    item.Value.EntryTime, item.Value.ExitTime));
+                }
+                _sessionsViewModel.PositiveChatCount = _entity.PositiveChatCount;
+                _sessionsViewModel.NegativeChatCount = _entity.NegativeChatCount;
+                _sessionsViewModel.NeutralChatCount = _entity.NeutralChatCount;
+                _sessionsViewModel.OverallSentiment = _entity.OverallSentiment;
+                _sessionsViewModel.TotalUserCount = _entity.Analysis.TotalUserCount;
+                _sessionsViewModel.SessionSummary = string.Join(Environment.NewLine, _entity.Sentences);
+                _sessionsViewModel.TimeStampUserCountEntries = timeStampUserCountEntries;
+                _sessionsViewModel.UserActivities = userActivities;
             }
-            _sessionsViewModel.PositiveChatCount = _entity.PositiveChatCount;
-            _sessionsViewModel.NegativeChatCount = _entity.NegativeChatCount;
-            _sessionsViewModel.NeutralChatCount = _entity.NeutralChatCount;
-            _sessionsViewModel.TotalChatCount = _entity.Analysis.TotalChatCount;
-            _sessionsViewModel.OverallSentiment = _entity.OverallSentiment;
-            _sessionsViewModel.TotalUserCount = _entity.Analysis.TotalUserCount;
-            _sessionsViewModel.SessionSummary = string.Join(Environment.NewLine, _entity.Sentences);
-            _sessionsViewModel.TimeStampChatCountEntries = timeStampChatCountEntries;
-            _sessionsViewModel.UserActivities = userActivities;
+            catch (Exception ex) { }
         }
     }
 }

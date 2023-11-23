@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MessengerApp.Stores;
-using MessengerApp.ViewModels;
+using MessengerViewModels.Stores;
+using MessengerViewModels.ViewModels;
 using MessengerDashboard;
 using MessengerDashboard.Client;
 
-namespace MessengerApp.Commands
+namespace MessengerViewModels.Commands
 {
-    internal class NavigateClientMeetCommand : CommandBase
+    public class NavigateClientMeetCommand : CommandBase
     {
         private readonly NavigationStore _navigationStore;
         private readonly HomeViewModel _homeViewModel;

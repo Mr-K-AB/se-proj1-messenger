@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = ClientSessionController.cs
+* Filename    = IClientSessionController.cs
 *
 * Author      = Shailab Chauhan 
 *
@@ -9,7 +9,7 @@
 * 
 * Project     = MessengerDashboard
 *
-* Description = A class that controls the session for the client.
+* Description = Interface for client session control
 *****************************************************************************/
 using System;
 using MessengerDashboard.Client.Events;

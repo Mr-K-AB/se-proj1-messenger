@@ -1,4 +1,19 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = ServerSessionController.cs
+*
+* Author      = Pratham Ravindra Nagpure
+*
+* Roll number = 112001054
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerDashboard
+*
+* Description = This file contains the definition of the ServerSessionController class,
+*               which controls the server session for the Messenger Dashboard.
+*****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using MessengerDashboard.Sentiment;
 using MessengerDashboard.Summarization;
@@ -17,7 +32,7 @@ using System.Threading;
 namespace MessengerDashboard.Server
 {
     /// <summary>
-    /// Handles the server session.
+    /// Controls the server session.
     /// </summary>
     /// <remarks>
     /// Implements <see cref="IServerSessionController"/>
@@ -49,9 +64,10 @@ namespace MessengerDashboard.Server
         private SentimentResult _sentiment = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerSessionController"/> with the provided <see cref="ICommunicator"/> instance.
+        /// Initializes a new instance of the <see cref="ServerSessionController"/> used for testing.
         /// </summary>
-        /// <param name="communicator">An <see cref="ICommunicator "/> implementation for server communication.</param>
+        /// <param name="communicator"></param>
+        /// <param name="contentServer"></param>
         public ServerSessionController(ICommunicator communicator, IContentServer contentServer)
         {
             _communicator = communicator;
@@ -59,12 +75,18 @@ namespace MessengerDashboard.Server
             SetupServer();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerSessionController"/> used for testing.
+        /// </summary>
         public ServerSessionController() 
         {
             _communicator = CommunicationFactory.GetCommunicator(false);
             SetupServer();
         }
 
+        /// <summary>
+        /// Initial setup for server.j
+        /// </summary>
         private void SetupServer()
         {
             _telemetry.SubscribeToServerSessionController(this);
@@ -75,15 +97,31 @@ namespace MessengerDashboard.Server
             ConnectionDetails = new(ipAndPortArray[0], int.Parse(ipAndPortArray[1]));
         }
 
+        /// <summary>
+        /// Occurs when the session is updated.
+        /// </summary>
         public event EventHandler<SessionUpdatedEventArgs>? SessionUpdated;
 
         /// <summary>
-        ///  the credentials required to Join the meeting
+        /// Gets the credentials required for joining the meeting
         /// </summary>
         public ConnectionDetails ConnectionDetails { get; private set; }
 
-        public SessionInfo SessionInfo = new();
 
+        /// <summary>
+        /// Gets the session information
+        /// </summary>
+        public SessionInfo SessionInfo { get; private set; } = new();
+
+        /// <summary>
+        /// Broadcasts payload data to all connected clients.
+        /// </summary>
+        /// <param name="operation">The type of operation to perform.</param>
+        /// <param name="sessionInfo">Information about the session.</param>
+        /// <param name="summary">Text summary data.</param>
+        /// <param name="sessionAnalytics">Telemetry analysis data.</param>
+        /// <param name="sentiment">Sentiment analysis result.</param>
+        /// <param name="user">User information.</param>
         public void BroadcastPayloadToClients(Operation operation, SessionInfo? sessionInfo, TextSummary? summary = null,
 
                                                       Analysis? sessionAnalytics = null, SentimentResult? sentiment = null, UserInfo? user = null)
@@ -99,7 +137,8 @@ namespace MessengerDashboard.Server
             Trace.WriteLine("Dashboard Server >>> Broadcasted data");
         }
 
-        public void CalculateSentiment()
+
+        private void CalculateSentiment()
         {
             Trace.WriteLine("Dashboard Server >>> Getting chats for sentiment");
             List<ChatThread> chatThreads = _contentServer.GetAllMessages();
@@ -120,7 +159,7 @@ namespace MessengerDashboard.Server
             Trace.WriteLine("Dashboard Server >>> Calculated sentiment");
         }
 
-        public void CalculateSummary()
+        private void CalculateSummary()
         {
             Trace.WriteLine("Dashboard Server >>> Getting chats for summary");
             List<ChatThread> chatThreads = _contentServer.GetAllMessages();
@@ -142,7 +181,7 @@ namespace MessengerDashboard.Server
             Trace.WriteLine("Dashboard Server >>> Created Summary");
         }
 
-        public void SendPayloadToClient(Operation operation, int userId, SessionInfo? sessionInfo, UserInfo? userInfo = null,
+       private void SendPayloadToClient(Operation operation, int userId, SessionInfo? sessionInfo, UserInfo? userInfo = null,
                     TextSummary? summary = null, Analysis? sessionAnalytics = null,
                     SentimentResult? sentiment = null)
         {
@@ -156,22 +195,39 @@ namespace MessengerDashboard.Server
             Trace.WriteLine("Dashboard Server >>> Data sent to client");
         }
 
+        /// <summary>
+        /// Handles Joining of new clients
+        /// </summary>
+        /// <param name="socketObject"></param>
         public void OnClientJoined(TcpClient socketObject)
         {
             Trace.WriteLine("Dashboard Server >>> Adding Client to session");
             _clientCount += 1;
+
+            // The unique id for a client.
             int userId = _clientCount;
             _communicator.AddClient(userId.ToString(), socketObject);
             UserInfo userInfo = new("", userId, "", "");
+
+            // Ask client for their details
             SendPayloadToClient(Operation.GiveUserDetails, userId, null, userInfo);
         }
 
+        /// <summary>
+        /// Handles leaving of client.
+        /// </summary>
+        /// <param name="clientId"></param>
         public void OnClientLeft(string clientId)
         {
             int userId = int.Parse(clientId);
             RemoveClient(userId);
         }
 
+        /// <summary>
+        /// Method that checks and deserializes data. 
+        /// </summary>
+        /// <param name="serializedData"></param>
+        /// <returns>null if data is invalid otherwise the <see cref="ClientPayload"/></returns>
         private ClientPayload? DeserializeData(string serializedData)
         {
             if (string.IsNullOrEmpty(serializedData))
@@ -190,6 +246,10 @@ namespace MessengerDashboard.Server
             return clientPayload;
         }
 
+        /// <summary>
+        /// This method is called by the communicator for sending data.
+        /// </summary>
+        /// <param name="serializedData"></param>
         public void OnDataReceived(string serializedData)
         {
             try
@@ -226,10 +286,13 @@ namespace MessengerDashboard.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine("Dashboard Server >>> Exception: " + e);
+                Trace.WriteLine("Dashboard Server >>> Exception: " + e.Message);
             }
         }
 
+        /// <summary>
+        /// Recalculates all the analyzations and sends to clients.
+        /// </summary>
         private void Refresh()
         {
             Trace.WriteLine("Dashboard Server >>> Started refresh");
@@ -240,6 +303,10 @@ namespace MessengerDashboard.Server
             Trace.WriteLine("Dashboard Server >>> Done refresh");
         }
 
+        /// <summary>
+        /// Adds a new client and refreshes.
+        /// </summary>
+        /// <param name="userInfo"></param>
         private void IncludeClientInSession(UserInfo userInfo)
         {
             Trace.WriteLine("Dashboard Server >>> Adding Client to session");
@@ -285,9 +352,13 @@ namespace MessengerDashboard.Server
             Trace.WriteLine("Dashboard Server >>> Calculated telemetry analysis.");
         }
 
+        /// <summary>
+        /// Removes the client from session, if initiated by instructor then the session ends.
+        /// </summary>
+        /// <param name="userId"></param>
         private void RemoveClient(int userId)
         {
-            if (userId == 1) // The leader or instructor
+            if (userId == 1) // The leader or instructor has id 1
             {
                 Trace.WriteLine("Dashboard Server >>> Ending the session");
                 SessionInfo.Users.Clear();
@@ -301,7 +372,7 @@ namespace MessengerDashboard.Server
                 _communicator.Stop();
                 Trace.WriteLine("Dashboard Server >>> Ended the session");
             }
-            else // The member or student
+            else // The member or student 
             {
                 Trace.WriteLine("Dashboard Server >>> Removing Client");
                 int removedCount = SessionInfo.Users.RemoveAll(user => user.UserId == userId);

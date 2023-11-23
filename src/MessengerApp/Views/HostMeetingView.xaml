@@ -17,9 +17,9 @@
             <DataTemplate DataType="{x:Type viewmodels:DashboardInstructorViewModel}">
                 <views:DashboardControl/>
             </DataTemplate>
-            <!--<DataTemplate DataType="{x:Type whiteboard:ViewModel}">
+            <DataTemplate DataType="{x:Type whiteboard:ViewModel}">
                 <views:WhiteboardControl/>
-            </DataTemplate>-->
+            </DataTemplate>
             <DataTemplate DataType="{x:Type screenshare:ScreenshareServerViewModel}">
                 <views:ScreenshareServerControl/>
             </DataTemplate>

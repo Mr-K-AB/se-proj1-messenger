@@ -1,9 +1,16 @@
-﻿/// <credits>
-/// <author>
-/// <name>Shubh Pareek</name>
-/// <rollnumber>112001039</rollnumber>
-/// </author>
-/// </credits>
+﻿/******************************************************************************
+* Filename    = RestClient.cs
+*
+* Author      = Shubh Pareek
+*
+* Roll Number = 112001039
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerCloud
+*
+* Description =  tests for messenger cloud .
+* *****************************************************************************/
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,11 +25,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 
 namespace MessengerTests.CloudTests
 {
+    /// <summary>
+    /// for doing tests on messenger cloud module 
+    /// </summary>
     [TestClass]
+    
     public class CloudTests
     {
         private const string BaseUrl = @"http://localhost:7166/api/entity";
+        //for testing api functions 
+        private readonly HttpClient _entityClient;
+        //for testing cloud rest client 
         private readonly RestClient _restClient;
+        //dummy variables for sake of passing information 
         private readonly Analysis _analysisCloud;
         readonly List<string> _sentences = new() { "Hi", "Hello", "Wow" };
 
@@ -41,6 +56,7 @@ namespace MessengerTests.CloudTests
                 );
             _analysisCloud.TimeStampToUserCountMap.Add(DateTime.Now, 3);
             _analysisCloud.UserIdToUserActivityMap.Add(4, new UserActivity() { EntryTime = DateTime.Now, ExitTime = DateTime.Now, UserEmail = "hello", UserChatCount = 2, UserName = "shubh" });
+            _entityClient = new HttpClient();
         }
 
         /// <summary>
@@ -112,6 +128,101 @@ namespace MessengerTests.CloudTests
             Logger.LogMessage("Delete any existing entities.");
             await _restClient.DeleteEntitiesAsync();
         }
+        /// <summary>
+        /// for deleting by id and getting by id .
+        /// </summary>
+        [TestMethod]
+
+        public async Task TestGetidAndDelid()
+        {
+            //delete so that it doesn't cause any issues 
+            await _restClient.DeleteEntitiesAsync();
+            _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, 5, "Positive", "1", _analysisCloud));
+            //get the same entity anda validate 
+            Logger.LogMessage("Validate.");
+            Entity resultt = await _restClient.GetEntityAsync("1");
+            //delete it 
+            await _restClient.DeleteEntityAsync("1");
+            Assert.AreEqual(resultt.Id, "1");
+        }
+        /// <summary>
+        /// Test method to evaluate the functionality of various API operations.
+        /// </summary>
+        [TestMethod]
+        public async Task TestApiFunctions()
+        {
+            // Delete all entities using the API
+            Debug.WriteLine("deleting all ");
+            using HttpResponseMessage response = await _entityClient.DeleteAsync(BaseUrl);
+            response.EnsureSuccessStatusCode();
+
+            // Create a new EntityInfoWrapper object for testing
+            var info = new EntityInfoWrapper(_sentences, 1, 2, 3, "Positive", "-1", _analysisCloud);
+            string json = System.Text.Json.JsonSerializer.Serialize(info);
+
+            // Convert the JSON string to a ByteArrayContent
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // Post the new entity to the API
+            using HttpResponseMessage responsee = await _entityClient.PostAsync(BaseUrl, content);
+            responsee.EnsureSuccessStatusCode();
+            string result = await responsee.Content.ReadAsStringAsync();
+
+            // Deserialize the API response to an Entity object
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            Entity? entity = JsonSerializer.Deserialize<Entity>(result, options);
+
+            // Retrieve all entities from the API
+            HttpResponseMessage responseee = await _entityClient.GetAsync(BaseUrl);
+            responseee.EnsureSuccessStatusCode();
+            result = await responseee.Content.ReadAsStringAsync();
+            options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+
+            // Deserialize the API response to a list of Entity objects
+            IReadOnlyList<Entity>? entities = JsonSerializer.Deserialize<IReadOnlyList<Entity>>(result, options);
+
+            // Retrieve a specific entity by ID from the API
+            HttpResponseMessage responseeee = await _entityClient.GetAsync(BaseUrl + $"/-1");
+            responseeee.EnsureSuccessStatusCode();
+            result = await responseeee.Content.ReadAsStringAsync();
+            options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+
+            // Deserialize the API response to an Entity object
+            entity = JsonSerializer.Deserialize<Entity>(result, options);
+
+            // Delete the specific entity with ID "-1" using the API
+            Debug.WriteLine("deleting this -1");
+            using HttpResponseMessage responseeeee = await _entityClient.DeleteAsync(BaseUrl + $"/-1");
+        }
+
+        /// <summary>
+        /// Test method to verify the behavior of the Entity class.
+        /// </summary>
+        [TestMethod]
+        public void TestEntity()
+        {
+            // Create a new EntityInfoWrapper object for testing
+            var info = new EntityInfoWrapper(_sentences, 1, 2, 3, "Positive", "-1", _analysisCloud);
+
+            // Create an Entity object using the EntityInfoWrapper
+            Entity entity = new(info);
+
+            // Assert that the Entity object is not null
+            Assert.IsNotNull(entity);
+
+            // Assert that the ID of the Entity matches the expected value "-1"
+            Assert.AreEqual(entity.Id, "-1");
+        }
+
     }
 
 

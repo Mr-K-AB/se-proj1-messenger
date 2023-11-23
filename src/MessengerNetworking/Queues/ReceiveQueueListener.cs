@@ -1,4 +1,12 @@
-﻿using System.Collections.Generic;
+﻿/******************************************************************************
+ * 
+ * Author      = Priyanshu Gupta
+ *
+ * Roll no     = 112001033
+ *
+ *****************************************************************************/
+
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using MessengerNetworking.NotificationHandler;
@@ -100,7 +108,9 @@ namespace MessengerNetworking.Queues
 
                 // If the thread needs to be stopped
                 if (!isThreadRunning)
+                {
                     break;
+                }
 
                 // Waiting for the receiving queue to contain a packet
                 _receivingQueue.WaitForPacket();

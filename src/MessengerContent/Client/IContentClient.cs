@@ -1,4 +1,16 @@
-﻿using Messenger.Client;
+﻿/******************************************************************************
+ * Filename    = ContentClient.cs
+ *
+ * Author      = Rapeti Siddhu Neehal
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerContent
+ *
+ * Description = Interface for ContentClient
+ *****************************************************************************/
+
+using Messenger.Client;
 using MessengerContent.DataModels;
 
 namespace MessengerContent.Client

@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = data model for sending file data
  *****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;

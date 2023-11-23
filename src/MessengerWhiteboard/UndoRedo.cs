@@ -43,7 +43,7 @@ namespace MessengerWhiteboard
         public UndoStackElement Undo()
         {
             // If Stack is empty
-            if(undoStackElements.Count == 0)
+            if (undoStackElements.Count == 0)
             {
                 return null;
             }

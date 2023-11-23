@@ -11,7 +11,6 @@
 *              the message handler for the whiteboard.
 ***************************/
 using System.Diagnostics;
-using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Threading;
 using MessengerNetworking.NotificationHandler;
@@ -43,13 +42,13 @@ namespace MessengerWhiteboard
             Serializer serializer = new();
             ServerState serverState = ServerState.Instance;
 
-            if(isServer)
+            if (isServer)
             {
                 try
                 {
                     WBShape deserializedData = serializer.DeserializeWBShape(data);
                     List<ShapeItem> shapes = serializer.DeserializeShapes(deserializedData.ShapeItems);
-                    switch(deserializedData.Op)
+                    switch (deserializedData.Op)
                     {
                         case Operation.Creation:
                             //foreach(ShapeItem shape in shapes)
@@ -60,14 +59,14 @@ namespace MessengerWhiteboard
                             //}
                             break;
                         case Operation.ModifyShape:
-                            foreach(ShapeItem shape in shapes)
+                            foreach (ShapeItem shape in shapes)
                             {
                                 ModifyIncomingShape(shape);
                                 serverState.OnShapeReceived(shape, Operation.ModifyShape);
                             }
                             break;
                         case Operation.Deletion:
-                            foreach(ShapeItem shape in shapes)
+                            foreach (ShapeItem shape in shapes)
                             {
                                 DeleteIncomingShape(shape);
                                 serverState.OnShapeReceived(shape, Operation.Deletion);

@@ -1,4 +1,16 @@
-﻿using System.Collections.Generic;
+﻿/******************************************************************************
+* Filename    = ChatPageViewModel.cs
+*
+* Author      = M V Nagasurya
+*
+* Product     = Messenger
+* 
+* Project     = MessengerApp
+*
+* Description = View Model for ChatBubble
+*****************************************************************************/
+
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using Messenger.Client;
@@ -23,30 +35,43 @@ using MessengerApp.DataModel;
 namespace MessengerApp.ViewModels
 {
 
-
-    public class ChatPageViewModel :  INotifyPropertyChanged, IUserNotification, IMessageListener
+    /// <summary>
+    /// Chat Page View Model class
+    /// </summary>
+    public class ChatPageViewModel : INotifyPropertyChanged, IUserNotification, IMessageListener
     {
-        //Data Models
+        // Client Model
         private readonly IContentClient _model;
 
-        public IDictionary<int, string> Users; // Mapping User IDS to their names
+        public IDictionary<int, string> UserIdToNames; // Mapping User IDS to their names
 
         public IDictionary<int, string> Messages; // Mapping Message IDs to their context
 
         public IDictionary<int, int> ThreadIds; // Mapping Message IDs to their ThreadIDs
 
+        // For testing. It is true if testing mode is enabled, else false
+        public bool testingMode;
+
+        // For testing the received Messages
+        public List<ChatMessage> TestChatMessages;
+
         /// <summary>
         ///     Constructor for ViewModel
         /// </summary>
-        public ChatPageViewModel()
+        public ChatPageViewModel(bool testing = false)
         {
-            Users = new Dictionary<int, string>();
+            UserIdToNames = new Dictionary<int, string>();
             Messages = new Dictionary<int, string>();
             ThreadIds = new Dictionary<int, int>();
+            testingMode = testing;
+
+            if (testing)
+            {
+                TestChatMessages = new();
+            }
 
             _model = ContentClientFactory.GetInstance();
             _model.ClientSubscribe(this);
-
         }
 
         /// <summary>
@@ -54,11 +79,11 @@ namespace MessengerApp.ViewModels
         /// </summary>
         public static int UserId { get; private set; }
 
+        /// <summary>
+        ///  The current username
+        /// </summary>
         public static string UserName { get; private set; }
 
-        public static string ServerIP { get; private set; }
-        
-        public static int ServerPort { get; private set; }
         /// <summary>
         ///     The received message
         /// </summary>
@@ -78,7 +103,7 @@ namespace MessengerApp.ViewModels
         /// <summary>
         ///     Handling the raised PropertyChangedEvent
         /// </summary>
-        /// <param name="property"> </param>
+        /// <param name="property"> The property which is changed </param>
         public void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
@@ -87,13 +112,14 @@ namespace MessengerApp.ViewModels
         /// <summary>
         ///     Sends the message to content module
         /// </summary>
-        /// <param name="message"> </param>
-        /// <param name="replyMsgId">  </param>
-        /// <param name="messageType">  </param>
+        /// <param name="message"> Message Data </param>
+        /// <param name="replyMsgId"> Reply Message Id </param>
+        /// <param name="messageType"> Type of message </param>
         public void SendMessage(string message, int replyMsgId, string messageType)
         {
+            Trace.WriteLine("[ChatPageViewModel] Message to be sent, received");
             MsgToSend = new SendChatData();
-            
+
             if (messageType == "File")
             {
                 MsgToSend.Type = MessageType.File;
@@ -102,6 +128,7 @@ namespace MessengerApp.ViewModels
             {
                 MsgToSend.Type = MessageType.Chat;
             }
+            else { throw new Exception("MessageType Undefined!"); }
 
             MsgToSend.ReplyMessageID = replyMsgId;
             MsgToSend.Data = message;
@@ -110,9 +137,12 @@ namespace MessengerApp.ViewModels
             {
                 MsgToSend.ReplyThreadID = ThreadIds[replyMsgId];
             }
-            UserId = _model.GetUserID();
-            UserName = _model.GetUserName();
-            _model.ClientSendData(MsgToSend);
+            if (!testingMode)
+            {
+                UserId = _model.GetUserID();
+                UserName = _model.GetUserName();
+                _model.ClientSendData(MsgToSend);
+            }
         }
 
         /// <summary>
@@ -122,6 +152,7 @@ namespace MessengerApp.ViewModels
         /// <param name="msgId">  </param>
         public void DownloadFile(string savePath, int msgId)
         {
+            Trace.WriteLine("[ChatPageViewModel] Message need to be downloaded received");
             _model.ClientDownload(msgId, savePath);
         }
 
@@ -132,6 +163,7 @@ namespace MessengerApp.ViewModels
         /// <param name="newMsg"> The updated Chat Message  </param>
         public void EditChatMsg(int msgID, string newMsg)
         {
+            Trace.WriteLine("[ChatPageViewModel] Edited Message received");
             _model.ClientEdit(msgID, newMsg);
         }
 
@@ -141,6 +173,7 @@ namespace MessengerApp.ViewModels
         /// <param name="msgID"> </param>
         public void DeleteChatMsg(int msgID)
         {
+            Trace.WriteLine("[ChatPageViewModel] Delete Message received");
             _model.ClientDelete(msgID);
         }
 
@@ -150,31 +183,8 @@ namespace MessengerApp.ViewModels
         /// <param name="msgId"> </param>
         public void StarChatMsg(int msgId)
         {
+            Trace.WriteLine("[ChatPageViewModel] Starred Message received");
             _model.ClientStar(msgId);
-        }
-
-
-        public void OnUserSessionChange(SessionInfo currentSession)
-        {
-            _ = ApplicationMainThreadDispatcher.BeginInvoke(
-                      DispatcherPriority.Normal,
-                      new Action<SessionInfo>(currentSession =>
-                      {
-                          lock (this)
-                          {
-                              if (currentSession != null)
-                              {
-                                  Trace.WriteLine("[ChatPageViewModel] Users List Received.");
-                                  Users.Clear();
-                                  foreach (UserInfo user in currentSession.Users)
-                                  {
-                                      // adding users for the session
-                                      Users.Add(user.UserId, user.UserName);
-                                  }
-                              }
-                          }
-                      }),
-                      currentSession);
         }
 
         private Dispatcher ApplicationMainThreadDispatcher =>
@@ -182,8 +192,32 @@ namespace MessengerApp.ViewModels
                     Application.Current.Dispatcher :
                     Dispatcher.CurrentDispatcher;
 
+        public void OnUserSessionChange(SessionInfo currentSession)
+        {
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
+                      DispatcherPriority.Normal,
+            new Action<SessionInfo>(currentSession =>
+            {
+                lock (this)
+                {
+                    if (currentSession != null)
+                    {
+                        Trace.WriteLine("[ChatPageViewModel] Users List Received.");
+                        UserIdToNames.Clear();
+                        foreach (UserInfo user in currentSession.Users)
+                        {
+                            // adding users for the session
+                            UserIdToNames.Add(user.UserId, user.UserName);
+                        }
+                    }
+                }
+            }),
+            currentSession);
+        }
+
+
         /// <summary>
-        ///     Handles the appropriate even on the received message
+        ///     Handles the appropriate event on the received message
         /// </summary>
         /// <param name="contentData"> </param>
         public void OnMessageReceived(ReceiveChatData contentData)
@@ -192,110 +226,118 @@ namespace MessengerApp.ViewModels
             string? senderName = contentData.SenderName;
             _ = ApplicationMainThreadDispatcher.BeginInvoke(
                       DispatcherPriority.Normal,
-                      new Action<ReceiveChatData>(contentData =>
-                      {
-                          lock (this)
-                          {
-                              if (contentData.Event == MessengerContent.Enums.MessageEvent.New)
-                              {
-                                  Trace.WriteLine("[ChatPageViewModel] New Message has been received.");
-                                  Messages.Add(contentData.MessageID, contentData.Data);
-                                  ThreadIds.Add(contentData.MessageID, contentData.ReplyThreadID);
+            new Action<ReceiveChatData>(contentData =>
+            {
+                lock (this)
+                {
+                    if (contentData.Event == MessengerContent.Enums.MessageEvent.New)
+                    {
+                        Trace.WriteLine("[ChatPageViewModel] New Message has been received");
+                        Messages.Add(contentData.MessageID, contentData.Data);
+                        ThreadIds.Add(contentData.MessageID, contentData.ReplyThreadID);
 
-                                  ReceivedMsg = new()
-                                  {
+                        // Create a new ChatMessage Instance for the new Received Msg
+                        ReceivedMsg = new()
+                        {
 
-                                      MessageID = contentData.MessageID,
-                                      MessageType = contentData.Type == MessageType.Chat,
-                                      MsgData = Path.GetFileName(contentData.Data),
-                                      Time = contentData.SentTime.ToString("hh:mm tt"),
-                                      Sender = senderName,
-                                      isCurrentUser = UserId == contentData.SenderID,
-                                      ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID]
-                                  };
+                            MessageID = contentData.MessageID,
+                            MessageType = contentData.Type == MessageType.Chat,
+                            MsgData = Path.GetFileName(contentData.Data),
+                            Time = contentData.SentTime.ToString("hh:mm tt"),
+                            Sender = senderName,
+                            isCurrentUser = UserId == contentData.SenderID,
+                            ReplyMessage = contentData.ReplyMessageID == -1 ? null : Messages[contentData.ReplyMessageID]
+                        };
 
-                                  OnPropertyChanged("ReceivedMsg");
-                              }
-                              else if (contentData.Event == MessengerContent.Enums.MessageEvent.Edit || contentData.Event == MessengerContent.Enums.MessageEvent.Delete)
-                              {
+                        OnPropertyChanged("NewReceivedMsg"); // Raise PropertChangedEvent
+                    }
+                    else if (contentData.Event == MessengerContent.Enums.MessageEvent.Edit || contentData.Event == MessengerContent.Enums.MessageEvent.Delete)
+                    {
 
-                                  // Creating object for the received message
-                                  // Message object, ReceivedMsg, will modify the current user's _allmessages list upon property changed event
-                                  ReceivedMsg = new()
-                                  {
-                                      MessageID = contentData.MessageID,
-                                      MessageType = contentData.Type == MessageType.Chat,
-                                      MsgData = contentData.Data,
-                                      Time = contentData.SentTime.ToString("hh:mm tt"),
-                                      Sender = senderName,
-                                      //Sender = contentData.SenderID,
-                                      isCurrentUser = UserId == contentData.SenderID,
-                                      ReplyMessage = contentData.ReplyMessageID == -1 ? "" : Messages[contentData.ReplyMessageID],
-                                  };
-                                  Messages[contentData.MessageID] = ReceivedMsg.MsgData;
+                        // Creating a new ChatMessage instance for ReceivedMsg
+                        // For both the Edit and Delete events, the implementation when the message is received is same. 
+                        // The Deleted Messages should always have MsgData as "Message Deleted."
+                        // The Edited Messages will have MsgData as some text given by the user in the TextBox.
+                        if (contentData.Event == MessengerContent.Enums.MessageEvent.Edit)
+                        {
+                            Trace.WriteLine("[ChatPageViewModel] Edited Message has been received");
+                        }
+                        else if (contentData.Event == MessengerContent.Enums.MessageEvent.Delete)
+                        {
+                            Trace.WriteLine("[ChatPageViewModel] Deleted Message has been received");
+                        }
+                        ReceivedMsg = new()
+                        {
+                            MessageID = contentData.MessageID,
+                            MessageType = contentData.Type == MessageType.Chat,
+                            MsgData = contentData.Data,
+                            Time = contentData.SentTime.ToString("hh:mm tt"),
+                            Sender = senderName,
+                            isCurrentUser = UserId == contentData.SenderID,
+                            ReplyMessage = contentData.ReplyMessageID == -1 ? null : Messages[contentData.ReplyMessageID],
+                        };
+                        Messages[contentData.MessageID] = ReceivedMsg.MsgData;
 
-                                  OnPropertyChanged("EditOrDelete");
-                              }
-                          }
-                      }),
-                      contentData);
+                        OnPropertyChanged("Edited/Deleted"); // Raise PropertChangedEvent
+                    }
+                }
+            }),
+            contentData);
         }
 
         /// <summary>
         ///     When a new user joins, they receive the list of messages upto then
         /// </summary>
-        /// <param name="allMessages"> List of all messages upto now </param>
-        public void OnAllMessagesReceived(List<ChatThread> allMessages)
+        /// <param name="chatHistory"> List of all messages upto now </param>
+        public void OnAllMessagesReceived(List<ChatThread> chatHistory)
         {
-            // Execute the call on the application's main thread.
-            //
-            // Also note that we may execute the call asynchronously as the calling
-            // thread is not dependent on the callee thread finishing this method call.
-            // Hence we may call the dispatcher's BeginInvoke method which kicks off
-            // execution async as opposed to Invoke which does it synchronously.
-
             _ = ApplicationMainThreadDispatcher.BeginInvoke(
                       DispatcherPriority.Normal,
-                      new Action<List<ChatThread>>(allMessages =>
-                      {
-                          lock (this)
-                          {
-                              // clearing existing data entries
-                              Messages.Clear();
-                              ThreadIds.Clear();
-                              // updating the Threads and Messages dictionary and displaying the chat upto now in the listbox in view
-                              foreach (ChatThread messageList in allMessages)
-                              {
-                                  foreach (ReceiveChatData message in messageList.MessageList)
-                                  {
-                                      Trace.WriteLine("[ChatPageViewModel] All messages have been received.");
-                                      Messages.Add(message.MessageID, message.Data);
-                                      ThreadIds.Add(message.MessageID, message.ReplyThreadID);
+            new Action<List<ChatThread>>(chatHistory =>
+            {
+                lock (this)
+                {
+                    Messages.Clear();
+                    ThreadIds.Clear();
+                    // updating the Threads and Messages dictionary and displaying the chat upto now in the listbox in view
+                    Trace.WriteLine("[ChatPageViewModel] Received All Messages");
+                    foreach (ChatThread messageList in chatHistory)
+                    {
+                        foreach (ReceiveChatData message in messageList.MessageList)
+                        {
 
-                                      UserId = _model.GetUserID();
+                            Messages.Add(message.MessageID, message.Data);
+                            ThreadIds.Add(message.MessageID, message.ReplyThreadID);
 
-                                      // Creating object for the received message
-                                      // Message object, ReceivedMsg, to be added to the new user's _allmessages
-                                      // list upon property changed event
-                                      ReceivedMsg = new()
-                                      {
-                                          MessageID = message.MessageID,
-                                          MessageType = message.Type == MessageType.Chat,
-                                          MsgData = message.Data,
-                                          Time = message.SentTime.ToString("hh:mm tt"),
-                                          Sender = Users.ContainsKey(message.SenderID) ? Users[message.SenderID] : "Anonymous",
-                                          isCurrentUser = UserId == message.SenderID,
-                                          ReplyMessage = message.ReplyMessageID == -1 ? "" : Messages[message.ReplyMessageID]
-                                      };
+                            if (!testingMode) { UserId = _model.GetUserID(); }
+                            else // for testing
+                            {
+                                UserId = 1;
+                            }
 
-                                      // Propery Changed Event raised for updating View with current session's chat
-                                      OnPropertyChanged("ReceivedAllMsgs");
-                                  }
-                              }
-                          }
-                      }),
-                      allMessages);
+                            // If the sender info is not there in the current session, then this sender will not be known by the user.
+                            string senderName = UserIdToNames.ContainsKey(message.SenderID) ? UserIdToNames[message.SenderID] : "Anonymous";
+
+                            ReceivedMsg = new()
+                            {
+                                MessageID = message.MessageID,
+                                MessageType = message.Type == MessageType.Chat,
+                                MsgData = message.Data,
+                                Time = message.SentTime.ToString("hh:mm tt"),
+                                Sender = senderName,
+                                isCurrentUser = UserId == message.SenderID,
+                                ReplyMessage = message.ReplyMessageID == -1 ? null : Messages[message.ReplyMessageID]
+                            };
+                            if (testingMode)
+                            {
+                                TestChatMessages.Add(ReceivedMsg);
+                            }
+                            OnPropertyChanged("HistoryMsgs");
+                        }
+                    }
+                }
+            }),
+            chatHistory);
         }
     }
 }
-

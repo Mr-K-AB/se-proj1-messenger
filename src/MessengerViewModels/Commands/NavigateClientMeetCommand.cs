@@ -7,6 +7,7 @@ using MessengerViewModels.Stores;
 using MessengerViewModels.ViewModels;
 using MessengerDashboard;
 using MessengerDashboard.Client;
+using System.Windows;
 
 namespace MessengerViewModels.Commands
 {
@@ -38,6 +39,11 @@ namespace MessengerViewModels.Commands
             {
                 _navigationStore.CurrentViewModel = new ClientMeetViewModel(_navigationStore);
 
+            }
+            else
+            {
+                MessageBox.Show("Failed to connect. Check meeting details and try again", "MessengerApp", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                //_navigationStore.CurrentViewModel = _homeViewModel;
             }
         }
     }

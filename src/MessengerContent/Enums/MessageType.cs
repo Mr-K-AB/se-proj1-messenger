@@ -7,7 +7,7 @@
  * 
  * Project     = MessangerContent
  *
- * Description = 
+ * Description = Message type
  *****************************************************************************/
 
 namespace MessengerContent

@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = data model for chat
  *****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;

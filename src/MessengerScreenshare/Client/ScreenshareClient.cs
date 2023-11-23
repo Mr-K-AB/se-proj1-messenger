@@ -49,7 +49,7 @@ namespace MessengerScreenshare.Client
         public int _id;
         // Tokens added to be able to stop the thread execution
         private bool _confirmationCancellationToken;
-        private readonly CancellationTokenSource? _imageCancellation;
+        private CancellationTokenSource? _imageCancellation;
 
         // View model for screenshare client
         public ScreenshareClientViewModel? _viewModel;
@@ -67,7 +67,6 @@ namespace MessengerScreenshare.Client
         {
             _capturer = new ScreenCapturer();
             _processor = new ScreenProcessor(_capturer);
-            _imageCancellation = new CancellationTokenSource();
             if (!isDebugging)
             {
                 _communicator = CommunicationFactory.GetCommunicator(true);
@@ -229,6 +228,7 @@ namespace MessengerScreenshare.Client
         /// </summary>
         private async Task StartImageSendingAsync()
         {
+            _imageCancellation = new CancellationTokenSource();
             CancellationToken cancellationToken = _imageCancellation!.Token;
             _capturer.StartCapture();
             _processor?.StartProcessingAsync(1);

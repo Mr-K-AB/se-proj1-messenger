@@ -169,6 +169,7 @@ namespace MessengerTests.ScreenshareTests
             Assert.IsTrue(clientIdx != -1);
 
             SharedClientScreen serverClient = subscribers[clientIdx];
+            Assert.IsTrue(serverClient.GetPrivate<Queue<Bitmap>>("_imageQueue").Count == numImages);
             for (int i = 0; i < numImages; ++i)
             {
                 string? receivedImage = serverClient.GetImage(serverClient.TaskId);

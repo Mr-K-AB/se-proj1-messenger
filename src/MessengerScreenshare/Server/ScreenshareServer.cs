@@ -56,7 +56,7 @@ namespace MessengerScreenshare.Server
             _subscribers = new Dictionary<int, SharedClientScreen>();
             _disposedValue = false;
             _receiver = receiver;
-            Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareServer", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage("created the instance for ScreenshareServer", withTimeStamp: true));
         }
         
         /// <summary>
@@ -123,15 +123,8 @@ namespace MessengerScreenshare.Server
                         {
                             UpdateTimer(clientId);
                         }
-                        else
-                        {
-                            Trace.WriteLine(Utils.GetDebugMessage($"Unknown header {packet.Header}", withTimeStamp: true));
-                        }
                 }
-                else
-                {
-                    Trace.WriteLine(Utils.GetDebugMessage("Failed to deserialize packet.", withTimeStamp: true));
-                }
+
             }
             catch (Exception e)
             {
@@ -159,7 +152,7 @@ namespace MessengerScreenshare.Server
                 {
                     // If TryAdd fails, the client is already registered.
                     Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
-                    return; // Early exit.
+                    return; 
                 }
             }
             NotifyUX();
@@ -204,7 +197,7 @@ namespace MessengerScreenshare.Server
                 }
                 else
                 {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Trying to deregister a client with id {clientId} which is not present in subscribers list", withTimeStamp: true));
+                    Trace.WriteLine(Utils.GetDebugMessage($"This client with id {clientId} which is not present in subscribers list", withTimeStamp: true));
                 }
             }
         }
@@ -255,13 +248,11 @@ namespace MessengerScreenshare.Server
             {
                 return;
             }
-
             if (!Enum.TryParse(headerVal, out ServerDataHeader serverDataHeader))
             {
                 Trace.WriteLine(Utils.GetDebugMessage($"Failed to parse the header {headerVal}", withTimeStamp: true));
                 return;
             }
-
             try
             {
                 int product = numRowsColumns.Rows * numRowsColumns.Cols;
@@ -328,10 +319,7 @@ namespace MessengerScreenshare.Server
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects)
                     List<SharedClientScreen> sharedClientScreens;
-
-                    // Acquire lock because timer threads could also execute simultaneously.
                     lock (_subscribers)
                     {
                         sharedClientScreens = _subscribers.Values.ToList();
@@ -347,9 +335,6 @@ namespace MessengerScreenshare.Server
                 _disposedValue = true;
             }
         }
-
-       
-
         public void Dispose()
         {
             Dispose(disposing: true);

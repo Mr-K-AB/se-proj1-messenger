@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = data model for receiving chat data
  *****************************************************************************/
 
 using System;

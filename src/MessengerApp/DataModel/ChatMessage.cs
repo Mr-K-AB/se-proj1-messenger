@@ -16,7 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessengerApp
+namespace MessengerApp.DataModel
 {
     public class ChatMessage
     {

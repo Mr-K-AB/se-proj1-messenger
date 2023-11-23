@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 * Filename    = ChatBubble.xaml.cs
 *
 * Author      = M V Nagasurya
@@ -26,14 +26,17 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LiveCharts.Maps;
+using MessengerApp.DataModel;
 using MessengerApp.ViewModels;
 using MessengerContent;
 using MessengerContent.DataModels;
+using Microsoft.VisualBasic;
 using Microsoft.Win32;
 
 namespace MessengerApp
@@ -43,39 +46,19 @@ namespace MessengerApp
     /// </summary>
     public partial class ChatBubble : UserControl
     {
+        // All the messages are added into this Collection.
+        // Whenever a message is received from the ViewModel, this collection gets updated which inturn updates the UI.
+        private readonly ObservableCollection<ChatMessage> _msgCollection;
 
-        private readonly ObservableCollection<ChatMessage> _msgCollection; // All the messages uptil now
         public ChatBubble()
         {
             InitializeComponent();
 
             var viewModel = new ChatPageViewModel();
-            viewModel.PropertyChanged += Listener; // Subscribe to PropertyChangedEvent
+            viewModel.PropertyChanged += MsgListener; // Subscribe to PropertyChangedEvent
             DataContext = viewModel;
 
             _msgCollection = new ObservableCollection<ChatMessage>();
-        //    ChatMessage c1 = new()
-        //    {
-        //        MessageID = 0,
-        //        Sender = "surya",
-        //        Time = DateTime.Now.ToShortTimeString(),
-        //        MessageType = false,
-        //        ReplyMessage = null,
-        //        MsgData = "The_Avengers_5.txt",
-        //        isCurrentUser = false
-        //};
-        //    ChatMessage c2 = new()
-        //    {
-        //        MessageID = 0,
-        //        Sender = "surya",
-        //        Time = DateTime.Now.ToShortTimeString(),
-        //        MessageType = false,
-        //        ReplyMessage = "cool!",
-        //        MsgData = "The_Avengers_5.txt",
-        //        isCurrentUser = false
-        //    };
-        //    _msgCollection.Add(c1);
-        //    _msgCollection.Add(c2);
 
             MainChat.ItemsSource = _msgCollection; // Binding all the messages to the MainChat (ListBox)
         }
@@ -89,6 +72,11 @@ namespace MessengerApp
             set;
         }
 
+        /// <summary>
+        /// ReplyToggleButton reference for enabling toggling.
+        /// If we press on the reply button, msg will appear on the ReplyTextBox
+        /// If we toggle it, ReplytextBox will become clear
+        /// </summary>
         public ToggleButton ReplyObject
         {
             get;
@@ -98,34 +86,40 @@ namespace MessengerApp
         /// <summary>
         ///     Updates the display with new messages
         /// </summary>
-        /// <param name="sender"> </param>
-        /// <param name="e"> </param>
-        private void Listener(object? sender, PropertyChangedEventArgs e)
+        /// <param name="sender"> The Sender which is notifying the event </param>
+        /// <param name="e"> PropertyChangedEvent </param>
+        private void MsgListener(object? sender, PropertyChangedEventArgs e)
         {
 
             string? propertyName = e.PropertyName; // Changed Property Name
-
             var viewModel = DataContext as ChatPageViewModel;
 
-            if (propertyName == "ReceivedMsg")
+            if (propertyName == "NewReceivedMsg") // When the user receive a new message
             {
-                if(viewModel.ReceivedMsg.ReplyMessage == "")
+                if (viewModel.ReceivedMsg.ReplyMessage == "")
                 {
                     viewModel.ReceivedMsg.ReplyMessage = null;
                 }
+                Trace.WriteLine("[ChatBubble] New message received");
                 _msgCollection.Add(viewModel.ReceivedMsg); // Adding the received message into the collection (_msgCollection)
                 UpdateScrollBar(MainChat);
             }
-            else if (propertyName == "ReceivedAllMsgs")
+            else if (propertyName == "HistoryMsgs")
             {
                 // Adding all the messages for the new user to our collection(_msgCollection)
+                if (viewModel.ReceivedMsg.ReplyMessage == "")
+                {
+                    viewModel.ReceivedMsg.ReplyMessage = null;
+                }
+                Trace.WriteLine("[ChatBubble] Chat History received");
                 _msgCollection.Add(viewModel.ReceivedMsg);
                 UpdateScrollBar(MainChat);
             }
-            else if (propertyName == "EditOrDelete")
+            else if (propertyName == "Edited/Deleted")
             {
                 string replyMsg = "";
                 string replyMsgUpd = ""; // for storing the edited message
+                ChatMessage? result = null;
 
                 for (int i = 0; i < _msgCollection.Count; i++) // find the msg which has been triggered
                 {
@@ -134,7 +128,7 @@ namespace MessengerApp
                     {
                         replyMsg = message.MsgData;
                         replyMsgUpd = viewModel.ReceivedMsg.MsgData;
-                        ChatMessage toUpd = new()
+                        ChatMessage updatedMessage = new()
                         {
                             isCurrentUser = message.isCurrentUser,
                             ReplyMessage = message.ReplyMessage,
@@ -142,10 +136,11 @@ namespace MessengerApp
                             Time = message.Time,
                             MessageID = message.MessageID,
                             MessageType = message.MessageType,
-                            MsgData = viewModel.ReceivedMsg.MsgData
+                            MsgData = replyMsgUpd
                         };
 
-                        _msgCollection[i] = toUpd; // Updating the incoming message
+                        _msgCollection[i] = updatedMessage; // Updating the messageCollection to automatically update in the UI
+                        result = _msgCollection[i];
                     }
                 }
 
@@ -155,7 +150,7 @@ namespace MessengerApp
                     ChatMessage message = _msgCollection[i];
                     if (message.ReplyMessage == replyMsg)
                     {
-                        ChatMessage toUpd = new()
+                        ChatMessage updatedMessage = new()
                         {
                             isCurrentUser = message.isCurrentUser,
                             ReplyMessage = replyMsgUpd,
@@ -166,9 +161,11 @@ namespace MessengerApp
                             MsgData = message.MsgData
                         };
 
-                        _msgCollection[i] = toUpd; // updating all the messages which replied to the message which is modified
+                        _msgCollection[i] = updatedMessage; // updating all the messages which replied to the message which is modified
+                        result = _msgCollection[i];
                     }
                 }
+                Trace.WriteLine($"[ChatBubble] {result.MessageID}'s data has been changed to {result.MsgData}");
             }
             return;
         }
@@ -177,7 +174,7 @@ namespace MessengerApp
         /// <summary>
         ///     Handler for the Send Button
         /// </summary>
-        /// <param name="sender"> Notification Sender </param>
+        /// <param name="sender"> The Sender which is notifying the event </param>
         /// <param name="e"> Routed Event Data </param>
         private void SendHandler(object sender, RoutedEventArgs e)
         {
@@ -203,11 +200,10 @@ namespace MessengerApp
                 {
                     viewModel.SendMessage(msg, ReplyMsgId, "Chat");
                     ReplyObject.IsChecked = false;
-                    //toggleReply.IsChecked = false;
                 }
                 SendTextBox.Text = string.Empty; // clear the textbox
                 ReplyTextBox.Text = string.Empty;
-
+                Trace.WriteLine("[ChatBubble] Sending Message");
             }
             return;
         }
@@ -215,13 +211,12 @@ namespace MessengerApp
         /// <summary>
         ///     Handler for the ReplyButton
         /// </summary>
-        /// <param name="sender"> Notification Sender</param>
+        /// <param name="sender"> The Sender which is notifying the event</param>
         /// <param name="e"> Routed Event Data </param>
         private void ReplyHandler(object sender, RoutedEventArgs e)
         {
             if ((sender is ToggleButton senderButton) && (senderButton.DataContext is ChatMessage msg))
             {
-                
                 string? message = msg.MsgData;
                 if (message != "Message Deleted.") // Can't reply to the deleted messages
                 {
@@ -235,6 +230,7 @@ namespace MessengerApp
                     ReplyMsgId = msg.MessageID;
                     ReplyObject = senderButton;
                 }
+                Trace.WriteLine("[ChatBubble] Replying to Message");
             }
             return;
         }
@@ -242,13 +238,13 @@ namespace MessengerApp
         /// <summary>
         ///     Handler for edit button
         /// </summary>
-        /// <param name="sender"> </param>
+        /// <param name="sender"> The Sender which is notifying the event </param>
         /// <param name="e"> </param>
         private void EditHandler(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(SendTextBox.Text)) // Only if there is some text in the textbox, we can edit the msg.
             {
-                if ((sender is Button senderButton) && (senderButton.DataContext is ChatMessage msg))
+                if ((sender is Button senderButton) && (senderButton.DataContext is ChatMessage msg)) // Getting the message from the send button
                 {
                     var viewModel = DataContext as ChatPageViewModel;
                     if (msg.MsgData != "Message Deleted.") // can't edit deleted message
@@ -258,6 +254,7 @@ namespace MessengerApp
                         SendTextBox.Text = string.Empty;
                     }
                 }
+                Trace.WriteLine("[ChatBubble] Editing Message");
             }
             return;
         }
@@ -265,7 +262,7 @@ namespace MessengerApp
         /// <summary>
         ///     Handler for the delete button
         /// </summary>
-        /// <param name="sender"> Notification Sender</param>
+        /// <param name="sender"> The Sender which is notifying the event </param>
         /// <param name="e"> Routed Event Data </param>
         private void DeleteHandler(object sender, RoutedEventArgs e)
         {
@@ -274,19 +271,22 @@ namespace MessengerApp
 
                 var viewModel = DataContext as ChatPageViewModel;
                 viewModel.DeleteChatMsg(msg.MessageID);
+                Trace.WriteLine("[ChatBubble] Deleting Message");
             }
+            return;
         }
 
         /// <summary>
         ///     Handler for Clearing reply box
         /// </summary>
-        /// <param name="sender"> </param>
+        /// <param name="sender"> The Sender which is notifying the event </param>
         /// <param name="e"> </param>
         private void UndoReplyHandler(object sender, RoutedEventArgs e)
         {
             if (sender is ToggleButton)
             {
                 ReplyTextBox.Text = null;
+                Trace.WriteLine("[ChatBubble] Undo reply Message");
             }
             return;
         }
@@ -294,78 +294,90 @@ namespace MessengerApp
         /// <summary>
         ///     Upload File Button Handler
         /// </summary>
-        /// <param name="sender"> Notification Sender </param>
+        /// <param name="sender"> The Sender which is notifying the event </param>
         /// <param name="e"> Routed Event Data </param>
         private void UploadHandler(object sender, RoutedEventArgs e)
         {
-            //string? replyMsgText = ReplyTextBox.Text;
-            if (true)
+
+            var viewModel = DataContext as ChatPageViewModel;
+
+            var openFileDialog = new OpenFileDialog();
+
+            bool? isFileSelected = openFileDialog.ShowDialog();
+            long size; // size of the file
+            try
             {
-                var viewModel = DataContext as ChatPageViewModel;
+                size = new FileInfo(openFileDialog.FileName).Length;
+            }
+            catch // If the user didnt select any file
+            {
+                MessageBox.Show("Choose a File!");
+                return;
+            }
 
-                var openFileDialog = new OpenFileDialog();
-
-                bool? result = openFileDialog.ShowDialog();
-                long size; // size of the file
-                try
+            if (isFileSelected == true)
+            {
+                if (size > 2048000)
                 {
-                    size = new FileInfo(openFileDialog.FileName).Length;
-                }
-                catch // If the user didnt select any file
-                {
-                    MessageBox.Show("Choose a File!");
+                    MessageBox.Show("File size is greater than 2MB!");
                     return;
                 }
 
-                if (result == true)
+                if (string.IsNullOrEmpty(ReplyTextBox.Text))
                 {
-                    if (size > 10240000)
-                    {
-                        MessageBox.Show("File size is greater than 10MB!");
-                        return;
-                    }
-                    if (string.IsNullOrEmpty(ReplyTextBox.Text))
-                    {
-                        //MessageBox.Show("-1");
-                        viewModel.SendMessage(openFileDialog.FileName, -1, "File");
-                    }
-                    else
-                    {
-                        //MessageBox.Show($"{ReplyMsgId}");
-                        viewModel.SendMessage(openFileDialog.FileName, ReplyMsgId, "File");
-                    }
-
-                    SendTextBox.Text = string.Empty; // after the message has been sent, clearing the textbox
-                    ReplyTextBox.Text = string.Empty;
+                    viewModel.SendMessage(openFileDialog.FileName, -1, "File");
                 }
+                else
+                {
+                    viewModel.SendMessage(openFileDialog.FileName, ReplyMsgId, "File");
+                }
+
+                SendTextBox.Text = string.Empty;  // After the message has been sent, clearing the textbox
+                ReplyTextBox.Text = string.Empty; // and the ReplyTextBox
             }
+            Trace.WriteLine("[ChatBubble] Uploading file");
         }
 
         /// <summary>
         ///     Download Button Event Handler on Click
         /// </summary>
-        /// <param name="sender"> </param>
+        /// <param name="sender"> The Sender which is notifying the event </param>
         /// <param name="e"> </param>
         private void DownloadHandler(object sender, RoutedEventArgs e)
         {
+            
             if (sender is Button senderBtn)
             {
                 var viewModel = DataContext as ChatPageViewModel;
 
-                SaveFileDialog dailogFile = new();
+                SaveFileDialog dialogFile = new();
 
+                // Get the message through the Download button
                 if (senderBtn.DataContext is ChatMessage message)
                 {
-                    // Set the File name and the Extension of the file from the message
-                    dailogFile.FileName = System.IO.Path.GetFileNameWithoutExtension(message.MsgData);
-                    dailogFile.DefaultExt = System.IO.Path.GetExtension(message.MsgData);
-
-                    bool? isDownloadOk = dailogFile.ShowDialog();
-
-                    if (isDownloadOk == true)
+                    string? messageText = message.MsgData;
+                    if (messageText == "Message Deleted.")
                     {
-                        viewModel.DownloadFile(dailogFile.FileName, message.MessageID);
+                        MessageBox.Show("Can't download deleted files!");
+                        Trace.WriteLine("[ChatBubble] Can't Download file");
+
                     }
+                    else
+                    {
+                        // Set the File name and the Extension of the file from the message
+                        dialogFile.FileName = System.IO.Path.GetFileNameWithoutExtension(message.MsgData);
+                        dialogFile.DefaultExt = System.IO.Path.GetExtension(message.MsgData);
+
+                        // Show the Dialog box to let the user choose a destination folder in which the file can be downloaded
+                        bool? isDownloadOk = dialogFile.ShowDialog();
+
+                        if (isDownloadOk == true)
+                        {
+                            viewModel.DownloadFile(dialogFile.FileName, message.MessageID);
+                        }
+                        Trace.WriteLine("[ChatBubble] Downloading file");
+                    }
+                        
                 }
             }
             return;
@@ -374,7 +386,7 @@ namespace MessengerApp
         /// <summary>
         ///     Handler for Star Radio Button
         /// </summary>
-        /// <param name="sender">  </param>
+        /// <param name="sender"> The Sender which is notifying the event </param>
         /// <param name="e"> </param>
         private void StarHandler(object sender, RoutedEventArgs e)
         {
@@ -382,29 +394,29 @@ namespace MessengerApp
             if ((sender is ToggleButton senderRadioBtn) && (senderRadioBtn.DataContext is ChatMessage msg))
             {
                 viewModel.StarChatMsg(msg.MessageID);
-            }
-        }
-
-
-        /// <summary>
-        ///     Updates the Scrollbar
-        /// </summary>
-        /// <param name="listBox"> </param>
-        private void UpdateScrollBar(ListBox listBox)
-        {
-            if ((listBox != null) && (VisualTreeHelper.GetChildrenCount(listBox) != 0))
-            {
-                var border = (Border)VisualTreeHelper.GetChild(listBox, 0);
-                var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
-                scrollViewer.ScrollToBottom();
+                Trace.WriteLine("[ChatBubble] Starring Message");
             }
             return;
         }
 
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
-        {
 
+        /// <summary>
+        ///     Gets the bottom-most message in the ListBox and scrolls the listbox down to that message
+        /// </summary>
+        /// <param name="messages"> ListBox of messages </param>
+        private void UpdateScrollBar(ListBox messages)
+        {
+            int countOfChildren = VisualTreeHelper.GetChildrenCount(messages);
+            if ((messages != null) && (countOfChildren != 0))
+            {
+                var border = (Border)VisualTreeHelper.GetChild(messages, 0);
+                var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+                scrollViewer.ScrollToBottom();
+                Trace.WriteLine("[ChatBubble] Scrollbar Updated");
+            }
+            return;
         }
+
 
     }
 }

@@ -108,5 +108,34 @@ namespace MessengerTests.ContentTests
             Assert.AreEqual(rcdata1.Starred, rcdata2.Starred);
             Assert.AreEqual(rcdata1.Event, rcdata2.Event);
         }
+
+        /// <summary>
+        /// Checks if two chat threads are similar
+        /// </summary>
+        /// <param name="thread1">ChatThread object</param>
+        /// <param name="thread2">ChatThread object</param>
+        public void CheckChatThreads(ChatThread thread1, ChatThread thread2)
+        {
+            Assert.AreEqual(thread1.ThreadID, thread2.ThreadID);
+            Assert.AreEqual(thread1.MessageList.Count, thread2.MessageList.Count);
+            for (int i = 0; i < thread1.MessageList.Count; i++)
+            {
+                CheckReceiveChatData(thread1.MessageList[i], thread2.MessageList[i]);
+            }
+        }
+
+        /// <summary>
+        /// Checks if two lists of chat threads are similar
+        /// </summary>
+        /// <param name="list1">List of chat threads</param>
+        /// <param name="list2">List of chat threads</param>
+        public void CheckChatThreadLists(List<ChatThread> list1, List<ChatThread> list2)
+        {
+            Assert.AreEqual(list1.Count, list2.Count);
+            for (int i = 0; i < list1.Count; i++)
+            {
+                CheckChatThreads(list1[i], list2[i]);
+            }
+        }
     }
 }

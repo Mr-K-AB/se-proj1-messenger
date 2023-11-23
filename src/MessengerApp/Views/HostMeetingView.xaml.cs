@@ -20,14 +20,15 @@ namespace MessengerApp.Views
     /// </summary>
     public partial class HostMeetingView : UserControl
     {
+        public ChatBubble chatBubbleControl;
         public HostMeetingView()
         {
             InitializeComponent();
+            chatBubbleControl = new();
         }
 
         private void Chat_Click(object sender, RoutedEventArgs e)
         {
-            ChatBubble chatBubbleControl = new();
             OverlayContent.Content = chatBubbleControl;
             OverlayPanel.Visibility = OverlayPanel.IsVisible ? Visibility.Collapsed : Visibility.Visible;
         }

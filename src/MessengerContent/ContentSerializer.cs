@@ -7,8 +7,9 @@
 * 
 * Project     = MessengerContent
 *
-* Description = 
-*****************************************************************************/using System;
+* Description = serealizer for message serealizing
+*****************************************************************************/
+using System;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Formatting = Newtonsoft.Json.Formatting;

@@ -1,4 +1,16 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = ISentimentAnalyzer.cs
+*
+* Author      = Aradhya Bijalwan
+*
+* Product     = MessengerApp
+* 
+* Project     = MessengerDashboard
+*
+* Description = Implementing interface for SentimentResult
+*        
+*****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

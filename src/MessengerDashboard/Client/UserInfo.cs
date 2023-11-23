@@ -17,7 +17,7 @@ using System;
 namespace MessengerDashboard.Client
 {
     /// <summary>
-    /// Represents information about a user .
+    /// Represents information about a user.
     /// </summary>
     public class UserInfo
     {

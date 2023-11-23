@@ -210,7 +210,6 @@ namespace MessengerContent.Client
                     return thread.MessageList[messageIndex];
                 }
             }
-
             return null;
         }
 

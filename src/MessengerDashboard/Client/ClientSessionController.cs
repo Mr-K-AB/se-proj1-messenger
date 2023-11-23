@@ -194,7 +194,7 @@ namespace MessengerDashboard.Client
             Trace.WriteLine("Dashboard Client >>> Setting user info.");
             _userInfo.UserId = userId;
             _screenshareClient.SetUser(_userInfo.UserId, _userInfo.UserName);
-            _contentClient.SetUser(_userInfo.UserId, _userInfo.UserName, _serverIp, _serverPort);
+            _contentClient.SetUser(_userInfo.UserId, _userInfo.UserName);
             Trace.WriteLine("Dashboard Client >>> User info set.");
             SendPayloadToServer(Operation.TakeUserDetails);
         }

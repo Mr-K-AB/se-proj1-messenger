@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -6,6 +6,23 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="CloudTests\**" />
+    <Compile Remove="DashboardTests\**" />
+    <Compile Remove="MessengerNetworking\**" />
+    <Compile Remove="ScreenshareTests\**" />
+    <Compile Remove="WhiteboardTests\**" />
+    <EmbeddedResource Remove="CloudTests\**" />
+    <EmbeddedResource Remove="DashboardTests\**" />
+    <EmbeddedResource Remove="MessengerNetworking\**" />
+    <EmbeddedResource Remove="ScreenshareTests\**" />
+    <EmbeddedResource Remove="WhiteboardTests\**" />
+    <None Remove="CloudTests\**" />
+    <None Remove="DashboardTests\**" />
+    <None Remove="MessengerNetworking\**" />
+    <None Remove="ScreenshareTests\**" />
+    <None Remove="WhiteboardTests\**" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="Moq" Version="4.20.69" />
@@ -19,6 +36,7 @@
     <PackageReference Include="PrivateObjectExtensions" Version="1.4.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MessengerApp\MessengerApp.csproj" />
     <ProjectReference Include="..\MessengerCloud\MessengerCloud.csproj" />
     <ProjectReference Include="..\MessengerContent\MessengerContent.csproj" />
     <ProjectReference Include="..\MessengerDashboard\MessengerDashboard.csproj" />

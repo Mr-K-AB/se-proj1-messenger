@@ -54,9 +54,6 @@ namespace MessengerContent.Client
         // Name and Id of the current client user
         private string? _name;
 
-        private string _serverIP;
-        private int _serverPort;
-
         /// <summary>
         /// Lock object for locking
         /// </summary>
@@ -148,7 +145,7 @@ namespace MessengerContent.Client
         /// User ID setter functions
         /// </summary>
         /// 
-        public void SetUser(int id, string name, string ip, int port)
+        public void SetUser(int id, string name)
         {
             _userID = id;
             _chatHandler.UserID = id;
@@ -156,12 +153,18 @@ namespace MessengerContent.Client
             _fileHandler.UserID = id;
             _fileHandler.UserName = name;
             _name = name;
-            _serverIP = ip;
-            _serverPort = port;
             RequestMessageHistory();
         }
-           
-
+        public int UserID
+        {
+            get => _userID;
+            set
+            {
+                _userID = value;
+                _chatHandler.UserID = value;
+                _fileHandler.UserID = value;
+            }
+        }
         /// <summary>
         /// Check for valid reply message ID 
         /// </summary>
@@ -265,7 +268,7 @@ namespace MessengerContent.Client
         // interface functions
 
         ///<inheritdoc/>
-        public void ClientSendData(SendChatData chatData, string ip, int port)
+        public void ClientSendData(SendChatData chatData)
         {
             // check if receiver ID list is not null
             /*if (chatData.ReceiverIDs is null)
@@ -293,15 +296,15 @@ namespace MessengerContent.Client
             {
                 case MessageType.Chat:
                     Trace.WriteLine("[ContentClient] Using chat handler to send event to server");
-                    _chatHandler.NewChat(chatData, ip, port);
+                    _chatHandler.NewChat(chatData);
                     break;
                 case MessageType.File:
                     Trace.WriteLine("[ContentClient] Using file handler to send event to server");
-                    _fileHandler.SendFile(chatData, ip, port);
+                    _fileHandler.SendFile(chatData);
                     break;
                 case MessageType.HistoryRequest:
                     Trace.WriteLine("[ContentClient] Requesting server for Message History");
-                    _chatHandler.NewChat(chatData, ip, port);
+                    _chatHandler.NewChat(chatData);
                     break;
                 default:
                     throw new ArgumentException($"Invalid Message Field Type : {chatData.Type}");
@@ -324,7 +327,7 @@ namespace MessengerContent.Client
         }
 
         ///<inheritdoc/>
-        public void ClientEdit(int messageID, string newMessage, string ip, int port)
+        public void ClientEdit(int messageID, string newMessage)
         {
             // get message and check if it is empty
             ReceiveChatData? message = GetMessage(messageID) ?? throw new ArgumentException("Message with given message ID does not exist");
@@ -340,11 +343,11 @@ namespace MessengerContent.Client
 
             }
             Trace.WriteLine("[ContentClient] Using chat handler to send edit event to server");
-            _chatHandler.EditChat(messageID, newMessage, message.ReplyThreadID, ip, port);
+            _chatHandler.EditChat(messageID, newMessage, message.ReplyThreadID);
         }
 
         ///<inheritdoc/>
-        public void ClientDelete(int messageID, string ip, int port)
+        public void ClientDelete(int messageID)
         {
             // get message and check if it is empty
             ReceiveChatData message = GetMessage(messageID) ?? throw new ArgumentException("Message being replied to does not exist");
@@ -356,14 +359,15 @@ namespace MessengerContent.Client
             // check if user can delete the message
             if (message.SenderID != _userID)
             {
+                Debug.Print("{0}, {0}", message.SenderID, _userID);
                 throw new ArgumentException("Delete not allowed for messages from another sender");
             }
             Trace.WriteLine("[ContentClient] Using chat handler to send delete event to server");
-            _chatHandler.DeleteChat(messageID, message.ReplyThreadID, ip, port);
+            _chatHandler.DeleteChat(messageID, message.ReplyThreadID);
         }
 
         /// <inheritdoc/>
-        public void ClientDownload(int messageID, string savePath, string ip, int port)
+        public void ClientDownload(int messageID, string savePath)
         {
             // check save path and message 
             CheckFilePath(savePath);
@@ -379,11 +383,11 @@ namespace MessengerContent.Client
                 throw new ArgumentException($"Invalid message type : {message.Type}");
             }
             Trace.WriteLine("[ContentClient] Using file handler to send download file event to server");
-            _fileHandler.DownloadFile(messageID, savePath, ip, port);
+            _fileHandler.DownloadFile(messageID, savePath);
         }
 
         ///<inheritdoc/>
-        public void ClientStar(int messageID, string ip, int port)
+        public void ClientStar(int messageID)
         {
             // check if message is empty
             ReceiveChatData? message = GetMessage(messageID) ?? throw new ArgumentException("Message with given message ID to does not exist");
@@ -393,7 +397,7 @@ namespace MessengerContent.Client
                 throw new ArgumentException($"Invalid message type : {message.Type}");
             }
             Trace.WriteLine("[ContentClient] Using chat handler to send star chat to server");
-            _chatHandler.StarChat(messageID, message.ReplyThreadID, ip, port);
+            _chatHandler.StarChat(messageID, message.ReplyThreadID);
         }
 
         /// <inheritdoc/>
@@ -419,16 +423,6 @@ namespace MessengerContent.Client
         public string GetUserName()
         {
             return _name;
-        }
-
-        public string GetIP()
-        {
-            return _serverIP;
-        }
-
-        public int GetPort()
-        {
-            return _serverPort;
         }
 
         // event handler helper functions

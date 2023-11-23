@@ -16,17 +16,18 @@ using MessengerContent.Client;
 
 namespace MessengerTests.ContentTests
 {
-    public class FakeContentListener : IMessageListener
+    public class MockMessageListener : IMessageListener
     {
         // content listener parameters
         private ReceiveChatData _receivedMessage;
-
+        private List<ChatThread> _allMessages;
         /// <summary>
         /// Constructor to create content listener
         /// </summary>
-        public FakeContentListener()
+        public MockMessageListener()
         {
             _receivedMessage = new ReceiveChatData();
+            _allMessages = new List<ChatThread>();
         }
 
         ///<inheritdoc/>
@@ -47,7 +48,15 @@ namespace MessengerTests.ContentTests
 
         public void OnAllMessagesReceived(List<ChatThread> allMessages)
         {
-            throw new NotImplementedException();
+            _allMessages = allMessages;
+        }
+        /// <summary>
+        /// Gets the list of threads containing all messages
+        /// </summary>
+        /// <returns>List of threads containing all messages</returns>
+        public List<ChatThread> GetAllMessages()
+        {
+            return _allMessages;
         }
     }
 }

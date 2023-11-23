@@ -25,6 +25,7 @@ namespace MessengerContent.DataModels
         /// <summary>
         /// Empty constructor to create type without parameters.
         /// </summary>
+        
         public ChatData()
         {
         }

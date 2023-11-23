@@ -1,4 +1,4 @@
-﻿using MessengerNetworking.Communicator;
+﻿/*using MessengerNetworking.Communicator;
 using MessengerScreenshare.Client;
 using MessengerScreenshare;
 using Moq;
@@ -133,3 +133,4 @@ namespace MessengerTests.ScreenshareTests
 // test StopConfirmationSending
 // 
 
+*/

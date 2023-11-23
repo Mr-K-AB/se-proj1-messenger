@@ -33,7 +33,7 @@ namespace MessengerWhiteboard
         {
             get
             {
-                s_instance ??= new ClientState ();
+                s_instance ??= new ClientState();
 
                 return s_instance;
             }
@@ -82,7 +82,6 @@ namespace MessengerWhiteboard
 
             List<SerializableShapeItem> serializedShapes = _serializer.SerializeShapes(shapeItems);
             WBShape wBShape = new(serializedShapes, operation);
-            Debug.Print("OnShapeReceived: {0}", shapeItem.ShapeType);
             _communicator.SendToServer(wBShape);
         }
 

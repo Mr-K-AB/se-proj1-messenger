@@ -1,7 +1,10 @@
-﻿///<author>Likhit5th Reddy</author>
-///<summary> 
-///This file contains tests for ScreenCapturer Class.  
-///</summary>
+﻿/******************************************************************************
+ * 
+ * Author      = A Sathvik
+ *
+ * Roll no     = 112001005
+ *
+ *****************************************************************************/
 using MessengerScreenshare.Client;
 using System.Drawing;
 using System.Windows.Controls;

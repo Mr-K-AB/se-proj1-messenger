@@ -7,7 +7,7 @@
  * 
  * Project     = MessangerContent
  *
- * Description = 
+ * Description = Message type
  *****************************************************************************/
 
 namespace MessengerContent
@@ -18,6 +18,7 @@ namespace MessengerContent
     public enum MessageType
     {
         File,
-        Chat
+        Chat,
+        HistoryRequest
     }
 }

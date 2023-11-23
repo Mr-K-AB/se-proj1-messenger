@@ -1,4 +1,13 @@
-﻿using System;
+﻿/******************************************************************************
+ * 
+ * Author      = Vikas Saini
+ *
+ * Roll no     = 112001049
+ *
+ *****************************************************************************/
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +35,9 @@ namespace MessengerTests.MessengerNetworking.Serializer
 
             Assert.IsNotNull( deserializedObj );
 
-            Assert.AreEqual<SampleObject>( deserializedObj, objToSerialize );
+            Assert.AreEqual( deserializedObj.Id, objToSerialize.Id);
+
+            Assert.AreEqual(deserializedObj.name, objToSerialize.name);
         }
     }
 }
@@ -36,3 +47,4 @@ public class SampleObject
     public int Id { get; set; }
     public string name { get; set; }
 }
+

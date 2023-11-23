@@ -1,20 +1,20 @@
-﻿/// <credits>
-/// <author>
-/// <name>Shailab Chauhan</name>
-/// <rollnumber>112001038</rollnumber>
-/// </author>
-/// </credits>
+﻿/******************************************************************************
+* Filename    = ClientSessionController.cs
+*
+* Author      = Shailab Chauhan 
+*
+* Roll number = 112001038
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerDashboard
+*
+* Description = A class that controls the session for the client.
+*****************************************************************************/
+
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
 using MessengerNetworking.Communicator;
-using System.Security.RightsManagement;
-using MessengerNetworking;
-using MessengerNetworking.NotificationHandler;
-using System.Windows;
-using System.Net.Sockets;
 using MessengerDashboard.Telemetry;
 using MessengerDashboard.Summarization;
 using MessengerDashboard.Server;
@@ -23,26 +23,23 @@ using MessengerNetworking.Factory;
 using MessengerScreenshare.ScreenshareFactory;
 using MessengerScreenshare.Client;
 using MessengerContent.Client;
-using Microsoft.Extensions.Logging;
-using System.Text.Json.Serialization;
-using SentimentAnalyzer.Models;
 using MessengerDashboard.Sentiment;
+using MessengerNetworking.NotificationHandler;
 
 namespace MessengerDashboard.Client
 {
-    public class ClientSessionController : IClientSessionController
+    /// <summary>
+    /// Manages the client session, handling communication with the server and updating session data.
+    /// </summary>
+    public class ClientSessionController : IClientSessionController, INotificationHandler
     {
-        private readonly ICommunicator _communicator = Factory.GetInstance();
+        private readonly ICommunicator _communicator;
 
-        private readonly ManualResetEvent _connectionEstablished = new(false);
+        private readonly IContentClient _contentClient;
 
-        private readonly IContentClient _contentClient = ContentClientFactory.GetInstance();
+        private readonly string _moduleName = "Dashboard";
 
-        private readonly string _serverModuleIdentifier = "DashboardServer";
-
-        private readonly string _clientModuleIdentifier = "DashboardClient";
-
-        private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
+        private readonly IScreenshareClient _screenshareClient;
 
         private readonly Serializer _serializer = new();
 
@@ -50,295 +47,411 @@ namespace MessengerDashboard.Client
 
         private int _serverPort;
 
-        private UserInfo? _user;
+        private readonly UserInfo _userInfo = new();
 
+        // Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientSessionController"/> class.
+        /// </summary>
         public ClientSessionController()
         {
-            _communicator.AddSubscriber(_clientModuleIdentifier, this);
-            ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
-            Trace.WriteLine("Dashboard: Created Client Session Manager");
+            Trace.WriteLine("Dashboard Client >>> Creating Client Session Manager");
+            _communicator = CommunicationFactory.GetCommunicator(true);
+            _communicator.Subscribe(_moduleName, this);
+            _contentClient = ContentClientFactory.GetInstance();
+            _screenshareClient = ScreenshareFactory.getInstance();
+            Trace.WriteLine("Dashboard Client >>> Created Client Session Manager");
         }
 
-        public ClientSessionController(ICommunicator communicator)
-        {
-            _communicator = communicator;
-            _communicator.AddSubscriber(_clientModuleIdentifier, this);
-            ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
-        }
 
-        public ClientSessionController(ICommunicator communicator, IContentClient contentClient)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientSessionController"/> class used for testing.
+        /// </summary>
+        /// <param name="communicator">The communicator to use for communication with the server.</param>
+        /// <param name="contentClient">The content client instance</param>
+        /// <param name="screenshareClient">The screenshare client instance</param>
+        public ClientSessionController(ICommunicator communicator, IContentClient contentClient, IScreenshareClient screenshareClient)
         {
+            Trace.WriteLine("Dashboard Client >>> Creating Client Session Manager");
             _communicator = communicator;
-            _communicator.AddSubscriber(_clientModuleIdentifier, this);
-            ConnectionDetails = new(_communicator.IpAddress, _communicator.ListenPort);
+            _communicator.Subscribe(_moduleName, this);
             _contentClient = contentClient;
+            _screenshareClient = screenshareClient;
+            Trace.WriteLine("Dashboard Client >>> Created Client Session Manager");
         }
 
-        public event EventHandler<AnalysisChangedEventArgs> TelemetryAnalysisChanged;
+      
+        /// <summary>
+        /// Occurs when the client session has changed.
+        /// </summary>
+        public event EventHandler<ClientSessionChangedEventArgs>? SessionChanged;
 
-        public event EventHandler<ClientSessionChangedEventArgs> SessionChanged;
+        /// <summary>
+        /// Occurs when the client session has exited.
+        /// </summary>
+        public event EventHandler<SessionExitedEventArgs>? SessionExited;
 
-        public event EventHandler<SessionExitedEventArgs> SessionExited;
+        /// <summary>
+        /// Occurs when the session mode has changed.
+        /// </summary>
+        public event EventHandler<SessionModeChangedEventArgs>? SessionModeChanged;
 
-        public event EventHandler<SummaryChangedEventArgs> SummaryChanged;
+        /// <summary>
+        /// Occurs when a refresh is requested.
+        /// </summary>
+        public event EventHandler<RefreshedEventArgs>? Refreshed;
 
-        public event EventHandler<SentimentChangedEventArgs> SentimentChanged;
+        /// <summary>
+        /// Gets the analysis results associated with the client session.
+        /// </summary>
+        public Analysis AnalysisResults { get; private set; } = new();
 
-        public event EventHandler<SessionModeChangedEventArgs> SessionModeChanged;
+        /// <summary>
+        /// Gets the chat summary associated with the client session.
+        /// </summary>
+        public TextSummary ChatSummary { get; private set; } = new();
 
-        public Analysis? AnalysisResults { get; private set; }
-
-        public TextSummary? ChatSummary { get; private set; }
-
-        public ConnectionDetails ConnectionDetails { get; private set; }
-
+        /// <summary>
+        /// Gets a value indicating whether the client is connected to the server.
+        /// </summary>
         public bool IsConnectedToServer { get; private set; } = false;
 
+        /// <summary>
+        /// Gets the session information associated with the client session.
+        /// </summary>
         public SessionInfo SessionInfo { get; private set; } = new SessionInfo();
 
+        /// <summary>
+        /// Gets the sentiment result associated with the client session.
+        /// </summary>
         public SentimentResult SentimentResult { get; private set; } = new SentimentResult();
 
-        public bool ConnectToServer(
-            string serverIpAddress, 
-            int serverPort, 
-            int? timeoutInMilliseconds,
-            string clientUsername,
-            string clientEmail,
-            string clientPhotoUrl
-        )
+        /// <summary>
+        /// Attempts to connect to the server with the specified parameters.
+        /// </summary>
+        /// <param name="serverIp">The IP address of the server.</param>
+        /// <param name="serverPort">The port number of the server.</param>
+        /// <param name="userName">The user's name.</param>
+        /// <param name="userEmail">The user's email.</param>
+        /// <param name="userPhotoUrl">The URL of the user's photo.</param>
+        /// <returns>True if the connection is successful, otherwise false.</returns>
+        public bool ConnectToServer(string serverIp, int serverPort, string userName, string userEmail, string userPhotoUrl)
         {
-            _serverIp = serverIpAddress;
-            _serverPort = serverPort;
-            Trace.WriteLine("Dashboard: Connecting to server at IP: " + serverIpAddress + " Port: " + serverPort);
-
-            if (string.IsNullOrWhiteSpace(clientUsername))
+            // Check if already connected to the server
+            if (IsConnectedToServer)
             {
+                return true;
+            }
+            // Set server IP and port
+            _serverIp = serverIp;
+            _serverPort = serverPort;
+            // Log connection attempt
+            Trace.WriteLine("Dashboard Client >>> Connecting to server at IP: " +
+                             serverIp + " Port: " + serverPort);
+
+            // Check if the username is not empty or whitespace
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                Trace.WriteLine("Dashboard Client >>> Null username received");
                 return false;
             }
+            // Lock to ensure thread safety during connection attempt
             lock (this)
             {
-                Trace.WriteLine("Dashboard: Sending Connection Request");
-                UserInfo userInfo = new(clientUsername, -1, clientEmail, clientPhotoUrl);
-                ClientPayload clientPayload = new(Operation.AddClient, ConnectionDetails.IpAddress, ConnectionDetails.Port, userInfo);
-                string serializedMessage = _serializer.Serialize(clientPayload);
-                _communicator.SendMessage(serverIpAddress, serverPort, _serverModuleIdentifier, serializedMessage);
-                Trace.WriteLine("Dashboard: Sent Connection Request");
-            }
-            bool connected;
-            if (timeoutInMilliseconds == null)
-            {
-                connected = _connectionEstablished.WaitOne();
-            }
-            else
-            {
-                connected = _connectionEstablished.WaitOne((int)timeoutInMilliseconds);
-            }
-            if (connected)
-            {
-                _communicator.AddClient(serverIpAddress, serverPort);
-            }
-            return connected;
-        }
+                // Log the connection attempt
+                Trace.WriteLine("Dashboard Client >>> Connecting to server");
+                // Initialize user information
+                _userInfo.UserId = -1;
+                _userInfo.UserName = userName;
+                _userInfo.UserEmail = userEmail;
+                _userInfo.UserPhotoUrl = userPhotoUrl;
 
-        public void SendTelemetryAnalysisRequestToServer()
-        {
-            Trace.WriteLine("Dashboard Client: Requesting server for telemetry");
-            SendPayloadToServer(Operation.GetTelemetryAnalysis, _user);
-            Trace.WriteLine("Dashboard Client: Requested server for telemetry");
-        }
-
-        public void SendSummaryRequestToServer()
-        {
-            Trace.WriteLine("Dashboard Client: Requesting server for summary");
-            SendPayloadToServer(Operation.GetSummary, _user);
-            Trace.WriteLine("Dashboard Client: Requested server for summary");
-        }
-
-        public void SendSentimentRequestToServer()
-        {
-            Trace.WriteLine("Dashboard Client: Requesting server for sentiment");
-            SendPayloadToServer(Operation.GetSentiment, _user);
-            Trace.WriteLine("Dashboard Client: Requested server for sentiment");
-        }
-
-        public void OnClientJoined(string ipAddress, int port) { }
-
-        public void OnClientLeft(string ipAddress, int port) { }
-
-        public void OnDataReceived(string serializedData)
-        {
-            if (serializedData == null)
-            {
-                Trace.WriteLine("Dashboard Server: Received null serialized data from network");
-                return;
-            }
-
-            Trace.WriteLine("Dashboard Server: Data received from network");
-            try
-            {
-                ServerPayload serverPayload = _serializer.Deserialize<ServerPayload>(serializedData);
-                Operation operationType = serverPayload.Operation;
-
-                switch (operationType)
+                // Attempt to start communication with the server
+                string connected = _communicator.Start(serverIp, serverPort.ToString());
+               
+                // Check if the connection was successful
+                if (connected == "failure")
                 {
-
-                    case Operation.ExamMode:
-                    case Operation.LabMode:
-                        UpdateSessionData(serverPayload);
-                        return;
-
-                    case Operation.AddClientACK:
-                        UpdateSessionData(serverPayload);
-                        SetUser(serverPayload);
-                        return;
-
-                    case Operation.GetSummary:
-                        UpdateSummary(serverPayload);
-                        UpdateSessionData(serverPayload);
-                        return;
-
-                    case Operation.GetTelemetryAnalysis:
-                        UpdateTelemetryAnalysis(serverPayload);
-                        UpdateSessionData(serverPayload);
-                        return;
-
-                    case Operation.GetSentiment:
-                        UpdateSentiment(serverPayload);
-                        UpdateSessionData(serverPayload);
-                        return;
-
-                    case Operation.RemoveClient:
-                    case Operation.EndSession:
-                        UpdateSummary(serverPayload);
-                        UpdateTelemetryAnalysis(serverPayload);
-                        UpdateSentiment(serverPayload);
-                        UpdateSessionData(serverPayload);
-                        ExitSession();
-                        return;
-
-                    case Operation.SessionUpdated:
-                        UpdateSessionData(serverPayload);
-                        return;
-
-                    default:
-                        return;
+                    Trace.WriteLine("Dashboard Client >>> Connection failed");
+                }
+                else
+                {
+                    IsConnectedToServer = true;
+                    Trace.WriteLine("Dashboard Client >>> Connection succeeded");
                 }
             }
-            catch(Exception e)
+
+            // Return the connection status
+            return IsConnectedToServer;
+        }
+
+        /// <summary>
+        /// Sends a refresh request to the server to retrieve any updates.
+        /// </summary>
+        public void SendRefreshRequestToServer()
+        {
+            // Log the refresh request
+            Trace.WriteLine("Dashboard Client >>> Requesting server for any updates");
+
+            // Send a refresh payload to the server
+            SendPayloadToServer(Operation.Refresh);
+
+            // Log that the request has been made
+            Trace.WriteLine("Dashboard Client >>> Requested server for any updates");
+        }
+
+        /// <summary>
+        /// Handles data received from the network.
+        /// </summary>
+        /// <param name="serializedData">The serialized data received from the network.</param>
+        public void OnDataReceived(string serializedData)
+        {
+            // Check if the received serialized data is null
+            if (serializedData == null)
             {
-                Trace.WriteLine("Dashboard Client: Exception " + e);
+                Trace.WriteLine("Dashboard Server >>> Received null serialized data from network");
+                return;
+            }
+
+            // Log that data has been received from the network
+            Trace.WriteLine("Dashboard Server >>> Data received from network");
+            try
+            {
+                // Deserialize the received data into a ServerPayload
+                ServerPayload serverPayload = _serializer.Deserialize<ServerPayload>(serializedData);
+               
+                // Handle the operation based on the payload
+                HandleOperation(serverPayload);
+            }
+            catch (Exception e)
+            {
+                // Log any exceptions that occur during data handling
+                Trace.WriteLine("Dashboard Client >>> Exception " + e);
             }
         }
 
+        /// <summary>
+        /// Handles the operation based on the type of operation received from the server.
+        /// </summary>
+        /// <param name="serverPayload">The payload received from the server.</param>
+        private void HandleOperation(ServerPayload serverPayload)
+        {
+            Operation operationType = serverPayload.Operation;
+            switch (operationType)
+            {
+                case Operation.GiveUserDetails:
+                    HandleGiveUserDetailsOperation(serverPayload);
+                    break;
+                case Operation.SessionUpdated:
+                    HandleSessionUpdated(serverPayload);
+                    break;
+                case Operation.Refresh:
+                    Refresh(serverPayload);
+                    break;
+                case Operation.RemoveClient:
+                case Operation.EndSession:
+                    Refresh(serverPayload);
+                    ExitSession();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Handles the SessionUpdated operation received from the server.
+        /// </summary>
+        /// <param name="serverPayload">The payload containing session information.</param>
+        private void HandleSessionUpdated(ServerPayload serverPayload)
+        {
+            // Check if the received session info is null
+            if (serverPayload.SessionInfo == null) 
+            { 
+                Trace.WriteLine("Dashboard Client >>> Null session info received");
+                return;
+            }
+
+            // Update session data based on received information
+            UpdateSessionData(serverPayload.SessionInfo);
+        }
+
+        /// <summary>
+        /// Handles the GiveUserDetails operation received from the server.
+        /// </summary>
+        /// <param name="serverPayload">The payload containing user information.</param>
+        private void HandleGiveUserDetailsOperation(ServerPayload serverPayload)
+        {
+            if (serverPayload.UserInfo == null)
+            {
+                Trace.WriteLine("Dashboard Client >>> Received null user info in GiveUser operation.");
+                return;
+            }
+            int userId = serverPayload.UserInfo.UserId;
+            Trace.WriteLine("Dashboard Client >>> Setting user info.");
+            _userInfo.UserId = userId;
+            _screenshareClient.SetUser(_userInfo.UserId, _userInfo.UserName);
+            _contentClient.SetUser(_userInfo.UserId, _userInfo.UserName);
+            Trace.WriteLine("Dashboard Client >>> User info set.");
+            SendPayloadToServer(Operation.TakeUserDetails);
+        }
+
+        /// <summary>
+        /// Handles the Refresh operation received from the server.
+        /// </summary>
+        /// <param name="serverPayload">The payload containing updated session information.</param>
+        private void Refresh(ServerPayload serverPayload)
+        {
+
+            Trace.WriteLine("Dashboard Client >>> Refreshing");
+            UpdateSummary(serverPayload.Summary);
+            UpdateTelemetryAnalysis(serverPayload.SessionAnalysis);
+            UpdateSentiment(serverPayload.Sentiment);
+            UpdateSessionData(serverPayload.SessionInfo);
+            Refreshed?.Invoke(this, new(AnalysisResults, SentimentResult, ChatSummary, SessionInfo));
+            Trace.WriteLine("Dashboard Client >>> Refreshed");
+        }
+
+        /// <summary>
+        /// Sends a request to the server to let the client exit the session.
+        /// </summary>
         public void SendExitSessionRequestToServer()
         {
-            Trace.WriteLine("Dashboard Client: Requesting server to let client exit.");
-            SendPayloadToServer(Operation.RemoveClient, _user);
-            Trace.WriteLine("Dashboard Client: Requested server to let client exit.");
+            Trace.WriteLine("Dashboard Client >>> Requesting server to let client exit.");
+            SendPayloadToServer(Operation.RemoveClient);
+            Trace.WriteLine("Dashboard Client >>> Requested server to let client exit.");
         }
 
+        /// <summary>
+        /// Sends a request to the server to enable lab mode.
+        /// </summary>
         public void SendLabModeRequestToServer()
         {
-            SendPayloadToServer(Operation.LabMode, _user);
+
+            Trace.WriteLine("Dashboard Client >>> Requesting server for lab mode.");
+            SendPayloadToServer(Operation.LabMode);
+            Trace.WriteLine("Dashboard Client >>> Requested server for lab mode.");
         }
 
+        /// <summary>
+        /// Sends a request to the server to enable exam mode.
+        /// </summary>
         public void SendExamModeRequestToServer()
         {
-            SendPayloadToServer(Operation.ExamMode, _user);
+            Trace.WriteLine("Dashboard Client >>> Requesting server for lab mode.");
+            SendPayloadToServer(Operation.ExamMode);
+            Trace.WriteLine("Dashboard Client >>> Requested server for lab mode.");
         }
 
-        private void SetUser(ServerPayload serverPayload)
-        {
-            IsConnectedToServer = true;
-            _connectionEstablished.Set();
-            _user = serverPayload.User;
-            _screenshareClient.SetUser(_user.UserId, _user.UserName);
-            _contentClient.SetUser(_user.UserId, _user.UserName, _serverIp, _serverPort);
-        }
+        /// <summary>
+        /// Sends a payload to the server with the specified operation and user information.
+        /// </summary>
+        /// <param name="operation">The operation to be sent to the server.</param>
 
-        private void SendPayloadToServer(Operation operation, UserInfo userInfo)
+        private void SendPayloadToServer(Operation operation)
         {
-            ClientPayload clientPayload;
+            Trace.WriteLine("Dashboard Client >>> Sending data to server.");
             lock (this)
             {
-                clientPayload = new ClientPayload(operation, ConnectionDetails.IpAddress, ConnectionDetails.Port, userInfo);
+                ClientPayload clientPayload = new(operation, _userInfo);
                 string serializedData = _serializer.Serialize(clientPayload);
-                _communicator.Broadcast(_serverModuleIdentifier, serializedData);
+                _communicator.Send(serializedData, _moduleName, null);
             }
-            Trace.WriteLine("Dashboard Client: Data sent to communicator");
+            Trace.WriteLine("Dashboard Client >>> Data sent to server.");
         }
 
+        /// <summary>
+        /// Exits the current session by stopping communication with the server.
+        /// </summary>
         private void ExitSession()
         {
-            Trace.WriteLine("Dashboard Client: Exiting session");
-            _communicator.RemoveClient(_serverIp, _serverPort);
-            _communicator.RemoveSubscriber(_clientModuleIdentifier);
-            SessionExited?.Invoke(this, new SessionExitedEventArgs(ChatSummary, SentimentResult, AnalysisResults));
-            Trace.WriteLine("Dashboard Client: Exited session");
+            Trace.WriteLine("Dashboard Client >>> Exiting session");
+            _communicator.Stop();
+            IsConnectedToServer = false;
+            SessionExited?.Invoke(this, new(ChatSummary, SentimentResult, AnalysisResults));
+            Trace.WriteLine("Dashboard Client >>> Exited session");
         }
 
-        private void UpdateTelemetryAnalysis(ServerPayload serverPayload)
+        /// <summary>
+        /// Updates the telemetry analysis data with the specified analysis.
+        /// </summary>
+        /// <param name="analysis">The telemetry analysis data to be updated.</param>
+        private void UpdateTelemetryAnalysis(Analysis? analysis)
         {
-            Trace.WriteLine("Dashboard Client: Updating telemetry analysis");
-            if (serverPayload.SessionAnalysis == null)
+            Trace.WriteLine("Dashboard Client >>> Updating telemetry analysis");
+            if (analysis == null)
             {
-                Trace.WriteLine("Dashboard Client: Received null telemetry");
+                Trace.WriteLine("Dashboard Client >>> Received null telemetry");
                 return;
             }
             lock (this)
             {
-                AnalysisResults = serverPayload.SessionAnalysis;
-                TelemetryAnalysisChanged?.Invoke(this, new(AnalysisResults));
+                AnalysisResults = analysis;
             }
-            Trace.WriteLine("Dashboard Client: Updated telemetry analysis");
+            Trace.WriteLine("Dashboard Client >>> Updated telemetry analysis");
         }
 
-        private void UpdateSentiment(ServerPayload serverPayload)
+        /// <summary>
+        /// Updates the sentiment analysis data with the specified sentiment result.
+        /// </summary>
+        /// <param name="sentiment">The sentiment result data to be updated.</param>
+        private void UpdateSentiment(SentimentResult? sentiment)
         {
-            Trace.WriteLine("Dashboard Client: Updating Sentiment");
-            if (serverPayload.Sentiment == null)
+            Trace.WriteLine("Dashboard Client >>> Updating Sentiment");
+            if (sentiment == null)
             {
-                Trace.WriteLine("Dashboard Client: Received null summary");
+                Trace.WriteLine("Dashboard Client >>> Received null summary");
                 return;
             }
             lock (this)
             {
-                SentimentResult = serverPayload.Sentiment;
-                SentimentChanged?.Invoke(this, new SentimentChangedEventArgs(SentimentResult));
+                SentimentResult = sentiment;
             }
-            Trace.WriteLine("Dashboard Client: Updated Sentiment");
+            Trace.WriteLine("Dashboard Client >>> Updated Sentiment");
         }
 
-        private void UpdateSummary(ServerPayload serverPayload)
+        /// <summary>
+        /// Updates the summary data with the specified text summary.
+        /// </summary>
+        /// <param name="textSummary">The text summary data to be updated.</param>
+        private void UpdateSummary(TextSummary? textSummary)
         {
-            Trace.WriteLine("Dashboard Client: Updating Summary");
-            if (serverPayload.Summary == null)
+            Trace.WriteLine("Dashboard Client >>> Updating Summary");
+            if (textSummary == null)
             {
-                Trace.WriteLine("Dashboard Client: Received null summary");
+                Trace.WriteLine("Dashboard Client >>> Received null summary");
                 return;
             }
             lock (this)
             {
-                ChatSummary = serverPayload.Summary;
-                SummaryChanged?.Invoke(this, new SummaryChangedEventArgs(ChatSummary));
+                ChatSummary = textSummary;
             }
-            Trace.WriteLine("Dashboard Client: Updated Summary");
+            Trace.WriteLine("Dashboard Client >>> Updated Summary");
         }
 
-        private void UpdateSessionData(ServerPayload receivedData)
+        /// <summary>
+        /// Updates the session information data with the specified session information.
+        /// </summary>
+        /// <param name="sessionInfo">The session information data to be updated.</param>
+        private void UpdateSessionData(SessionInfo? sessionInfo)
         {
-            SessionInfo? receivedSessionData = receivedData.SessionInfo;
+            if (sessionInfo == null)
+            {
+                Trace.WriteLine("Dashboard Client >>> Received null session info.");
+                return;
+            }
+            Trace.WriteLine("Dashboard Client >>> Updating Session information.");
             bool modeChanged = false;
             lock (this)
             {
-                modeChanged = receivedSessionData.SessionMode != SessionInfo.SessionMode;
-                SessionInfo = receivedSessionData;
+                modeChanged = sessionInfo.SessionMode != SessionInfo.SessionMode;
+                SessionInfo = sessionInfo;
             }
             SessionChanged?.Invoke(this, new ClientSessionChangedEventArgs(SessionInfo));
             if (modeChanged)
             {
                 SessionModeChanged?.Invoke(this, new SessionModeChangedEventArgs(SessionInfo.SessionMode));
             }
+            Trace.WriteLine("Dashboard Client >>> Updated Session information.");
         }
     }
 }

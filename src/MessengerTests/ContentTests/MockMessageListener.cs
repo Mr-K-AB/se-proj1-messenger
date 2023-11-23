@@ -13,21 +13,21 @@
 using MessengerContent.DataModels;
 using Messenger.Client;
 using MessengerContent.Client;
-using MessengerContent.DataModels;
 
-namespace PlexShareTests.ContentTests
+namespace MessengerTests.ContentTests
 {
-    public class FakeContentListener : IMessageListener
+    public class MockMessageListener : IMessageListener
     {
         // content listener parameters
         private ReceiveChatData _receivedMessage;
-
+        private List<ChatThread> _allMessages;
         /// <summary>
         /// Constructor to create content listener
         /// </summary>
-        public FakeContentListener()
+        public MockMessageListener()
         {
             _receivedMessage = new ReceiveChatData();
+            _allMessages = new List<ChatThread>();
         }
 
         ///<inheritdoc/>
@@ -44,6 +44,19 @@ namespace PlexShareTests.ContentTests
         public ReceiveChatData GetReceivedMessage()
         {
             return _receivedMessage;
+        }
+
+        public void OnAllMessagesReceived(List<ChatThread> allMessages)
+        {
+            _allMessages = allMessages;
+        }
+        /// <summary>
+        /// Gets the list of threads containing all messages
+        /// </summary>
+        /// <returns>List of threads containing all messages</returns>
+        public List<ChatThread> GetAllMessages()
+        {
+            return _allMessages;
         }
     }
 }

@@ -34,22 +34,9 @@ namespace MessengerContent.Client
 
         public void OnClientJoined(TcpClient socket)
         {
-            throw new NotImplementedException();
         }
-
-        public void OnClientJoined(string ipAddress, int port)
-        {
-            throw new NotImplementedException();
-        }
-
         public void OnClientLeft(string clientId)
         {
-            throw new NotImplementedException();
-        }
-
-        public void OnClientLeft(string ipAddress, int port)
-        {
-            throw new NotImplementedException();
         }
 
         public void OnDataReceived(string data)
@@ -64,6 +51,13 @@ namespace MessengerContent.Client
                 {
                     _receivedMessage = _serialzer.Deserialize<ChatData>(data);
                     _messageHandler.OnReceive(_receivedMessage);
+                    Trace.WriteLine($"[ContentClientNotificationHandler] Deserialized data and sending it to content client");
+                }
+                // if data is a List<ChatThread>
+                else if (string.Equals(deserializedType, typeof(List<ChatThread>).ToString()))
+                {
+                    _allMessages = _serialzer.Deserialize<List<ChatThread>>(data);
+                    _messageHandler.OnReceive(_allMessages);
                     Trace.WriteLine($"[ContentClientNotificationHandler] Deserialized data and sending it to content client");
                 }
                 else

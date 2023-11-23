@@ -1,10 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/***************************
+* Filename    = NetworkOperations.cs
+*
+* Author      = Syed Abdul Mateen
+*
+* Product     = Messenger
+* 
+* Project     = White-Board
+*
+* Description = This file contains all the operations that can be executed on
+*               incoming shapes from network.
+***************************/
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 using MessengerWhiteboard.Models;
 
 namespace MessengerWhiteboard
@@ -13,7 +19,7 @@ namespace MessengerWhiteboard
     {
         public void CreateIncomingShape(ShapeItem newShape)
         {
-            if(newShape == null)
+            if (newShape == null)
             {
                 return;
             }
@@ -33,7 +39,7 @@ namespace MessengerWhiteboard
 
         public void ModifyIncomingShape(ShapeItem newShape)
         {
-            if(newShape == null)
+            if (newShape == null)
             {
                 return;
             }
@@ -45,7 +51,7 @@ namespace MessengerWhiteboard
 
         public void DeleteIncomingShape(ShapeItem newShape)
         {
-            if(newShape == null)
+            if (newShape == null)
             {
                 return;
             }

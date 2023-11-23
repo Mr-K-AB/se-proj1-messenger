@@ -1,49 +1,106 @@
-﻿using MessengerNetworking.NotificationHandler;
+﻿/******************************************************************************
+ * 
+ * Author      = Vikas Saini
+ *
+ * Roll no     = 112001049
+ *
+ *****************************************************************************/
+
+
+using System.Net.Sockets;
+using MessengerNetworking.NotificationHandler;
 
 namespace MessengerNetworking.Communicator
 {
-    /// <summary>
-    /// Declares a communicator that can send and receive messages.
-    /// </summary>
     public interface ICommunicator
     {
         /// <summary>
-        /// Gets the port that is used for listening.
+        /// Client side: Connects to the server and starts all threads.
+        /// Server side: Starts the tcp client connect request listener
+        /// and starts all threads.
         /// </summary>
-        int ListenPort { get; }
+        /// <param name="serverIP">
+        /// IP Address of the server. Required only on client side.
+        /// </param>
+        /// <param name="serverPort">
+        /// Port no. of the server. Required only on client side.
+        /// </param>
+        /// <returns>
+        ///  Client side: string "success" if success, "failure" 
+        ///  if failure
+        /// Server side: If success then address of the server as a 
+        ///  string of "IP:Port", else string "failure"
+        /// </returns>
+        public string Start(string serverIP = null,
+            string serverPort = null);
 
         /// <summary>
-        /// Returns IPv4 address of local machine
+        /// Client side: Stops all threads, clears queues and 
+        /// closes the socket.
+        /// Server side: Stops listening to client connect requests 
+        /// and stops all threads. And clears the queues.
         /// </summary>
-        /// <returns></returns>
-        string IpAddress { get; }
+        /// <returns> void </returns>
+        public void Stop();
 
         /// <summary>
-        /// Adds a subscriber.
+        /// This function is to be called by the Dashboard module on
+        /// the server side when a new client joins. It adds the client
+        /// socket to the map and starts listening to the client.
         /// </summary>
-        /// <param name="id">Identity of the subscriber to be added</param>
-        /// <param name="subscriber">The message listener instance</param>
-        void AddSubscriber(string id, INotificationHandler subscriber);
+        /// <param name="clientId"> The client Id. </param>
+        /// <param name="socket">
+        /// The socket which is connected to the client.
+        /// </param>
+        /// <returns> void </returns>
+        public void AddClient(string clientId, TcpClient socket);
 
         /// <summary>
-        /// Removes a subscriber
+        /// This function is to be called by the Dashboard module on
+        /// the server side when a client leaves. It will remove the 
+        /// client from the networking modules map on the server.
         /// </summary>
-        /// <param name="id">Identity of the subscriber to be removed</param>
-        void RemoveSubscriber(string id);
-
-        void AddClient(string ipAddress, int port);
-
-        void RemoveClient(string ipAddress, int port);
+        /// <param name="clientId"> The client Id. </param>
+        /// <returns> void </returns>
+        public void RemoveClient(string clientId);
 
         /// <summary>
-        /// Sends the given message to the given ip and port.
+        /// Sends data from client to server or server to client(s).
+        /// Client Side: Sends data to the server.
+        /// Server Side: Sends data to a particular client if client
+        /// id given in the destination argument, otherwise broadcasts
+        /// data to all clients if destination null.
         /// </summary>
-        /// <param name="ipAddress">IP address of the destination</param>
-        /// <param name="port">Port of the destination</param>
-        /// <param name="senderId">Identity of the sender</param>
-        /// <param name="message">Message to be sent</param>
-        void SendMessage(string ipAddress, int port, string senderId, string message, int priority = 0);
+        /// <param name="serializedData">
+        /// The serialzed data to be sent.
+        /// </param>
+        /// <param name="moduleOfPacket"> 
+        /// Name of module sending the data.
+        /// </param>
+        /// <param name="destination">
+        /// Client side: Not required on client side, give null.
+        /// Server Side: Client Id of the client to which you want
+        /// to send the data. To broadcast to all clients give null.
+        /// </param>
+        /// <returns> void </returns>
+        public void Send(string serializedData, string moduleOfPacket,
+            string? destination);
 
-        void Broadcast(string senderId, string message, int priority = 0);
+        /// <summary>
+        /// Other modules can subscribe using this function to be able
+        /// to send data. And be notified when data is received, and
+        /// when a client joins, and when a client leaves.
+        /// </summary>
+        /// <param name="moduleName">  Name of the module. </param>
+        /// <param name="notificationHandler">
+        /// Module implementation of the INotificationHandler.
+        /// </param>
+        /// <param name="isHighPriority">
+        /// Boolean telling whether module's data is high priority
+        /// or low priority.
+        /// </param>
+        /// <returns> void </returns>
+        public void Subscribe(string moduleName, INotificationHandler
+            notificationHandler, bool isHighPriority = false);
     }
 }

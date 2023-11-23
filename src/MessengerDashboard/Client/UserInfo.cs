@@ -1,21 +1,38 @@
-﻿/// <credits>
-/// <author>
-/// <name>Shailab Chauhan</name>
-/// <rollnumber>112001038</rollnumber>
-/// </author>
-/// </credits>
+﻿/******************************************************************************
+* Filename    = UserInfo.cs
+*
+* Author      = Shailab Chauhan 
+*
+* Roll number = 112001038
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerDashboard
+*
+* Description = Represents information about a user.
+*****************************************************************************/
 
 using System;
 
 namespace MessengerDashboard.Client
 {
+    /// <summary>
+    /// Represents information about a user.
+    /// </summary>
     public class UserInfo
     {
-        public UserInfo()
-        {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserInfo"/> class.
+        /// </summary>
+        public UserInfo() { }
 
-        }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserInfo"/> class with specified parameters.
+        /// </summary>
+        /// <param name="userName">The name of the user.</param>
+        /// <param name="userId">The unique identifier of the user.</param>
+        /// <param name="userEmail">The email of the user (optional).</param>
+        /// <param name="userPhotoUrl">The URL of the user's photo (optional).</param>
         public UserInfo(
             string userName,
             int userId,
@@ -29,25 +46,26 @@ namespace MessengerDashboard.Client
             UserPhotoUrl = userPhotoUrl;
         }
 
-        public string? UserEmail { get; set; }
+        /// <summary>
+        /// Gets or sets the email of the user.
+        /// </summary>
+        public string UserEmail { get; set; } = "";
 
-        public int UserId { get; set; }
+        /// <summary>
+        /// Gets or sets the unique identifier of the user.
+        /// </summary>
+        public int UserId { get; set; } = -1;
 
-        public string? UserName { get; set; }
+        /// <summary>
+        /// Gets or sets the name of the user.
+        /// </summary>
+        public string UserName { get; set; } = "";
 
-        public string? UserPhotoUrl { get; set; }
+        /// <summary>
+        /// Gets or sets the URL of the user's photo.
+        /// </summary>
+        public string UserPhotoUrl { get; set; } = "";
 
-        public bool Equals(UserInfo client)
-        {
-            if (client == null)
-            {
-                return false;
-            }
-
-            return UserId.Equals(client.UserId) &&
-                   (ReferenceEquals(UserName, client.UserName) ||
-                    UserName != null && UserName.Equals(client.UserName));
-        }
     }
 }
 

@@ -1,10 +1,18 @@
-﻿/// <author> Likhith Reddy </author>
-/// <summary>
-/// Contains view model for screenshare client.
-/// </summary>
+﻿/************************************************************
+* Filename    = ScreenshareServerViewModel.cs
+*
+* Author      = Likhith Reddy
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = Contains view model for screenshare client.
+************************************************************/
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -76,7 +84,7 @@ namespace MessengerScreenshare.Client
         /// </summary>
         public ScreenshareClientViewModel()
         {
-            _model = ScreenshareClient.GetInstance(false);
+            _model = ScreenshareFactory.ScreenshareFactory.getClientInstance(this);
             _sharingScreen = false;
         }
 

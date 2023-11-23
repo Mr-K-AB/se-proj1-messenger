@@ -1,10 +1,15 @@
-﻿///<author>Alugonda Sathvik </author>
-///<summary>
-/// This file has ScreenshareClient class's implementation
-/// In this file functions related to starting and stopping Screen Capturing 
-/// are implemented
-///</summary>
-///
+﻿/******************************************************************************
+* Filename    = ScreenshareClient.cs
+*
+* Author      = Alugonda Sathvik
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = This Class implements start and stop screen sharing of clients.
+*****************************************************************************/
+
 using MessengerScreenshare.Client;
 using MessengerScreenshare;
 using System;
@@ -18,6 +23,7 @@ using System.Xml.Linq;
 using MessengerNetworking.Communicator;
 using MessengerNetworking.Factory;
 using MessengerNetworking.NotificationHandler;
+using System.Timers;
 
 namespace MessengerScreenshare.Client
 {
@@ -39,11 +45,18 @@ namespace MessengerScreenshare.Client
         private readonly ScreenProcessor _processor;
 
         // Name and Id of the current client user
-        private string? _name;
-        private int _id=0;
+        public string? _name;
+        public int _id;
         // Tokens added to be able to stop the thread execution
         private bool _confirmationCancellationToken;
-        private readonly CancellationTokenSource? _imageCancellation;
+        private CancellationTokenSource? _imageCancellation;
+
+        // View model for screenshare client
+        public ScreenshareClientViewModel? _viewModel;
+
+        private readonly System.Timers.Timer? _timer;
+        public static double Timeout { get; } = 200 * 1000;
+
 
         /// <summary>
         /// Setting up the ScreenCapturer and ScreenProcessor Class
@@ -56,19 +69,49 @@ namespace MessengerScreenshare.Client
             _processor = new ScreenProcessor(_capturer);
             if (!isDebugging)
             {
-                _communicator = Factory.GetInstance();
-                _communicator.AddSubscriber(Utils.ModuleIdentifier, this);
+                _communicator = CommunicationFactory.GetCommunicator(true);
+                _communicator.Subscribe(Utils.ClientIdentifier, this);
             }
+
+            try
+            {
+                // Create the timer for this client.
+                _timer = new System.Timers.Timer();
+                _timer.Elapsed += new((sender, e) => OnTimeOut());
+
+                // The timer should be invoked only once.
+                _timer.AutoReset = false;
+
+                // Set the time interval for the timer.
+                UpdateTimer();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}", withTimeStamp: true));
+            }
+
             Trace.WriteLine(Utils.GetDebugMessage("Successfully stopped image processing", withTimeStamp: true));
+        }
+
+        /// <summary>
+        /// On timeout stop screensharing and make the viewmodel's sharingscreen boolean
+        /// value as false for letting viewmodel know that screenshare stopped
+        /// </summary>
+        public void OnTimeOut()
+        {
+            StopScreensharing();
+            _viewModel.SharingScreen = false;
+            Trace.WriteLine(Utils.GetDebugMessage($"Timeout occurred [from client side]", withTimeStamp: true));
         }
 
         /// <summary>
         /// Gives an instance of ScreenshareClient class and that instance is always 
         /// the same i.e. singleton pattern.
         /// </summary>
-        public static ScreenshareClient GetInstance(bool isDebugging = false)
+        public static ScreenshareClient GetInstance(ScreenshareClientViewModel? viewModel = null, bool isDebugging = false)
         {
             s_screenShareClient ??= new ScreenshareClient(isDebugging);
+            s_screenShareClient._viewModel = viewModel;
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareClient", withTimeStamp: true));
             return s_screenShareClient;
         }
@@ -80,18 +123,19 @@ namespace MessengerScreenshare.Client
         /// </summary>
         public async Task StartScreensharingAsync()
         {
+            // Start the timer.
+            _timer.Enabled = true;
+
             Debug.Assert(_id != 0, Utils.GetDebugMessage("_id property found null"));
             Debug.Assert(_name != null, Utils.GetDebugMessage("_name property found null"));
 
             DataPacket dataPacket = new(_id, _name, ClientDataHeader.Register.ToString(), "");
             string serializedData = JsonSerializer.Serialize(dataPacket);
-            _communicator.Broadcast(Utils.ModuleIdentifier, serializedData);
+            _communicator.Send(serializedData, Utils.ServerIdentifier, null);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent REGISTER packet to server", withTimeStamp: true));
-
-            await SendConfirmationPacketAsync();
+            //Task.Run(async () => await StartImageSendingAsync());
             Trace.WriteLine(Utils.GetDebugMessage("Started sending confirmation packet", withTimeStamp: true));
-
-            await StartImageSendingAsync();
+            await SendConfirmationPacketAsync();
         }
 
         /// <summary>
@@ -127,16 +171,31 @@ namespace MessengerScreenshare.Client
                 Trace.WriteLine(Utils.GetDebugMessage("Got STOP packet from server", withTimeStamp: true));
                 StopImageSending();
             }
-            else if (dataPacket?.Header == ServerDataHeader.Confirmation.ToString())
-            {
-                // Else if it was a CONFIRMATION packet then update the timer to the max value
+            else if (dataPacket?.Header == ServerDataHeader.Confirmation.ToString()) { // Else if it was a CONFIRMATION packet then update the timer to the max value
+                UpdateTimer();
                 Trace.WriteLine(Utils.GetDebugMessage("Got CONFIRMATION packet from server", withTimeStamp: true));
             }
-            else
+            else { // Else it was some invalid packet so add a debug message
+                Debug.Assert(false,Utils.GetDebugMessage("Header from server is neither SEND, STOP nor CONFIRMATION")); }
+        }
+
+        /// <summary>
+        /// Resets the time of the timer object.
+        /// </summary>
+        /// <exception cref="Exception"></exception>
+        public void UpdateTimer()
+        {
+            Debug.Assert(_timer != null, Utils.GetDebugMessage("_timer is found null"));
+
+            try
             {
-                // Else it was some invalid packet so add a debug message
-                Debug.Assert(false,
-                    Utils.GetDebugMessage("Header from server is neither SEND, STOP nor CONFIRMATION"));
+                // It will reset the timer to start again.
+                _timer.Interval = Timeout;
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to reset the timer: {e.Message}", withTimeStamp: true));
+                throw new Exception("Failed to reset the timer", e);
             }
         }
 
@@ -145,25 +204,22 @@ namespace MessengerScreenshare.Client
         /// send it to the server via the networking module. Images are sent only if there
         /// are any changes in pixels as compared to previous image.
         /// </summary>
-        private async Task ImageSendingAsync()
+        private async Task ImageSendingAsync(CancellationToken cancellationToken)
         {
             int cnt = 0;
-            CancellationToken _imageCancellationToken = _imageCancellation!.Token;
-            while (!_imageCancellationToken.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                string serializedImg = await _processor.GetFrameAsync(_imageCancellationToken);
-                if (_imageCancellationToken.IsCancellationRequested)
+                string serializedImg = await _processor.GetFrameAsync(cancellationToken);
+                if (cancellationToken.IsCancellationRequested)
                 {
                     break;
                 }
-
-                DataPacket dataPacket = new(_id!, _name!, ClientDataHeader.Image.ToString(), serializedImg);
-                string serializedData = JsonSerializer.Serialize(dataPacket);
-
-                Trace.WriteLine(Utils.GetDebugMessage($"Sent frame {cnt} of size {serializedData.Length}", withTimeStamp: true));
-                _communicator.Broadcast(Utils.ModuleIdentifier, serializedData);
                 cnt++;
-                await Task.Delay(1); // Introduce a small delay for asynchronous behavior
+                DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
+                string serializedData = JsonSerializer.Serialize(dataPacket);
+                _communicator.Send(serializedData, Utils.ServerIdentifier, null);
+                Trace.WriteLine(Utils.GetDebugMessage($"Sent Image: {cnt} to server", withTimeStamp: true));
+                //await Task.Delay(1); // Introduce a small delay for asynchronous behavior
             }
         }
 
@@ -172,12 +228,13 @@ namespace MessengerScreenshare.Client
         /// </summary>
         private async Task StartImageSendingAsync()
         {
+            _imageCancellation = new CancellationTokenSource();
+            CancellationToken cancellationToken = _imageCancellation!.Token;
             _capturer.StartCapture();
             _processor?.StartProcessingAsync(1);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully started capturer and processor", withTimeStamp: true));
-
-            _imageCancellation?.Dispose();
-            _sendImageTask = Task.Run(async () => await ImageSendingAsync());
+            
+            _sendImageTask = Task.Run(async () => await ImageSendingAsync(cancellationToken));
             Trace.WriteLine(Utils.GetDebugMessage("Successfully started image sending", withTimeStamp: true));
             await _sendImageTask;
         }
@@ -194,8 +251,8 @@ namespace MessengerScreenshare.Client
             string serializedDeregisterPacket = JsonSerializer.Serialize(deregisterPacket);
 
             StopImageSending();
-            StopConfirmationSendingAsync().Wait(); // Synchronously wait here for demonstration purposes
-            _communicator.Broadcast(Utils.ModuleIdentifier, serializedDeregisterPacket);
+            StopConfirmationSendingAsync();
+            _communicator.Send(serializedDeregisterPacket, Utils.ServerIdentifier, null);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
         }
 
@@ -203,15 +260,24 @@ namespace MessengerScreenshare.Client
         /// Method to stop sending confirmation packets. Will be called only when the client
         /// stops screensharing.
         /// </summary>
-        private async Task StopConfirmationSendingAsync()
+        private void StopConfirmationSendingAsync()
         {
             if (_sendConfirmationTask == null)
             {
                 return;
             }
 
-            _confirmationCancellationToken = true;
-            await _sendConfirmationTask;
+            try
+            {
+                _confirmationCancellationToken = true;
+                _sendConfirmationTask.Wait();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Unable to cancel confirmation sending task: {e.Message}", withTimeStamp: true));
+            }
+
+            _sendConfirmationTask = null;
         }
 
         /// <summary>
@@ -264,7 +330,8 @@ namespace MessengerScreenshare.Client
             {
                 while (!_confirmationCancellationToken)
                 {
-                    _communicator.Broadcast(Utils.ModuleIdentifier, serializedConfirmationPacket);
+                    _communicator.Send(serializedConfirmationPacket, Utils.ServerIdentifier, null);
+                    Trace.WriteLine(Utils.GetDebugMessage($"Sent cofirmation packet to server", withTimeStamp: true));
                     await Task.Delay(5000);
                 }
             });
@@ -283,6 +350,11 @@ namespace MessengerScreenshare.Client
             _id = id;
             _name = name;
             Trace.WriteLine(Utils.GetDebugMessage("Successfully set client name and id"));
+        }
+
+        public string GetUserName()
+        {
+            return _name;
         }
         public void OnClientJoined(string ipAddress, int port)
         {

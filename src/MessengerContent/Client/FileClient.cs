@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = Handles the client side of sending and downloading files
  *****************************************************************************/
 using MessengerContent.DataModels;
 using System.Diagnostics;
@@ -23,7 +23,7 @@ namespace MessengerContent.Client
         /// <summary>
         /// Module identifier for communicator
         /// </summary>
-        private readonly string _moduleIdentifier = "ContentServer";
+        private readonly string _moduleIdentifier = "Content";
         private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
 
@@ -59,13 +59,13 @@ namespace MessengerContent.Client
         /// <param name="
         /// ">Instance of SendChatData class</param>
         /// <param name="eventType">Type of message event as string</param>
-        private void SerializeAndSendToServer(ChatData chatData, string eventType, string ip, int port)
+        private void SerializeAndSendToServer(ChatData chatData, string eventType)
         {
             try
             {
                 string xml = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[File Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.SendMessage(ip, port, _moduleIdentifier, xml);
+                _communicator.Send(xml, _moduleIdentifier, null);
             }
             catch (Exception e)
             {
@@ -78,7 +78,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="sendContent">Instance of the SendChatData class</param>
         /// <exception cref="ArgumentException"></exception>
-        public void SendFile(SendChatData sendContent, string ip, int port)
+        public void SendFile(SendChatData sendContent)
         {
             // check message type
             if (sendContent.Type != MessageType.File)
@@ -90,13 +90,15 @@ namespace MessengerContent.Client
             {
                 throw new FileNotFoundException($"File at {sendContent.Data} not found");
             }
+            string[] path = sendContent.Data.Split(new char[] { '\\' }, StringSplitOptions.None);
             ChatData sendData = new()
             {
                 Type = sendContent.Type,
-                Data = sendContent.Data,
+                Data = path.Last(),
                 MessageID = -1,
                 //ReceiverIDs = sendContent.ReceiverIDs,
-                ReplyThreadID = -1,
+                ReplyThreadID = sendContent.ReplyThreadID,
+                ReplyMessageID = sendContent.ReplyMessageID,
                 SenderID = UserID,
                 SenderName = UserName,
                 SentTime = DateTime.Now,
@@ -104,7 +106,7 @@ namespace MessengerContent.Client
                 Event = MessageEvent.New,
                 FileData = new SendFileData(sendContent.Data)
             };
-            SerializeAndSendToServer(sendData, "New", ip, port);
+            SerializeAndSendToServer(sendData, "New");
         }
 
         /// <summary>
@@ -112,7 +114,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="messageID">ID of the message</param>
         /// <param name="savePath">Path to which the file will be downloaded</param>
-        public void DownloadFile(int messageID, string savePath, string ip, int port)
+        public void DownloadFile(int messageID, string savePath)
         {
             // check for savePath
             if (savePath == null || savePath == "")
@@ -128,7 +130,7 @@ namespace MessengerContent.Client
                 Event = MessageEvent.Download,
                 FileData = null
             };
-            SerializeAndSendToServer(sendData, "Download", ip, port);
+            SerializeAndSendToServer(sendData, "Download");
         }
     }
 }

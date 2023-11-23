@@ -16,12 +16,15 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="PrivateObjectExtensions" Version="1.4.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MessengerApp\MessengerApp.csproj" />
     <ProjectReference Include="..\MessengerCloud\MessengerCloud.csproj" />
     <ProjectReference Include="..\MessengerContent\MessengerContent.csproj" />
     <ProjectReference Include="..\MessengerDashboard\MessengerDashboard.csproj" />
     <ProjectReference Include="..\MessengerNetworking\MessengerNetworking.csproj" />
+    <ProjectReference Include="..\MessengerWhiteboard\MessengerWhiteboard.csproj" />
   </ItemGroup>
   <ItemGroup Condition="$(VisualStudioVersion) == '17.0'">
     <Reference Include="Microsoft.Data.Tools.Schema.Sql, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

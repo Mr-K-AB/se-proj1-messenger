@@ -1,273 +1,375 @@
-﻿<UserControl x:Class="MessengerApp.Views.DashboardControl"
+﻿<!--
+ /******************************************************************************
+* Filename    = DashboardControl.xaml
+*
+* Author      = Satish Patidar 
+*
+* Roll number = 112001037
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerApp
+*
+* Description = A UserControl representing a view for the instructor
+*****************************************************************************/
+-->
+<UserControl x:Class="MessengerApp.Views.DashboardControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              xmlns:local="clr-namespace:MessengerApp.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             xmlns:viewmodels="clr-namespace:MessengerDashboard.UI.ViewModels;assembly=MessengerDashboard"
+             d:DataContext="{d:DesignInstance Type=viewmodels:DashboardMemberViewModel}"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800">
     <Grid Background="LightGray">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
             <RowDefinition Height="10*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" >
+        <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-
                 <ColumnDefinition Width="7.5*" />
-
-                <ColumnDefinition Width="2*"/>
-
-                <ColumnDefinition Width="3*"/>
-
-                <ColumnDefinition Width="3*"/>
-
-                <ColumnDefinition Width="5*"/>
-
-                <ColumnDefinition Width="2*"/>
-
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" >
+            <Grid Grid.Column="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2.7*" />
-                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0" Grid.ColumnSpan="2" Margin="3">
-                    <Border CornerRadius="10" BorderThickness="5" BorderBrush="Gray" Background="Gray">
-                        <TextBlock Background="Gray" Text="{Binding Mode}" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="18"/>
+                <Grid Grid.Column="0"
+                      Grid.ColumnSpan="2"
+                      Margin="3">
+                    <Border CornerRadius="10"
+                            BorderThickness="5"
+                            BorderBrush="Gray"
+                            Background="Gray">
+                        <TextBlock Background="Gray"
+                                   Text="{Binding Mode}"
+                                   d:Text="Lab"
+                                   TextAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   FontWeight="Bold"
+                                   FontSize="18" />
                     </Border>
                 </Grid>
                 <Grid Grid.Column="1">
-                    <Button Width="auto" Content="Switch" Background="#034eff" Command="{Binding SwitchModeCommand}" BorderThickness="0"  Margin="5 5 5 5" FontWeight="Bold" FontStyle="Italic">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="10" ></Setter>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
+                    <Viewbox Stretch="Fill">
+                        <Button Width="auto"
+                                Content="Switch"
+                                Background="#034eff"
+                                Command="{Binding SwitchModeCommand}"
+                                BorderThickness="5"
+                                BorderBrush="#034eff"
+                                Margin="5 5 5 5"
+                                FontWeight="DemiBold"
+                                FontStyle="Italic">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius"
+                                            Value="10"></Setter>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </Viewbox>
                 </Grid>
             </Grid>
 
-            <Grid Grid.Column="1" >
-                <Button Width="auto" Content="Refresh" Background="#00ad11" Command="{Binding RefreshCommand}" BorderThickness="0" Click="Button_Click" ToolTip="Refresh" Margin="5 5 5 5" FontWeight="Bold" FontStyle="Italic">
-                    <!--<Image Source="../Images/refresh.png" Height="23" />-->
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="10"></Setter>
-                        </Style>
-                    </Button.Resources>
-                </Button>
+            <Grid Grid.Column="1">
+                <Viewbox Stretch="Fill">
+                    <Button Width="auto"
+                            Content="Refresh"
+                            Background="#00ad11"
+                            Command="{Binding RefreshCommand}"
+                            BorderThickness="5"
+                            BorderBrush="#00ad11"
+                            Click="Button_Click"
+                            ToolTip="Refresh"
+                            Margin="5 5 5 5"
+                            FontWeight="DemiBold"
+                            FontStyle="Italic">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius"
+                                        Value="10"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Viewbox>
             </Grid>
-
-            <Grid Grid.Column="2" >
-                <Border CornerRadius="10" BorderThickness="1" BorderBrush="Gray" Background="DarkGray" Margin="5">
-                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsCloudSavingEnabled}">
-                        <TextBlock FontWeight="Bold" FontStyle="Italic">
-                            Cloud Save
-                        </TextBlock>
-                    </CheckBox>
-                </Border>
+            <Grid Grid.Column="2">
+                <Viewbox Stretch="Fill">
+                    <Border CornerRadius="10"
+                            BorderThickness="5"
+                            BorderBrush="DarkGray"
+                            Background="DarkGray"
+                            Margin="5">
+                        <CheckBox VerticalAlignment="Center"
+                                  IsChecked="{Binding IsCloudSavingEnabled}">
+                            <TextBlock FontWeight="Bold"
+                                       FontStyle="Italic">
+                                Cloud Save
+                            </TextBlock>
+                        </CheckBox>
+                    </Border>
+                </Viewbox>
             </Grid>
-
-            <Grid Grid.Column="3" >
-                <Border CornerRadius="10" BorderThickness="1" BorderBrush="Gray" Background="DarkGray" Margin="5">
-                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsLocalSavingEnabled}">
-                        <TextBlock FontWeight="Bold" FontStyle="Italic">
-                            Local Save
-                        </TextBlock>
-                    </CheckBox>
-                </Border>
+            <Grid Grid.Column="3">
+                <Viewbox Stretch="Fill">
+                    <Border CornerRadius="10"
+                            BorderThickness="5"
+                            BorderBrush="DarkGray"
+                            Background="DarkGray"
+                            Margin="5">
+                        <CheckBox VerticalAlignment="Center"
+                                  IsChecked="{Binding IsLocalSavingEnabled}">
+                            <TextBlock FontWeight="Bold"
+                                       FontStyle="Italic">
+                                Local Save
+                            </TextBlock>
+                        </CheckBox>
+                    </Border>
+                </Viewbox>
             </Grid>
-
-            <Grid Grid.Column="5" >
-                <Button Width="auto" Content="End Meet" Background="Red" Command="{Binding EndMeetCommand}"  ToolTip="End Meet" Margin="5 5 5 5" FontWeight="Bold" FontStyle="Italic" >
-                    <!--<Image Source="../Images/end-meet.png" Width="40"/>-->
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="10"></Setter>
-                        </Style>
-                    </Button.Resources>
-                </Button>
+            <Grid Grid.Column="5">
+                <Viewbox Stretch="Fill">
+                    <Button Width="auto"
+                            Content="End Meet"
+                            Background="Red"
+                            Command="{Binding EndMeetCommand}"
+                            BorderThickness="5"
+                            BorderBrush="Red"
+                            ToolTip="End Meet"
+                            Margin="5 5 5 5"
+                            FontWeight="Bold"
+                            FontStyle="Italic">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius"
+                                        Value="10"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Viewbox>
             </Grid>
-
         </Grid>
-
-
-
-        <Grid Grid.Row="1" >
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-
                 <ColumnDefinition Width="1.5*" />
-
-                <ColumnDefinition Width="2*"/>
-
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-
-            <Grid Grid.Column="0" >
+            <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="6*" />
-                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="4*" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="3*" />
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" >
-                    <Border BorderBrush="Wheat" BorderThickness="5" CornerRadius="10" Margin="3 3 3 0">
+                <Grid Grid.Row="0"
+                      Margin="0,0,0,10">
+                    <Border BorderBrush="Wheat"
+                            BorderThickness="5"
+                            CornerRadius="10"
+                            Margin="3 0 0 0">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <TextBlock Width="auto" Background="Wheat" Text="Chat Summary" TextAlignment="Center" FontWeight="Bold"/>
-                            <ScrollViewer Grid.Row="1" Width="auto" VerticalScrollBarVisibility="Auto">
+                            <TextBlock Width="auto"
+                                       Background="Wheat"
+                                       Text="Chat Summary"
+                                       TextAlignment="Center"
+                                       FontWeight="Bold" />
+                            <ScrollViewer Grid.Row="1"
+                                          Width="auto"
+                                          VerticalScrollBarVisibility="Auto">
                                 <TextBlock TextWrapping="Wrap"
-                                           Width="auto" 
-                                           Height="auto" 
-                                           Background="Wheat" 
+                                           Width="auto"
+                                           Height="auto"
+                                           Background="Wheat"
                                            Text="{Binding Summary}"
+                                           d:Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer pharetra condimentum massa nec accumsan. Nulla ornare nisl justo, eu mollis sapien tristique sed."
                                            TextAlignment="Center" />
                             </ScrollViewer>
                         </Grid>
                     </Border>
                 </Grid>
-                <Grid Grid.Row="1" >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0">
-                        <Border CornerRadius="5" BorderThickness="1" BorderBrush="Teal" Margin="3" Background="Teal">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Total Chats" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding TotalChatCount}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
-                            </Grid>
-                        </Border>
-                    </Grid>
-                    <Grid Grid.Column="1">
-                        <Border CornerRadius="5" BorderThickness="1" BorderBrush="Teal" Margin="3" Background="Teal">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Positive Chats" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding PositiveChatCount}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
-                            </Grid>
-                        </Border>
-                    </Grid>
-                    <Grid Grid.Column="2">
-                        <Border CornerRadius="5" BorderThickness="1" BorderBrush="Teal" Margin="3" Background="Teal">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Negative Chats" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding NegativeChatCount}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
-                            </Grid>
-                        </Border>
-                    </Grid>
-                    <Grid Grid.Column="3">
-                        <Border CornerRadius="5" BorderThickness="1" BorderBrush="Teal" Margin="3" Background="Teal">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Width="auto" Background="Teal" Text="Overall Sentiment" TextAlignment="Center" Margin="1 1 1 0" FontSize="10" TextWrapping="Wrap"/>
-                                <TextBlock Grid.Row="1" Width="auto" Background="Teal" Text="{Binding OverallSentiment}" TextAlignment="Center" Margin="1 0 1 1" FontSize="10" />
-                            </Grid>
-                        </Border>
+                <GridSplitter Grid.Row="1"
+                              Background="LightGray"
+                              BorderThickness="0"
+                              HorizontalAlignment="Stretch" />
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="10*" />
+                    </Grid.RowDefinitions>
+                    <Viewbox Margin="5 0 0 0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Overall Sentiment: "
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Text="{Binding OverallSentiment}"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Viewbox>
+                    <Grid Grid.Row="1">
+                        <lvc:PieChart>
+                            <lvc:PieChart.Series>
+                                <lvc:PieSeries Values="{Binding PositiveChatCount}"
+                                               Title="Positive"
+                                               Fill="Green"
+                                               FontSize="13"
+                                               LabelPoint="{Binding LabelPoint}"
+                                               DataLabels="True">
+                                </lvc:PieSeries>
+                                <lvc:PieSeries Values="{Binding NegativeChatCount}"
+                                               Title="Negative"
+                                               Fill="Red"
+                                               FontSize="13"
+                                               LabelPoint="{Binding LabelPoint}"
+                                               DataLabels="True">
+                                </lvc:PieSeries>
+                                <lvc:PieSeries Values="{Binding NeutralChatCount}"
+                                               Title="Neutral"
+                                               Fill="Orange"
+                                               FontSize="13"
+                                               LabelPoint="{Binding LabelPoint}"
+                                               DataLabels="True">
+                                </lvc:PieSeries>
+                            </lvc:PieChart.Series>
+                        </lvc:PieChart>
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid Grid.Column="1" >
+            <GridSplitter Grid.Column="1"
+                          Width="5"
+                          Background="LightGray"
+                          BorderThickness="0"
+                          HorizontalAlignment="Stretch" />
+            <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
+                    <RowDefinition Height="5" />
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" >
-                    <Border BorderThickness="5" BorderBrush="White" CornerRadius="10" Margin="0 2 0 2">
+                <Grid Grid.Row="0">
+                    <Border BorderThickness="5"
+                            BorderBrush="White"
+                            CornerRadius="10"
+                            Margin="0 0 0 2">
                         <lvc:CartesianChart Background="White">
                             <lvc:CartesianChart.Series>
-                                <lvc:LineSeries  Title="Users" Values="{Binding UserCounts}" StrokeThickness="3" Stroke="Gray"/>
+                                <lvc:LineSeries  Title="Users"
+                                                 Values="{Binding UserCounts}"
+                                                 StrokeThickness="2"
+                                                 Stroke="Gray"
+                                                 LineSmoothness="0" />
                             </lvc:CartesianChart.Series>
                             <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Time" Labels="{Binding DateTimes}">
+                                <lvc:Axis Title="Time"
+                                          Labels="{Binding DateTimes}">
                                     <lvc:Axis.Separator>
-                                        <lvc:Separator StrokeThickness="0" Step="1"/>
+                                        <lvc:Separator StrokeThickness="0" />
                                     </lvc:Axis.Separator>
                                 </lvc:Axis>
                             </lvc:CartesianChart.AxisX>
                             <lvc:CartesianChart.AxisY>
-                                <lvc:Axis Title="Users" MinValue="0">
+                                <lvc:Axis Title="Users"
+                                          MinValue="0"
+                                          MaxValue="{Binding MaxUserCount}">
                                     <lvc:Axis.Separator>
-                                        <lvc:Separator StrokeThickness="1"/>
+                                        <lvc:Separator StrokeThickness="1" />
                                     </lvc:Axis.Separator>
                                 </lvc:Axis>
                             </lvc:CartesianChart.AxisY>
                         </lvc:CartesianChart>
                     </Border>
                 </Grid>
-                    <Grid Grid.Row="2">
-                        <Border BorderThickness="5" BorderBrush="White" CornerRadius="10" Margin="0 2 0 5">
-                         <lvc:CartesianChart Background="White">
-                            <lvc:CartesianChart.Series>
-                                <lvc:ColumnSeries Title="Chat Count" Values="{Binding UserChatCounts}"/>
-                            </lvc:CartesianChart.Series>
-                            <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Users"  Labels="{Binding UserNames}">
-                                    <lvc:Axis.Separator>
-                                        <lvc:Separator Step="1" StrokeThickness="0"/>
-                                    </lvc:Axis.Separator>
-                                </lvc:Axis>
-                            </lvc:CartesianChart.AxisX>
-                            <lvc:CartesianChart.AxisY>
-                                <lvc:Axis Title="Chat Count" MinValue="0"/>
-                            </lvc:CartesianChart.AxisY>
-                        </lvc:CartesianChart>                       
-                    </Border>
+                <GridSplitter Grid.Row="1"
+                              Width="5"
+                              Background="LightGray"
+                              BorderThickness="0"
+                              HorizontalAlignment="Stretch" />
+                <Grid Grid.Row="2">
+                    <DataGrid d:ItemsSource="{d:SampleData ItemCount=10}"
+                              ItemsSource="{Binding UserActivities}" />
                 </Grid>
             </Grid>
-            <Border Grid.Column="2" BorderBrush="Pink" BorderThickness="5" CornerRadius="10" Margin="3 3 3 3">
-                <Grid >
+            <GridSplitter Grid.Column="3"
+                          Width="5"
+                          Background="LightGray"
+                          BorderThickness="0"
+                          HorizontalAlignment="Stretch" />
+            <Border Grid.Column="4"
+                    BorderBrush="Pink"
+                    BorderThickness="5"
+                    CornerRadius="10"
+                    Margin="0 0 3 3">
+                <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="5*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="1" Text="Participant(s)" Background="Pink" TextAlignment="Center" FontWeight="Bold"/>
-                        <TextBlock Grid.Column="0" Text="{Binding Users.Count}" Background="Pink" TextAlignment="Right" FontWeight="Bold" />
+                        <TextBlock Grid.Column="1"
+                                   Text="Participant(s)"
+                                   Background="Pink"
+                                   TextAlignment="Center"
+                                   FontWeight="Bold" />
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding Users.Count}"
+                                   Background="Pink"
+                                   TextAlignment="Right"
+                                   FontWeight="Bold" />
                     </Grid>
                     <Grid Grid.Row="1">
-                        <ListView Grid.Row="1" x:Name="ContactsLV" Background="Pink" ItemsSource="{Binding Users}" d:ItemsSource="{d:SampleData ItemCount=5}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <ListView Grid.Row="1"
+                                  x:Name="ContactsLV"
+                                  Background="Pink"
+                                  ItemsSource="{Binding Users}"
+                                  d:ItemsSource="{d:SampleData ItemCount=5}"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Margin="5, 10, 0, 10">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="1*" />
+                                            <ColumnDefinition Width="1*" />
                                         </Grid.ColumnDefinitions>
-                                        <Ellipse Width="30" Height="30">
+                                        <Ellipse Width="30"
+                                                 Height="30">
                                             <Ellipse.Fill>
                                                 <ImageBrush ImageSource="{Binding UserPicturePath}" />
                                             </Ellipse.Fill>
                                         </Ellipse>
                                         <Grid Grid.Column="1">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="1*"/>
+                                                <RowDefinition Height="1*" />
                                             </Grid.RowDefinitions>
-                                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"  Text="{Binding UserName}" Foreground="Black" VerticalAlignment="Center" TextAlignment="center" FontSize="15" Margin="5, 0, 0, 0" />
+                                            <TextBlock TextWrapping="WrapWithOverflow"
+                                                       HorizontalAlignment="Center"
+                                                       Text="{Binding UserName}"
+                                                       Foreground="Black"
+                                                       VerticalAlignment="Center"
+                                                       TextAlignment="center"
+                                                       FontSize="15"
+                                                       Margin="5, 0, 0, 0" />
                                         </Grid>
                                     </Grid>
                                 </DataTemplate>

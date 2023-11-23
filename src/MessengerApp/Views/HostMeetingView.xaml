@@ -17,9 +17,9 @@
             <DataTemplate DataType="{x:Type viewmodels:DashboardInstructorViewModel}">
                 <views:DashboardControl/>
             </DataTemplate>
-            <!--<DataTemplate DataType="{x:Type whiteboard:ViewModel}">
+            <DataTemplate DataType="{x:Type whiteboard:ViewModel}">
                 <views:WhiteboardControl/>
-            </DataTemplate>-->
+            </DataTemplate>
             <DataTemplate DataType="{x:Type screenshare:ScreenshareServerViewModel}">
                 <views:ScreenshareServerControl/>
             </DataTemplate>
@@ -30,16 +30,22 @@
             <MenuItem Header="Whiteboard" Command="{Binding NavigateServerWhiteboardCommand}"/>
             <MenuItem Header="Screenshare" Command="{Binding NavigateServerScreenshareCommand}" />
             <MenuItem Header="Chat" Click="Chat_Click"/>
-            <TextBlock Text="{Binding IP}"></TextBlock>
-            <TextBlock Text="{Binding Port}"></TextBlock>
+            <StackPanel x:Name="Meeting_Details" Orientation="Horizontal" >
+                <Label Content="Meeting IP :" />
+                <TextBlock Text="{Binding IP}"  VerticalAlignment="Center"  FontWeight="Bold"/>
+                <Label Content="Meeting Port :" />
+                <TextBlock Text="{Binding Port}"  VerticalAlignment="Center" FontWeight="Bold"/>
+            </StackPanel>
         </Menu>
+        
+        
         <Grid x:Name="OverlayPanel" Panel.ZIndex="1000" Visibility="Collapsed" HorizontalAlignment="Right" Width="300" Background="AliceBlue">
             <ContentControl x:Name="OverlayContent"/>
         </Grid>
         <!-- Profile Information -->
-        <Button Content="End Meeting" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>
+        <Button Content="Close Session" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0" Command="{Binding NavigateHomeCommand}"/>
 
-        <ContentControl Content="{Binding SubViewModel}" Margin="0,25,0,0"/>
+        <ContentControl Content="{Binding SubViewModel}" Margin="0,30,0,0"/>
 
     </Grid>
 </UserControl>

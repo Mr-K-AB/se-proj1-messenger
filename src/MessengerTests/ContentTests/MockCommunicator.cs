@@ -1,7 +1,7 @@
 ﻿/******************************************************************************
- * Filename    = MokCommunicator.cs
+ * Filename    = MockCommunicator.cs
  *
- * Author      = Manikanta
+ * Author      = Rapeti Siddhu Neehal
  *
  * Product     = Messenger
  * 
@@ -13,47 +13,73 @@
 using MessengerNetworking.Communicator;
 using MessengerNetworking.NotificationHandler;
 using System.Net.Sockets;
+using System.Windows.Markup;
 
 namespace MessengerTests.ContentTests
 {
     public class MockCommunicator : ICommunicator
     {
-        public int ListenPort => throw new NotImplementedException();
-
-        public string IpAddress => throw new NotImplementedException();
+        private bool _isBroadcast;
         private string _sendSerializedStr;
+        private readonly List<INotificationHandler> _subscribers;
 
-        public void AddClient(string ipAddress, int port)
+        public MockCommunicator()
         {
-            throw new NotImplementedException();
+            _sendSerializedStr = "";
+            _subscribers = new List<INotificationHandler>();
         }
-
-        public void AddSubscriber(string id, INotificationHandler subscriber)
+        public void Send(string message, string senderId, string recieverid)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Broadcast(string senderId, string message, int priority = 0)
-        {
-            _sendSerializedStr=message;
+            if (recieverid == null)
+            {
+                _sendSerializedStr = message;
+                _isBroadcast = true;
+            }
+            else
+            {
+                _sendSerializedStr = message;
+                _isBroadcast = false;
+            }
         }
         public string GetSendData()
         {
             return _sendSerializedStr;
         }
-        public void RemoveClient(string ipAddress, int port)
+
+        public string Start(string serverIP = null, string serverPort = null)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveSubscriber(string id)
+        public void Stop()
         {
             throw new NotImplementedException();
         }
 
-        public void SendMessage(string ipAddress, int port, string senderId, string message, int priority = 0)
+        public void AddClient(string clientId, TcpClient socket)
         {
             throw new NotImplementedException();
+        }
+
+        public void RemoveClient(string clientId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Subscribe(string moduleName, INotificationHandler notificationHandler, bool isHighPriority = false)
+        {
+            _subscribers.Add(notificationHandler);
+        }
+
+        public void Reset()
+        {
+            _isBroadcast = false;
+        }
+        public bool IsBroadcast()
+        {
+            bool flag = _isBroadcast;
+            Reset();
+            return flag;
         }
     }
 }

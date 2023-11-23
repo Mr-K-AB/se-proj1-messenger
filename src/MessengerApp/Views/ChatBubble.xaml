@@ -1,0 +1,880 @@
+<!--
+* Filename    = ChatBubble.xaml
+*
+* Author      = M V Nagasurya
+*
+* Product     = Messenger
+* 
+* Project     = MessengerApp
+*
+* Description = Interface of the Chat Page
+-->
+
+
+<UserControl x:Class="MessengerApp.ChatBubble"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
+             xmlns:local="clr-namespace:MessengerApp.Views"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+
+             d:DesignHeight="800" d:DesignWidth="500" >
+
+    <UserControl.Resources>
+
+
+        <!--Chat TextBox-->
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <!--The line which blinks when we are on the text box, to show where we are at, is the CaretBrush-->
+                    <Setter Property="CaretBrush">
+                        <Setter.Value>
+                            <SolidColorBrush Color="White" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+            </Style.Triggers>
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="8" />
+                </Style>
+            </Style.Resources>
+        </Style>
+
+        <!--Buttons-->
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Width" Value="90" />
+            <Setter Property="Margin" Value="10" />
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect ShadowDepth="0" Color="White" Opacity="10" BlurRadius="20" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--StarButton-->
+        <ControlTemplate x:Key="StarToggleButton" TargetType="{x:Type ToggleButton}">
+            <Canvas Width="12" Height="12" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
+                <Path
+            x:Name="ButtonPath"
+            Width="12"
+            Height="12"
+            Data="F1 M 17.416,32.25L 32.910,32.25L 38,18L 43.089,32.25L 58.583,32.25L 45.679,41.494L 51.458,56L 38,48.083L 26.125,56L 30.597,41.710L 17.416,32.25 Z "
+            Fill="Transparent"
+            Stroke="#FFFFFF"
+            StrokeThickness="1"
+            Stretch="Fill" />
+            </Canvas>
+            <!--When the star button is checked, fill with yellow color, else white-->
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="true">
+                    <Setter TargetName="ButtonPath" Property="Fill" Value="Yellow" />
+                </Trigger>
+                <Trigger Property="IsChecked" Value="false">
+                    <Setter TargetName="ButtonPath" Property="Fill" Value="transparent" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <!--DataTemplate for chat bubble sent by the user which is not a reply-->
+        <DataTemplate x:Key="MsgFromUserNotReplyTemplate">
+
+            <Grid>
+                <Border CornerRadius="20, 20, 0, 20" Background="Teal" Margin="0,0,3,5" MaxWidth="257" HorizontalAlignment="Right">
+                    <Grid x:Name="ToBubble" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="0" />
+                        </Grid.RowDefinitions>
+                        <Grid Margin="5,10,5,5"  Background="Transparent"  Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" HorizontalAlignment="Right">
+                                <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
+                   Width="230" FontSize="14" TextAlignment="Right" Padding="2, 2, 5, 2" FontWeight="Bold" />
+                            </Grid>
+
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <emoji:TextBlock Foreground="#FFFFFF" Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}"
+                               x:Name="MainText" TextWrapping="Wrap" Grid.Row="0"  FontSize="16"
+                               Padding="8,5,8,5" Grid.Column="0" />
+
+                                <!--buttons-->
+                                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                                    <!--reply button-->
+                                    <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                        Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
+                                        <Image Source="../Images/undo.png" />
+                                    </ToggleButton>
+                                </StackPanel>
+
+                            </Grid>
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <!--time and star button-->
+                                <TextBlock Opacity="0.8" Foreground="#FFFFFF"
+                       Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+                       Grid.Row="0" Padding="8" Grid.Column="0" />
+                                <ToggleButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                         Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+
+                                <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="Sent"
+                       x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                       Grid.Column="3" HorizontalAlignment="Right" />
+
+                                <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left">
+
+                                    <!--edit button-->
+                                    <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+                                            Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
+                                        <Image Source="../Images/pen.png" />
+                                    </Button>
+                                    <!--delete button-->
+                                    <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+                                            Width="30" Height="20" Margin="0,0,0,0" Click="DeleteHandler" ToolTip="Delete">
+                                        <Image Source="../Images/delete-chat.png" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+
+                    </Grid>
+                </Border>
+            </Grid>
+
+        </DataTemplate>
+
+
+
+        <!--Template for the msg bubble sent by current user-->
+        <DataTemplate x:Key="MsgFromUserTemplate">
+            <Border CornerRadius="20, 20, 0, 20" Background="Teal" Margin="0,0,3,5" MaxWidth="257" HorizontalAlignment="Right">
+                <Grid x:Name="ToBubble" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="0" />
+                    </Grid.RowDefinitions>
+                    <Grid Margin="0" Background="Transparent" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+
+                        <Grid Grid.Row="1" HorizontalAlignment="Left">
+                            <!--reply text block-->
+                            <Border Grid.Column="0" CornerRadius="8" BorderBrush="Transparent"
+                            BorderThickness="5" Background="White" Opacity="0.5">
+                                <TextBlock 
+                                    Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}"
+                                   TextWrapping="Wrap" Width="230" FontSize="14" Padding="8,5,8,5" FontStyle="Italic" HorizontalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+
+                        <!--sender name-->
+                        <Grid Grid.Row="0" HorizontalAlignment="Right">
+                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
+                           Width="230" FontSize="14" TextAlignment="Right" Padding="8,2,8,2" FontWeight="Bold" />
+                        </Grid>
+
+                        <!--message data-->
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <emoji:TextBlock Foreground="#FFFFFF" Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}"
+                               x:Name="MainText" TextWrapping="Wrap" Grid.Row="0"  FontSize="16"
+                               Padding="8,5,8,5" Grid.Column="0" />
+
+                            <!--buttons-->
+                            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                                <!--reply button-->
+                                <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                    Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
+                                    <Image Source="../Images/undo.png" />
+                                </ToggleButton>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <!--time and star button-->
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF"
+                               Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+                               Grid.Row="0" Padding="8" Grid.Column="0" />
+                            <ToggleButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                                 Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="Sent"
+                               x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                               Grid.Column="3" HorizontalAlignment="Right" />
+
+                            <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left">
+
+                                <!--edit button-->
+                                <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
+                                    <Image Source="../Images/pen.png" />
+                                </Button>
+                                <!--delete button-->
+                                <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+                                    Width="30" Height="20" Margin="0,0,0,0" Click="DeleteHandler" ToolTip="Delete">
+                                    <Image Source="../Images/delete-chat.png" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+
+        </DataTemplate>
+
+        <!--DataTemplate for file bubble sent by the user (not reply)-->
+        <DataTemplate x:Key="FileFromUserNotReplyTemplate">
+            <Border CornerRadius="20, 20, 0, 20" Background="Teal" Margin="0,0,3,5" MaxWidth="257" HorizontalAlignment="Right">
+                <Grid x:Name="ToBubble" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="0" />
+                    </Grid.RowDefinitions>
+                    <Grid Margin="5, 10, 5, 5" Background="Transparent" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <!--sender-->
+                        <Grid Grid.Row="0" HorizontalAlignment="Right">
+                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
+                        Width="230" FontSize="14" TextAlignment="Right" Padding="8,2,8,2" FontWeight="Bold" />
+                        </Grid>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border CornerRadius="8" BorderBrush="Teal"
+                                BorderThickness="5" Background="#075e54">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="3*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Source="../Images/save.png" Width="25" Height="25" Margin="2" />
+                                    <emoji:TextBlock Grid.Column="1" Foreground="#FFFFFF"
+                               Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
+                                FontSize="16" Padding="8,5,8,5"  />
+
+                                </Grid>
+                            </Border>
+                            <!-- buttons-->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+
+                                <Button Background="Transparent" BorderBrush="Transparent"
+                                HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0"
+                                Click="DownloadHandler">
+                                    <Image Source="../Images/download.png" HorizontalAlignment="Center" />
+                                </Button>
+                                <!--reply-->
+                                <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                        Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
+                                    <Image Source="../Images/undo.png" />
+                                </ToggleButton>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <!--time and star button-->
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF"
+                            Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+                            Grid.Row="0" Padding="8" Grid.Column="0" />
+                            <ToggleButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                                Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="Sent"
+                                x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                                Grid.Column="3" HorizontalAlignment="Right" />
+
+                            <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left">
+
+                                <!--edit button--><!--
+                                <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+                                        Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
+                                    <Image Source="../Images/pen.png" />
+                                </Button>-->
+                                <!--delete button-->
+                                <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+                                        Width="30" Height="20" Margin="0,0,0,0" Click="DeleteHandler" ToolTip="Delete">
+                                    <Image Source="../Images/delete-chat.png" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+
+        <!--Template for the File message bubble sent by the current user-->
+        <DataTemplate x:Key="FileFromUserTemplate">
+            <!--<Grid>-->
+            <Border CornerRadius="20, 20, 0, 20" Background="Teal" Margin="0,0,3,5" MaxWidth="257" HorizontalAlignment="Right">
+                <Grid x:Name="ToBubble" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="0" />
+                    </Grid.RowDefinitions>
+                    <Grid Margin="5, 10, 5, 5" Background="Transparent" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="1" HorizontalAlignment="Left" Width="230">
+                            <!--reply-->
+                            <Border Grid.Column="0" CornerRadius="8" BorderBrush="Transparent"
+                                BorderThickness="5" Background="White" Opacity="0.5">
+                                <TextBlock 
+                                 Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}"
+                                TextWrapping="Wrap" Width="230" FontSize="14" Padding="8,5,8,5" FontStyle="Italic" HorizontalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+
+                        <!--sender-->
+                        <Grid Grid.Row="0" HorizontalAlignment="Right">
+                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
+                            Width="230" FontSize="14" TextAlignment="Right" Padding="8,2,8,2" FontWeight="Bold" />
+                        </Grid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border CornerRadius="8" BorderBrush="Teal"
+                                BorderThickness="5" Background="#075e54">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="3*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Source="../Images/save.png" Width="25" Height="25" Margin="2" />
+                                    <emoji:TextBlock Grid.Column="1" Foreground="#FFFFFF"
+                                       Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
+                                        FontSize="16" Padding="8,5,8,5"  />
+
+                                </Grid>
+                            </Border>
+                            <!-- buttons-->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+
+                                <Button Background="Transparent" BorderBrush="Transparent"
+                                HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0"
+                                Click="DownloadHandler">
+                                    <Image Source="../Images/download.png" HorizontalAlignment="Center" />
+                                </Button>
+                                <!--reply-->
+                                <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                        Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
+                                    <Image Source="../Images/undo.png" />
+                                </ToggleButton>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <!--time and star button-->
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF"
+       Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+       Grid.Row="0" Padding="8" Grid.Column="0" />
+                            <ToggleButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+         Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="Sent"
+       x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+       Grid.Column="3" HorizontalAlignment="Right" />
+
+                            <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left">
+
+                                <!--edit button--><!--
+                                <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+            Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
+                                    <Image Source="../Images/pen.png" />
+                                </Button>-->
+                                <!--delete button-->
+                                <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+            Width="30" Height="20" Margin="0,0,0,0" Click="DeleteHandler" ToolTip="Delete">
+                                    <Image Source="../Images/delete-chat.png" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                        
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <!--DataTemplate for chat bubble sent to the user which is not a reply-->
+        <DataTemplate x:Key="MsgToUserNotReplyTemplate">
+            <Border CornerRadius="20, 20, 20, 0" Background="#075e54" Margin="0,0,0,5" MaxWidth="257" HorizontalAlignment="Left">
+                <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="0" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Margin="5,10,5,5"  Background="Transparent" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <!--sender-->
+                        <Grid Grid.Row="0" HorizontalAlignment="Left">
+                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
+                            Width="230" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" FontWeight="Bold" />
+                        </Grid>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <emoji:TextBlock Foreground="#FFFFFF" Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}"
+                               x:Name="MainText" TextWrapping="Wrap" Grid.Row="0"  FontSize="16"
+                               Padding="8,5,8,5" Grid.Column="0" />
+
+                            <!--buttons-->
+                            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                                <!--reply button-->
+                                <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
+                                    <Image Source="../Images/undo.png" />
+                                </ToggleButton>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <!--time-->
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}"
+                               x:Name="timeText" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                               Grid.Column="0" />
+                            <!--star button-->
+                            <ToggleButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                                Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+
+        <!--Template for chat message sent to the User-->
+        <DataTemplate x:Key="MsgToUserTemplate">
+            <Border CornerRadius="20, 20, 20, 0" Background="#075e54" Margin="0,0,0,5" MaxWidth="257" HorizontalAlignment="Left">
+                <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="0" />
+                    </Grid.RowDefinitions>
+                    <Grid Margin="0, 5, 0, 0"  Background="Transparent" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="1" HorizontalAlignment="Left">
+                            <!--reply-->
+                            <Border Grid.Column="0" CornerRadius="8" BorderBrush="Transparent"
+                                    BorderThickness="5" Background="White" Opacity="0.5">
+                                <TextBlock 
+                                 Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}"
+                                TextWrapping="Wrap" Width="230" FontSize="14" Padding="8,5,8,5" FontStyle="Italic" HorizontalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+
+                        <!--sender-->
+                        <Grid Grid.Row="0" HorizontalAlignment="Left">
+                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
+                                Width="230" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" FontWeight="Bold" />
+                        </Grid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <emoji:TextBlock Foreground="#FFFFFF" Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}"
+                               x:Name="MainText" TextWrapping="Wrap" Grid.Row="0"  FontSize="16"
+                               Padding="8,5,8,5" Grid.Column="0" />
+
+                            <!--buttons-->
+                            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                                <!--reply button-->
+                                <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                    Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
+                                    <Image Source="../Images/undo.png" />
+                                </ToggleButton>
+                            </StackPanel>
+                        </Grid>
+
+
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <!--time-->
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}"
+                           x:Name="timeText" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                           Grid.Column="0" />
+                            <!--star button-->
+                            <ToggleButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                             Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <!--Template for file msg sent to the user (not reply)-->
+        <DataTemplate x:Key="FileToUserNotReplyTemplate">
+            <Border CornerRadius="20, 20, 20, 0" Background="#075e54" Margin="0,0,0,5" MaxWidth="257" HorizontalAlignment="Left">
+                <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="0" />
+                    </Grid.RowDefinitions>
+
+
+                    <Grid Margin="5, 10, 5, 5" Background="Transparent" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <!--sender-->
+                        <Grid Grid.Row="0" HorizontalAlignment="Left">
+                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
+                                Width="230" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" FontWeight="Bold" />
+                        </Grid>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border CornerRadius="8" BorderBrush="#075e54"
+                                    BorderThickness="5" Background="Teal">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="3*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Source="../Images/save.png" Width="25" Height="25" Margin="2" />
+                                    <emoji:TextBlock Grid.Column="1" Foreground="#FFFFFF"
+                                       Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
+                                        FontSize="16" Padding="8,5,8,5"  />
+
+                                </Grid>
+                            </Border>
+                            <!-- buttons-->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+
+                                <Button Background="Transparent" BorderBrush="Transparent"
+                                        HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0"
+                                        Click="DownloadHandler">
+                                    <Image Source="../Images/download.png" HorizontalAlignment="Center" />
+                                </Button>
+                                <!--reply-->
+
+                                <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                        Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
+                                    <Image Source="../Images/undo.png" />
+                                </ToggleButton>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF"
+                                Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+                                Grid.Row="0" Padding="8" Grid.Column="0" />
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="Sent"
+                                x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                                Grid.Column="2" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <!--Template for file msg sent to the user-->
+        <DataTemplate x:Key="FileToUserTemplate">
+            <Border CornerRadius="20, 20, 20, 0" Background="#075e54" Margin="0,0,0,5" MaxWidth="257" HorizontalAlignment="Left">
+                <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="0" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Margin="5, 10, 5, 5" Background="Transparent" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="1" HorizontalAlignment="Left" Width="230">
+                            <!--reply-->
+                            <Border Grid.Column="0" CornerRadius="8" BorderBrush="Transparent"
+                                BorderThickness="5" Background="White" Opacity="0.5">
+                                <TextBlock 
+                                 Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}"
+                                TextWrapping="Wrap" Width="230" FontSize="14" Padding="8,5,8,5" FontStyle="Italic" HorizontalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+
+                        <!--sender-->
+                        <Grid Grid.Row="0" HorizontalAlignment="Left">
+                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
+                            Width="230" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" FontWeight="Bold" />
+                        </Grid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border CornerRadius="8" BorderBrush="#075e54"
+                        BorderThickness="5" Background="Teal">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="3*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Source="../Images/save.png" Width="25" Height="25" Margin="2" />
+                                    <emoji:TextBlock Grid.Column="1" Foreground="#FFFFFF"
+                           Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
+                            FontSize="16" Padding="8,5,8,5"  />
+
+                                </Grid>
+                            </Border>
+                            <!-- buttons-->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+
+                                <Button Background="Transparent" BorderBrush="Transparent"
+                            HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0"
+                            Click="DownloadHandler">
+                                    <Image Source="../Images/download.png" HorizontalAlignment="Center" />
+                                </Button>
+                                <!--reply-->
+                                <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
+                                    Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
+                                    <Image Source="../Images/undo.png" />
+                                </ToggleButton>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF"
+                            Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+                            Grid.Row="0" Padding="8" Grid.Column="0" />
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="Sent"
+                            x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                            Grid.Column="2" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+
+        <!--Setting up the templates for constructing chat bubbles-->
+        <local:ChatBubbleConstructor x:Key="TemplateSelector" SentChatMessageTemplate="{StaticResource MsgFromUserTemplate}"
+                  SentFileMessageTemplate="{StaticResource FileFromUserTemplate}"
+                  ReceivedChatMessageTemplate="{StaticResource MsgToUserTemplate}"
+                  ReceivedFileMessageTemplate="{StaticResource FileToUserTemplate}"
+                  SentChatMessageNotReplyTemplate="{StaticResource MsgFromUserNotReplyTemplate}"
+                  ReceivedChatMessageNotReplyTemplate ="{StaticResource MsgToUserNotReplyTemplate}"
+                  ReceivedFileMessageNotReplyTemplate = "{StaticResource FileToUserNotReplyTemplate}"
+                  SentFileMessageNotReplyTemplate = "{StaticResource FileFromUserNotReplyTemplate}"/>
+
+    </UserControl.Resources>
+
+
+    <!--Grid layout for chat Window View-->
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="140"/>
+        </Grid.RowDefinitions>
+        <Border CornerRadius="10" Background="Transparent">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="0" Opacity="0.2" />
+            </Border.Effect>
+        </Border>
+        <Grid Grid.Row="0">
+            <TextBlock Text="In-Call Messages" FontSize="20" Height="Auto" Margin="5 5 5 5" />
+        </Grid>
+
+        <!--ListBox, for the Chat History-->
+        <Grid Grid.Row="1" Margin="5,30,5,5" Grid.ColumnSpan="2">
+
+            <!--Using Dynamic Template Selector, dynamically changes the template based on the Message received by the current User or the other user -->
+            <ListBox Background="Transparent" HorizontalAlignment="Stretch"
+                    BorderBrush="Transparent" VerticalAlignment="Stretch"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="MainChat" ScrollViewer.CanContentScroll="False"
+                    ItemTemplateSelector="{StaticResource TemplateSelector}"  MaxHeight="800">
+                <!--Items style-->
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <Border Background="{TemplateBinding Background}">
+                                        <ContentPresenter
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch" ClipToBounds="True" SnapsToDevicePixels="True" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+
+            </ListBox>
+
+        </Grid>
+
+        <!--TextBox, for the current message to be sent-->
+        <Grid Grid.Row="2"  VerticalAlignment="Bottom" Margin="0,0,0,10" Grid.ColumnSpan="2" RenderOptions.EdgeMode="Aliased">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Grid.ColumnSpan="2" CornerRadius="8" Background="Transparent"
+                            BorderBrush="Transparent" BorderThickness="2" Margin="5,0,5,0">
+                <Grid VerticalAlignment="Bottom">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Border CornerRadius="8" BorderBrush="#0f3d3e"
+                                BorderThickness="0" Background="Transparent"
+                                Opacity="0.6" Margin="0" Grid.ColumnSpan="2">
+
+                                <!--Reply text block-->
+                                <TextBlock Name="ReplyTextBox" 
+                                        Foreground="Black"
+                                        Width="425" MaxHeight="40" FontSize="14" Padding="8,5,8,5" FontStyle="Italic" />
+                            </Border>
+                        </Grid>
+
+
+                        <!--message text box-->
+
+                        <TextBox Grid.Row="1" Name="SendTextBox" Foreground="White" SpellCheck.IsEnabled="True" Background="#075E54" Width="207"
+                                BorderThickness="0" Height="40" FontSize="16" Padding="8, 8, 10, 5" VerticalAlignment="Bottom" CaretBrush="White" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Left" />
+                        <Border Grid.Row="1" Width="90" Height="40" Background="#075E54"  HorizontalAlignment="Right" CornerRadius="8" VerticalAlignment="Bottom">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" >
+                                <Button Background="Transparent" Width="30" Click="UploadHandler" VerticalAlignment="Center" ToolTip="Upload"
+                                                HorizontalAlignment="Center">
+                                    <Image Source="../Images/file-attach.png" Width="30" Height="20" />
+                                </Button>
+                                <Button Background="Transparent" Width="30" Margin="-3, 0, 0, 0"
+                                            Click="SendHandler" ToolTip="Send" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Image Source="../Images/sendButton.png" Width="30" Height="20"/>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

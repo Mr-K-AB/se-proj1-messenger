@@ -7,7 +7,8 @@
 * 
 * Project     = MessengerContent
 *
-* Description = file to obtain the files and chat messages on the server and pass them along after processing.
+* Description = file to obtain the files and chat messages from the server and 
+*               pass them on to clients after processing.
 *****************************************************************************/
 
 using System;
@@ -35,22 +36,21 @@ namespace MessengerContent.Server
         private FileServer _fileServer;
         private IContentSerializer _serializer;
         private List<IMessageListener> _subscribers;
-        private readonly ICommunicator _communicator;
 
         public ContentServer()
         {
             _subscribers = new List<IMessageListener>();
-            _communicator = Factory.GetInstance();
+            Communicator = CommunicationFactory.GetCommunicator(false);
             _contentDatabase = new ContentDataBase();
             _notificationHandler = new ContentServerNotificationHandler(this);
             _fileServer = new FileServer(_contentDatabase);
             _chatServer = new ChatServer(_contentDatabase);
             _serializer = new ContentSerializer();
-            _communicator.AddSubscriber("ContentServer", _notificationHandler);
+            Communicator.Subscribe("Content", _notificationHandler);
         }
 
         /// <summary>
-        /// Get and Set Communicator, util for testing the code
+        /// Get and Set Communicator set auto for both tests and running
         /// </summary>
         public ICommunicator Communicator { get; set; }
 
@@ -68,13 +68,15 @@ namespace MessengerContent.Server
                 return _chatServer.GetMessages();
             }
         }
-
-        /// <inheritdoc />
-        /*public void SendAllMessagesToClient(int userId)
+        /// <summary>
+        /// Send all the messages in the Database to Client
+        /// </summary>
+        public void SendAllMessagesToClient(int userId)
         {
             string allMessagesSerialized = _serializer.Serialize(GetAllMessages());
-            Communicator.Broadcast(allMessagesSerialized, "Content", userId.ToString());
-        }*/
+            Communicator.Send(allMessagesSerialized, "Content", userId.ToString());
+        }
+
 
         /// <summary>
         /// Receives data from ContentServerNotificationHandler and processes it
@@ -97,7 +99,7 @@ namespace MessengerContent.Server
             ChatData receivedMessageData;
             Trace.WriteLine("[ContentServer] Received MessageData from ContentServerNotificationHandler");
 
-            // lock to prevent multiple threads from modifying the messages at once.
+            // lock to prevent multiple threads from modifying the messages at once
             lock (s_lock)
             {
                 switch (messageData.Type)
@@ -112,10 +114,10 @@ namespace MessengerContent.Server
                         receivedMessageData = _fileServer.Receive(messageData);
                         break;
 
-                    /*case MessageType.HistoryRequest:
+                    case MessageType.HistoryRequest:
                         Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SendAllMessagesToClient");
                         SendAllMessagesToClient(messageData.SenderID);
-                        return;*/
+                        return;
 
                     default:
                         Trace.WriteLine("[ContentServer] MessageType is Unknown");
@@ -162,7 +164,7 @@ namespace MessengerContent.Server
         public void Send(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            _communicator.Broadcast("ContentClient", message);
+            Communicator.Send(message, "Content", null);
         }
 
         /// <summary>
@@ -172,7 +174,7 @@ namespace MessengerContent.Server
         public void SendFile(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            _communicator.SendMessage(_communicator.IpAddress, _communicator.ListenPort, "ContentClient", message);
+            Communicator.Send(message, "Content", messageData.SenderID.ToString());
         }
 
         /// <summary>

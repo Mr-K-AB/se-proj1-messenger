@@ -27,7 +27,7 @@ namespace MessengerContent.Server
         /// Add a new subscriber to the list of subscribers
         /// </summary>
         /// <param name="subscriber">IContentListener implementation provided by the subscriber</param>
-        void ServerSubscribe(IMessageListener subscriber);
+        //void ServerSubscribe(IMessageListener subscriber);
 
         /// <summary>
         /// Get all the messages sent

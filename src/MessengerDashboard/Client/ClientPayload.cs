@@ -1,9 +1,17 @@
-﻿/// <credits>
-/// <author>
-/// <name>Shailab Chauhan</name>
-/// <rollnumber>112001038</rollnumber>
-/// </author>
-/// </credits>
+﻿/******************************************************************************
+ * Filename    = ClientPayload.cs
+ *
+ * Author      = Shailab Chauhan 
+ *
+ * Roll number = 112001038
+ *
+ * Product     = Messenger 
+ * 
+ * Project     = MessengerDashboard
+ *
+ * Description = A class that stores the Payload sent  from the client.
+ *****************************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,27 +21,38 @@ using MessengerDashboard.Sentiment;
 
 namespace MessengerDashboard.Client
 {
+    /// <summary>
+    /// Represents a payload sent from the client to the server.
+    /// </summary>
     public class ClientPayload
     {
-        public ClientPayload(Operation eventName, string ipAddress, int port, UserInfo userInfo)
-        {
-            Operation = eventName;
-            IpAddress = ipAddress;
-            Port = port;
-            UserInfo = userInfo;
-        }
+        /// <summary>
+        /// Gets or sets the operation type in the payload.
+        /// </summary>
+        public Operation Operation { get; set; }
 
+        /// <summary>
+        /// Gets or sets user information associated with the payload.
+        /// </summary>
+        public UserInfo UserInfo { get; set; } = new();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientPayload"/> class.
+        /// </summary>
         public ClientPayload()
         {
 
         }
 
-        public string? IpAddress { get; set; } = string.Empty;
-        
-        public Operation Operation { get; set; }
-
-        public int Port { get; set; } = -1;
-
-        public UserInfo? UserInfo { get; set; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientPayload"/> class with specified operation and user information.
+        /// </summary>
+        /// <param name="eventName">The operation type.</param>
+        /// <param name="userInfo">User information.</param>
+        public ClientPayload(Operation eventName, UserInfo? userInfo)
+        {
+            Operation = eventName;
+            UserInfo = userInfo;
+        }
     }
 }

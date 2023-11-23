@@ -1,9 +1,17 @@
-﻿/// <credits>
-/// <author>
-/// <name>Shubh Pareek</name>
-/// <rollnumber>112001039</rollnumber>
-/// </author>
-/// </credits>
+﻿/******************************************************************************
+* Filename    = RestClient.cs
+*
+* Author      = Shubh Pareek
+*
+* Roll Number = 112001039
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerCloud
+*
+* Description = A rest client class for interacting with entitiy api functions.
+*****************************************************************************/
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
@@ -27,6 +35,7 @@ namespace MessengerCloud
         {
             _entityClient = new();
             _url = url;
+            Trace.WriteLine("[RestClient]: new client created ");
         }
 
         /// <summary>
@@ -36,6 +45,7 @@ namespace MessengerCloud
         /// <returns>The entity with the given id.</returns>
         public async Task<Entity?> GetEntityAsync(string? id)
         {
+            Trace.WriteLine("[RestClient]: get entity async called ");
             HttpResponseMessage response = await _entityClient.GetAsync(_url + $"/{id}");
             response.EnsureSuccessStatusCode();
             string result = await response.Content.ReadAsStringAsync();
@@ -46,6 +56,7 @@ namespace MessengerCloud
             };
 
             Entity? entity = JsonSerializer.Deserialize<Entity>(result, options);
+            Trace.WriteLine("[RestClient]: entity deserialized ");
             return entity;
         }
 
@@ -55,6 +66,7 @@ namespace MessengerCloud
         /// <returns>All the entities created so far</returns>
         public async Task<IReadOnlyList<Entity>?> GetEntitiesAsync()
         {
+            Trace.WriteLine("[RestClient]: get entities called ");
             HttpResponseMessage response = await _entityClient.GetAsync(_url);
             response.EnsureSuccessStatusCode();
             string result = await response.Content.ReadAsStringAsync();
@@ -65,6 +77,8 @@ namespace MessengerCloud
             };
 
             IReadOnlyList<Entity>? entities = JsonSerializer.Deserialize<IReadOnlyList<Entity>>(result, options);
+            Trace.WriteLine("[RestClient]: got entities, and returned   ");
+
             return entities;
         }
 
@@ -75,6 +89,7 @@ namespace MessengerCloud
         /// <returns>A new entity with the given name.</returns>
         public async Task<Entity?> PostEntityAsync(EntityInfoWrapper info)
         {
+            Trace.WriteLine("[RestClient]: Post entity called ");
             string json = System.Text.Json.JsonSerializer.Serialize(info);
 
             // Convert the JSON string to a ByteArrayContent
@@ -90,6 +105,7 @@ namespace MessengerCloud
             };
 
             Entity? entity = JsonSerializer.Deserialize<Entity>(result, options);
+            Trace.WriteLine("[RestClient]: posted successfully");
             return entity;
         }
 
@@ -100,8 +116,10 @@ namespace MessengerCloud
         /// <returns>A Task.</returns>
         public async Task DeleteEntityAsync(string? id)
         {
+            Trace.WriteLine("[RestClient]: Delete entity called ");
             Debug.WriteLine("deleting this ", id);
             using HttpResponseMessage response = await _entityClient.DeleteAsync(_url + $"/{id}");
+            Trace.WriteLine("[RestClient]: Delete entity Done ");
             response.EnsureSuccessStatusCode();
         }
 
@@ -111,8 +129,10 @@ namespace MessengerCloud
         /// <returns>A Task.</returns>
         public async Task DeleteEntitiesAsync()
         {
+            Trace.WriteLine("[RestClient]: Delete entities called ");
             Debug.WriteLine("deleting all ");
             using HttpResponseMessage response = await _entityClient.DeleteAsync(_url);
+            Trace.WriteLine("[RestClient]: Delete entities done ");
             response.EnsureSuccessStatusCode();
         }
     }

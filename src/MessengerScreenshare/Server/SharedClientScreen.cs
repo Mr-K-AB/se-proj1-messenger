@@ -1,14 +1,22 @@
-﻿/// <author>Aditya Raj</author>
-/// <summary>
-/// This file contains the SharedClientScreen class which 
-/// represents the screen shared by a client.
-/// </summary>
-/// 
+﻿/******************************************************************************
+ * Filename    = SharedClientScreen.cs
+ *
+ * Author      = Aditya Raj
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerScreenshare
+ *
+ * Description = This file contains the SharedClientScreen class which 
+                 represents the screen shared by a client.
+ *****************************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -33,7 +41,7 @@ namespace MessengerScreenshare.Server
         /// The data model defining the callback for the timeout.
         /// </summary>
         private readonly ITimer _serverTimeout;
-
+        //public Dictionary<int, StringBuilder>? ImageFragments { get; set; }
         /// <summary>
         /// It will store the image receiving from the clients.
         /// </summary>
@@ -132,35 +140,33 @@ namespace MessengerScreenshare.Server
             _tileHeight = 0;
             _tileWidth = 0;
 
-            if (!isDebug)
+            try
             {
-               SetupTimer();
+                if (!isDebug)
+                {
+                    // Create the timer for this client.
+                    _timer = new Timer();
+                    _timer.Elapsed += new((sender, e) => _serverTimeout.OnTimeOut(sender, Id, e));
+
+                    // The timer should be invoked only once.
+                    _timer.AutoReset = false;
+
+                    // Set the time interval for the timer.
+                    UpdateTimer();
+
+                    // Start the timer.
+                    _timer.Enabled = true;
+                }
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}", withTimeStamp: true));
+                throw new Exception("Failed to create the timer", e);
             }
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully created client with id: {Id} and name: {Name}", withTimeStamp: true));
         }
 
-        /// <summary>
-        /// It sets up a timer to perform an timeout action,
-        /// after a specified time interval.
-        /// </summary>
-        /// <exception cref="Exception"></exception>
-        private void SetupTimer()
-        {
-            try
-            {
-                Timer _timer = new ();
-                _timer.Elapsed += (sender, e) => _serverTimeout.OnTimeOut(sender, Id, e);
-                _timer.AutoReset = false;
-                UpdateTimer();
-                _timer.Enabled = true;
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}" , withTimeStamp: true));
-                throw new Exception("Failed to create the timer", e);
-            }
-        }
 
         /// <summary>
         /// Destructor for the class that will perform some cleanup tasks.
@@ -298,31 +304,34 @@ namespace MessengerScreenshare.Server
         public string? GetImage(int taskId)
         {
             Debug.Assert(_screenImageQueue != null, Utils.GetDebugMessage("_imageQueue is null"));
+            // Wait until the queue is empty.
+            while (_screenImageQueue != null && _screenImageQueue.Count == 0)
+            {
+                // Return if the task is stopped or a new task is started.
+                if (taskId != TaskId)
+                {
+                    return "";
+                }
+
+                Thread.Sleep(100);
+            }
+
+            // Return if the task is stopped or a new task is started.
+            if (_screenImageQueue == null || taskId != TaskId)
+            {
+                return "";
+            }
+
             lock (_screenImageQueue)
             {
-                // Check if the task is stopped or a new task is started.
-                if (_screenImageQueue == null || taskId != TaskId)
-                {
-                    return null;
-                }
-
-                // Use a while loop to wait until the queue is not empty.
-                while (_screenImageQueue.Count == 0)
-                {
-                    // Release the lock and wait for a signal.
-                    Monitor.Wait(_screenImageQueue);
-
-                    // After being woken up, recheck if the task is stopped or a new task is started.
-                    if (_screenImageQueue == null || taskId != TaskId)
-                    {
-                        return null;
-                    }
-                }
-
-                Debug.Assert(_screenImageQueue.Count > 0, Utils.GetDebugMessage("Queue should not be empty"));
-
                 try
                 {
+                    // Return if the task is stopped or a new task is started.
+                    if (taskId != TaskId)
+                    {
+                        return "";
+                    }
+
                     return _screenImageQueue.Dequeue();
                 }
                 catch (InvalidOperationException e)
@@ -370,31 +379,34 @@ namespace MessengerScreenshare.Server
         {
             Debug.Assert(_finalScreenImageQueue != null, Utils.GetDebugMessage("_finalImageQueue is found null"));
 
-            lock (_finalScreenImageQueue)
+            // Wait until the queue is not empty.
+            while (_finalScreenImageQueue != null && _finalScreenImageQueue.Count == 0)
             {
-                // Check if the task is stopped or a new task is started.
-                if (_finalScreenImageQueue == null || taskId != TaskId)
+                // Return if the task is stopped or a new task is started.
+                if (taskId != TaskId)
                 {
                     return null;
                 }
 
-                // Use a while loop to wait until the queue is not empty.
-                while (_finalScreenImageQueue.Count == 0)
-                {
-                    // Release the lock and wait for a signal.
-                    Monitor.Wait(_finalScreenImageQueue);
+                Thread.Sleep(100);
+            }
 
-                    // After being woken up, recheck if the task is stopped or a new task is started.
-                    if (_finalScreenImageQueue == null || taskId != TaskId)
+            // Return if the task is stopped or a new task is started.
+            if (_finalScreenImageQueue == null || taskId != TaskId)
+            {
+                return null;
+            }
+
+            lock (_finalScreenImageQueue)
+            {
+                try
+                {
+                    // Return if the task is stopped or a new task is started.
+                    if (taskId != TaskId)
                     {
                         return null;
                     }
-                }
 
-                Debug.Assert(_finalScreenImageQueue.Count > 0, Utils.GetDebugMessage("Queue should not be empty"));
-
-                try
-                {
                     return _finalScreenImageQueue.Dequeue();
                 }
                 catch (InvalidOperationException e)
@@ -411,7 +423,7 @@ namespace MessengerScreenshare.Server
         /// <param name="image">
         /// Image to be inserted.
         /// </param>
-        /// /// <param name="taskId">
+        /// <param name="taskId">
         /// Id of the task in which this function is called.
         /// </param>
         public void PutFinalImage(Bitmap image, int taskId)
@@ -551,7 +563,7 @@ namespace MessengerScreenshare.Server
             try
             {
                 // It will reset the timer to start again.
-                _timer.Interval = SharedClientScreen.Timeout;
+                _timer.Interval = Timeout;
             }
             catch (Exception e)
             {

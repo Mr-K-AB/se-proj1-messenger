@@ -8,7 +8,7 @@ namespace MessengerNetworking.Sockets
     public static class PacketString
     {
         // serializer to serialize packets
-        static readonly Serialzer _serializer = new();
+        static readonly Serialzer s_serializer = new();
 
         /// <summary>
         /// Convertes a packet to a serialized and framed string.
@@ -24,7 +24,7 @@ namespace MessengerNetworking.Sockets
             try
             {
                 // serialize the packet
-                string packetString = _serializer.Serialize(packet);
+                string packetString = s_serializer.Serialize(packet);
 
                 // replace the "END" from the string by "NOTEND" because
                 // we are going to mark the end of the string by "END"
@@ -74,7 +74,7 @@ namespace MessengerNetworking.Sockets
                 // deserialize the packet string to get back the packet
                 // and return this packet
                 Packet packet =
-                    _serializer.Deserialize<Packet>(packetString);
+                    s_serializer.Deserialize<Packet>(packetString);
 
                 return packet;
             }

@@ -133,7 +133,7 @@ namespace MessengerNetworking.Communicator
                 _runClientConnectReuqestAcceptorThread = false;
 
                 // stop listening to the clients
-                foreach (var socketListener in
+                foreach (SocketListener socketListener in
                     _clientIdToSocketListener.Values)
                 {
                     socketListener.Stop();
@@ -259,12 +259,12 @@ namespace MessengerNetworking.Communicator
 
                     // notify all "subscribed" modules that a new
                     // client has joined
-                    foreach (var moduleToNotificationHandler in
+                    foreach (KeyValuePair<string, INotificationHandler> moduleToNotificationHandler in
                         _moduleToNotificationHanderMap)
                     {
                         string module =
                             moduleToNotificationHandler.Key;
-                        var notificationHandler =
+                        INotificationHandler notificationHandler =
                             moduleToNotificationHandler.Value;
                         notificationHandler.OnClientJoined(
                             clientSocket);
@@ -273,30 +273,12 @@ namespace MessengerNetworking.Communicator
                             " has joined.");
                     }
                 }
-                catch (SocketException e)
-                {
-                    if (e.SocketErrorCode == SocketError.Interrupted)
-                    {
-                        Trace.WriteLine("[Networking] Error in " +
-                            "CommunicatorServer." +
-                            "AcceptClientConnectRequests(): client " +
-                            "connect request tcp listener socket " +
-                            "has been closed.");
-                    }
-                    else
-                    {
-                        Trace.WriteLine("[Networking] SocketException "
-                            + "in CommunicatorServer." +
-                            "AcceptClientConnectRequests(): " +
-                            e.Message);
-                    }
-                }
-                catch (Exception e)
+                catch (Exception ex)
                 {
                     Trace.WriteLine("[Networking] Error in " +
                         "CommunicatorServer." +
                         "AcceptClientConnectRequests(): " +
-                        e.Message);
+                        ex.Message);
                 }
             }
         }

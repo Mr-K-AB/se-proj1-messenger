@@ -6,9 +6,9 @@ namespace MessengerNetworking.Factory
 {
     public static class CommunicationFactory
     {
-        private static readonly CommunicatorClient _communicatorClient =
+        private static readonly CommunicatorClient s_communicatorClient =
             new();
-        private static readonly CommunicatorServer _communicatorServer =
+        private static readonly CommunicatorServer s_communicatorServer =
             new();
 
         /// <summary>
@@ -26,9 +26,9 @@ namespace MessengerNetworking.Factory
                 "called with isClientSide: " + isClientSide.ToString());
             if (isClientSide)
             {
-                return _communicatorClient;
+                return s_communicatorClient;
             }
-            return _communicatorServer;
+            return s_communicatorServer;
         }
     }
 }

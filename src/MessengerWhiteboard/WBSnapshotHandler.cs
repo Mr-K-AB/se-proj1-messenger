@@ -10,12 +10,6 @@
 * Description = This file handles the implementation of
 *               snapshot handling for whiteboard.
 ***************************/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace MessengerWhiteboard
 {
     public partial class ViewModel

@@ -33,7 +33,7 @@ namespace MessengerWhiteboard
         {
             get
             {
-                s_instance ??= new ClientState ();
+                s_instance ??= new ClientState();
 
                 return s_instance;
             }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using System.Windows.Media;
 using MessengerWhiteboard.Models;
 using Newtonsoft.Json;
@@ -14,7 +9,7 @@ namespace MessengerWhiteboard
     {
         public SerializableShapeItem SerializeShape(ShapeItem shape)
         {
-            if(shape == null)
+            if (shape == null)
             {
                 return null;
             }
@@ -36,7 +31,7 @@ namespace MessengerWhiteboard
 
         public List<SerializableShapeItem> SerializeShapes(List<ShapeItem> shapes)
         {
-            if(shapes == null)
+            if (shapes == null)
             {
                 return null;
             }
@@ -50,7 +45,7 @@ namespace MessengerWhiteboard
 
         public string MarhsalShapes(List<ShapeItem> shapes)
         {
-            if(shapes == null)
+            if (shapes == null)
             {
                 return null;
             }
@@ -69,7 +64,7 @@ namespace MessengerWhiteboard
                 List<SerializableShapeItem>? boardShapes = JsonConvert.DeserializeObject<List<SerializableShapeItem>>(
                     jsonString
                 );
-                if(boardShapes == null)
+                if (boardShapes == null)
                 {
                     return null;
                 }
@@ -96,20 +91,20 @@ namespace MessengerWhiteboard
 
         public ShapeItem DeserializeShape(SerializableShapeItem serializableShape)
         {
-            if(serializableShape == null)
+            if (serializableShape == null)
             {
                 return null;
             }
             Geometry g = new RectangleGeometry(serializableShape.boundary);
-            if(serializableShape.shapeType == "Ellipse")
+            if (serializableShape.shapeType == "Ellipse")
             {
                 g = new EllipseGeometry(serializableShape.boundary);
             }
-            else if(serializableShape.shapeType == "Line")
+            else if (serializableShape.shapeType == "Line")
             {
                 g = new LineGeometry(serializableShape.points[0], serializableShape.points[1]);
             }
-            else if(serializableShape.shapeType == "Curve")
+            else if (serializableShape.shapeType == "Curve")
             {
                 //PathGeometry pathGeometry = new();
                 //pathGeometry.AddGeometry(new LineGeometry(serializableShape.points[0], serializableShape.points[1]));
@@ -139,7 +134,7 @@ namespace MessengerWhiteboard
 
         public List<ShapeItem> DeserializeShapes(List<SerializableShapeItem> serializableShapes)
         {
-            if(serializableShapes == null)
+            if (serializableShapes == null)
             {
                 return null;
             }

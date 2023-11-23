@@ -1,10 +1,15 @@
-﻿///<author>Alugonda Sathvik </author>
-///<summary>
-/// This file has ScreenshareClient class's implementation
-/// In this file functions related to starting and stopping Screen Capturing 
-/// are implemented
-///</summary>
-///
+﻿/******************************************************************************
+* Filename    = ScreenshareClient.cs
+*
+* Author      = Alugonda Sathvik
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = This Class implements start and stop screen sharing of clients.
+*****************************************************************************/
+
 using MessengerScreenshare.Client;
 using MessengerScreenshare;
 using System;
@@ -47,7 +52,7 @@ namespace MessengerScreenshare.Client
         private readonly CancellationTokenSource? _imageCancellation;
 
         // View model for screenshare client
-        private ScreenshareClientViewModel? _viewModel;
+        public ScreenshareClientViewModel? _viewModel;
 
         private readonly System.Timers.Timer? _timer;
         public static double Timeout { get; } = 200 * 1000;

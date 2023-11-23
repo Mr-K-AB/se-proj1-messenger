@@ -1,4 +1,17 @@
-﻿using System.Collections.Concurrent;
+﻿/******************************************************************************
+* Filename    = ScreenProcessor.cs
+*
+* Author      = Alugonda Sathvik
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = Thhis class processes captured screen frames asynchronously, compresses and queues them. 
+*               It includes functionality for dynamic resolution adjustment and employs a XOR-based differencing approach to detect changes between consecutive frames.
+*****************************************************************************/
+
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;

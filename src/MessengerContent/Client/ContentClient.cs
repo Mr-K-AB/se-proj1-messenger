@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = handles client side of recieving, sending and processing messages
  *****************************************************************************/
 using System;
 using System.Collections.Generic;
@@ -215,38 +215,6 @@ namespace MessengerContent.Client
         }
 
         /// <summary>
-        /// Returns the array of intersecting receiver IDs of an existing message and a new reply message 
-        /// </summary>
-        /// <param name="previousReceiverIDs">List of receiver IDs of existing message</param>
-        /// <param name="currentReceiverIDs">List of receiver IDs of the new message</param>
-        /// <param name="previousSenderID">ID of the sender of existing message</param>
-        /// <returns>List of Receiver IDs</returns>
-        /// <exception cref="ArgumentException"></exception>
-        /*private int[] AllReceivers(int[] previousReceiverIDs, int[] currentReceiverIDs, int previousSenderID)
-        {
-            // exisiting message receiver ID array is empty implies message is a broadcast message
-            // final receiver array is simply the receiver array of the new message
-            if (!(previousReceiverIDs?.Length > 0))
-            {
-                return currentReceiverIDs;
-            }
-            // add the sender of existing message to the receiver array
-            _ = previousReceiverIDs.Concat(new[] { previousSenderID }).ToArray();
-            // final receiver array is existing message receiver array if current array is empty 
-            if (!(currentReceiverIDs?.Length > 0))
-            {
-                return previousReceiverIDs;
-            }
-            // get intersecting array of receiver IDs
-            int[] allReceivers = previousReceiverIDs.Intersect(currentReceiverIDs).ToArray();
-            if (allReceivers.Length == 0)
-            {
-                throw new ArgumentException("Invalid array of receivers.");
-            }
-            return allReceivers;
-        }*/
-
-        /// <summary>
         /// Function to check if path is accessible and a file can be created
         /// </summary>
         /// <param name="path">File path</param>
@@ -269,11 +237,6 @@ namespace MessengerContent.Client
         ///<inheritdoc/>
         public void ClientSendData(SendChatData chatData)
         {
-            // check if receiver ID list is not null
-            /*if (chatData.ReceiverIDs is null)
-            {
-                throw new ArgumentException("List of receiver IDs given is null");
-            }*/
             // check if message is part of thread
             if (chatData.ReplyThreadID != -1)
             {

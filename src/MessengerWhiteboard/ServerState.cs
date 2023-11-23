@@ -24,7 +24,7 @@ namespace MessengerWhiteboard
         private static IServerCommunicator s_communicator;
         private readonly Serializer _serializer;
         private static ServerState s_instance;
-        private static ServerSnapshotHandler s_serverSnapshotHandler;
+        public static ServerSnapshotHandler s_serverSnapshotHandler;
 
         /// <summary>
         ///     Making sure there is a single instance of the server on a particular machine.

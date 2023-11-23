@@ -400,7 +400,7 @@ namespace MessengerApp.Views
         /// <param name="e"></param>
         private void SaveMode(object sender, RoutedEventArgs e)
         {
-            _viewModel.SaveSnapshot("here");
+            _viewModel.SaveSnapshot(SaveSessionText.Text);
         }
 
     }

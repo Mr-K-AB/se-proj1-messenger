@@ -210,8 +210,8 @@
                                 VerticalOffset="5">
                                     <Border Background="Gray" Height="auto" Width="auto" Padding="5">
                                         <StackPanel Orientation="Vertical">
-                                            <TextBox Name="SaveSessionText" Width="150" Height="30" FontSize="16"/>
-                                            <Button Name="SaveSessionButton" Click="SaveMode">Submit</Button>
+                                            <TextBox x:Name="SaveSessionText" Width="150" Height="30" FontSize="16"/>
+                                            <Button x:Name="SaveSessionButton" Click="SaveMode">Submit</Button>
                                         </StackPanel>
                                     </Border>
                                 </Popup>

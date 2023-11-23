@@ -14,18 +14,18 @@ namespace MessengerDashboard.UI.ViewModels
     public class SessionsViewModel : ViewModel
     {
 
-        protected readonly RestClient _restClient = new(@"http://localhost:7166/api/entity");
 
         public SessionsViewModel() 
         {
             LocalCommand = new LocalCommand(this);
-            CloudCommand = new CloudCommand(_restClient, this);
-            DeleteAllCommand = new DeleteAllCommand(_restClient, this);
+            CloudCommand = new CloudCommand(RestClient, this);
+            DeleteAllCommand = new DeleteAllCommand(RestClient, this);
         }
+        public RestClient RestClient { get; set; } = new(@"http://localhost:7166/api/entity");
 
-        private List<TimeStampChatCountEntry> _timeStampChatCountEntries;
+        private List<TimeStampUserCountEntry> _timeStampChatCountEntries;
 
-        public List<TimeStampChatCountEntry> TimeStampChatCountEntries
+        public List<TimeStampUserCountEntry> TimeStampUserCountEntries
         {
             get => _timeStampChatCountEntries;
             set => SetProperty(ref _timeStampChatCountEntries, value);
@@ -47,12 +47,12 @@ namespace MessengerDashboard.UI.ViewModels
             set => SetProperty(ref _sessions, value);
         }
 
-        private string _sessionsummary;
+        private string _sessionSummary;
 
         public string SessionSummary
         {
-            get => _sessionsummary;
-            set => SetProperty(ref _sessionsummary, value);
+            get => _sessionSummary;
+            set => SetProperty(ref _sessionSummary, value);
         }
 
         private int _totalUserCount;
@@ -63,14 +63,6 @@ namespace MessengerDashboard.UI.ViewModels
             set => SetProperty(ref _totalUserCount, value);
         }
 
-        private int _totalChatCount;
-
-        public int TotalChatCount
-        {
-            get => _totalChatCount;
-            set => SetProperty(ref _totalChatCount, value);
-        }
-        
         private int _positiveChatCount;
 
         public int PositiveChatCount

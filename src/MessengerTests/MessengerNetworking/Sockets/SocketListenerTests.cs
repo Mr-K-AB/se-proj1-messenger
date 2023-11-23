@@ -1,4 +1,12 @@
-﻿using MessengerNetworking.Communicator;
+﻿/******************************************************************************
+ * 
+ * Author      = Priyanshu Gupta
+ *
+ * Roll no     = 112001033
+ *
+ *****************************************************************************/
+
+using MessengerNetworking.Communicator;
 using MessengerNetworking.Queues;
 using MessengerNetworking.Sockets;
 using System.Net;

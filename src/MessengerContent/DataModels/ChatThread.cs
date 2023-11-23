@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = data model for chat threads
  *****************************************************************************/
 
 using System;

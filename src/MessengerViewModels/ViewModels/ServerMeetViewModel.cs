@@ -1,5 +1,5 @@
-﻿using MessengerApp.Stores;
-using MessengerApp.Commands;
+﻿using MessengerViewModels.Stores;
+using MessengerViewModels.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +12,9 @@ using MessengerDashboard.UI.ViewModels;
 using MessengerWhiteboard;
 using MessengerScreenshare.Server;
 
-namespace MessengerApp.ViewModels
+namespace MessengerViewModels.ViewModels
 {
-    internal class ServerMeetViewModel : ViewModelBase
+    public class ServerMeetViewModel : ViewModelBase
     {
         public ICommand NavigateHomeCommand { get; }
         public ICommand NavigateServerDashboardCommand { get; }
@@ -28,6 +28,8 @@ namespace MessengerApp.ViewModels
 
         private readonly DashboardInstructorViewModel _dashboardViewModel;
         private readonly MessengerWhiteboard.ViewModel _whiteboardViewModel;
+        
+
         private readonly MessengerScreenshare.Server.ScreenshareServerViewModel _screenshareServerViewModel;
 
         public int Port { get; set; }
@@ -43,13 +45,15 @@ namespace MessengerApp.ViewModels
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
             _dashboardViewModel = new DashboardInstructorViewModel();
             _whiteboardViewModel = new MessengerWhiteboard.ViewModel();
-            _screenshareServerViewModel = new ScreenshareServerViewModel(false);
+            _screenshareServerViewModel = ScreenshareServerViewModel.GetInstance() ;
             _server = DashboardFactory.GetServerSessionController();
             navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
             Port = _server.ConnectionDetails.Port;
             IP = _server.ConnectionDetails.IpAddress;
+
             _whiteboardViewModel = MessengerWhiteboard.ViewModel.Instance;
             _whiteboardViewModel.SetUserID(0);
+
             NavigateServerDashboardCommand = new NavigateServerDashboardCommand(navigationStore, _dashboardViewModel);
             NavigateServerWhiteboardCommand = new NavigateServerWhiteboardCommand(navigationStore, _whiteboardViewModel);
             NavigateServerScreenshareCommand = new NavigateServerScreenshareCommand(navigationStore, _screenshareServerViewModel);

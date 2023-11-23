@@ -1,4 +1,15 @@
-﻿
+﻿/******************************************************************************
+ * Filename    = ContentClient.cs
+ *
+ * Author      = Rapeti Siddhu Neehal
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerContent
+ *
+ * Description = Interface for message listener
+ *****************************************************************************/
+
 using MessengerContent.DataModels;
 using System.Collections.Generic;
 

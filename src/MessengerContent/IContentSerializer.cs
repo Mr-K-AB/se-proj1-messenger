@@ -1,4 +1,16 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = ContentServer.cs
+*
+* Author      = Likhitha
+*
+* Product     = Messenger
+* 
+* Project     = MessengerContent
+*
+* Description = interface for message serealizer
+*****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

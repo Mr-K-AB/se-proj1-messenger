@@ -1,4 +1,23 @@
-﻿using System;
+﻿/*****************************************************************************
+*Filename = SessionsViewModel.cs
+*
+*Author = Satish Patidar
+*
+* Roll number = 112001037
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerDashboard
+*
+* Description = This file contains the definition of the SessionsViewModel class, which is a ViewModel
+* responsible for managing data related to user sessions in the Messenger Session.
+* It includes properties for various session-related data such as time stamps, user activities,
+*session entries, and counts of positive, negative, and neutral chats.The class also defines
+* commands for local operations, cloud operations, and deleting all data. Additionally, it uses
+*               a RestClient to interact with the Messenger API.
+*****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;

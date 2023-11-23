@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = ClientSessionController.cs
+* Filename    = IUserNotification.cs
 *
 * Author      = Shailab Chauhan 
 *
@@ -8,8 +8,7 @@
 * Product     = Messenger 
 * 
 * Project     = MessengerDashboard
-*
-* Description = A class that controls the session for the client.
+
 *****************************************************************************/
 using System;
 using System.Collections.Generic;

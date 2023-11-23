@@ -1,19 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/******************************************************************************
+* Filename    = IServerSessionController.cs
+*
+* Author      = Pratham Ravindra Nagpure 
+*
+* Roll number = 112001054
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerDashboard
+*
+* Description = Provides an interface for a server session controller.
+*****************************************************************************/
+
+using System;
 using MessengerDashboard.Server.Events;
-using MessengerNetworking.NotificationHandler;
 
 namespace MessengerDashboard.Server
 {
     /// <summary>
-    /// Provides an interface for a server session handler.
+    /// Provides an interface for a server session controller.
     /// </summary>
     public interface IServerSessionController
     {
-        public ConnectionDetails ConnectionDetails { get; }
-        public event EventHandler<SessionUpdatedEventArgs>? SessionUpdated;
+        /// <summary>
+        /// Gets the connection details for the server session.
+        /// </summary>
+        ConnectionDetails ConnectionDetails { get; }
+
+        /// <summary>
+        /// Event triggered when the server session is updated.
+        /// </summary>
+        event EventHandler<SessionUpdatedEventArgs>? SessionUpdated;
     }
 }

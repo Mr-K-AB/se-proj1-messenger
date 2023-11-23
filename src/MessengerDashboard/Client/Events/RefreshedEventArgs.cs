@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = ClientSessionController.cs
+* Filename    = RefreshedEventArgs.cs
 *
 * Author      = Shailab Chauhan 
 *
@@ -9,7 +9,7 @@
 * 
 * Project     = MessengerDashboard
 *
-* Description = A class that controls the session for the client.
+* Description = Provides data for the event when the client session is refreshed.
 *****************************************************************************/
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ using MessengerDashboard.Telemetry;
 namespace MessengerDashboard.Client.Events
 {
     /// <summary>
-    /// Provides data for the event when the client session is refreshed in the Messenger Dashboard project.
+    /// Provides data for the event when the client session is refreshed.
     /// </summary>
     public class RefreshedEventArgs : EventArgs
     {

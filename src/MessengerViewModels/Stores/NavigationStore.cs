@@ -1,11 +1,11 @@
-﻿using MessengerApp.ViewModels;
+﻿using MessengerViewModels.ViewModels;
 using MessengerDashboard;
 using MessengerDashboard.UI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MessengerApp.Stores
+namespace MessengerViewModels.Stores
 {
     public class NavigationStore
     {

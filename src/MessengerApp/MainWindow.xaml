@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MessengerApp.Views"
         xmlns:views="clr-namespace:MessengerApp.Views"
-        xmlns:viewmodels="clr-namespace:MessengerApp.ViewModels"
+        xmlns:viewmodels="clr-namespace:MessengerViewModels.ViewModels;assembly=MessengerViewModels"
         mc:Ignorable="d"
         Title="Messenger" Height="450" Width="800">
     <Grid>

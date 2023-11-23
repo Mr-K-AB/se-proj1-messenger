@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Input;
 
-namespace MessengerApp.Commands
+namespace MessengerViewModels.Commands
 {
     public abstract class CommandBase : ICommand
     {

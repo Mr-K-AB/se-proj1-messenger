@@ -7,16 +7,16 @@ using System.Windows.Input;
 
 namespace MessengerDashboard.UI.DataModels
 {
-    public class TimeStampChatCountEntry
+    public class TimeStampUserCountEntry
     {
         public DateTime TimeStamp { get; set; }
 
-        public int ChatCount { get; set; }
+        public int UserCount { get; set; }
 
-        public TimeStampChatCountEntry(DateTime timeStamp, int chatCount)
+        public TimeStampUserCountEntry(DateTime timeStamp, int chatCount)
         {
             TimeStamp = timeStamp;
-            ChatCount = chatCount;
+            UserCount = chatCount;
         }
     }
 }

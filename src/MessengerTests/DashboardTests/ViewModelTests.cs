@@ -94,7 +94,8 @@ namespace MessengerTests.DashboardTests
             // Arrange
             string cloudUrl = "http://localhost:7166/api/entity";
             Mock<SessionsViewModel> sessionsViewModelMock = new();
-            CloudCommand cloudCommand = new(cloudUrl, sessionsViewModelMock.Object);
+            RestClient restClient = new (cloudUrl);
+            CloudCommand cloudCommand = new(restClient, sessionsViewModelMock.Object);
             cloudCommand.Execute(null);
             Thread.Sleep(1000);
             Assert.IsTrue(cloudCommand.CanExecute(null));

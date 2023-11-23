@@ -29,9 +29,6 @@ namespace MessengerTests.ScreenshareTests
         /// <summary>
         /// Tests the successful registration of the clients when clients start screen sharing.
         /// </summary>
-        /// <param name="numClients">
-        /// Number of clients who registered.
-        /// </param>
         [TestMethod]
         public void TestRegisterClient()
         {
@@ -121,9 +118,6 @@ namespace MessengerTests.ScreenshareTests
         /// <summary>
         /// Tests the successful registration of the clients when clients stop screen sharing.
         /// </summary>
-        /// <param name="numClients">
-        /// Number of clients who registered.
-        /// </param>
         [TestMethod]
         public void TestDeregisterClient()
         {
@@ -204,9 +198,6 @@ namespace MessengerTests.ScreenshareTests
         /// <summary>
         /// Tests the successful marking of a single client as pinned.
         /// </summary>
-        /// <param name="numClients">
-        /// Number of clients who registered.
-        /// </param>
         [TestMethod]
         public void TestOnPinSingle()
         {
@@ -305,8 +296,6 @@ namespace MessengerTests.ScreenshareTests
         /// <summary>
         /// Tests the successful marking of multiple clients as pinned.
         /// </summary>
-        /// <param name="numClients">
-        /// Number o
         [TestMethod]
         public void TestOnPinMultiple()
         {
@@ -415,10 +404,7 @@ namespace MessengerTests.ScreenshareTests
 
         /// <summary>
         /// Tests the successful marking of a client as unpinned.
-        /// </summary>
-        /// <param name="numClients">
-        /// Number of clients who registered.
-        /// </param>
+        /// </summary> who registered.
         [TestMethod]
         public void TestOnUnpin()
         {

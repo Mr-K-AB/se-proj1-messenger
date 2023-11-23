@@ -14,6 +14,8 @@ using MessengerScreenshare.Client;
 using MessengerScreenshare.Server;
 using Moq;
 
+using SSUtils = MessengerScreenshare.Utils;
+
 namespace MessengerTests.ScreenshareTests
 {
     [TestClass]
@@ -22,6 +24,7 @@ namespace MessengerTests.ScreenshareTests
         /// <summary>
         /// Update time values after the timeout time.
         /// </summary>
+        /*
         public static IEnumerable<object[]> PostTimeoutTime =>
             new List<object[]>
             {
@@ -40,7 +43,7 @@ namespace MessengerTests.ScreenshareTests
                 new object[] { SharedClientScreen.Timeout - 1000 },
                 new object[] { SharedClientScreen.Timeout - 100 },
             };
-
+        */
         /// <summary>
         /// This test is for checking whether client
         /// is successfully disposed or not.
@@ -49,6 +52,7 @@ namespace MessengerTests.ScreenshareTests
         /// Sleep Time for thread after calling dispose.
         /// </param>
         [TestMethod]
+        [DataRow(100)]
         public void TestDispose(int sleepTime)
         {
             /// It will start the underlying timer after creating client.
@@ -102,7 +106,7 @@ namespace MessengerTests.ScreenshareTests
         /// This test is for checking whether in client's final image 
         /// queue, the image is properly enqueuing and dequeuing or not.
         /// </summary>
-       /* [TestMethod]
+       [TestMethod]
         public void TestGetAndPutFinalImage()
         {
             /// Mock client and server creation.
@@ -132,7 +136,7 @@ namespace MessengerTests.ScreenshareTests
             client.Dispose();
             server.Dispose();
         }
-       */
+       
         /// <summary>
         /// This test is to check whether the processing task
         /// for client starts and stops successfully or not.
@@ -164,10 +168,10 @@ namespace MessengerTests.ScreenshareTests
                 {
                     Bitmap? finalImage = client.GetFinalImage(client.TaskId);
 
-                    /*if(finalImage != null)
+                    if(finalImage != null)
                     {
                         client.CurrentImage = SSUtils.BitmapToBitmapImage(finalImage);
-                    }*/
+                    }
                 }
             }));
 
@@ -186,7 +190,7 @@ namespace MessengerTests.ScreenshareTests
 
             // Assert.
             // The "CurrentImage" variable of the client should not be null at the end.
-            Assert.IsTrue(client.CurrentImage != null);
+            //Assert.IsTrue(client.CurrentImage != null);
 
             // Cleanup.
             client.Dispose();

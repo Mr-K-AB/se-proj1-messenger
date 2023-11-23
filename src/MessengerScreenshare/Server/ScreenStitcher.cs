@@ -41,7 +41,7 @@ namespace MessengerScreenshare.Server
         /// A count to maintain the number of image stitched. Used in
         /// trace logs.
         /// </summary>
-        private int _cnt = 0;
+        //private int _cnt = 0;
 
         /// <summary>
         /// Constructor for ScreenSticher.
@@ -144,10 +144,10 @@ namespace MessengerScreenshare.Server
         /// </param>
         public void StartStitching(int taskId)
         {
-            if (_stitchTask != null)
+            /*if (_stitchTask != null)
             {
                 return;
-            }
+            }*/
 
             _stitchTask = new Task(() =>
             {
@@ -159,14 +159,14 @@ namespace MessengerScreenshare.Server
                     {
                         break;
                     }
-                    if (newFrame == null)
+                    /*if (newFrame == null)
                     {
                         Trace.WriteLine(Utils.GetDebugMessage("New frame returned by _sharedClientScreen is null.", withTimeStamp: true));
                         continue;
-                    }
+                    }*/
 
                     Bitmap stichedImage = Stitch(_priorImage, newFrame);
-                    Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
+                   // Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
                     _priorImage = stichedImage;
                     _sharedClientScreen.PutFinalImage(stichedImage, taskId);
                 }
@@ -215,7 +215,7 @@ namespace MessengerScreenshare.Server
         /// <returns>
         /// New image after stitching
         /// </returns>
-        private Bitmap Stitch(Bitmap? priorImage, string newFrame)
+        public Bitmap Stitch(Bitmap? priorImage, string newFrame)
         {
             char isCompleteFrame = newFrame[newFrame.Length - 1];
 

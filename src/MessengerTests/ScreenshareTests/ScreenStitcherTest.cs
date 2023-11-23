@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MessengerScreenshare.Client;
 using MessengerScreenshare.Server;
-
+using Moq;
 
 namespace MessengerTests.ScreenshareTests
 {
@@ -49,6 +49,7 @@ namespace MessengerTests.ScreenshareTests
             Bitmap? img = Screenshot.Instance().MakeScreenshot();
             if (img == null)
             {
+                Assert.Fail("Failed to capture the screenshot.");
                 return;
             }
             Bitmap curImg = new(img);
@@ -62,5 +63,6 @@ namespace MessengerTests.ScreenshareTests
             Assert.IsTrue(Utils.CompareBitmap(img, curImg));
 
         }
+
     }
 }

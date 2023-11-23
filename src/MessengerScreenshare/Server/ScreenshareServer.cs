@@ -143,6 +143,11 @@ namespace MessengerScreenshare.Server
 
             lock (_subscribers)
             {
+                if (_subscribers.Count > 4) 
+                {
+                    BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Stop), (1, 1));
+                    return; 
+                }
                 if (!_subscribers.TryAdd(clientId, new (clientId, clientName, this)))
                 {
                     // If TryAdd fails, the client is already registered.

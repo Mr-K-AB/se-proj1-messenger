@@ -7,10 +7,9 @@ using MessengerWhiteboard.Models;
 
 namespace MessengerTests.WhiteboardTests
 {
-    [TestClass]
-    public class Utils
+    public static class Utils
     {
-        public bool Compare(ShapeItem shape1, ShapeItem shape2)
+        public static bool Compare(ShapeItem shape1, ShapeItem shape2)
         {
             if (shape1 == null && shape2 == null)
             {
@@ -32,7 +31,7 @@ namespace MessengerTests.WhiteboardTests
                 shape1.points == shape2.points;
         }
 
-        public bool Compare(List<ShapeItem> list1, List<ShapeItem> list2)
+        public static bool Compare(List<ShapeItem> list1, List<ShapeItem> list2)
         {
             if (list1 == null && list2 == null)
             {
@@ -58,7 +57,7 @@ namespace MessengerTests.WhiteboardTests
 
             return true;
         }
-        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, string textData = "Text")
+        public static ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, Guid uid, string textData = "Text")
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;
@@ -103,7 +102,7 @@ namespace MessengerTests.WhiteboardTests
                 ZIndex = 1,
                 Fill = fillBrush,
                 Stroke = borderBrush,
-                Id = Guid.NewGuid(),
+                Id = uid,
                 points = new List<Point> { start, end },
                 TextString = textData,
             };
@@ -112,7 +111,7 @@ namespace MessengerTests.WhiteboardTests
             //return new ShapeItem(shapeType, geometry, boundingBox, color, 1, 1);
         }
 
-        public ShapeItem CreateRandomShape()
+        public static ShapeItem CreateRandomShape()
         {
             Random random = new();
             Dictionary<int, string> shapeTypes = new()
@@ -122,10 +121,10 @@ namespace MessengerTests.WhiteboardTests
             };
             Point start = new(random.Next(0, 100), random.Next(0, 100));
             Point end = new(random.Next(0, 100), random.Next(0, 100));
-            return CreateShape(shapeTypes[random.Next(0, 2)], start, end, Brushes.Black, Brushes.Transparent, 1);
+            return CreateShape(shapeTypes[random.Next(0, 2)], start, end, Brushes.Black, Brushes.Transparent, 1, new Guid("rndm"));
         }
 
-        public List<ShapeItem> GenerateRandomBoardShapes(int n)
+        public static List<ShapeItem> GenerateRandomBoardShapes(int n)
         {
             List<ShapeItem> boardShapes = new();
 

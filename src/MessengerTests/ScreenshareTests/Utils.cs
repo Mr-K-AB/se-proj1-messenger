@@ -1,4 +1,4 @@
-﻿/// <author>Satyam Mishra</author>
+﻿/// <author>Likhith Reddy</author>
 /// <summary>
 /// Defines the static "Utils" class which defines
 /// general utilities required for unit tests.

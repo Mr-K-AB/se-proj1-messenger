@@ -9,8 +9,11 @@ namespace MessengerWhiteboard
     public partial class ViewModel : INotifyPropertyChanged
     {
         public BindingList<ShapeItem> ShapeItems { get; set; }
+        public List<ShapeItem> HighlightShapeItems;
         public BindingList<string> SavedSessions { get; set; }
         public ShapeItem? _tempShape;
+        public ShapeItem? _selectedShape;
+        public ShapeItem? _selectedCorner;
 
         private string _userID = "tempUser";
         public bool isServer = true;
@@ -43,6 +46,8 @@ namespace MessengerWhiteboard
         public ViewModel()
         {
             ShapeItems = new();
+            SavedSessions = new();
+            HighlightShapeItems = new();
             currentMode = WBModes.ViewMode;
             if (_userID == "tempUser")
             {
@@ -162,6 +167,8 @@ namespace MessengerWhiteboard
         public void ClearScreen()
         {
             ShapeItems.Clear();
+            undoStackElements.Clear();
+            redoStackElements.Clear();
             machine.OnShapeReceived(null, Operation.Clear);
         }
 

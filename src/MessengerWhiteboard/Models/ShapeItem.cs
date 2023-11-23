@@ -20,6 +20,8 @@ namespace MessengerWhiteboard.Models
         public Guid Id { get; set; }
         public List<Point> points { get; set; }
         public string TextString { get; set; }
+
+
         //public ShapeItem(string shapeType, Geometry geometry, Rect bb, Color c, double strokeThickness, int zIndex)
         //{
         //    ShapeType = shapeType;
@@ -66,17 +68,75 @@ namespace MessengerWhiteboard.Models
 
         public void MoveShape(Point a, Point b)
         {
-            Rect boundingBox = new(a, b);
-            double dX = boundingBox.X - boundary.X;
-            double dY = boundingBox.Y - boundary.Y;
-            if (Geometry.Transform is TranslateTransform)
+            //Rect boundingBox = new(a, b);
+            //double dX = boundingBox.X - boundary.X;
+            //double dY = boundingBox.Y - boundary.Y;
+            //if (Geometry.Transform is TranslateTransform)
+            //{
+            //    dX = (Geometry.Transform as TranslateTransform).X + boundingBox.X - boundary.X;
+            //    dY = (Geometry.Transform as TranslateTransform).Y + boundingBox.Y - boundary.Y;
+            //}
+            //Geometry.Transform = new TranslateTransform(dX, dY);
+            //// Geometry.Transform.SetValue(TranslateTransform.XProperty, dX);
+            //// Geometry.Transform.SetValue(TranslateTransform.YProperty, dY);
+            //boundary = boundingBox;
+
+            if (ShapeType == "Rectangle" || ShapeType == "Ellipse")
             {
-                dX = (Geometry.Transform as TranslateTransform).X + boundingBox.X - boundary.X;
-                dY = (Geometry.Transform as TranslateTransform).Y + boundingBox.Y - boundary.Y;
+                Rect newBoundingBox = new(a, b);
+                if (ShapeType == "Rectangle")
+                {
+                    Geometry.SetValue(RectangleGeometry.RectProperty, newBoundingBox);
+                    boundary = newBoundingBox;
+                }
+                else if (ShapeType == "Ellipse")
+                {
+                    //Geometry geometry = new EllipseGeometry(newBoundingBox);
+                    //Geometry = geometry;
+                    //boundary = newBoundingBox;
+
+                    Point center = new(newBoundingBox.X + newBoundingBox.Width / 2, newBoundingBox.Y + newBoundingBox.Height / 2);
+                    double radiusX = newBoundingBox.Width / 2;
+                    double radiusY = newBoundingBox.Height / 2;
+
+                    Geometry.SetValue(EllipseGeometry.CenterProperty, center);
+                    Geometry.SetValue(EllipseGeometry.RadiusXProperty, radiusX);
+                    Geometry.SetValue(EllipseGeometry.RadiusYProperty, radiusY);
+
+                    boundary = newBoundingBox;
+                }
             }
-            Geometry.Transform = new TranslateTransform(dX, dY);
-            boundary = boundingBox;
         }
+
+        public void ResizeShape(Point newTopLeft, Point newBottomRight)
+        {
+            if (ShapeType == "Rectangle" || ShapeType == "Ellipse")
+            {
+                Rect newBoundingBox = new(newTopLeft, newBottomRight);
+                if (ShapeType == "Rectangle")
+                {
+                    Geometry.SetValue(RectangleGeometry.RectProperty, newBoundingBox);
+                    boundary = newBoundingBox;
+                }
+                else if (ShapeType == "Ellipse")
+                {
+                    //Geometry geometry = new EllipseGeometry(newBoundingBox);
+                    //Geometry = geometry;
+                    //boundary = newBoundingBox;
+
+                    Point center = new(newBoundingBox.X + newBoundingBox.Width / 2, newBoundingBox.Y + newBoundingBox.Height / 2);
+                    double radiusX = newBoundingBox.Width / 2;
+                    double radiusY = newBoundingBox.Height / 2;
+
+                    Geometry.SetValue(EllipseGeometry.CenterProperty, center);
+                    Geometry.SetValue(EllipseGeometry.RadiusXProperty, radiusX);
+                    Geometry.SetValue(EllipseGeometry.RadiusYProperty, radiusY);
+
+                    boundary = newBoundingBox;
+                }
+            }
+        }
+
         public override string ToString()
         {
             return $"{ShapeType}";
@@ -94,6 +154,24 @@ namespace MessengerWhiteboard.Models
                 return Id == shape.Id;
             }
             return false;
+        }
+
+        public ShapeItem Clone()
+        {
+            ShapeItem newShape = new()
+            {
+                ShapeType = ShapeType,
+                Geometry = Geometry.Clone(),
+                boundary = boundary,
+                StrokeThickness = StrokeThickness,
+                ZIndex = ZIndex,
+                Fill = Fill,
+                Stroke = Stroke,
+                Id = Id,
+                points = points,
+                TextString = TextString,
+            };
+            return newShape;
         }
     }
 }

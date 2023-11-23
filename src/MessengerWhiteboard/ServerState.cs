@@ -24,7 +24,7 @@ namespace MessengerWhiteboard
         private static IServerCommunicator s_communicator;
         private readonly Serializer _serializer;
         private static ServerState s_instance;
-        private readonly ServerSnapshotHandler _serverSnapshotHandler;
+        private static ServerSnapshotHandler s_serverSnapshotHandler;
 
         /// <summary>
         ///     Making sure there is a single instance of the server on a particular machine.
@@ -37,6 +37,7 @@ namespace MessengerWhiteboard
                 {
                     s_instance = new ServerState();
                     s_communicator = ServerCommunicator.Instance;
+                    s_serverSnapshotHandler = new ServerSnapshotHandler();
                 }
 
                 return s_instance;
@@ -170,7 +171,7 @@ namespace MessengerWhiteboard
         /// <param name="snapshotNumber">Value of the snap-shot number to be set.</param>
         public void SetSnapshot(string ssid)
         {
-            _serverSnapshotHandler.SnapshotId = ssid;
+            s_serverSnapshotHandler.SnapshotId = ssid;
         }
 
 
@@ -191,7 +192,7 @@ namespace MessengerWhiteboard
             Trace.WriteLine("[Whiteboard] ServerState.RestoreSnapshotHandler: Restoring Snapshot " + deserializedObject.SnapshotID);
             Trace.WriteLine("[Whiteboard] " + GetServerListSize());
 
-            List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadSession(deserializedObject.SnapshotID);
+            List<ShapeItem> loadedShapes = s_serverSnapshotHandler.LoadSession(deserializedObject.SnapshotID);
             //List<SerializableShapeItem> serializableShapeItems = _serializer.SerializeShapes(loadedShapes);
 
             //WBShape wBShape = new(serializableShapeItems, Operation.RestoreSnapshot, deserializedObject.UserId);
@@ -215,7 +216,7 @@ namespace MessengerWhiteboard
 
         public string CreateSnapshot(WBShape wBShape)
         {
-            string s = _serverSnapshotHandler.SaveSession(wBShape.SnapshotID, _mapping.Values.ToList());
+            string s = s_serverSnapshotHandler.SaveSession(wBShape.SnapshotID, _mapping.Values.ToList());
 
             return s;
         }

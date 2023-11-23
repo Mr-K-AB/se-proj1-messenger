@@ -179,7 +179,7 @@
                             </Border.BitmapEffect>
                             <StackPanel Orientation="Horizontal" Background="White" Width="auto" Margin="10" >
 
-                                <Button Name="Save" ToolTip="Save Session" Style="{StaticResource ButtonStyle}" Visibility="{Binding IsServer, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Button Name="Save" ToolTip="Save Session" Click="SaveMode" Style="{StaticResource ButtonStyle}" Visibility="{Binding IsServer, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Image Source="../Images/save.png" Style="{StaticResource ImageStyle}" />
                                 </Button>
 
@@ -212,9 +212,8 @@
                                                 </TextBlock>
                                             </StackPanel>
 
-                                            <!--<ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke" ItemsSource="{Binding CheckList}">
-
-                                        </ListBox>-->
+                                            <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke" ItemsSource="{Binding SavedSessions}">
+                                            </ListBox>
 
                                         </Grid>
                                     </Border>

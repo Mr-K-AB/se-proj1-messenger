@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = Handles the client side of sending and downloading files
  *****************************************************************************/
 using MessengerContent.DataModels;
 using System.Diagnostics;
@@ -23,7 +23,7 @@ namespace MessengerContent.Client
         /// <summary>
         /// Module identifier for communicator
         /// </summary>
-        private readonly string _moduleIdentifier = "ContentServer";
+        private readonly string _moduleIdentifier = "Content";
         private readonly IContentSerializer _serializer;
         private ICommunicator _communicator;
 
@@ -65,7 +65,7 @@ namespace MessengerContent.Client
             {
                 string xml = _serializer.Serialize(chatData);
                 Trace.WriteLine($"[File Client] Setting event as '{eventType}' and sending object to server.");
-                _communicator.Send(xml, _moduleIdentifier, "ContentServer");
+                _communicator.Send(xml, _moduleIdentifier, null);
             }
             catch (Exception e)
             {
@@ -96,7 +96,8 @@ namespace MessengerContent.Client
                 Data = sendContent.Data,
                 MessageID = -1,
                 //ReceiverIDs = sendContent.ReceiverIDs,
-                ReplyThreadID = -1,
+                ReplyThreadID = sendContent.ReplyThreadID,
+                ReplyMessageID = sendContent.ReplyMessageID,
                 SenderID = UserID,
                 SenderName = UserName,
                 SentTime = DateTime.Now,

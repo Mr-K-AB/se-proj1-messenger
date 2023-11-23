@@ -84,8 +84,6 @@ namespace MessengerScreenshare.Server
                 int clientId = packet.Id;
                 string clientName = packet.Name;
                 ClientDataHeader header = Enum.Parse<ClientDataHeader>(packet.Header);
-                int imgCount = packet.ImgCount;
-                int fragmentOffset = packet.Offset;
                 string clientData = packet.Data;
                 Trace.WriteLine(Utils.GetDebugMessage(header.ToString()));
                 switch (header)
@@ -156,6 +154,7 @@ namespace MessengerScreenshare.Server
                     Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
                     return; // Early exit.
                 }
+                //BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
             }
             //DataPacket confirmationPacket = new(clientId, clientName, ServerDataHeader.Send.ToString(), 0, 0, "");
             //string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
@@ -299,7 +298,7 @@ namespace MessengerScreenshare.Server
             {
                 int product = numRowsColumns.Rows * numRowsColumns.Cols;
 
-                var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), 0, 0, JsonSerializer.Serialize(product));
+                var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), JsonSerializer.Serialize(product));
                 string packedData = JsonSerializer.Serialize(packet);
 
                 foreach (int clientId in clientIds)

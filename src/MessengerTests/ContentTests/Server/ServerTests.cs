@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using MessengerContent.DataModels;
 using MessengerContent.Server;
 using MessengerContent;
-using MessengerTests.ContentTests;
 
-namespace MessengerTests.ContentTests
+namespace MessengerTests.ContentTests.Server
 {
     [TestClass]
     public class ServerTests

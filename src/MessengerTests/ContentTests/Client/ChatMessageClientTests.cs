@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerTests
  *
- * Description = tests
+ * Description = chat message client tests
  *****************************************************************************/
 
 using MessengerContent.Enums;

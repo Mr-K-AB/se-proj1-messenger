@@ -76,6 +76,10 @@ namespace MessengerWhiteboard
                             ClearIncomingShapes();
                             serverState.OnShapeReceived(null, Operation.Clear);
                             break;
+                        case Operation.NewUser:
+                            LoadBoard(shapes);
+                            serverSide.NewUserHandler(deserializedObject);
+                            break;
 
                     }
                 }
@@ -123,6 +127,17 @@ namespace MessengerWhiteboard
                     throw;
                 }
 
+            }
+        }
+
+        public void LoadBoard(List<ShapeItem> shapeItems)
+        {
+            if (shapeItems != null)
+            {
+                foreach (ShapeItem shapeItem in shapeItems)
+                {
+                    CreateIncomingShape(shapeItem);
+                }
             }
         }
 

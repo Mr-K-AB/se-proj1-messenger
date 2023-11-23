@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Windows.Shapes;
 using MessengerNetworking.Communicator;
 using MessengerNetworking.Factory;
 using MessengerWhiteboard.Interfaces;

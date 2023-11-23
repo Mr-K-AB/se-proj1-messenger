@@ -1,4 +1,16 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = ScreenshareServerControl.xaml.cs
+*
+* Author      = Harsh Kanani
+*
+* Product     = Messenger
+* 
+* Project     = MessengerApp
+*
+* Description = Interaction logic for ScreenshareServerControl.xaml.
+*****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -23,9 +35,14 @@ namespace MessengerApp.Views
     /// </summary>
     public partial class ScreenshareServerControl : UserControl
     {
+        /// <summary>
+        /// Creates an instance of the ScreenshareServerControl.
+        /// </summary>
         public ScreenshareServerControl()
         {
             InitializeComponent();
+
+            // Create the ViewModel and set as data context.
             ScreenshareServerViewModel viewModel = ScreenshareServerViewModel.GetInstance();
             DataContext = viewModel;
 
@@ -33,33 +50,10 @@ namespace MessengerApp.Views
 
             Debug.WriteLine(viewModel.CurrentWindowClients.Count);
         }
-        private void OnNextPageButtonClicked(object sender, RoutedEventArgs e)
-        {
-            ScreenshareServerViewModel? viewModel = DataContext as ScreenshareServerViewModel;
-            Debug.Assert(viewModel != null, Utils.GetDebugMessage("View Model could not be created"));
-            viewModel.RecomputeCurrentWindowClients(viewModel.CurrentPage + 1);
-
-            Trace.WriteLine(Utils.GetDebugMessage("Next Page Button Clicked", withTimeStamp: true));
-        }
 
         /// <summary>
-        /// This function decreases the current page number by 1
-        /// If on the first page, previous button is not accessible and so is this function 
-        /// </summary>
-        /// <param name="sender"> default </param>
-        /// <param name="e"> default </param>
-        private void OnPreviousPageButtonClicked(object sender, RoutedEventArgs e)
-        {
-            ScreenshareServerViewModel? viewModel = DataContext as ScreenshareServerViewModel;
-            Debug.Assert(viewModel != null, Utils.GetDebugMessage("View Model could not be created"));
-            viewModel.RecomputeCurrentWindowClients(viewModel.CurrentPage - 1);
-
-            Trace.WriteLine(Utils.GetDebugMessage("Previous Page Button Clicked", withTimeStamp: true));
-        }
-
-        /// <summary>
-        /// This function calls the OnPin function of the viewModel which pins the tile on which the user has clicked 
-        /// The argument given to OnPin is the ClientID of user which has to be pinned, stored in Command Parameter 
+        /// This function calls the viewModel's OnPin function, which pins the tile that the user clicked. 
+        /// The user's ClientID, which is kept in the Command Parameter, is the input passed to OnPin. 
         /// </summary>
         /// <param name="sender"> default </param>
         /// <param name="e"> default </param>
@@ -80,8 +74,8 @@ namespace MessengerApp.Views
         }
 
         /// <summary>
-        /// This function calls the OnUnpin function of the ViewModel which will unpin the tile the user clicked on
-        /// The argument given to Unpin function is the Client ID which has to be unpinned, stored in the Command Parameter 
+        /// This function calls the viewModel's OnUnPin function, which unpins the tile that the user clicked. 
+        /// The user's ClientID, which is kept in the Command Parameter, is the input passed to OnUnPin. 
         /// </summary>
         /// <param name="sender"> default </param>
         /// <param name="e"> default </param>

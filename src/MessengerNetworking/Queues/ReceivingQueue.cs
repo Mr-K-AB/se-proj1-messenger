@@ -1,4 +1,12 @@
-﻿using System.Diagnostics;
+﻿/******************************************************************************
+ * 
+ * Author      = Priyanshu Gupta
+ *
+ * Roll no     = 112001033
+ *
+ *****************************************************************************/
+
+using System.Diagnostics;
 
 namespace MessengerNetworking.Queues
 {

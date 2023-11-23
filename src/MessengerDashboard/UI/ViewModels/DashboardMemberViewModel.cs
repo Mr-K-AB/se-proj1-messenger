@@ -19,6 +19,11 @@ namespace MessengerDashboard.UI.ViewModels
             _client.SessionExited += HandleSessionExited;
         }
 
+        public DashboardMemberViewModel(IClientSessionController clientSessionController) : base(clientSessionController) 
+        { 
+            _client.SessionExited += HandleSessionExited;
+        }
+
         protected void HandleSessionExited(object? sender, Client.Events.SessionExitedEventArgs e)
         {
             lock (this)

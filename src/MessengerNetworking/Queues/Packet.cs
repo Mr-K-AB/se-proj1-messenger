@@ -1,4 +1,12 @@
-﻿namespace MessengerNetworking.Queues
+﻿/******************************************************************************
+ * 
+ * Author      = Priyanshu Gupta
+ *
+ * Roll no     = 112001033
+ *
+ *****************************************************************************/
+
+namespace MessengerNetworking.Queues
 {
     public class Packet
     {

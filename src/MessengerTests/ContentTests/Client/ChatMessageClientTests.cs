@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
- * Filename    = ContentTests.cs
+ * Filename    = ContentMessageClientTests.cs
  *
  * Author      = Rapeti Siddhu Neehal
  *
@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerTests
  *
- * Description = tests
+ * Description = chat message client tests
  *****************************************************************************/
 
 using MessengerContent.Enums;

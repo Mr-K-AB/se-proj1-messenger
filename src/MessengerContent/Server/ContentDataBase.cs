@@ -7,7 +7,7 @@
 * 
 * Project     = MessengerContent
 *
-* Description = Databse logic for the server side
+* Description = Database logic for the server side
 * *****************************************************************************/
 
 using MessengerContent.DataModels;

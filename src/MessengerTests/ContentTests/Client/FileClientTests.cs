@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerTests
  *
- * Description = tests
+ * Description = client side file tests
  *****************************************************************************/
 
 using MessengerContent.Client;

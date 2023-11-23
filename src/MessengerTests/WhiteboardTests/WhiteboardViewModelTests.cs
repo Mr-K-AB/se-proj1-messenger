@@ -26,6 +26,7 @@ using static MessengerWhiteboard.ViewModel;
 using System.Reflection.PortableExecutable;
 using MessengerWhiteboard.Interfaces;
 using Moq;
+using LiveCharts;
 
 namespace MessengerTests.WhiteboardTests
 {
@@ -244,6 +245,26 @@ namespace MessengerTests.WhiteboardTests
         }
 
         [TestMethod]
+        public void SelectCornerTest()
+        {
+            // Arrange
+            ViewModel _viewModel = new();
+
+            Point start = new(0, 0);
+            Point end = new(100, 100);
+            ShapeItem s1 = _viewModel.CreateShape("Rectangle", start, end, Brushes.Yellow, Brushes.Black, 1, "tempShape");
+
+            // Act
+            _viewModel.HighlightShape(s1);
+            _viewModel.SelectShape(_viewModel.HighlightShapeItems[1].Id.ToString());
+
+
+            // Assert
+            Assert.IsNotNull(_viewModel._selectedCorner);
+            Assert.AreEqual(_viewModel.HighlightShapeItems[1].Id.ToString(), _viewModel._selectedCorner.Id.ToString());
+        }
+
+        [TestMethod]
         public void UnselectShapeTest()
         {
             ViewModel _viewModel = new();
@@ -361,6 +382,57 @@ namespace MessengerTests.WhiteboardTests
         }
 
         [TestMethod]
+        public void CreateShapeCurveTest()
+        {
+            // Arrange
+            ViewModel _viewModel = new();
+            string shapeType = "Curve";
+            Point start = new(0, 0);
+            Point end = new(100, 100);
+            Brush fillBrush = Brushes.Purple;
+            Brush borderBrush = Brushes.Yellow;
+            double strokeThickness = 3.0;
+
+            // Act
+            ShapeItem result = _viewModel.CreateShape(shapeType, start, end, fillBrush, borderBrush, strokeThickness);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(shapeType, result.ShapeType);
+            Assert.IsInstanceOfType(result.Geometry, typeof(PathGeometry));
+            Assert.AreEqual(new Rect(start, end), result.boundary);
+            Assert.AreEqual(fillBrush, result.Fill);
+            Assert.AreEqual(borderBrush, result.Stroke);
+            Assert.AreEqual(strokeThickness, result.StrokeThickness);
+        }
+
+
+        [TestMethod]
+        public void CreateShapeLineTest()
+        {
+            // Arrange
+            ViewModel _viewModel = new();
+            string shapeType = "Line";
+            Point start = new(0, 0);
+            Point end = new(100, 100);
+            Brush fillBrush = Brushes.Green;
+            Brush borderBrush = Brushes.Orange;
+            double strokeThickness = 2.0;
+
+            // Act
+            ShapeItem result = _viewModel.CreateShape(shapeType, start, end, fillBrush, borderBrush, strokeThickness);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(shapeType, result.ShapeType);
+            Assert.IsInstanceOfType(result.Geometry, typeof(LineGeometry));
+            Assert.AreEqual(new Rect(start, end), result.boundary);
+            Assert.AreEqual(fillBrush, result.Fill);
+            Assert.AreEqual(borderBrush, result.Stroke);
+            Assert.AreEqual(strokeThickness, result.StrokeThickness);
+        }
+
+        [TestMethod]
         public void HighlightShapeTest()
         {
             // Arrange
@@ -461,6 +533,33 @@ namespace MessengerTests.WhiteboardTests
         }
 
         [TestMethod]
+        public void ResizeShapeTest2()
+        {
+            // Arrange
+            ViewModel _viewModel = new()
+            {
+                activeTool = "Select"
+            };
+
+
+            Point start = new(10, 10);
+            Point end = new(100, 100);
+            _viewModel._tempShape = _viewModel.CreateShape("Rectangle", start, end, Brushes.Yellow, Brushes.Black, 1, "tempShape");
+            _viewModel.HighlightShape(_viewModel._tempShape);
+
+            _viewModel.lastDownPoint = new Point(10, 10);
+            _viewModel._selectedCorner = _viewModel.HighlightShapeItems[1];
+            Point newPoint = new(0, 0);
+
+            // Act
+            _viewModel.BuildShape(newPoint);
+
+            // Assert
+            var expectedBoundary = new Rect(0, 0, 100, 100);
+            Assert.AreEqual(expectedBoundary, _viewModel._tempShape.boundary);
+        }
+
+        [TestMethod]
         public void DeleteShapeTest()
         {
             // Arrange
@@ -487,6 +586,100 @@ namespace MessengerTests.WhiteboardTests
             Assert.IsFalse(_viewModel.ShapeItems.Contains(shapeToDelete));
             Assert.IsNull(_viewModel._tempShape);
             _mockShapeReceiver.Verify(m => m.OnShapeReceived(shapeToDelete, Operation.Deletion), Times.Once());
+        }
+
+        [TestMethod]
+        public void UserIdTest()
+        {
+            ViewModel _viewModel = new();
+            string UiD = _viewModel.GetUserID();
+
+            Assert.AreEqual(UiD, "user1");
+        }
+
+        [TestMethod]
+        public void EndShapeCreateModeTest()
+        {
+            // Arrange
+            Mock<IShapeReceiver> _mockShapeReceiver = new();
+            ViewModel _viewModel = new()
+            {
+                currentMode = WBModes.CreateMode,
+                machine = _mockShapeReceiver.Object
+            };
+
+
+            Point start = new(0, 0);
+            Point end = new(100, 100);
+            ShapeItem shapeToCreate = _viewModel.CreateShape("Rectangle", start, end, Brushes.Yellow, Brushes.Black, 1, "tempShape");
+            _viewModel.AddShape(shapeToCreate);
+            _viewModel._tempShape = shapeToCreate;
+
+            // Set up the mock behavior
+            _mockShapeReceiver.Setup(m => m.OnShapeReceived(It.IsAny<ShapeItem>(), Operation.Creation));
+
+            // Act
+            _viewModel.EndShape(new Point(0, 0));
+
+            // Assert
+            _mockShapeReceiver.Verify(m => m.OnShapeReceived(shapeToCreate, Operation.Creation), Times.Once());
+            Assert.IsNull(_viewModel._tempShape); // _tempShape should be null after EndShape in CreateMode
+        }
+
+        [TestMethod]
+        public void EndShapeSelectModeTest()
+        {
+            // Arrange
+            Mock<IShapeReceiver> _mockShapeReceiver = new();
+            ViewModel _viewModel = new()
+            {
+                currentMode = WBModes.SelectMode,
+                machine = _mockShapeReceiver.Object
+            };
+
+
+            Point start = new(0, 0);
+            Point end = new(100, 100);
+            ShapeItem shapeToModify = _viewModel.CreateShape("Rectangle", start, end, Brushes.Yellow, Brushes.Black, 1, "tempShape");
+            _viewModel.AddShape(shapeToModify);
+            _viewModel._tempShape = shapeToModify;
+
+            // Set up the mock behavior
+            _mockShapeReceiver.Setup(m => m.OnShapeReceived(It.IsAny<ShapeItem>(), Operation.ModifyShape));
+
+            // Act
+            _viewModel.EndShape(new Point(0, 0));
+
+            // Assert
+            _mockShapeReceiver.Verify(m => m.OnShapeReceived(shapeToModify, Operation.ModifyShape), Times.Once());
+            Assert.IsNotNull(_viewModel._tempShape);  // _tempShape should not be null after EndShape in SelectMode
+        }
+
+        [TestMethod]
+        public void BuildShapeCreation()
+        {
+            ViewModel _viewModel = new()
+            {
+                activeTool = "Rectangle"
+            };
+
+            Point start = new (0, 0);
+            Point end = new (50, 50);
+
+            ShapeItem s = _viewModel.CreateShape("Rectangle", start, end, Brushes.Yellow, Brushes.Black, 1, "tempShape");
+            _viewModel.AddShape(s);
+            _viewModel._tempShape = s; 
+
+            Point newEnd = new (100, 100);
+            Rect expectedEditedBoundary = new (start, newEnd);
+
+            // Act 
+            _viewModel.BuildShape(newEnd);
+
+            // Assert
+            Assert.AreEqual(expectedEditedBoundary, _viewModel._tempShape.boundary);
+            // Last item in ShapeItems should be the edited shape
+            Assert.AreEqual(_viewModel._tempShape, _viewModel.ShapeItems[^1]);  
         }
     }
 }

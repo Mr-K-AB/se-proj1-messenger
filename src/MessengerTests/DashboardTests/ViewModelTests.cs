@@ -1,4 +1,18 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = ViewModelTests.cs
+*
+* Author      = Satish Patidar 
+*
+* Roll number = 112001037
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerTests
+*
+* Description = Testing for View Model of Dashboard and Session
+*****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,12 +23,20 @@ using MessengerDashboard.UI.Commands;
 using MessengerDashboard.UI.ViewModels;
 using MessengerTests.DashboardTests.Mocks;
 using Moq;
+using MessengerDashboard.Client;
+using MessengerDashboard;
 
 namespace MessengerTests.DashboardTests
 {
+    /// <summary>
+    /// Test class for Dashboard View Models
+    /// </summary>
     [TestClass]
     public class ViewModelTests
     {
+        /// <summary>
+        /// Test for Dashboard Member View Model
+        /// </summary>
         [TestMethod]
         public void DashboardMemberViewModelTest()
         {
@@ -51,6 +73,9 @@ namespace MessengerTests.DashboardTests
             Assert.IsNotNull(dashboardVM.IsLocalSavingEnabled);
         }
 
+        /// <summary>
+        /// Test for Dashboard Instructor View Model
+        /// </summary>
         [TestMethod]
         public void DashboardInstructorViewModelTest()
         {
@@ -88,24 +113,127 @@ namespace MessengerTests.DashboardTests
             Assert.IsNotNull(dashboardVM.IsLocalSavingEnabled);
         }
 
+        /// <summary>
+        /// Test for Command Execution
+        /// </summary>
         [TestMethod]
         public void TestCommandExecution()
         {
             // Arrange
-            string cloudUrl = "http://localhost:7166/api/entity";
-            Mock<SessionsViewModel> sessionsViewModelMock = new();
-            RestClient restClient = new (cloudUrl);
-            CloudCommand cloudCommand = new(restClient, sessionsViewModelMock.Object);
-            cloudCommand.Execute(null);
-            Thread.Sleep(1000);
-            Assert.IsTrue(cloudCommand.CanExecute(null));
+            try
+            {
+                string cloudUrl = "http://localhost:7166/api/entity";
+                Mock<SessionsViewModel> sessionsViewModelMock = new();
+                RestClient restClient = new(cloudUrl);
+
+                CloudCommand cloudCommand = new(restClient, sessionsViewModelMock.Object);
+                cloudCommand.Execute(null);
+                Thread.Sleep(1000);
+                Assert.IsTrue(cloudCommand.CanExecute(null));
+
+                SessionsViewModel sessionsViewModel = new()
+                {
+                    IsLocalClicked = true
+                };
+                DeleteAllCommand deleteAllCommand = new(restClient, sessionsViewModel);
+                deleteAllCommand.Execute(null);
+                Assert.IsTrue(deleteAllCommand.CanExecute(null));
+                sessionsViewModel.IsLocalClicked = false;
+                deleteAllCommand.Execute(null);
+                Assert.IsTrue(deleteAllCommand.CanExecute(null));
+
+                EndMeetCommand endMeetCommand = new();
+                endMeetCommand.Execute(null);
+                Assert.IsTrue(endMeetCommand.CanExecute(null));
+
+                EntityInfoWrapper entity = new();
+                sessionsViewModel.IsLocalClicked = false;
+                ExpandCommand expandCommand = new(sessionsViewModel, entity);
+                expandCommand.Execute(null);
+                Assert.IsTrue(expandCommand.CanExecute(null));
+
+                LocalCommand localCommand = new(sessionsViewModel);
+                LocalCommand localCommand1 = new();
+                localCommand.Execute(null);
+                Assert.IsTrue(localCommand.CanExecute(null));
+
+                RefreshCommand refreshCommand = new();
+                refreshCommand.Execute(null);
+                Assert.IsTrue(refreshCommand.CanExecute(null));
+
+                SwitchModeCommand switchModeCommand = new();
+                switchModeCommand.Execute(null);
+                Assert.IsTrue(switchModeCommand.CanExecute(null));
+                IClientSessionController client = DashboardFactory.GetClientSessionController();
+                client.SessionInfo.SessionMode = SessionMode.Exam;
+                switchModeCommand.Execute(null);
+                Assert.IsTrue(switchModeCommand.CanExecute(null));
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
         }
 
+        /// <summary>
+        /// Test for Initialization
+        /// </summary>
         public void InitializationTest()
         {
             Assert.IsNotNull(new DashboardInstructorViewModel());
             Assert.IsNotNull(new DashboardViewModel());
             Assert.IsNotNull(new DashboardMemberViewModel());
+        }
+
+        /// <summary>
+        /// Test for Session View Model
+        /// </summary>
+        [TestMethod]
+        public void SessionVMTest()
+        {
+            SessionsViewModel sessionsViewModel = new();
+            Assert.IsNotNull(sessionsViewModel.LocalCommand);
+            Assert.IsNotNull(sessionsViewModel.CloudCommand);
+            Assert.IsNotNull(sessionsViewModel.DeleteAllCommand);
+
+            sessionsViewModel.NegativeChatCount = 5;
+            Assert.AreEqual(sessionsViewModel.NegativeChatCount, 5);
+
+            List<TimeStampUserCountEntry> list = new();
+            TimeStampUserCountEntry entry = new(DateTime.Now, 1);
+            list.Add(entry);
+            sessionsViewModel.TimeStampUserCountEntries = list;
+            Assert.AreEqual(list, sessionsViewModel.TimeStampUserCountEntries);
+
+            List<UserActivityEntry> userlist = new();
+            UserActivityEntry entry1 = new(1, 1, "Sam", "abc123@gmail.com", DateTime.Now, DateTime.Now);
+            userlist.Add(entry1);
+            sessionsViewModel.UserActivities = userlist;
+            Assert.AreEqual(userlist, sessionsViewModel.UserActivities);
+
+            List<SessionEntry> sessionEntries = new();
+            SessionEntry entry2 = new(1, 1);
+            sessionEntries.Add(entry2);
+            sessionsViewModel.Sessions = sessionEntries;
+            Assert.AreEqual(sessionEntries, sessionsViewModel.Sessions);
+
+            sessionsViewModel.SessionSummary = "We got full marks";
+            Assert.AreEqual(sessionsViewModel.SessionSummary, "We got full marks");
+
+            sessionsViewModel.PositiveChatCount = 5;
+            Assert.AreEqual(sessionsViewModel.PositiveChatCount, 5);
+
+            sessionsViewModel.TotalUserCount = 5;
+            Assert.AreEqual(sessionsViewModel.TotalUserCount, 5);
+
+            sessionsViewModel.NeutralChatCount = 5;
+            Assert.AreEqual(sessionsViewModel.NeutralChatCount, 5);
+
+            sessionsViewModel.OverallSentiment = "Yes you will get full marks";
+            Assert.AreEqual(sessionsViewModel.OverallSentiment, "Yes you will get full marks");
+
+            sessionsViewModel.IsLocalClicked = true;
+            Assert.AreEqual(sessionsViewModel.IsLocalClicked, true);
         }
     }
 }

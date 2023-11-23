@@ -1,4 +1,19 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = DashboardViewModel.cs
+*
+* Author      = Satish Patidar 
+*
+* Roll number = 112001037
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerDashboard
+*
+* Description = This file contains the implementation of the DashboardViewModel class, 
+*               which serves as the ViewModel for the Messenger Dashboard application.  
+*****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Input;
@@ -13,23 +28,36 @@ using MessengerDashboard.UI.DataModels;
 
 namespace MessengerDashboard.UI.ViewModels
 {
+    /// <summary>
+    /// ViewModel for the Messenger Dashboard application.
+    /// </summary>
     public class DashboardViewModel : ViewModel
     {
         protected readonly IClientSessionController _client = DashboardFactory.GetClientSessionController();
 
         protected readonly string _cloudUrl = @"http://localhost:7166/api/entity";
 
+        /// <summary>
+        /// Default constructor for DashboardViewModel.
+        /// </summary>
         public DashboardViewModel()
         {
             SetViewModel();
         }
 
+        /// <summary>
+        /// Constructor for DashboardViewModel with a specified client.
+        /// </summary>
+        /// <param name="client">The client session controller.</param>
         public DashboardViewModel(IClientSessionController client)
         {
             _client = client;
             SetViewModel();
         }
 
+        /// <summary>
+        /// Sets up the ViewModel with initial data and event handlers.
+        /// </summary>
         protected void SetViewModel()
         {
             _client.SessionChanged += HandleSessionChanged;
@@ -41,40 +69,70 @@ namespace MessengerDashboard.UI.ViewModels
             IsLocalSavingEnabled = true;
         }
 
+        /// <summary>
+        /// List of users in the session.
+        /// </summary>
         protected List<User> _users;
 
+        /// <summary>
+        /// Gets or sets the list of users in the session.
+        /// </summary>
         public List<User> Users
         {
             get => _users;
             set => SetProperty(ref _users, value);
         }
 
+        /// <summary>
+        /// Summary of the session.
+        /// </summary>
         protected string _summary;
 
+        /// <summary>
+        /// Gets or sets the summary of the session.
+        /// </summary>
         public string Summary
         {
             get => _summary;
             set => SetProperty(ref _summary, value);
         }
 
+        /// <summary>
+        /// Mode of the session (Exam or Lab).
+        /// </summary>
         protected string _mode;
 
+        /// <summary>
+        /// Gets or sets the mode of the session (Exam or Lab).
+        /// </summary>
         public string Mode
         {
             get => _mode;
             set => SetProperty(ref _mode, value);
         }
 
+        /// <summary>
+        /// Positive chat count for charting.
+        /// </summary>
         protected ChartValues<int> _positiveChatCount = new() { 0 };
 
+        /// <summary>
+        /// Gets or sets the positive chat count for charting.
+        /// </summary>
         public ChartValues<int> PositiveChatCount
         {
             get => _positiveChatCount;
             set => SetProperty(ref _positiveChatCount, value);
         }
 
+        /// <summary>
+        /// Negative chat count for charting.
+        /// </summary>
         protected ChartValues<int> _negativeChatCount = new() { 0 };
 
+        /// <summary>
+        /// Gets or sets the Negative chat count for charting.
+        /// </summary>
         public ChartValues<int> NegativeChatCount
         {
             get => _negativeChatCount;
@@ -82,6 +140,7 @@ namespace MessengerDashboard.UI.ViewModels
         }
 
         protected ChartValues<int> _neutralChatCount = new() { 0 };
+
 
         public ChartValues<int> NeutralChatCount
         {
@@ -178,16 +237,26 @@ namespace MessengerDashboard.UI.ViewModels
 
         protected bool _isLocalSavingEnabled;
 
+        
         public bool IsLocalSavingEnabled
         {
             get => _isLocalSavingEnabled;
             set => SetProperty(ref _isLocalSavingEnabled, value);
         }
 
+        /// <summary>
+        /// Command to end the meeting.
+        /// </summary>
         public ICommand EndMeetCommand { get; } = new EndMeetCommand();
 
+        /// <summary>
+        /// Command to refresh the dashboard.
+        /// </summary>
         public ICommand RefreshCommand { get; } = new RefreshCommand();
 
+        /// <summary>
+        /// Event handler for the Refreshed event.
+        /// </summary>
         protected void HandleRefreshed(object? sender, Client.Events.RefreshedEventArgs e)
         {
             lock (this)
@@ -240,6 +309,9 @@ namespace MessengerDashboard.UI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Event handler for the SessionChanged event.
+        /// </summary>
         protected void HandleSessionChanged(object? sender, Client.Events.ClientSessionChangedEventArgs e)
         {
             lock (this)
@@ -251,6 +323,13 @@ namespace MessengerDashboard.UI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Creates the data to be saved to the cloud.
+        /// </summary>
+        /// <param name="textSummary">Text summary of the session.</param>
+        /// <param name="sentimentResult">Sentiment analysis result.</param>
+        /// <param name="analysis">Telemetry analysis data.</param>
+        /// <returns>An EntityInfoWrapper containing the session data.</returns>
         public EntityInfoWrapper CreateSessionSaveData(TextSummary textSummary, SentimentResult sentimentResult, Telemetry.Analysis analysis)
         {
             foreach(KeyValuePair<int, Telemetry.UserActivity> x in analysis.UserIdToUserActivityMap)
@@ -271,6 +350,10 @@ namespace MessengerDashboard.UI.ViewModels
             return entityInfo;
         }
 
+        /// <summary>
+        /// Saves the session data to local storage.
+        /// </summary>
+        /// <param name="entityInfo">Entity information to be saved.</param>
         protected void SaveSessionToLocalStorage(EntityInfoWrapper entityInfo)
         {
             try
@@ -283,6 +366,11 @@ namespace MessengerDashboard.UI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Converts Telemetry.Analysis to MessengerCloud.Analysis.
+        /// </summary>
+        /// <param name="analysis">Telemetry analysis data.</param>
+        /// <returns>Converted MessengerCloud.Analysis object.</returns>
         protected MessengerCloud.Analysis ConvertToCloudObject(Telemetry.Analysis analysis)
         {
             Dictionary<int, MessengerCloud.UserActivity> userIdToUserActivityMap = new();

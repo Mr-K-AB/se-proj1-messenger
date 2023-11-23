@@ -1,4 +1,16 @@
-﻿using System;
+﻿/******************************************************************************
+ * Filename    = ChatServerTests.cs
+ *
+ * Author      = Manikanta Gudipudi
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerContentTests
+ *
+ * Description = Tests for ChatServer
+ *****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +25,7 @@ namespace MessengerTests.ContentTests.Server
     [TestClass]
     public class ChatServerTests
     {
-        public MockHelper _utils;
+        public MockHelper _helper;
         public ContentDataBase database;
         public ChatServer? ChatServer;
 
@@ -21,14 +33,14 @@ namespace MessengerTests.ContentTests.Server
         {
             database = new ContentDataBase();
             ChatServer = new ChatServer(database);
-            _utils = new MockHelper();
+            _helper = new MockHelper();
         }
 
         [TestMethod]
         public void GetMessages_ValidInput_ReturnsAllMessages()
         {
             Setup();
-            ChatData msg = _utils.GenerateChatData(MessageType.Chat, data: "Testing Get Messages");
+            ChatData msg = _helper.GenerateChatData(MessageType.Chat, data: "Testing Get Messages");
             _ = ChatServer.Receive(msg);
             List<ChatThread> allMessage = ChatServer.GetMessages();
             Assert.IsNotNull(allMessage);
@@ -39,7 +51,7 @@ namespace MessengerTests.ContentTests.Server
         public void UpdateChat_ValidInput_ReturnsValidContentData()
         {
             Setup();
-            ChatData msg = _utils.GenerateChatData(MessageType.Chat, data: "Testing Update");
+            ChatData msg = _helper.GenerateChatData(MessageType.Chat, data: "Testing Update");
             ChatData msg1 = ChatServer.Receive(msg);
             ReceiveChatData updatedMsg = ChatServer.UpdateMessage(msg1.ReplyThreadID, msg1.MessageID, "Message Updated");
             Assert.AreEqual("Message Updated", updatedMsg.Data);
@@ -49,7 +61,7 @@ namespace MessengerTests.ContentTests.Server
         public void StarMessage_ValidInput_ReturnsTrue()
         {
             Setup();
-            ChatData msg = _utils.GenerateChatData(MessageType.Chat, data: "Testing Starring");
+            ChatData msg = _helper.GenerateChatData(MessageType.Chat, data: "Testing Starring");
             ChatData msg1 = ChatServer.Receive(msg);
             ReceiveChatData starredMsg = ChatServer.StarMessage(msg1.ReplyThreadID, msg1.MessageID);
             Assert.IsTrue(starredMsg.Starred);
@@ -59,17 +71,17 @@ namespace MessengerTests.ContentTests.Server
         public void DeleteChat_ValidInput_ReturnsValidContentData()
         {
             Setup();
-            ChatData msg = _utils.GenerateChatData(MessageType.Chat, data: "Testing Delete");
+            ChatData msg = _helper.GenerateChatData(MessageType.Chat, data: "Testing Delete");
             ChatData msg1 = ChatServer.Receive(msg);
             ReceiveChatData updatedMsg = ChatServer.DeleteMessage(msg1.ReplyThreadID, msg1.MessageID);
             Assert.AreEqual("Message Deleted.", updatedMsg.Data);
         }
-        
+
         [TestMethod]
         public void Receive_UpdatingMessage_ReturnsUpdatedMessage()
         {
             Setup();
-            ChatData msg1 = _utils.GenerateChatData(data: "Test Message", senderID: 1);
+            ChatData msg1 = _helper.GenerateChatData(data: "Test Message", senderID: 1);
             ReceiveChatData receivedMsg = ChatServer.Receive(msg1);
             Assert.AreEqual(msg1.Data, receivedMsg.Data);
 
@@ -92,7 +104,7 @@ namespace MessengerTests.ContentTests.Server
         public void Receive_UpdatingMessageDoesntExist_ReturnsNull()
         {
             Setup();
-            ChatData msg1 = _utils.GenerateChatData(data: "Test Message", senderID: 1);
+            ChatData msg1 = _helper.GenerateChatData(data: "Test Message", senderID: 1);
 
             ChatData receivedMsg = ChatServer.Receive(msg1);
 
@@ -120,18 +132,18 @@ namespace MessengerTests.ContentTests.Server
         {
             database = new ContentDataBase();
             ChatServer = new ChatServer(database);
-            _utils = new MockHelper();
+            _helper = new MockHelper();
 
-            ChatData msg1 = _utils.GenerateChatData(data: "Test Message", senderID: 1);
+            ChatData msg1 = _helper.GenerateChatData(data: "Test Message", senderID: 1);
             ChatData receivedMsg = ChatServer.Receive(msg1);
             Assert.AreEqual(msg1.Data, receivedMsg.Data);
 
-            ChatData msg2 = _utils.GenerateChatData(data: "Test Message2", senderID: 1, replyThreadID: msg1.ReplyThreadID);
+            ChatData msg2 = _helper.GenerateChatData(data: "Test Message2", senderID: 1, replyThreadID: msg1.ReplyThreadID);
             receivedMsg = ChatServer.Receive(msg2);
             Assert.AreEqual(msg2.Data, receivedMsg.Data);
             Assert.AreNotEqual(msg2.MessageID, msg1.MessageID);
 
-            ChatData msg3 = _utils.GenerateChatData(data: "Test Message3", senderID: 1);
+            ChatData msg3 = _helper.GenerateChatData(data: "Test Message3", senderID: 1);
             receivedMsg = ChatServer.Receive(msg3);
             Assert.AreEqual(msg3.Data, receivedMsg.Data);
             Assert.AreNotEqual(msg3.MessageID, msg2.MessageID);
@@ -141,7 +153,7 @@ namespace MessengerTests.ContentTests.Server
         public void Receive_NewMessage_StoreMessageAn_ReturnStoredMessage()
         {
             Setup();
-            ChatData msg1 = _utils.GenerateChatData(data: "Test Message", senderID: 1);
+            ChatData msg1 = _helper.GenerateChatData(data: "Test Message", senderID: 1);
             ReceiveChatData receivedMsg = ChatServer.Receive(msg1);
             Assert.AreEqual(msg1.Data, receivedMsg.Data);
         }
@@ -150,7 +162,7 @@ namespace MessengerTests.ContentTests.Server
         public void Receive_StarringMessage_ReturnsTheStarredMessage()
         {
             Setup();
-            ChatData msg = _utils.GenerateChatData(data: "Test Message", senderID: 1);
+            ChatData msg = _helper.GenerateChatData(data: "Test Message", senderID: 1);
             ReceiveChatData receivedMsg = ChatServer.Receive(msg);
             Assert.AreEqual(msg.Data, receivedMsg.Data);
 
@@ -171,7 +183,7 @@ namespace MessengerTests.ContentTests.Server
         public void Receive_StarringMessageDoesNotExist_ReturnsNull()
         {
             Setup();
-            ChatData msg = _utils.GenerateChatData(data: "Test Message", senderID: 1);
+            ChatData msg = _helper.GenerateChatData(data: "Test Message", senderID: 1);
             ReceiveChatData receivedMsg = ChatServer.Receive(msg);
             Assert.AreEqual(msg.Data, receivedMsg.Data);
 
@@ -194,7 +206,7 @@ namespace MessengerTests.ContentTests.Server
         public void Receive_DeletingtingMessage_ReturnsMessageDeleted()
         {
             Setup();
-            ChatData msg1 = _utils.GenerateChatData(data: "Test Message", senderID: 1);
+            ChatData msg1 = _helper.GenerateChatData(data: "Test Message", senderID: 1);
             ReceiveChatData receivedMsg = ChatServer.Receive(msg1);
             Assert.AreEqual(msg1.Data, receivedMsg.Data);
 
@@ -215,7 +227,7 @@ namespace MessengerTests.ContentTests.Server
         public void Receive_DeletingMessageDoesNotExist_ReturnsNull()
         {
             Setup();
-            ChatData msg = _utils.GenerateChatData(data: "Test Message", senderID: 1);
+            ChatData msg = _helper.GenerateChatData(data: "Test Message", senderID: 1);
             ReceiveChatData receivedMsg = ChatServer.Receive(msg);
             Assert.AreEqual(msg.Data, receivedMsg.Data);
 

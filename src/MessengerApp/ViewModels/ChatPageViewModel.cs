@@ -315,16 +315,13 @@ namespace MessengerApp.ViewModels
                                 UserId = 1;
                             }
 
-                            // If the sender info is not there in the current session, then this sender will not be known by the user.
-                            string senderName = UserIdToNames.ContainsKey(message.SenderID) ? UserIdToNames[message.SenderID] : "Anonymous";
-
                             ReceivedMsg = new()
                             {
                                 MessageID = message.MessageID,
                                 MessageType = message.Type == MessageType.Chat,
                                 MsgData = message.Data,
                                 Time = message.SentTime.ToString("hh:mm tt"),
-                                Sender = senderName,
+                                Sender = message.SenderName,
                                 isCurrentUser = UserId == message.SenderID,
                                 ReplyMessage = message.ReplyMessageID == -1 ? null : Messages[message.ReplyMessageID]
                             };

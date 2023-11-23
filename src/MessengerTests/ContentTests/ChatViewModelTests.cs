@@ -178,7 +178,7 @@ namespace MessengerTests.ContentTests
             UiDispatcherHelper.ProcessUiEvents();
 
             // Validation of the Chat Messages received
-            Assert.AreEqual("Anonymous", _viewModel.TestChatMessages[0].Sender);
+            Assert.AreEqual("Siddhu", _viewModel.TestChatMessages[0].Sender);
             Assert.AreEqual("M V Nagasurya", _viewModel.TestChatMessages[1].Sender);
         }
 

@@ -7,7 +7,8 @@
 * 
 * Project     = MessengerContent
 *
-* Description = file to obtain the files and chat messages on the server and pass them along after processing.
+* Description = file to obtain the files and chat messages from the server and 
+*               pass them on to clients after processing.
 *****************************************************************************/
 
 using System;
@@ -35,22 +36,21 @@ namespace MessengerContent.Server
         private FileServer _fileServer;
         private IContentSerializer _serializer;
         private List<IMessageListener> _subscribers;
-        private readonly ICommunicator _communicator;
 
         public ContentServer()
         {
             _subscribers = new List<IMessageListener>();
-            _communicator = CommunicationFactory.GetCommunicator(false);
+            Communicator = CommunicationFactory.GetCommunicator(false);
             _contentDatabase = new ContentDataBase();
             _notificationHandler = new ContentServerNotificationHandler(this);
             _fileServer = new FileServer(_contentDatabase);
             _chatServer = new ChatServer(_contentDatabase);
             _serializer = new ContentSerializer();
-            _communicator.Subscribe("Content", _notificationHandler);
+            Communicator.Subscribe("Content", _notificationHandler);
         }
 
         /// <summary>
-        /// Get and Set Communicator, util for testing the code
+        /// Get and Set Communicator set auto for both tests and running
         /// </summary>
         public ICommunicator Communicator { get; set; }
 
@@ -58,7 +58,6 @@ namespace MessengerContent.Server
         public void ServerSubscribe(IMessageListener subscriber)
         {
             _subscribers.Add(subscriber);
-            //
         }
 
         /// <inheritdoc />
@@ -69,11 +68,13 @@ namespace MessengerContent.Server
                 return _chatServer.GetMessages();
             }
         }
-
+        /// <summary>
+        /// Send all the messages in the Database to Client
+        /// </summary>
         public void SendAllMessagesToClient(int userId)
         {
             string allMessagesSerialized = _serializer.Serialize(GetAllMessages());
-            _communicator.Send(allMessagesSerialized, "Content", userId.ToString());
+            Communicator.Send(allMessagesSerialized, "Content", userId.ToString());
         }
 
 
@@ -163,7 +164,7 @@ namespace MessengerContent.Server
         public void Send(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            _communicator.Send(message, "Content", null);
+            Communicator.Send(message, "Content", null);
         }
 
         /// <summary>
@@ -173,7 +174,7 @@ namespace MessengerContent.Server
         public void SendFile(ChatData messageData)
         {
             string message = _serializer.Serialize(messageData);
-            _communicator.Send(message, "Content", messageData.SenderID.ToString());
+            Communicator.Send(message, "Content", messageData.SenderID.ToString());
         }
 
         /// <summary>

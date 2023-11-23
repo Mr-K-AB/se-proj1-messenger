@@ -20,28 +20,28 @@ namespace MessengerContent.Server
 {
     public class ChatServer
     {
-        private readonly ContentDataBase _contentDB;
+        private readonly ContentDataBase _contentDataBase;
 
         /// <summary>
         /// Constructor to initialize the content Database.
         /// </summary>
         public ChatServer(ContentDataBase db)
         {
-            _contentDB = db;
+            _contentDataBase = db;
         }
 
         /// <summary>
-        /// This function returns all the messages stored in the content DB.
+        /// function to fetch all the messages stored in the content DB.
         /// </summary>
         public List<ChatThread> GetMessages()
         {
-            return _contentDB.GetChatThreads();
+            return _contentDataBase.GetChatThreads();
         }
 
         /// <summary>
-        /// function to process the chat based on the type of event that occurred.
+        /// function to process the chat based on event type
         /// </summary>
-        /// <param name="messageData"></param>
+        /// <param name="msg"></param>
         /// <returns>Returns the new message</returns>
         public ChatData? Receive(ChatData msg)
         {
@@ -50,7 +50,7 @@ namespace MessengerContent.Server
             if (msg.Event == MessageEvent.New)
             {
                 Trace.WriteLine("[ChatServer] MessageEvent is NewMessage, Adding message to existing Thread");
-                return _contentDB.MessageStore(msg);
+                return _contentDataBase.MessageStore(msg);
             }
             else if (msg.Event == MessageEvent.Star)
             {
@@ -87,11 +87,11 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        /// This function is used to update a message with a new message.
+        /// function to update a message with a new message.
         /// </summary>
         public ReceiveChatData? UpdateMessage(int replyId, int _msgId, string updatedMsg)
         {
-            ReceiveChatData message = _contentDB.GetMessage(replyId, _msgId);
+            ReceiveChatData message = _contentDataBase.GetMessage(replyId, _msgId);
 
             //if message doesn't exists in database, return null
             if (message == null)
@@ -106,11 +106,11 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        /// This function is used to star a message.
+        /// function to star a message.
         /// </summary>
         public ReceiveChatData? StarMessage(int replyId, int _msgId)
         {
-            ReceiveChatData msg = _contentDB.GetMessage(replyId, _msgId);
+            ReceiveChatData msg = _contentDataBase.GetMessage(replyId, _msgId);
 
             //if message doesn't exists in database, return null
             if (msg == null)
@@ -125,11 +125,11 @@ namespace MessengerContent.Server
         }
 
         /// <summary>
-        /// This function is used to Delete an exsisting message.
+        /// function to Delete an exsisting message.
         /// </summary>
         public ReceiveChatData? DeleteMessage(int replyId, int _msgId)
         {
-            ReceiveChatData message = _contentDB.GetMessage(replyId, _msgId);
+            ReceiveChatData message = _contentDataBase.GetMessage(replyId, _msgId);
 
             // if Message doesn't exists in database, return null
             if (message == null)

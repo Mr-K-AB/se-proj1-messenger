@@ -54,19 +54,19 @@ namespace MessengerScreenshare.Server
         private bool _disposed;
 
         /// <summary>
-        /// The clients which are on the current page.
+        /// The clients which are on the current view.
         /// </summary>
-        private readonly ObservableCollection<SharedClientScreen> _currentWindowClients;
+        private readonly ObservableCollection<SharedClientScreen> _currentClients;
 
         /// <summary>
         /// The current number of rows of the grid displayed on the screen.
         /// </summary>
-        private int _currentPageRows;
+        private int _currentRows;
 
         /// <summary>
         /// The current number of columns of the grid displayed on the screen.
         /// </summary>
-        private int _currentPageColumns;
+        private int _currentColumns;
 
         /// <summary>
         /// Whether the popup is open or not.
@@ -102,9 +102,9 @@ namespace MessengerScreenshare.Server
             // Initialize rest of the fields.
             _subscribers = new();
             _disposed = false;
-            _currentWindowClients = new();
-            _currentPageRows = InitialNumberOfRows;
-            _currentPageColumns = InitialNumberOfCols;
+            _currentClients = new();
+            _currentRows = InitialNumberOfRows;
+            _currentColumns = InitialNumberOfCols;
             _isPopupOpen = false;
             _popupText = "";
 
@@ -148,8 +148,8 @@ namespace MessengerScreenshare.Server
                 _subscribers = RearrangeSubscribers(subscribers);
             }
 
-            // Recompute the current window clients to notify the UX.
-            RecomputeCurrentWindowClients();
+            // Recompute the current  clients to notify the UX.
+            RecomputeCurrentClients();
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully updated the subscribers list", withTimeStamp: true));
         }
@@ -215,12 +215,12 @@ namespace MessengerScreenshare.Server
 
         /// <summary>
         /// Gets the maximum number of tiles of the shared screens
-        /// on a single page that will be shown to the server.
+        /// on a single screen that will be shown to the server.
         /// </summary>
         public static int MaxTiles { get; } = 9;
 
         /// <summary>
-        /// Acts as a map from the number of screens on the current window to
+        /// Acts as a map from the number of screens on the current  to
         /// the number of rows and columns of the grid displayed on the screen.
         /// </summary>
         public static List<(int Row, int Column)> NumRowsColumns { get; } = new()
@@ -238,39 +238,39 @@ namespace MessengerScreenshare.Server
         };
 
         /// <summary>
-        /// Gets the clients which are on the current page.
+        /// Gets the clients which are on the current view.
         /// </summary>
-        public ObservableCollection<SharedClientScreen> CurrentWindowClients
+        public ObservableCollection<SharedClientScreen> CurrentClients
         {
-            get => _currentWindowClients;
+            get => _currentClients;
 
             private set
             {
                 // Note, to update the whole list, we can't simply assign it equal
                 // to the new list. We need to clear the list first and add new elements
                 // into the list to be able to see the changes on the UI.
-                _currentWindowClients.Clear();
+                _currentClients.Clear();
                 foreach (SharedClientScreen screen in value)
                 {
-                    _currentWindowClients.Add(screen);
+                    _currentClients.Add(screen);
                 }
-                OnPropertyChanged(nameof(CurrentWindowClients));
+                OnPropertyChanged(nameof(CurrentClients));
             }
         }
 
         /// <summary>
         /// Gets the current number of rows of the grid displayed on the screen.
         /// </summary>
-        public int CurrentPageRows
+        public int CurrentRows
         {
-            get => _currentPageRows;
+            get => _currentRows;
 
             private set
             {
-                if (_currentPageRows != value)
+                if (_currentRows != value)
                 {
-                    _currentPageRows = value;
-                    OnPropertyChanged(nameof(CurrentPageRows));
+                    _currentRows = value;
+                    OnPropertyChanged(nameof(CurrentRows));
                 }
             }
         }
@@ -278,16 +278,16 @@ namespace MessengerScreenshare.Server
         /// <summary>
         /// Gets the current number of columns of the grid displayed on the screen.
         /// </summary>
-        public int CurrentPageColumns
+        public int CurrentColumns
         {
-            get => _currentPageColumns;
+            get => _currentColumns;
 
             private set
             {
-                if (_currentPageColumns != value)
+                if (_currentColumns != value)
                 {
-                    _currentPageColumns = value;
-                    OnPropertyChanged(nameof(CurrentPageColumns));
+                    _currentColumns = value;
+                    OnPropertyChanged(nameof(CurrentColumns));
                 }
             }
         }
@@ -354,11 +354,11 @@ namespace MessengerScreenshare.Server
         }
 
         /// <summary>
-        /// Recomputes current window clients using the pagination logic
-        /// and notifies the UX. It also notifies the old and new clients
+        /// Recomputes current  clients using the pagination logic
+        /// and notifies the UX. It also notifies the new clients
         /// about the new status of sending image packets.
         /// </summary>
-        public void RecomputeCurrentWindowClients()
+        public void RecomputeCurrentClients()
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
 
@@ -379,28 +379,17 @@ namespace MessengerScreenshare.Server
             }
 
             int newNumRows = 1, newNumCols = 1;
-            List<SharedClientScreen> previousWindowClients, newWindowClients;
+            List<SharedClientScreen> newClients;
             (int Height, int Width) newTileDimensions = (0, 0);
 
             lock (_subscribers)
             {
-                // Total count of all the subscribers sharing screen.
-                int totalCount = _subscribers.Count;
-
-                // Get the count of subscribers to skip for the current one.
-                int countToSkip = GetCountToSkip();
-
-                // Number of subscribers that will show up on the current page.
-                int limit = _subscribers[countToSkip].Pinned ? 1 : Math.Min(totalCount, MaxTiles);
-
-                Debug.Assert(limit <= MaxTiles, Utils.GetDebugMessage("Number of tiles on the current page should be less than or equal to the maximum number of tiles"));
-
-                // Get the new window clients to be displayed on the current page.
-                newWindowClients = _subscribers.GetRange(countToSkip, limit);
-                int numNewWindowClients = newWindowClients.Count;
+                int numNewClients = _subscribers.Count;
 
                 // The new number of rows and columns to be displayed based on new number of clients.
-                (newNumRows, newNumCols) = NumRowsColumns[numNewWindowClients];
+                (newNumRows, newNumCols) = NumRowsColumns[numNewClients];
+
+                newClients = _subscribers;
 
                 // The new tile dimensions of screen image to be displayed based on new number of clients.
                 newTileDimensions = GetTileDimensions(newNumRows, newNumCols);
@@ -408,20 +397,20 @@ namespace MessengerScreenshare.Server
 
             // Update the view with the new fields.
             UpdateView(
-                newWindowClients,
+                newClients,
                 newNumRows,
                 newNumCols,
                 newTileDimensions
             );
 
-            // Notifies the old and new clients about the status of sending image packets.
-            NotifySubscribers(newWindowClients, (newNumRows, newNumCols));
+            // Notifies the new clients about the status of sending image packets.
+            NotifySubscribers(newClients, (newNumRows, newNumCols));
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully recomputed current clients", withTimeStamp: true));
         }
 
         /// <summary>
-        /// Mark the client as pinned and switch to the page of that client.
+        /// Mark the client as pinned and switch to that client's tile.
         /// </summary>
         /// <param name="clientId">
         /// Id of the client which is marked as pinned.
@@ -431,9 +420,6 @@ namespace MessengerScreenshare.Server
             Debug.Assert(clientId != 0, Utils.GetDebugMessage("Received null client id"));
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
             Debug.Assert(_subscribers.Count != 0, Utils.GetDebugMessage("_subscribers has count 0"));
-
-            // The new page on which this pinned client will be displayed.
-            int pinnedClientPage = 1;
 
             // Acquire lock because timer threads could also execute simultaneously.
             lock (_subscribers)
@@ -459,14 +445,14 @@ namespace MessengerScreenshare.Server
                 _subscribers = RearrangeSubscribers(_subscribers);
             }
 
-            // Switch to the page of the client.
-            RecomputeCurrentWindowClients();
+            // Switch to the view of the client.
+            RecomputeCurrentClients();
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully pinned the client with id: {clientId}", withTimeStamp: true));
         }
 
         /// <summary>
-        /// Mark the client as pinned and switch to the previous (or the first) page.
+        /// Mark the client as unpinned and switch to the previous view.
         /// </summary>
         /// <param name="clientId">
         /// Id of the client which is marked as unpinned.
@@ -501,8 +487,8 @@ namespace MessengerScreenshare.Server
                 _subscribers = RearrangeSubscribers(_subscribers);
             }
 
-            //  Switch to the previous (or the first) page.
-            RecomputeCurrentWindowClients();
+            //  Switch to the previous view.
+            RecomputeCurrentClients();
 
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully unpinned the client with id: {clientId}", withTimeStamp: true));
         }
@@ -643,7 +629,7 @@ namespace MessengerScreenshare.Server
         {
             try
             {
-                // Ask all the current window clients to start processing their images.
+                // Ask all the current  clients to start processing their images.
                 foreach (SharedClientScreen client in clients)
                 {
                     // The lambda function takes the final image from the final image queue
@@ -699,83 +685,46 @@ namespace MessengerScreenshare.Server
         }
 
         /// <summary>
-        /// Stops the processing task for the clients.
+        /// Notify the previous/new  clients to stop/send their image packets.
+        /// It also asks the previous/new  clients to stop/start their image processing.
         /// </summary>
-        /// <param name="clients">
-        /// The clients for which the processing task needs to be stopped.
-        /// </param>
-        private static void StopProcessingForClients(List<SharedClientScreen> clients)
-        {
-            foreach (SharedClientScreen client in clients)
-            {
-                try
-                {
-                    // Stop the processing for the client asynchronously
-                    // so as not to block the main UI thread.
-                    client.StopProcessing(stopAsync: true);
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Failed to stop the processing: {e.Message}", withTimeStamp: true));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Notify the previous/new window clients to stop/send their image packets.
-        /// It also asks the previous/new window clients to stop/start their image processing.
-        /// </summary>
-        /// <param name="prevWindowClients">
-        /// List of clients which were there in the previous window.
-        /// </param>
-        /// <param name="currentWindowClients">
-        /// List of clients which are there in the current window.
+        /// <param name="currentClients">
+        /// List of clients which are there in the current .
         /// </param>
         /// <param name="numRowsColumns">
-        /// Number of rows and columns for the resolution of the image to be sent by the current window clients.
+        /// Number of rows and columns for the resolution of the image to be sent by the current  clients.
         /// </param>
-        private void NotifySubscribers(List<SharedClientScreen> currentWindowClients, (int, int) numRowsColumns)
+        private void NotifySubscribers(List<SharedClientScreen> currentClients, (int, int) numRowsColumns)
         {
             Debug.Assert(_model != null, Utils.GetDebugMessage("_model is found null"));
-            Debug.Assert(currentWindowClients != null, Utils.GetDebugMessage("list of current window clients is null"));
+            Debug.Assert(currentClients != null, Utils.GetDebugMessage("list of current  clients is null"));
 
-            // Ask all the current window clients to start sending image packets with the specified resolution.
-            _model.BroadcastClients(currentWindowClients
+            // Ask all the current  clients to start sending image packets with the specified resolution.
+            _model.BroadcastClients(currentClients
                                     .Select(client => client.Id)
                                     .ToList(), nameof(ServerDataHeader.Send), numRowsColumns);
 
-            // Start processing for the current window clients.
-            StartProcessingForClients(currentWindowClients);
+            // Start processing for the current  clients.
+            StartProcessingForClients(currentClients);
 
-            Trace.WriteLine(Utils.GetDebugMessage("Successfully notified the new current window clients", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage("Successfully notified the new current  clients", withTimeStamp: true));
         }
 
         /// <summary>
         /// Updates the view with the new values provided.
         /// </summary>
-        /// <param name="newWindowClients">
-        /// The new current window clients.
-        /// </param>
-        /// <param name="newPageNum">
-        /// The new page number.
-        /// </param>
+        /// <param name="newClients">
+        /// The new current  clients.
         /// <param name="newNumRows">
-        /// The new number of grid rows on the new page.
+        /// The new number of grid rows on the new view.
         /// </param>
         /// <param name="newNumCols">
-        /// The new number of grid columns on the new page.
-        /// </param>
-        /// <param name="newTotalPages">
-        /// The new total number of pages.
-        /// </param>
-        /// <param name="newIsLastPage">
-        /// If the new page is last page or not.
-        /// </param>
+        /// The new number of grid columns on the new view.
         /// <param name="newTileDimensions">
-        /// The new tile dimension of each grid cell on the new page.
+        /// The new tile dimension of each grid cell on the new view.
         /// </param>
         private void UpdateView(
-            List<SharedClientScreen> newWindowClients,
+            List<SharedClientScreen> newClients,
             int newNumRows,
             int newNumCols,
             (int Height, int Width) newTileDimensions
@@ -796,12 +745,12 @@ namespace MessengerScreenshare.Server
                             screen.TileWidth = tileDimensions.Width;
                         }
 
-                        CurrentWindowClients = clients;
-                        CurrentPageRows = numRows;
-                        CurrentPageColumns = numCols;
+                        CurrentClients = clients;
+                        CurrentRows = numRows;
+                        CurrentColumns = numCols;
                     }
                 }),
-                new ObservableCollection<SharedClientScreen>(newWindowClients),
+                new ObservableCollection<SharedClientScreen>(newClients),
                 newNumRows,
                 newNumCols,
                 newTileDimensions
@@ -834,32 +783,6 @@ namespace MessengerScreenshare.Server
                 }),
                 message
             );
-        }
-
-        /// <summary>
-        /// Computes the number of subscribers to skip up to current tile.
-        /// </summary>
-        /// <returns>
-        /// Returns the number of subscribers to skip up to the current tile.
-        /// </returns>
-        private int GetCountToSkip()
-        {
-            Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
-
-            int countToSkip = 0;
-            // The first screen on the page "i".
-            SharedClientScreen screen = _subscribers[countToSkip];
-            if (screen.Pinned)
-            {
-                // If the screen is pinned, skip by one.
-                ++countToSkip;
-            }
-            else
-            {
-                // If screen is not pinned, then skip by max number of tiles that are displayed on one page.
-                countToSkip += MaxTiles;
-            }
-            return countToSkip;
         }
 
         /// <summary>

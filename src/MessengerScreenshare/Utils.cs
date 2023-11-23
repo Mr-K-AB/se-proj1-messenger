@@ -1,9 +1,15 @@
-﻿///<author>Likhith Reddy</author>
-///<summary>
-/// This file has Frame and the related structures which are used for storing
-/// the difference in the pixel and the resolution of image. It also has some other
-/// general utilities.
-///</summary>
+﻿/******************************************************************************************************
+* Filename    = Utils.cs
+*
+* Author      = Likhith Reddy
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = This file has Frame and the related structures which are used for storing the difference 
+*               in the pixel and the resolution of image. It also has some other general utilities.
+********************************************************************************************************/
 
 using System;
 using System.Diagnostics;

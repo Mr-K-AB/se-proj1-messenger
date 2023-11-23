@@ -1,9 +1,16 @@
-﻿/// <author>Aditya Raj</author>
-/// <summary>
-/// This file contains the SharedClientScreen class which 
-/// represents the screen shared by a client.
-/// </summary>
-/// 
+﻿/******************************************************************************
+ * Filename    = SharedClientScreen.cs
+ *
+ * Author      = Aditya Raj
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerScreenshare
+ *
+ * Description = This file contains the SharedClientScreen class which 
+                 represents the screen shared by a client.
+ *****************************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

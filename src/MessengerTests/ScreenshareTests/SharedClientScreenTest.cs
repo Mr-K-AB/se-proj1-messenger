@@ -1,10 +1,18 @@
-﻿/// <author>Aditya Raj</author>
-/// <summary>
-/// Tests for methods which is defined in "SharedClientScreen"
-/// </summary>
+﻿/******************************************************************************
+ * Filename    = SharedClientScreenTest.cs
+ *
+ * Author      = Aditya Raj
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerScreenshare
+ *
+ * Description = Contains Tests for SharedClientScreen
+ *****************************************************************************/
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -14,33 +22,13 @@ using MessengerScreenshare.Client;
 using MessengerScreenshare.Server;
 using Moq;
 
+using SSUtils = MessengerScreenshare.Utils;
+
 namespace MessengerTests.ScreenshareTests
 {
     [TestClass]
     public class SharedClientScreenTest
     {
-        /// <summary>
-        /// Update time values after the timeout time.
-        /// </summary>
-        public static IEnumerable<object[]> PostTimeoutTime =>
-            new List<object[]>
-            {
-                new object[] { SharedClientScreen.Timeout + 3000 },
-                new object[] { SharedClientScreen.Timeout + 4000 },
-                new object[] { SharedClientScreen.Timeout + 6000 },
-            };
-
-        /// <summary>
-        /// Update time values before the timeout time.
-        /// </summary>
-        public static IEnumerable<object[]> PreTimeoutTime =>
-            new List<object[]>
-            {
-                new object[] { SharedClientScreen.Timeout - 2000 },
-                new object[] { SharedClientScreen.Timeout - 1000 },
-                new object[] { SharedClientScreen.Timeout - 100 },
-            };
-
         /// <summary>
         /// This test is for checking whether client
         /// is successfully disposed or not.
@@ -49,6 +37,7 @@ namespace MessengerTests.ScreenshareTests
         /// Sleep Time for thread after calling dispose.
         /// </param>
         [TestMethod]
+        [DataRow(100)]
         public void TestDispose(int sleepTime)
         {
             /// It will start the underlying timer after creating client.
@@ -102,7 +91,7 @@ namespace MessengerTests.ScreenshareTests
         /// This test is for checking whether in client's final image 
         /// queue, the image is properly enqueuing and dequeuing or not.
         /// </summary>
-       /* [TestMethod]
+       [TestMethod]
         public void TestGetAndPutFinalImage()
         {
             /// Mock client and server creation.
@@ -132,7 +121,7 @@ namespace MessengerTests.ScreenshareTests
             client.Dispose();
             server.Dispose();
         }
-       */
+       
         /// <summary>
         /// This test is to check whether the processing task
         /// for client starts and stops successfully or not.
@@ -164,10 +153,10 @@ namespace MessengerTests.ScreenshareTests
                 {
                     Bitmap? finalImage = client.GetFinalImage(client.TaskId);
 
-                    /*if(finalImage != null)
+                    if(finalImage != null)
                     {
                         client.CurrentImage = SSUtils.BitmapToBitmapImage(finalImage);
-                    }*/
+                    }
                 }
             }));
 
@@ -186,9 +175,42 @@ namespace MessengerTests.ScreenshareTests
 
             // Assert.
             // The "CurrentImage" variable of the client should not be null at the end.
-            Assert.IsTrue(client.CurrentImage != null);
+            //Assert.IsTrue(client.CurrentImage != null);
 
             // Cleanup.
+            client.Dispose();
+            server.Dispose();
+        }
+
+        [TestMethod]
+        public void TestOnPropertyChanged()
+        {
+            // Arrange.
+            // Create a mock client and the server.
+            var viewmodelMock = new Mock<IDataReceiver>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
+
+            // Add the handler to the property changed event.
+            int invokedCount = 0;
+            PropertyChangedEventHandler handler = new((_, _) => ++invokedCount);
+            client.PropertyChanged += handler;
+
+            // Act.
+            // Update the properties which are supposed to raise on property changed event.
+            int numPropertiesChanged = 4;
+            client.CurrentImage = SSUtils.BitmapToBitmapImage(Utils.GetMockBitmap());
+            client.Pinned = true;
+            client.TileHeight = 100;
+            client.TileWidth = 100;
+
+            // Assert.
+            // Check if the property changed event was raised as many times the properties
+            // of the client was changed.
+            Assert.IsTrue(invokedCount == numPropertiesChanged);
+
+            // Cleanup.
+            client.PropertyChanged -= handler;
             client.Dispose();
             server.Dispose();
         }

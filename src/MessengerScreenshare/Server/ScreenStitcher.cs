@@ -1,9 +1,16 @@
-﻿///<author>Aditya Raj</author>
-///<summary>
-/// Screen stitching functionality is implemented in this file. 
-///This file contains the ScreenStitcher class and used by ScreenshareServer.
-///</summary>
-
+﻿/******************************************************************************
+ * Filename    = ScreenStitcher.cs
+ *
+ * Author      = Aditya Raj
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerScreenshare
+ *
+ * Description = Screen stitching functionality is implemented in this file. 
+                 This file contains the ScreenStitcher class and used by 
+                 ScreenshareServer.
+ *****************************************************************************/
 
 using System;
 using System.Drawing;
@@ -215,7 +222,7 @@ namespace MessengerScreenshare.Server
         /// <returns>
         /// New image after stitching
         /// </returns>
-        private Bitmap Stitch(Bitmap? priorImage, string newFrame)
+        public Bitmap Stitch(Bitmap? priorImage, string newFrame)
         {
             char isCompleteFrame = newFrame[newFrame.Length - 1];
 

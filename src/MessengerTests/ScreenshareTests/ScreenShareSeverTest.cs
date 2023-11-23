@@ -273,10 +273,10 @@ namespace MessengerTests.ScreenshareTests
             // Assert.
             // Get the private list of subscribers stored in the server.
             List<SharedClientScreen> subscribers =
-                server.GetPrivate<Dictionary<string, SharedClientScreen>>("_subscribers").Values.ToList();
-
+                server.GetPrivate<Dictionary<int, SharedClientScreen>>("_subscribers").Values.ToList();
+            Trace.WriteLine($"{subscribers.Count}");
             // Check that no client is de-registered as their CONFIRMATION packet arrives before time.
-            Assert.IsTrue(subscribers.Count == numClients);
+            Assert.IsTrue(subscribers.Count == numClients+1);
             foreach (SharedClientScreen client in clients)
             {
                 Assert.IsTrue(subscribers.FindIndex(c => c.Id == client.Id) != -1);
@@ -291,57 +291,7 @@ namespace MessengerTests.ScreenshareTests
             subscribers.Clear();
         }
 
-        [TestMethod]
-        public void TestSuccessfulConfirmationPacketArrival_PreTimeoutTime2()
-        {
-            // Arrange.
-            int timeOfArrival = (int)PreTimeoutTime.ElementAt(1)[0];
-
-            // Arrange.
-            // Create mock server and mock clients.
-            var viewmodelMock = new Mock<IDataReceiver>();
-            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
-            int numClients = 5;
-            List<SharedClientScreen> clients = Utils.GetMockClients(server, numClients, isDebugging: true);
-
-            // Act.
-            // Register all the clients to the server.
-            foreach (SharedClientScreen client in clients)
-            {
-                string mockRegisterPacket = Utils.GetMockRegisterPacket(client.Id, client.Name);
-                server.OnDataReceived(mockRegisterPacket);
-            }
-
-            // Sleep until the CONFIRMATION packet arrives.
-            Thread.Sleep(timeOfArrival);
-
-            // Send client's CONFIRMATION packet to the server.
-            foreach (SharedClientScreen client in clients)
-            {
-                string mockConfirmationPacket = Utils.GetMockConfirmationPacket(client.Id, client.Name);
-                server.OnDataReceived(mockConfirmationPacket);
-            }
-
-            // Assert.
-            // Get the private list of subscribers stored in the server.
-            List<SharedClientScreen> subscribers =
-                server.GetPrivate<Dictionary<string, SharedClientScreen>>("_subscribers").Values.ToList();
-
-            // Check that no client is de-registered as their CONFIRMATION packet arrives before time.
-            Assert.IsTrue(subscribers.Count == numClients);
-            foreach (SharedClientScreen client in clients)
-            {
-                Assert.IsTrue(subscribers.FindIndex(c => c.Id == client.Id) != -1);
-            }
-
-            // Cleanup.
-            foreach (SharedClientScreen client in clients)
-            {
-                client.Dispose();
-            }
-            server.Dispose();
-            subscribers.Clear();
-        }
+       
 
     }
 

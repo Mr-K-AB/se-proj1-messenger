@@ -11,6 +11,8 @@ using MessengerDashboard.Client;
 using MessengerDashboard;
 using MessengerDashboard.UI.ViewModels;
 using MessengerScreenshare.Client;
+using MessengerWhiteboard;
+
 
 namespace MessengerApp.ViewModels
 {
@@ -18,8 +20,11 @@ namespace MessengerApp.ViewModels
     {
         public ICommand NavigateHomeCommand { get; }
         public ICommand NavigateClientDashboardCommand { get; }
+        public ICommand NavigateServerWhiteboardCommand { get; }
 
         public ICommand NavigateClientScreenshareCommand { get; }
+
+        private readonly MessengerWhiteboard.ViewModel _whiteboardViewModel;
 
 
         public object SubViewModel => _navigationStore.SubViewModel;
@@ -39,13 +44,18 @@ namespace MessengerApp.ViewModels
         {
             _dashboardViewModel = new DashboardMemberViewModel();
             _screenshareViewModel = new ScreenshareClientViewModel();
+            _whiteboardViewModel = new MessengerWhiteboard.ViewModel();
+
+
+            _whiteboardViewModel = MessengerWhiteboard.ViewModel.Instance;
+            _whiteboardViewModel.SetUserID(1);
 
             _navigationStore = navigationStore;
             navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
             NavigateClientDashboardCommand = new NavigateClientDashboardCommand(navigationStore, _dashboardViewModel);
             NavigateClientScreenshareCommand = new NavigateClientScreenshareCommand(navigationStore, _screenshareViewModel);
-
+            NavigateServerWhiteboardCommand = new NavigateServerWhiteboardCommand(navigationStore, _whiteboardViewModel);
         }
 
         private void NavigationStore_SubViewModelChanged()

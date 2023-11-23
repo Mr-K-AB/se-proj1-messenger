@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = factory for getting the instances 
  *****************************************************************************/
 using System;
 

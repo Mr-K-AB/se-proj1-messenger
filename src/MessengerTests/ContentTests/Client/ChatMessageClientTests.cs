@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
- * Filename    = ContentTests.cs
+ * Filename    = ContentMessageClientTests.cs
  *
  * Author      = Rapeti Siddhu Neehal
  *

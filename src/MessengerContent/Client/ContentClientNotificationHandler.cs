@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = Notification handles for all types of messages
  *****************************************************************************/
 using MessengerContent.DataModels;
 using MessengerNetworking;

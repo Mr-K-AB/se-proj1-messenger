@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = factory for getting the instances 
+ * Description = factory for getting the instance of ContentClient
  *****************************************************************************/
 using System;
 
@@ -26,16 +26,5 @@ namespace MessengerContent.Client
         {
             return s_contentClient.Value;
         }
-
-        /// <summary>
-        /// Sets the user ID and makes a request for message history
-        /// </summary>
-        /// <param name="userID">ID of the user</param>
-       /* public static void GetAllMessages(int userID)
-        {
-            ContentClient instance = s_contentClient.Value;
-            instance.UserID = userID;
-            instance.RequestMessageHistory();
-        }*/
     }
 }

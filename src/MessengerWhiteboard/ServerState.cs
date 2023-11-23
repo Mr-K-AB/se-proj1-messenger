@@ -78,21 +78,6 @@ namespace MessengerWhiteboard
 
 
         /// <summary>
-        ///     This function handles the creation of snap-shot. It invokes the server snap-shot handler
-        ///     to store the current server list of ShapeItems as a snap-shot, including the user ID.
-        ///     Subsequently, it broadcasts the received WBShape to all clients.
-        /// </summary>
-        /// <param name="deserializedObject">Deserialized object received from the network.</param>
-        /// <returns>Current snap-shot number.</returns>
-        //public int CreateSnapshotHandler(WBShape deserializedObject)
-        //{
-        //    int n = _serverSnapshotHandler.SaveBoard(_mapping.Values.ToList(), deserializedObject.UserId);
-        //    s_communicator.Broadcast(deserializedObject, null);
-        //    return n;
-        //}
-
-
-        /// <summary>
         ///     When a ShapeItem is received from the Client or View Model, it modifies the server-side
         ///     list of ShapeItems based on the operation performed on the ShapeItem.
         /// </summary>
@@ -193,9 +178,6 @@ namespace MessengerWhiteboard
             Trace.WriteLine("[Whiteboard] " + GetServerListSize());
 
             List<ShapeItem> loadedShapes = s_serverSnapshotHandler.LoadSession(deserializedObject.SnapshotID);
-            //List<SerializableShapeItem> serializableShapeItems = _serializer.SerializeShapes(loadedShapes);
-
-            //WBShape wBShape = new(serializableShapeItems, Operation.RestoreSnapshot, deserializedObject.UserId);
 
             BroadcastToClients(loadedShapes, Operation.RestoreSnapshot);
             return loadedShapes;
@@ -214,13 +196,18 @@ namespace MessengerWhiteboard
             return CreateSnapshot(wBShape);
         }
 
+
+        /// <summary>
+        ///     This function will create a snap-shot and save the session in a json file.
+        /// </summary>
+        /// <param name="wBShape">Current White-board session</param>
+        /// <returns>The session ID.</returns>
         public string CreateSnapshot(WBShape wBShape)
         {
             string s = s_serverSnapshotHandler.SaveSession(wBShape.SnapshotID, _mapping.Values.ToList());
 
             return s;
         }
-
 
 
         /// <summary>

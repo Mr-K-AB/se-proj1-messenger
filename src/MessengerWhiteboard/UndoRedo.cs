@@ -18,6 +18,14 @@ namespace MessengerWhiteboard
 {
     public partial class ViewModel
     {
+
+        /// <summary>
+        ///     This function is called when a user clicks on Undo.
+        ///     Following things will happen:
+        ///         1. A helper function will be called to call the Undo function.
+        ///         2. The shape returned by this function will be used to get the shape and the operation.
+        ///         3. The operation - which needs to be performed and the object - on which that operation has to be performed will be sent to the server.
+        /// </summary>
         public void CallUndo()
         {
             UndoStackElement sendingShape = Undo();
@@ -27,6 +35,13 @@ namespace MessengerWhiteboard
             }
         }
 
+        /// <summary>
+        ///     This function is called when a user clicks on Redo.
+        ///     Following things will happen:
+        ///         1. A helper function will be called to call the Redo function.
+        ///         2. The shape returned by this function will be used to get the shape and the operation.
+        ///         3. The operation - which needs to be performed and the object - on which that operation has to be performed will be sent to the server.
+        /// </summary>
         public void CallRedo()
         {
             UndoStackElement sendingShape = Redo();
@@ -40,6 +55,16 @@ namespace MessengerWhiteboard
         public Stack<UndoStackElement> undoStackElements = new();
         public Stack<UndoStackElement> redoStackElements = new();
 
+        /// <summary>
+        ///     This function actually implements the Undo operation logic.
+        ///     Following things will happen:
+        ///         1. To get the top of the stack, the head of UndoStack will be popped.
+        ///         2. A deep copy of the object will be saved as modifiedObject and will be sent to the server.
+        ///         3. The inverse of the operation associated with the object will be performed and that will be the modifiedObject's operation.
+        ///         4. The head to the Undo Stack will be pushed to the Redo Stack.
+        ///         5. The modifiedObject will be returned to the helper function.
+        /// </summary>
+        /// <returns>The UndoStackElement containing the shape and the operation to be broadcasted.</returns>
         public UndoStackElement Undo()
         {
             // If Stack is empty
@@ -58,6 +83,7 @@ namespace MessengerWhiteboard
 
             Trace.WriteLine("[White-Board] " + "\n" + head.Operation + "\n");
 
+            // Depending on the object's operation, inverse of that is performed to modify ShapeList
             if (head.Operation == Operation.Creation)
             {
                 DeleteIncomingShape(head.PreviousShapeItem);
@@ -65,7 +91,6 @@ namespace MessengerWhiteboard
             }
             else if (head.Operation == Operation.Deletion)
             {
-                //head.NewShapeItem.ZIndex = machine.GetMaxZindex(head.NewShapeItem);
                 CreateIncomingShape(head.PreviousShapeItem);
                 modifiedObject.Operation = Operation.Creation;
             }
@@ -80,8 +105,18 @@ namespace MessengerWhiteboard
             return modifiedObject;
         }
 
+        /// <summary>
+        ///     This function actually implements the Redo operation logic.
+        ///     Following things will happen:
+        ///         1. To get the top of the stack, the head of RedoStack will be popped.
+        ///         2. The operation associated with the object will be performed.
+        ///         4. The head to the Redo Stack will be pushed to the Undo Stack.
+        ///         5. The Redo head will be returned to the helper function.
+        /// </summary>
+        /// <returns>The UndoStackElement containing the shape and the operation to be broadcasted.</returns>
         public UndoStackElement Redo()
         {
+            // If Stack is empty
             if (redoStackElements.Count == 0)
             {
                 return null;
@@ -111,6 +146,10 @@ namespace MessengerWhiteboard
             return head;
         }
 
+        /// <summary>
+        ///     Whenever client performs some action on White-Board, this function will insert the ShapeItem along with the operation performed.
+        /// </summary>
+        /// <param name="newShape">The UndoStackElement to be pushed on the Undo Stack.</param>
         public void InsertIntoStack(UndoStackElement newShape)
         {
             undoStackElements.Push(newShape);

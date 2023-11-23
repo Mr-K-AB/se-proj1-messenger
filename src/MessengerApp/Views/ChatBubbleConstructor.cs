@@ -25,33 +25,6 @@ namespace MessengerApp.Views
     public class ChatBubbleConstructor : DataTemplateSelector
     {
         /// <summary>
-        /// Data Template for sent chat bubble.
-        /// </summary>
-        public DataTemplate? SentChatMessageTemplate { get; set; }
-
-        /// <summary>
-        /// Data Template for received chat bubble.
-        /// </summary>
-        public DataTemplate? ReceivedChatMessageTemplate { get; set; }
-
-        /// <summary>
-        /// Data Template for sent file bubble.
-        /// </summary>
-        public DataTemplate? SentFileMessageTemplate { get; set; }
-
-        /// <summary>
-        /// Data Template for received file bubble.
-        /// </summary>
-        public DataTemplate? ReceivedFileMessageTemplate { get; set; }
-
-        public DataTemplate? SentChatMessageNotReplyTemplate { get; set; }
-
-        public DataTemplate? ReceivedChatMessageNotReplyTemplate { get; set; }
-        public DataTemplate? SentFileMessageNotReplyTemplate { get; set; }
-
-        public DataTemplate? ReceivedFileMessageNotReplyTemplate { get; set; }
-
-        /// <summary>
         /// Select DataTemplate for the messages which are sent by us and received to us accordingly.
         /// </summary>
         /// <param name="item"></param>
@@ -64,18 +37,59 @@ namespace MessengerApp.Views
             {
                 if (message.MessageType == true)
                 {
-                    return message.ReplyMessage != null && message.ReplyMessage != "" ? SentChatMessageTemplate : SentChatMessageNotReplyTemplate;
+                    return (message.ReplyMessage != null && message.ReplyMessage != "") ? SentChatMessageTemplate : SentChatMessageNotReplyTemplate;
                 }
-                return message.ReplyMessage != null && message.ReplyMessage != "" ? SentFileMessageTemplate : SentFileMessageNotReplyTemplate;
+                return (message.ReplyMessage != null && message.ReplyMessage != "") ? SentFileMessageTemplate : SentFileMessageNotReplyTemplate;
             }
             else
             {
                 if (message.MessageType == true)
                 {
-                    return message.ReplyMessage != null ? ReceivedChatMessageTemplate : ReceivedChatMessageNotReplyTemplate;
+                    return (message.ReplyMessage != null && message.ReplyMessage != "") ? ReceivedChatMessageTemplate : ReceivedChatMessageNotReplyTemplate;
                 }
-                return message.ReplyMessage != null ? ReceivedFileMessageTemplate : ReceivedFileMessageNotReplyTemplate;
+                return (message.ReplyMessage != null && message.ReplyMessage != "") ? ReceivedFileMessageTemplate : ReceivedFileMessageNotReplyTemplate;
             }
         }
+
+        /// <summary>
+        /// Data Template for sent chat bubble which is a reply.
+        /// </summary>
+        public DataTemplate? SentChatMessageTemplate { get; set; }
+
+        /// <summary>
+        /// Data Template for received chat bubble which is a reply.
+        /// </summary>
+        public DataTemplate? ReceivedChatMessageTemplate { get; set; }
+
+        /// <summary>
+        /// Data Template for sent file bubble which is a reply.
+        /// </summary>
+        public DataTemplate? SentFileMessageTemplate { get; set; }
+
+        /// <summary>
+        /// Data Template for received file bubble which is a reply.
+        /// </summary>
+        public DataTemplate? ReceivedFileMessageTemplate { get; set; }
+
+        /// <summary>
+        /// Data Template for sent chat bubble which is not a reply.
+        /// </summary>
+        public DataTemplate? SentChatMessageNotReplyTemplate { get; set; }
+
+        /// <summary>
+        /// Data Template for received chat bubble which is not a reply.
+        /// </summary>
+        public DataTemplate? ReceivedChatMessageNotReplyTemplate { get; set; }
+
+        /// <summary>
+        /// Data Template for sent file bubble which is not a reply.
+        /// </summary>
+        public DataTemplate? SentFileMessageNotReplyTemplate { get; set; }
+
+        /// <summary>
+        /// Data Template for received file bubble which is not a reply.
+        /// </summary>
+        public DataTemplate? ReceivedFileMessageNotReplyTemplate { get; set; }
+
     }
 }

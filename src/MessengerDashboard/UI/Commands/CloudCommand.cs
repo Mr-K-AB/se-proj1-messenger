@@ -18,9 +18,9 @@ namespace MessengerDashboard.UI.Commands
 
         private readonly SessionsViewModel _sessionsViewModel;
 
-        public CloudCommand(string cloudUrl, SessionsViewModel sessionsViewModel)
+        public CloudCommand(RestClient restClient, SessionsViewModel sessionsViewModel)
         {
-            _restClient = new(cloudUrl);
+            _restClient = restClient;
             _sessionsViewModel = sessionsViewModel;
         }
 
@@ -33,9 +33,10 @@ namespace MessengerDashboard.UI.Commands
 
         public void Execute(object? parameter)
         {
-            try
+            _sessionsViewModel.IsLocalClicked = false;
+            Thread something = new(() =>
             {
-                Thread something = new(() =>
+                try
                 {
                     Task<IReadOnlyList<Entity>?> task = _restClient.GetEntitiesAsync();
                     task.Wait();
@@ -51,16 +52,12 @@ namespace MessengerDashboard.UI.Commands
                         sessions.Add(new SessionEntry(entity.SessionId, new ExpandCommand(_sessionsViewModel, entity)));
                     }
                     _sessionsViewModel.Sessions = sessions;
-
-                })
-                { IsBackground = true };
+                }
+                catch (Exception ex) { }
+            })
+            { IsBackground = true };
             something.Start();
-
-            }
-            catch(Exception e)
-            {
-                Trace.WriteLine("Cloud Command:" + e.Message);
-            }
+            something.Join();
         }
     }
 }

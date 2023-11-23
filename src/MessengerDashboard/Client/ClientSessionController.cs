@@ -35,11 +35,11 @@ namespace MessengerDashboard.Client
     {
         private readonly ICommunicator _communicator;
 
-        private readonly IContentClient _contentClient = ContentClientFactory.GetInstance();
+        private readonly IContentClient _contentClient;
 
         private readonly string _moduleName = "Dashboard";
 
-        private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
+        private readonly IScreenshareClient _screenshareClient;
 
         private readonly Serializer _serializer = new();
 
@@ -58,30 +58,26 @@ namespace MessengerDashboard.Client
             Trace.WriteLine("Dashboard Client >>> Creating Client Session Manager");
             _communicator = CommunicationFactory.GetCommunicator(true);
             _communicator.Subscribe(_moduleName, this);
+            _contentClient = ContentClientFactory.GetInstance();
+            _screenshareClient = ScreenshareFactory.getInstance();
             Trace.WriteLine("Dashboard Client >>> Created Client Session Manager");
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClientSessionController"/> class.
-        /// </summary>
-        /// <param name="communicator">The communicator to use for communication with the server.</param>
-        public ClientSessionController(ICommunicator communicator)
-        {
-            _communicator = communicator;
-            _communicator.Subscribe(_moduleName, this);
-        }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientSessionController"/> class.
+        /// Initializes a new instance of the <see cref="ClientSessionController"/> class used for testing.
         /// </summary>
         /// <param name="communicator">The communicator to use for communication with the server.</param>
-        /// <param name="contentClient">The content client to use for managing content.</param>
-
-        public ClientSessionController(ICommunicator communicator, IContentClient contentClient)
+        /// <param name="contentClient">The content client instance</param>
+        /// <param name="screenshareClient">The screenshare client instance</param>
+        public ClientSessionController(ICommunicator communicator, IContentClient contentClient, IScreenshareClient screenshareClient)
         {
+            Trace.WriteLine("Dashboard Client >>> Creating Client Session Manager");
             _communicator = communicator;
             _communicator.Subscribe(_moduleName, this);
             _contentClient = contentClient;
+            _screenshareClient = screenshareClient;
+            Trace.WriteLine("Dashboard Client >>> Created Client Session Manager");
         }
 
       

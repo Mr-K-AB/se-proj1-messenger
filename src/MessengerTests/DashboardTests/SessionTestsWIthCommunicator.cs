@@ -23,16 +23,23 @@ namespace MessengerTests.DashboardTests
     [TestClass]
     public class SessionTestsWIthCommunicator
     {
+        private IClientSessionController _client;
+
         [TestMethod]
         public void SessionJoinAndLeaveTest()
         {
 
             IServerSessionController server = DashboardFactory.GetServerSessionController();
-            IClientSessionController client = DashboardFactory.GetClientSessionController();
-            client.ConnectToServer(server.ConnectionDetails.IpAddress, server.ConnectionDetails.Port, "a", "a", "a");
-            Assert.IsTrue(client.IsConnectedToServer);
-            client.SendExitSessionRequestToServer();
-            Assert.IsFalse(client.IsConnectedToServer);
+            _client = DashboardFactory.GetClientSessionController();
+            _client.ConnectToServer(server.ConnectionDetails.IpAddress, server.ConnectionDetails.Port, "a", "a", "a");
+            Assert.IsTrue(_client.IsConnectedToServer);
+            _client.SendExitSessionRequestToServer();
+            _client.SessionExited += HandleSessionExited;
+        }
+
+        private void HandleSessionExited(object? sender, MessengerDashboard.Client.Events.SessionExitedEventArgs e)
+        {
+            Assert.IsFalse(_client.IsConnectedToServer);
         }
     }
 }

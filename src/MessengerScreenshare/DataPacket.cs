@@ -17,7 +17,7 @@ namespace MessengerScreenshare
         /// Creates an instance of the DataPacket with empty string values for all
         /// the fields.
         /// </summary>
-        public DataPacket()
+        public DataPacket(int _id)
         {
             Id = 0;
             Name = "";

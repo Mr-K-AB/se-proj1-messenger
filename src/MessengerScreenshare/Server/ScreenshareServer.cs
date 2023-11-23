@@ -320,7 +320,7 @@ namespace MessengerScreenshare.Server
                 {
                     try
                     {
-                        client._timer!.Interval = 20000;
+                        client.UpdateTimer();
                         BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
 
                         Trace.WriteLine(Utils.GetDebugMessage($"Timer updated for the client with Id: {clientId}", withTimeStamp: true));

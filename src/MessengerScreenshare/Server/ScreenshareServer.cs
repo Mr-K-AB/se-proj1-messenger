@@ -1,4 +1,15 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = ScreenshareServer.cs
+*
+* Author      = M Anish Goud
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = 
+*****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,8 +27,7 @@ using System.Security.Cryptography;
 namespace MessengerScreenshare.Server
 {
     public class ScreenshareServer: ITimer,
-       INotificationHandler, // To receive chat messages from clients.
-            // Handles client timeouts.
+       INotificationHandler,
         IDisposable
     {
         private bool _disposedValue;
@@ -75,12 +85,6 @@ namespace MessengerScreenshare.Server
             {
                 DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(packetData);
 
-                if (packet == null)
-                {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Not able to deserialize data packet: {packetData}", withTimeStamp: true));
-                    return;
-                }
-
                 int clientId = packet.Id;
                 string clientName = packet.Name;
                 ClientDataHeader header = Enum.Parse<ClientDataHeader>(packet.Header);
@@ -111,35 +115,7 @@ namespace MessengerScreenshare.Server
         }
 
 
-        /*private StringBuilder _receivedDataBuffer = new StringBuilder();
-
-        // Assuming this method is called when data is received from a client
-        private void OnDataReceived(string receivedFragment)
-        {
-            _receivedDataBuffer.Append(receivedFragment);
-
-            // Check if the complete data has been received
-            if (IsCompleteDataReceived(_receivedDataBuffer.ToString()))
-            {
-                // Process the complete data
-                string completeData = _receivedDataBuffer.ToString();
-                DataPacket dataPacket = JsonSerializer.Deserialize<DataPacket>(completeData);
-
-                // Your analysis logic here using dataPacket
-                // ...
-
-                // Clear the buffer for the next set of fragments
-                _receivedDataBuffer.Clear();
-            }
-        }
-
-        private bool IsCompleteDataReceived(string data)
-        {
-            // Your logic to determine if the complete data has been received
-            // For simplicity, you can check if the data ends with a specific marker or pattern
-            return data.EndsWith("EndOfDataMarker");
-        }
-        */
+      
 
 
         private void RegisterClient(int clientId, string clientName)
@@ -154,11 +130,7 @@ namespace MessengerScreenshare.Server
                     Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
                     return; // Early exit.
                 }
-                //BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
             }
-            //DataPacket confirmationPacket = new(clientId, clientName, ServerDataHeader.Send.ToString(), 0, 0, "");
-            //string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
-            //_communicator.Broadcast(Utils.ServerIdentifier, serializedConfirmationPacket);
             NotifyUX();
             NotifyUX(clientId, clientName, start: true);
 
@@ -173,9 +145,6 @@ namespace MessengerScreenshare.Server
                 if (_subscribers.TryGetValue(clientId, out SharedClientScreen? client))
                 {
                     _subscribers.Remove(clientId);
-                    //DataPacket confirmationPacket = new(clientId, clientName, ServerDataHeader.Stop.ToString(), 0, 0, "");
-                    //string serializedConfirmationPacket = JsonSerializer.Serialize(confirmationPacket);
-                    //_communicator.Broadcast(Utils.ServerIdentifier, serializedConfirmationPacket);
                     NotifyUX();
                     NotifyUX(clientId, client.Name, start: false);
 
@@ -212,48 +181,6 @@ namespace MessengerScreenshare.Server
                 {
                     try
                     {
-                        /*// Dictionary to store image fragments for each image
-                        client.ImageFragments ??= new Dictionary<int, StringBuilder>();
-
-                        // If the image fragment container doesn't exist, create it
-                        if (!client.ImageFragments.TryGetValue(imgCount, out StringBuilder imageFragmentContainer))
-                        {
-                            imageFragmentContainer = new StringBuilder();
-                            client.ImageFragments[imgCount] = imageFragmentContainer;
-                        }
-                        if (!imageFragmentContainer.ToString().Contains($"|{fragmentOffset}|"))
-                        {
-                            // Concatenate the received image packet to the StringBuilder for the specific image
-                            imageFragmentContainer.Append($"|{fragmentOffset}|{data}");
-
-                            // Check if all fragments for the current image have been received
-                            if (client.ImageFragments[imgCount].ToString().Split('|').Length - 1 == 500)
-                            {
-                                // Now, imageFragmentContainer contains the complete image as a single string
-                                // You can send or process the complete image here
-
-                                string completeImage = imageFragmentContainer.ToString().Replace($"|{fragmentOffset}|", "");
-
-                                // Clear the StringBuilder for this image
-                                client.PutImage(completeImage, client.TaskId);
-                                client.ImageFragments[imgCount].Clear();
-
-
-                                Trace.WriteLine(Utils.GetDebugMessage($"Successfully received and processed image of the client with Id: {clientId}, Image No: {imgCount}", withTimeStamp: true));
-                            }
-                            
-                            else
-                            {
-                                Trace.WriteLine(Utils.GetDebugMessage($"Received image packet {fragmentOffset} of {imgCount} from the client with Id: {clientId}", withTimeStamp: true));
-                            }
-
-
-                        }
-                        else
-                        {
-                            // Handle the case where the same fragmentOffset comes twice
-                            Trace.WriteLine(Utils.GetDebugMessage($"Duplicate image packet {fragmentOffset} received from the client with Id: {clientId}", withTimeStamp: true));
-                        }*/
                         client.PutImage(data, client.TaskId);
                         Trace.WriteLine(Utils.GetDebugMessage($"Successfully received image of the client with Id: {clientId}", withTimeStamp: true));
                     }
@@ -275,13 +202,6 @@ namespace MessengerScreenshare.Server
                 Trace.WriteLine(Utils.GetDebugMessage("_communicator is found null", withTimeStamp: true));
                 return;
             }
-
-            if (clientIds == null)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage("List of client Ids is found null", withTimeStamp: true));
-                return;
-            }
-
             // If there are no clients to broadcast to, return early.
             if (clientIds.Count == 0)
             {
@@ -367,9 +287,6 @@ namespace MessengerScreenshare.Server
                         DeregisterClient(client.Id);
                     }
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 _disposedValue = true;
             }
         }
@@ -378,7 +295,6 @@ namespace MessengerScreenshare.Server
 
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
@@ -408,14 +324,8 @@ namespace MessengerScreenshare.Server
                 _receiver.OnScreenshareStop(clientId, clientName);
             }
         }
-        public void OnClientJoined(string ipAddress, int port)
-        {
-            throw new NotImplementedException();
-        }
+        public void OnClientJoined(string ipAddress, int port) {}
 
-        public void OnClientLeft(string ipAddress, int port)
-        {
-            throw new NotImplementedException();
-        }
+        public void OnClientLeft(string ipAddress, int port) {}
     }
 }

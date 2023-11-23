@@ -1,4 +1,12 @@
-﻿using MessengerNetworking.Queues;
+﻿/******************************************************************************
+ * 
+ * Author      = Priyanshu Gupta
+ *
+ * Roll no     = 112001033
+ *
+ *****************************************************************************/
+
+using MessengerNetworking.Queues;
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
@@ -10,8 +18,8 @@ namespace MessengerNetworking.Sockets
     public class SocketListener
     {
         // set the max size of buffer and initialize the buffer
-        private const int bufferSize = 1000000;
-        private readonly byte[] buffer = new byte[bufferSize];
+        private const int BufferSize = 1000000;
+        private readonly byte[] _buffer = new byte[BufferSize];
 
         // StringBuilder string to store the the received message
         // StringBuilder type is mutable while string type is not
@@ -56,7 +64,7 @@ namespace MessengerNetworking.Sockets
                 _runSocketListenerThread = true;
                 _socket = _tcpClient.Client;
                 _socketListenerThread = new Thread(() =>
-                _socket.BeginReceive(buffer, 0, bufferSize, 0,
+                _socket.BeginReceive(_buffer, 0, BufferSize, 0,
                 ReceiveCallback, null));
                 _socketListenerThread.Start();
                 Trace.WriteLine("[Networking] SocketListener thread " +
@@ -107,7 +115,7 @@ namespace MessengerNetworking.Sockets
                     // covert the received bytes to string and
                     // append that string to _receivedString
                     _receivedString.Append(Encoding.UTF32.GetString(
-                        buffer, 0, bytesCount));
+                        _buffer, 0, bytesCount));
 
                     // call ProcessReceivedString() to process the
                     // received string and get the remaning string
@@ -120,7 +128,7 @@ namespace MessengerNetworking.Sockets
                     _receivedString.Append(remainingString);
 
                     // continue the receive
-                    _socket.BeginReceive(buffer, 0, bufferSize, 0,
+                    _socket.BeginReceive(_buffer, 0, BufferSize, 0,
                         ReceiveCallback, null);
                 }
             }

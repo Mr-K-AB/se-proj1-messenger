@@ -26,14 +26,12 @@ namespace MessengerTests.WhiteboardTests
         readonly ClientState _client;
         private readonly Mock<IClientCommunicator> _mockCommunicator;
         private readonly Serializer _serializer;
-        readonly Utils _utils;
 
         public ClientStateTest()
         {
             _client = ClientState.Instance;
             _mockCommunicator = new Mock<IClientCommunicator>();
             _serializer = new Serializer();
-            _utils = new Utils();
             _client.SetCommunicator(_mockCommunicator.Object);
         }
 
@@ -53,7 +51,7 @@ namespace MessengerTests.WhiteboardTests
             _client.InitializeUser();
             WBShape expected = new(null, Operation.NewUser, "2");
 
-            _mockCommunicator.Verify(a => a.SendToServer(It.Is<WBShape>(obj => _utils.CompareBoardServerShapes(obj, expected))), Times.Once);
+            _mockCommunicator.Verify(a => a.SendToServer(It.Is<WBShape>(obj => Utils.CompareBoardServerShapes(obj, expected))), Times.Once);
         }
 
         [TestMethod]
@@ -63,7 +61,7 @@ namespace MessengerTests.WhiteboardTests
 
             Point start = new(1, 1);
             Point end = new(2, 2);
-            ShapeItem boardShape = _utils.CreateShape("EllipseGeometry", start, end, Brushes.Transparent, Brushes.Black, 1, "u0f0");
+            ShapeItem boardShape = Utils.CreateShape("EllipseGeometry", start, end, Brushes.Transparent, Brushes.Black, 1, "u0f0");
             List<ShapeItem> newShapes = new()
             {
                 boardShape
@@ -74,7 +72,7 @@ namespace MessengerTests.WhiteboardTests
 
             _client.OnShapeReceived(boardShape, Operation.Creation);
 
-            _mockCommunicator.Verify(m => m.SendToServer(It.Is<WBShape>(obj => _utils.CompareBoardServerShapes(obj, expected))), Times.Once());
+            _mockCommunicator.Verify(m => m.SendToServer(It.Is<WBShape>(obj => Utils.CompareBoardServerShapes(obj, expected))), Times.Once());
         }
     }
 }

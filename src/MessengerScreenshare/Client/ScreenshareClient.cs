@@ -1,10 +1,15 @@
-﻿///<author>Alugonda Sathvik </author>
-///<summary>
-/// This file has ScreenshareClient class's implementation
-/// In this file functions related to starting and stopping Screen Capturing 
-/// are implemented
-///</summary>
-///
+﻿/******************************************************************************
+* Filename    = ScreenshareClient.cs
+*
+* Author      = Alugonda Sathvik
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = This Class implements start and stop screen sharing of clients.
+*****************************************************************************/
+
 using MessengerScreenshare.Client;
 using MessengerScreenshare;
 using System;
@@ -44,10 +49,10 @@ namespace MessengerScreenshare.Client
         public int _id;
         // Tokens added to be able to stop the thread execution
         private bool _confirmationCancellationToken;
-        private readonly CancellationTokenSource? _imageCancellation;
+        private CancellationTokenSource? _imageCancellation;
 
         // View model for screenshare client
-        private ScreenshareClientViewModel? _viewModel;
+        public ScreenshareClientViewModel? _viewModel;
 
         private readonly System.Timers.Timer? _timer;
         public static double Timeout { get; } = 200 * 1000;
@@ -62,7 +67,6 @@ namespace MessengerScreenshare.Client
         {
             _capturer = new ScreenCapturer();
             _processor = new ScreenProcessor(_capturer);
-            _imageCancellation = new CancellationTokenSource();
             if (!isDebugging)
             {
                 _communicator = CommunicationFactory.GetCommunicator(true);
@@ -167,18 +171,12 @@ namespace MessengerScreenshare.Client
                 Trace.WriteLine(Utils.GetDebugMessage("Got STOP packet from server", withTimeStamp: true));
                 StopImageSending();
             }
-            else if (dataPacket?.Header == ServerDataHeader.Confirmation.ToString())
-            {
-                // Else if it was a CONFIRMATION packet then update the timer to the max value
+            else if (dataPacket?.Header == ServerDataHeader.Confirmation.ToString()) { // Else if it was a CONFIRMATION packet then update the timer to the max value
                 UpdateTimer();
                 Trace.WriteLine(Utils.GetDebugMessage("Got CONFIRMATION packet from server", withTimeStamp: true));
             }
-            else
-            {
-                // Else it was some invalid packet so add a debug message
-                Debug.Assert(false,
-                    Utils.GetDebugMessage("Header from server is neither SEND, STOP nor CONFIRMATION"));
-            }
+            else { // Else it was some invalid packet so add a debug message
+                Debug.Assert(false,Utils.GetDebugMessage("Header from server is neither SEND, STOP nor CONFIRMATION")); }
         }
 
         /// <summary>
@@ -217,19 +215,6 @@ namespace MessengerScreenshare.Client
                     break;
                 }
                 cnt++;
-                //DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
-                //string serializedData = JsonSerializer.Serialize(dataPacket);
-
-                // Split the data into 500 fragments
-                /*List<string> dataFragments = SplitDataIntoFragments(serializedImg, 500);
-                int fragmentOffset = 1;
-                foreach (string fragment in dataFragments)
-                {
-                    DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), cnt, fragmentOffset, fragment);
-                    string serializedData = JsonSerializer.Serialize(dataPacket);
-                    _communicator.Broadcast(Utils.ServerIdentifier, serializedData);
-                    fragmentOffset++;
-                }*/
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = JsonSerializer.Serialize(dataPacket);
                 _communicator.Send(serializedData, Utils.ServerIdentifier, null);
@@ -238,25 +223,13 @@ namespace MessengerScreenshare.Client
             }
         }
 
-        private List<string> SplitDataIntoFragments(string data, int fragmentSize)
-        {
-            List<string> fragments = new();
-            for (int i = 0; i < data.Length; i += fragmentSize)
-            {
-                int length = Math.Min(fragmentSize, data.Length - i);
-                fragments.Add(data.Substring(i, length));
-            }
-            return fragments;
-        }
-
-
         /// <summary>
         /// Starting the image sending function on a thread.
         /// </summary>
         private async Task StartImageSendingAsync()
         {
+            _imageCancellation = new CancellationTokenSource();
             CancellationToken cancellationToken = _imageCancellation!.Token;
-            _imageCancellation?.Dispose();
             _capturer.StartCapture();
             _processor?.StartProcessingAsync(1);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully started capturer and processor", withTimeStamp: true));
@@ -278,7 +251,7 @@ namespace MessengerScreenshare.Client
             string serializedDeregisterPacket = JsonSerializer.Serialize(deregisterPacket);
 
             StopImageSending();
-            StopConfirmationSendingAsync().Wait(); // Synchronously wait here for demonstration purposes
+            StopConfirmationSendingAsync();
             _communicator.Send(serializedDeregisterPacket, Utils.ServerIdentifier, null);
             Trace.WriteLine(Utils.GetDebugMessage("Successfully sent DEREGISTER packet to server", withTimeStamp: true));
         }
@@ -287,15 +260,24 @@ namespace MessengerScreenshare.Client
         /// Method to stop sending confirmation packets. Will be called only when the client
         /// stops screensharing.
         /// </summary>
-        private async Task StopConfirmationSendingAsync()
+        private void StopConfirmationSendingAsync()
         {
             if (_sendConfirmationTask == null)
             {
                 return;
             }
 
-            _confirmationCancellationToken = true;
-            await _sendConfirmationTask;
+            try
+            {
+                _confirmationCancellationToken = true;
+                _sendConfirmationTask.Wait();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(Utils.GetDebugMessage($"Unable to cancel confirmation sending task: {e.Message}", withTimeStamp: true));
+            }
+
+            _sendConfirmationTask = null;
         }
 
         /// <summary>

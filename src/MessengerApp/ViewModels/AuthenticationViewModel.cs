@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MessengerApp.Stores;
+using MessengerViewModels.Stores;
 using MessengerApp.Views;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MessengerDashboard;
-
+using MessengerViewModels.ViewModels;
 namespace MessengerApp.ViewModels
 {
     [INotifyPropertyChanged]

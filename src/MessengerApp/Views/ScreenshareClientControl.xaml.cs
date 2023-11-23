@@ -1,4 +1,16 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = ScreenshareClientControl.xaml.cs
+*
+* Author      = Harsh Kanani
+*
+* Product     = Messenger
+* 
+* Project     = MessengerApp
+*
+* Description = Interaction logic for ScreenshareClientControl.xaml.
+*****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -24,12 +36,24 @@ namespace MessengerApp.Views
     /// </summary>
     public partial class ScreenshareClientControl : UserControl
     {
+        /// <summary>
+        /// Creates an instance of the ScreenshareClientControl.
+        /// </summary>
         public ScreenshareClientControl()
         {
             InitializeComponent();
+
+            // Create the ViewModel and set as data context.
             ScreenshareClientViewModel viewModel = new();
             DataContext = viewModel;
         }
+
+        /// <summary>
+        /// This function starts sharing the screen
+        /// It marks the SharingScreen component of the viewModel as True.
+        /// </summary>
+        /// <param name="sender"> default </param>
+        /// <param name="e"> default </param>
         private void StartScreenShare_Click(object sender, RoutedEventArgs e)
         {
             if (DataContext is ScreenshareClientViewModel viewModel)
@@ -40,6 +64,12 @@ namespace MessengerApp.Views
             Trace.WriteLine(Utils.GetDebugMessage("Start Share Button Clicked", withTimeStamp: true));
         }
 
+        /// <summary>
+        /// This function stops sharing the screen
+        /// It marks the SharingScreen component of the viewModel as False.
+        /// </summary>
+        /// <param name="sender"> default </param>
+        /// <param name="e"> default </param>
         private void StopScreenShare_Click(object sender, RoutedEventArgs e)
         {
             if (DataContext is ScreenshareClientViewModel viewModel)

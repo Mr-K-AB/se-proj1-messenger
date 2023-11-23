@@ -59,59 +59,79 @@ namespace MessengerScreenshare.Server
         /// Client may sends only a 'diff' instead of full image to server.
         /// So to retrieve full image using diff, this function is called.
         /// </summary>
-        /// <param name="curr">The 'diff' current image</param>
-        /// <param name="prev">Previous image</param>
-        /// <returns>Current image meant to be displayed</returns>
+        /// <param name="curr">
+        /// The 'diff' current image
+        /// </param>
+        /// <param name="prev">
+        /// Previous image
+        /// </param>
+        /// <returns>
+        /// Current image meant to be displayed
+        /// </returns>
         public static unsafe Bitmap Process(Bitmap curr, Bitmap prev)
         {
-            BitmapData currData = curr.LockBits(new Rectangle(0, 0, curr.Width, curr.Height), ImageLockMode.ReadOnly, curr.PixelFormat);
-            BitmapData prevData = prev.LockBits(new Rectangle(0, 0, prev.Width, prev.Height), ImageLockMode.ReadOnly, prev.PixelFormat);
+            BitmapData currData = curr.LockBits(new Rectangle(0, 0, curr.Width, curr.Height), ImageLockMode.ReadWrite, curr.PixelFormat);
+            BitmapData prevData = prev.LockBits(new Rectangle(0, 0, prev.Width, prev.Height), ImageLockMode.ReadWrite, prev.PixelFormat);
 
-            int bytesPerPixel = Image.GetPixelFormatSize(curr.PixelFormat) / 8;
-            int width = currData.Width;
-            int height = currData.Height;
+            int bytesPerPixel = Bitmap.GetPixelFormatSize(curr.PixelFormat) / 8;
+            int heightInPixels = currData.Height;
+            int widthInBytes = currData.Width * bytesPerPixel;
 
-            Bitmap newBitmap = new(width, height, curr.PixelFormat);
-            BitmapData newData = newBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, curr.PixelFormat);
+            byte* currptr = (byte*)currData.Scan0;
+            byte* prevptr = (byte*)prevData.Scan0;
 
-            byte* currPtr = (byte*)currData.Scan0;
-            byte* prevPtr = (byte*)prevData.Scan0;
-            byte* newPtr = (byte*)newData.Scan0;
+            Bitmap newb = new(curr.Width, curr.Height);
+            BitmapData bmd = newb.LockBits(new Rectangle(0, 0, 10, 10), System.Drawing.Imaging.ImageLockMode.ReadOnly, newb.PixelFormat);
+            byte* ptr = (byte*)bmd.Scan0;
 
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < heightInPixels; y++)
             {
-                int offset = y * currData.Stride;
+                int currentLine = y * currData.Stride;
 
-                for (int x = 0; x < width * bytesPerPixel; x++)
+                for (int x = 0; x < widthInBytes; x += bytesPerPixel)
                 {
-                    byte currByte = currPtr[offset + x];
-                    byte prevByte = prevPtr[offset + x];
+                    int oldBlue = currptr[currentLine + x];
+                    int oldGreen = currptr[currentLine + x + 1];
+                    int oldRed = currptr[currentLine + x + 2];
+                    int oldAlpha = currptr[currentLine + x + 3];
 
-                    newPtr[offset + x] = (byte)(currByte ^ prevByte);
+                    int newBlue = prevptr[currentLine + x];
+                    int newGreen = prevptr[currentLine + x + 1];
+                    int newRed = prevptr[currentLine + x + 2];
+                    int newAlpha = prevptr[currentLine + x + 3];
+
+                    ptr[currentLine + x] = (byte)(oldBlue ^ newBlue);
+                    ptr[currentLine + x + 1] = (byte)(oldGreen ^ newGreen);
+                    ptr[currentLine + x + 2] = (byte)(oldRed ^ newRed);
+                    ptr[currentLine + x + 3] = (byte)(oldAlpha ^ newAlpha);
                 }
             }
 
             curr.UnlockBits(currData);
             prev.UnlockBits(prevData);
-            newBitmap.UnlockBits(newData);
+            newb.UnlockBits(bmd);
 
-            return newBitmap;
+            return newb;
         }
 
         /// <summary>
         /// Method to decompress a byte array compressed by processor.
         /// </summary>
-        /// <param name="data">Byte array compressed using GZipStream</param>
-        /// <returns>Decompressed byte array</returns>
+        /// <param name="data">
+        /// Byte array compressed using GZipStream
+        /// </param>
+        /// <returns>
+        /// Decompressed byte array
+        /// </returns>
         public static byte[] DecompressByteArray(byte[] data)
         {
             using MemoryStream input = new(data);
             using MemoryStream output = new();
-            using GZipStream gzipStream = new(input, CompressionMode.Decompress);
+            using (DeflateStream dstream = new(input, CompressionMode.Decompress))
             {
-                gzipStream.CopyTo(output);
-                return output.ToArray();
+                dstream.CopyTo(output);
             }
+            return output.ToArray();
         }
 
         /// <summary>
@@ -129,38 +149,32 @@ namespace MessengerScreenshare.Server
                 return;
             }
 
-            CancellationTokenSource cancellationTokenSource = new();
-
-            _stitchTask = Task.Run(() =>
+            _stitchTask = new Task(() =>
             {
-                CancellationToken token = cancellationTokenSource.Token;
-
-                Trace.WriteLine(Utils.GetDebugMessage($"Successfully created the stitching task with id {taskId} for the client with id {_sharedClientScreen.Id}", withTimeStamp: true));
-
-                while (!token.IsCancellationRequested)
+                while (taskId == _sharedClientScreen.TaskId)
                 {
-                  
                     string? newFrame = _sharedClientScreen.GetImage(taskId);
 
+                    if (taskId != _sharedClientScreen.TaskId)
+                    {
+                        break;
+                    }
                     if (newFrame == null)
                     {
                         Trace.WriteLine(Utils.GetDebugMessage("New frame returned by _sharedClientScreen is null.", withTimeStamp: true));
                         continue;
                     }
 
-                    if (_priorImage != null)
-                    {
-                        Bitmap stitchedImage = Stitch(_priorImage, newFrame);
-                        Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
-                        _priorImage = stitchedImage;
-                        _sharedClientScreen.PutFinalImage(stitchedImage, taskId);
-
-                    }
-                    
+                    Bitmap stichedImage = Stitch(_priorImage, newFrame);
+                    Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
+                    _priorImage = stichedImage;
+                    _sharedClientScreen.PutFinalImage(stichedImage, taskId);
                 }
-            }, cancellationTokenSource.Token);
+            });
 
-            _stitchTask.Start();
+            _stitchTask?.Start();
+
+            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created the stitching task with id {taskId} for the client with id {_sharedClientScreen.Id}", withTimeStamp: true));
         }
 
         /// <summary>
@@ -173,14 +187,12 @@ namespace MessengerScreenshare.Server
                 return;
             }
 
-            CancellationTokenSource cancellationTokenSource = new();
-            _ = cancellationTokenSource.Token;
-
-            cancellationTokenSource.Cancel();
+            Task previousStitchTask = _stitchTask;
+            _stitchTask = null;
 
             try
             {
-                _stitchTask.Wait();
+                previousStitchTask?.Wait();
             }
             catch (Exception e)
             {
@@ -191,7 +203,6 @@ namespace MessengerScreenshare.Server
 
         }
 
-
         /// <summary>
         /// Stitch new frame over prior image is implemented. Data received
         /// from client has '1' in front then new image has arrived hence 
@@ -201,30 +212,30 @@ namespace MessengerScreenshare.Server
         /// </summary>
         /// <param name="priorImage"></param>
         /// <param name="newFrame"></param>
-        /// <returns>New image after stitching</returns>
-        private Bitmap Stitch(Bitmap priorImage, string newFrame)
+        /// <returns>
+        /// New image after stitching
+        /// </returns>
+        private Bitmap Stitch(Bitmap? priorImage, string newFrame)
         {
             char isCompleteFrame = newFrame[newFrame.Length - 1];
 
             newFrame = newFrame.Remove(newFrame.Length - 1);
 
-            byte[] frameData = Convert.FromBase64String(newFrame);
+            byte[]? frameData = Convert.FromBase64String(newFrame);
             frameData = DecompressByteArray(frameData);
 
-            using (MemoryStream frameStream = new(frameData))
-            using (Bitmap xorBitmap = new(frameStream))
+            MemoryStream frameStream = new(frameData);
+            Bitmap xorBitmap = new(frameStream);
             {
                 var newResolution = new Resolution() { Height = xorBitmap.Height, Width = xorBitmap.Width };
 
                 if (priorImage == null || newResolution != _resolution)
                 {
-                    priorImage?.Dispose();
                     priorImage = new Bitmap(newResolution.Width, newResolution.Height);
                 }
 
                 if (isCompleteFrame == '1')
                 {
-                    priorImage.Dispose();
                     priorImage = xorBitmap;
                 }
                 else

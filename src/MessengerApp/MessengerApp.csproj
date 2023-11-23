@@ -10,6 +10,7 @@
   <ItemGroup>
     <None Remove="Images\end-meet.png" />
     <None Remove="Images\file-attach.png" />
+    <None Remove="Images\mode.png" />
     <None Remove="Images\refresh.png" />
     <None Remove="Images\restore.png" />
     <None Remove="Images\save.png" />
@@ -51,6 +52,12 @@
     <None Remove="Images\size.png" />
     <None Remove="Images\triangle.png" />
     <None Remove="Images\undo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\mode.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

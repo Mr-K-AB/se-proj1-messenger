@@ -56,7 +56,7 @@ namespace MessengerScreenshare.Server
             _subscribers = new Dictionary<int, SharedClientScreen>();
             _disposedValue = false;
             _receiver = receiver;
-            Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareServer", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage("created the instance for ScreenshareServer", withTimeStamp: true));
         }
         
         /// <summary>
@@ -123,10 +123,6 @@ namespace MessengerScreenshare.Server
                         {
                             UpdateTimer(clientId);
                         }
-                        else
-                        {
-                            Trace.WriteLine(Utils.GetDebugMessage($"Unknown header {packet.Header}", withTimeStamp: true));
-                        }
                 }
                 else
                 {
@@ -154,7 +150,7 @@ namespace MessengerScreenshare.Server
                 {
                     // If TryAdd fails, the client is already registered.
                     Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
-                    return; // Early exit.
+                    return; 
                 }
             }
             NotifyUX();
@@ -199,7 +195,7 @@ namespace MessengerScreenshare.Server
                 }
                 else
                 {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Trying to deregister a client with id {clientId} which is not present in subscribers list", withTimeStamp: true));
+                    Trace.WriteLine(Utils.GetDebugMessage($"This client with id {clientId} which is not present in subscribers list", withTimeStamp: true));
                 }
             }
         }

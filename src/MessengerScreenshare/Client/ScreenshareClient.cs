@@ -49,7 +49,7 @@ namespace MessengerScreenshare.Client
         public int _id;
         // Tokens added to be able to stop the thread execution
         private bool _confirmationCancellationToken;
-        private readonly CancellationTokenSource? _imageCancellation;
+        private CancellationTokenSource? _imageCancellation;
 
         // View model for screenshare client
         public ScreenshareClientViewModel? _viewModel;
@@ -67,7 +67,6 @@ namespace MessengerScreenshare.Client
         {
             _capturer = new ScreenCapturer();
             _processor = new ScreenProcessor(_capturer);
-            _imageCancellation = new CancellationTokenSource();
             if (!isDebugging)
             {
                 _communicator = CommunicationFactory.GetCommunicator(true);
@@ -172,18 +171,12 @@ namespace MessengerScreenshare.Client
                 Trace.WriteLine(Utils.GetDebugMessage("Got STOP packet from server", withTimeStamp: true));
                 StopImageSending();
             }
-            else if (dataPacket?.Header == ServerDataHeader.Confirmation.ToString())
-            {
-                // Else if it was a CONFIRMATION packet then update the timer to the max value
+            else if (dataPacket?.Header == ServerDataHeader.Confirmation.ToString()) { // Else if it was a CONFIRMATION packet then update the timer to the max value
                 UpdateTimer();
                 Trace.WriteLine(Utils.GetDebugMessage("Got CONFIRMATION packet from server", withTimeStamp: true));
             }
-            else
-            {
-                // Else it was some invalid packet so add a debug message
-                Debug.Assert(false,
-                    Utils.GetDebugMessage("Header from server is neither SEND, STOP nor CONFIRMATION"));
-            }
+            else { // Else it was some invalid packet so add a debug message
+                Debug.Assert(false,Utils.GetDebugMessage("Header from server is neither SEND, STOP nor CONFIRMATION")); }
         }
 
         /// <summary>
@@ -222,19 +215,6 @@ namespace MessengerScreenshare.Client
                     break;
                 }
                 cnt++;
-                //DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
-                //string serializedData = JsonSerializer.Serialize(dataPacket);
-
-                // Split the data into 500 fragments
-                /*List<string> dataFragments = SplitDataIntoFragments(serializedImg, 500);
-                int fragmentOffset = 1;
-                foreach (string fragment in dataFragments)
-                {
-                    DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), cnt, fragmentOffset, fragment);
-                    string serializedData = JsonSerializer.Serialize(dataPacket);
-                    _communicator.Broadcast(Utils.ServerIdentifier, serializedData);
-                    fragmentOffset++;
-                }*/
                 DataPacket dataPacket = new(_id, _name, ClientDataHeader.Image.ToString(), serializedImg);
                 string serializedData = JsonSerializer.Serialize(dataPacket);
                 _communicator.Send(serializedData, Utils.ServerIdentifier, null);
@@ -243,23 +223,12 @@ namespace MessengerScreenshare.Client
             }
         }
 
-        private List<string> SplitDataIntoFragments(string data, int fragmentSize)
-        {
-            List<string> fragments = new();
-            for (int i = 0; i < data.Length; i += fragmentSize)
-            {
-                int length = Math.Min(fragmentSize, data.Length - i);
-                fragments.Add(data.Substring(i, length));
-            }
-            return fragments;
-        }
-
-
         /// <summary>
         /// Starting the image sending function on a thread.
         /// </summary>
         private async Task StartImageSendingAsync()
         {
+            _imageCancellation = new CancellationTokenSource();
             CancellationToken cancellationToken = _imageCancellation!.Token;
             _capturer.StartCapture();
             _processor?.StartProcessingAsync(1);

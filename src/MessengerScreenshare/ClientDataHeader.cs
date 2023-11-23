@@ -1,40 +1,39 @@
-﻿/// <author>Likhith Reddy</author>
-/// <summary>
-/// Defines the enum "ClientDataHeader", which enumerates all the headers
-/// that could be present in the data packet sent by the client.
-/// </summary>
-
+﻿/*************************************************************************************
+* Filename    = ClientDataHeader.cs
+*
+* Author      = Likhith Reddy
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = Defines the enumerator "ClientDataHeader", which enumerates all the
+*               headers that could be present in the data packet sent by the client.
+*************************************************************************************/
 using System.Runtime.Serialization;
 
 namespace MessengerScreenshare
 {
     /// <summary>
-    /// Enumerates all the headers that could be present in the data packet
-    /// sent by the client.
+    /// Enumerates all the headers that could be present
+    /// in the data packet sent by the client.
     /// </summary>
     public enum ClientDataHeader
     {
-        /// <summary>
-        /// Register a client for screen sharing.
-        /// </summary>
+        
+        // Register a client for screen sharing.
         [EnumMember(Value = "REGISTER")]
         Register,
 
-        /// <summary>
-        /// De-register a client for screen sharing.
-        /// </summary>
+        // De-register a client for screen sharing.
         [EnumMember(Value = "DEREGISTER")]
         Deregister,
 
-        /// <summary>
-        /// Image received from the client.
-        /// </summary>
+        // Image received from the client.
         [EnumMember(Value = "IMAGE")]
         Image,
 
-        /// <summary>
-        /// Confirmation packet received from the client.
-        /// </summary>
+        // Confirmation packet received from the client.
         [EnumMember(Value = "CONFIRMATION")]
         Confirmation
     }

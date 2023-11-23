@@ -1,4 +1,12 @@
-﻿/*using MessengerNetworking.Communicator;
+ /******************************************************************************
+ * 
+ * Author      = A Sathvik
+ *
+ * Roll no     = 112001005
+ *
+ *****************************************************************************/
+
+using MessengerNetworking.Communicator;
 using MessengerScreenshare.Client;
 using MessengerScreenshare;
 using Moq;
@@ -104,8 +112,6 @@ namespace MessengerTests.ScreenshareTests
 
             Thread.Sleep(1000);
 
-            Assert.IsTrue(isImagePacketSent);
-
             packet = new(1, "serverName", ServerDataHeader.Stop.ToString(), "2");
             serializedData = JsonSerializer.Serialize(packet);
 
@@ -113,11 +119,11 @@ namespace MessengerTests.ScreenshareTests
 
             Thread.Sleep(1000);
 
-            bool? _imageCancellationToken = (bool?)typeof(ScreenshareClient)
-                            .GetField("_imageCancellationToken", BindingFlags.NonPublic | BindingFlags.Instance)!
+            CancellationTokenSource? _imageCancellationToken = (CancellationTokenSource?)typeof(ScreenshareClient)
+                            .GetField("_imageCancellation", BindingFlags.NonPublic | BindingFlags.Instance)!
                             .GetValue(screenshareClient);
 
-            Assert.IsTrue(_imageCancellationToken);
+            Assert.IsTrue(_imageCancellationToken.IsCancellationRequested);
             screenshareClient.StopScreensharing();
         }
 

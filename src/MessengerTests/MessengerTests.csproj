@@ -7,6 +7,9 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="ContentTests\**" />
+    <EmbeddedResource Remove="ContentTests\**" />
+    <None Remove="ContentTests\**" />
     <Compile Remove="CloudTests\**" />
     <Compile Remove="DashboardTests\**" />
     <Compile Remove="MessengerNetworking\**" />

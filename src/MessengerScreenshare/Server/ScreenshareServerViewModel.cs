@@ -1,8 +1,14 @@
-﻿/// <author>Likith Reddy</author>
-/// <summary>
-/// Defines the "ScreenshareServerViewModel" class which represents the
-/// view model for screen sharing on the server side machine.
-/// </summary>
+﻿/*******************************************************************************************
+* Filename    = ScreenshareServerViewModel.cs
+*
+* Author      = Likhith Reddy
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = This represents the view model for screen sharing on the server side machine.
+********************************************************************************************/
 
 using System;
 using System.Collections.Generic;

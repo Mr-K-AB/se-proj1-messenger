@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
- * Filename    = ClientSessionController.cs
+ * Filename    = ClientPayload.cs
  *
  * Author      = Shailab Chauhan 
  *
@@ -9,7 +9,7 @@
  * 
  * Project     = MessengerDashboard
  *
- * Description = A class that controls the session for the client.
+ * Description = A class that stores the Payload sent  from the client.
  *****************************************************************************/
 
 using System;

@@ -90,10 +90,11 @@ namespace MessengerContent.Client
             {
                 throw new FileNotFoundException($"File at {sendContent.Data} not found");
             }
+            string[] path = sendContent.Data.Split(new char[] { '/' }, StringSplitOptions.None);
             ChatData sendData = new()
             {
                 Type = sendContent.Type,
-                Data = sendContent.Data,
+                Data = path.Last(),
                 MessageID = -1,
                 //ReceiverIDs = sendContent.ReceiverIDs,
                 ReplyThreadID = sendContent.ReplyThreadID,

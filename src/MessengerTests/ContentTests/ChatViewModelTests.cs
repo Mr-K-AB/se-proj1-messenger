@@ -352,29 +352,29 @@ namespace MessengerTests.ContentTests
             Assert.AreEqual(1, _viewModel.ReceivedMsg.MessageID);
             Assert.AreEqual("Yo! Surya", _viewModel.ReceivedMsg.MsgData);
 
-            // delete the message with MessageID = 1
-            ReceiveChatData deletedChat = new()
+            // star the message with MessageID = 1
+            ReceiveChatData starredChat = new()
             {
                 Type = MessengerContent.MessageType.Chat,
-                Event = MessageEvent.Delete,
-                Data = "Message Deleted.",
+                Event = MessageEvent.Star,
+                Data = "Message",
                 MessageID = 1,
                 ReplyMessageID = -1,
                 SenderID = 1,
                 SenderName = "surya",
                 SentTime = DateTime.Now,
-                Starred = false
+                Starred = true
             };
 
             UiDispatcherHelper.ProcessUiEvents();
-            // process the deleted message
-            _viewModel.OnMessageReceived(deletedChat);
+            // process the starred message
+            _viewModel.OnMessageReceived(starredChat);
             UiDispatcherHelper.ProcessUiEvents();
 
             // Validation of the deleted message
             Assert.AreEqual("surya", _viewModel.ReceivedMsg.Sender);
             Assert.AreEqual(1, _viewModel.ReceivedMsg.MessageID);
-            Assert.AreEqual("Message Deleted.", _viewModel.ReceivedMsg.MsgData);
+            Assert.AreEqual("Message", _viewModel.ReceivedMsg.MsgData);
             Assert.AreEqual(null, _viewModel.ReceivedMsg.ReplyMessage);
             Assert.IsTrue(_viewModel.ReceivedMsg.MessageType);
         }

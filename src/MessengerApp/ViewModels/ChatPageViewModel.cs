@@ -18,6 +18,7 @@ using MessengerDashboard;
 using System.Windows;
 using MessengerDashboard.Client;
 using SharpDX.Direct3D11;
+using MessengerApp.DataModel;
 
 namespace MessengerApp.ViewModels
 {

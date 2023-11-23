@@ -17,7 +17,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
-             xmlns:local="clr-namespace:MessengerApp"
+             xmlns:local="clr-namespace:MessengerApp.Views"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
 
@@ -160,17 +160,17 @@
                                 <!--reply button-->
                                 <!--<Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                     Width="30" Height="20" Margin="0,0,0,0" Click="ReplyHandler" ToolTip="Reply">
-                                        <Image Source="Images/undo.png" />
+                                        <Image Source="../Images/undo.png" />
                                     </Button>-->
 
                                     <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                         Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
-                                        <Image Source="Images/undo.png" />
+                                        <Image Source="../Images/undo.png" />
                                     </ToggleButton>
                                     <!--undo reply-->
                                     <!--<Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                     Width="30" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
-                                        <Image Source="Images/redo.png" />
+                                        <Image Source="../Images/redo.png" />
                                     </Button>-->
                                 </StackPanel>
 
@@ -198,12 +198,12 @@
                                     <!--edit button-->
                                     <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
                                             Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
-                                        <Image Source="Images/pen.png" />
+                                        <Image Source="../Images/pen.png" />
                                     </Button>
                                     <!--delete button-->
                                     <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
                                             Width="30" Height="20" Margin="0,0,0,0" Click="DeleteHandler" ToolTip="Delete">
-                                        <Image Source="Images/delete-chat.png" />
+                                        <Image Source="../Images/delete-chat.png" />
                                     </Button>
                                 </StackPanel>
                             </Grid>
@@ -267,16 +267,16 @@
                                     <!--reply button-->
                                     <!--<Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                             Width="30" Height="20" Margin="0,0,0,0" Click="ReplyHandler" ToolTip="Reply">
-                                        <Image Source="Images/undo.png" />
+                                        <Image Source="../Images/undo.png" />
                                     </Button>
                                     --><!--undo reply--><!--
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                             Width="30" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
-                                    <Image Source="Images/redo.png" />
+                                    <Image Source="../Images/redo.png" />
                                 </Button>-->
                                 <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </ToggleButton>
                             </StackPanel>
                             </Grid>
@@ -304,12 +304,12 @@
                                 <!--edit button-->
                                 <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
             Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
-                                    <Image Source="Images/pen.png" />
+                                    <Image Source="../Images/pen.png" />
                                 </Button>
                                 <!--delete button-->
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
             Width="30" Height="20" Margin="0,0,0,0" Click="DeleteHandler" ToolTip="Delete">
-                                    <Image Source="Images/delete-chat.png" />
+                                    <Image Source="../Images/delete-chat.png" />
                                 </Button>
                             </StackPanel>
                         </Grid>
@@ -356,7 +356,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="3*" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Grid.Column="0" Source="Images/save.png" Width="25" Height="25" Margin="2" />
+                                    <Image Grid.Column="0" Source="../Images/save.png" Width="25" Height="25" Margin="2" />
                                     <emoji:TextBlock Grid.Column="1" Foreground="{DynamicResource ClearTextPaint}"
                                Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
                                 FontSize="16" Padding="8,5,8,5"  />
@@ -369,22 +369,22 @@
                                 <Button Background="Transparent" BorderBrush="Transparent"
                             HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0"
                             Click="DownloadHandler">
-                                    <Image Source="Images/download.png" HorizontalAlignment="Center" />
+                                    <Image Source="../Images/download.png" HorizontalAlignment="Center" />
                                 </Button>
                                 <!--reply-->
                                 <!--<Button Background="Transparent" BorderBrush="Transparent" ToolTip="Reply"
                                 HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0" Click="ReplyHandler">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </Button>
                                 --><!--clear reply--><!--
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                 Width="20" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
-                                    <Image Source="Images/redo.png" />
+                                    <Image Source="../Images/redo.png" />
                                 </Button>-->
 
                                 <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                         Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </ToggleButton>
                             </StackPanel>
                         </Grid>
@@ -456,7 +456,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="3*" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Grid.Column="0" Source="Images/save.png" Width="25" Height="25" Margin="2" />
+                                    <Image Grid.Column="0" Source="../Images/save.png" Width="25" Height="25" Margin="2" />
                                     <emoji:TextBlock Grid.Column="1" Foreground="{DynamicResource ClearTextPaint}"
                    Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
                     FontSize="16" Padding="8,5,8,5"  />
@@ -469,21 +469,21 @@
                                 <Button Background="Transparent" BorderBrush="Transparent"
                 HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0"
                 Click="DownloadHandler">
-                                    <Image Source="Images/download.png" HorizontalAlignment="Center" />
+                                    <Image Source="../Images/download.png" HorizontalAlignment="Center" />
                                 </Button>
                                 <!--reply-->
                                 <!--<Button Background="Transparent" BorderBrush="Transparent" ToolTip="Reply"
                     HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0" Click="ReplyHandler">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </Button>
                                 --><!--clear reply--><!--
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                     Width="20" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
-                                    <Image Source="Images/redo.png" />
+                                    <Image Source="../Images/redo.png" />
                                 </Button>-->
                                 <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                         Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </ToggleButton>
                             </StackPanel>
                         </Grid>
@@ -544,16 +544,16 @@
                                 <!--reply button-->
                                 <!--<Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Click="ReplyHandler" ToolTip="Reply">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </Button>
                                 --><!--undo reply--><!--
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
-                                    <Image Source="Images/redo.png" />
+                                    <Image Source="../Images/redo.png" />
                                 </Button>-->
                                 <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                 Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </ToggleButton>
                             </StackPanel>
                         </Grid>
@@ -624,16 +624,16 @@
                                 <!--reply button-->
                                 <!--<Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Click="ReplyHandler" ToolTip="Reply">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </Button>
                                 --><!--undo reply--><!--
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
-                                    <Image Source="Images/redo.png" />
+                                    <Image Source="../Images/redo.png" />
                                 </Button>-->
                                 <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </ToggleButton>
                             </StackPanel>
                         </Grid>
@@ -691,7 +691,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="3*" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Grid.Column="0" Source="Images/save.png" Width="25" Height="25" Margin="2" />
+                                    <Image Grid.Column="0" Source="../Images/save.png" Width="25" Height="25" Margin="2" />
                                     <emoji:TextBlock Grid.Column="1" Foreground="{DynamicResource ClearTextPaint}"
                                        Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
                                         FontSize="16" Padding="8,5,8,5"  />
@@ -704,21 +704,21 @@
                                 <Button Background="Transparent" BorderBrush="Transparent"
                                         HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0"
                                         Click="DownloadHandler">
-                                    <Image Source="Images/download.png" HorizontalAlignment="Center" />
+                                    <Image Source="../Images/download.png" HorizontalAlignment="Center" />
                                 </Button>
                                 <!--reply-->
                                 <!--<Button Background="Transparent" BorderBrush="Transparent" ToolTip="Reply"
                                         HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0" Click="ReplyHandler">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </Button>
                                 --><!--clear reply--><!--
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="20" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
-                                    <Image Source="Images/redo.png" />
+                                    <Image Source="../Images/redo.png" />
                                 </Button>-->
                                 <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                         Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </ToggleButton>
                             </StackPanel>
                         </Grid>
@@ -788,7 +788,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="3*" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Grid.Column="0" Source="Images/save.png" Width="25" Height="25" Margin="2" />
+                                    <Image Grid.Column="0" Source="../Images/save.png" Width="25" Height="25" Margin="2" />
                                     <emoji:TextBlock Grid.Column="1" Foreground="{DynamicResource ClearTextPaint}"
                            Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}" x:Name="MainText" TextWrapping="Wrap"
                             FontSize="16" Padding="8,5,8,5"  />
@@ -801,21 +801,21 @@
                                 <Button Background="Transparent" BorderBrush="Transparent"
                             HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0"
                             Click="DownloadHandler">
-                                    <Image Source="Images/download.png" HorizontalAlignment="Center" />
+                                    <Image Source="../Images/download.png" HorizontalAlignment="Center" />
                                 </Button>
                                 <!--reply-->
                                 <!--<Button Background="Transparent" BorderBrush="Transparent" ToolTip="Reply"
                             HorizontalAlignment="Right" Width="20" Height="20" Margin="0,0,5,0" Click="ReplyHandler">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </Button>
                                 --><!--clear reply--><!--
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                         Width="20" Height="20" Margin="0,0,0,0" Click="UndoReplyHandler" ToolTip="Undo Reply">
-                                    <Image Source="Images/redo.png" />
+                                    <Image Source="../Images/redo.png" />
                                 </Button>-->
                                 <ToggleButton Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Right"
                                     Width="30" Height="20" Margin="0,0,0,0" Checked="ReplyHandler" Unchecked="UndoReplyHandler" ToolTip="Reply">
-                                    <Image Source="Images/undo.png" />
+                                    <Image Source="../Images/undo.png" />
                                 </ToggleButton>
                             </StackPanel>
                         </Grid>
@@ -951,11 +951,11 @@
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" >
                                             <Button Background="Transparent" Width="30" Click="UploadHandler" VerticalAlignment="Center" ToolTip="Upload"
                                                     HorizontalAlignment="Center">
-                                                <Image Source="Images/file-attach.png" Width="30" Height="20" />
+                                                <Image Source="../Images/file-attach.png" Width="30" Height="20" />
                                             </Button>
                                             <Button Background="Transparent" Width="30" Margin="-3, 0, 0, 0"
                                                 Click="SendHandler" ToolTip="Send" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Image Source="Images/sendButton.png" Width="30" Height="20"/>
+                                                <Image Source="../Images/sendButton.png" Width="30" Height="20"/>
                                             </Button>
                                         </StackPanel>
                                     </Border>

@@ -1,4 +1,11 @@
-﻿using MessengerScreenshare.Client;
+﻿/******************************************************************************
+ * 
+ * Author      = A Sathvik
+ *
+ * Roll no     = 112001005
+ *
+ *****************************************************************************/
+using MessengerScreenshare.Client;
 using MessengerScreenshare.Server;
 using MessengerScreenshare;
 using System.Drawing;

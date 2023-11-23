@@ -1,7 +1,10 @@
-﻿///<author>Likhith reddy</author>
-///<summary> 
-///This file contains tests for Screeshot Class.  
-///</summary>
+﻿/******************************************************************************
+ * 
+ * Author      = A Sathvik
+ *
+ * Roll no     = 112001005
+ *
+ *****************************************************************************/
 
 using System.Drawing;
 using System.Runtime.InteropServices;

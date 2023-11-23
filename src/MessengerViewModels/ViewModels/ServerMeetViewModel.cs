@@ -45,7 +45,7 @@ namespace MessengerViewModels.ViewModels
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
             _dashboardViewModel = new DashboardInstructorViewModel();
             _whiteboardViewModel = new MessengerWhiteboard.ViewModel();
-            _screenshareServerViewModel = new ScreenshareServerViewModel(false);
+            _screenshareServerViewModel = ScreenshareServerViewModel.GetInstance() ;
             _server = DashboardFactory.GetServerSessionController();
             navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
             Port = _server.ConnectionDetails.Port;

@@ -40,7 +40,7 @@ namespace MessengerTests.WhiteboardTests
         {
             ClientState client1 = ClientState.Instance;
             ClientState client2 = ClientState.Instance;
-            Assert.Equals(client1, client2);
+            Assert.AreEqual(client1, client2);
         }
 
         [TestMethod]
@@ -51,26 +51,28 @@ namespace MessengerTests.WhiteboardTests
             _client.InitializeUser();
             WBShape expected = new(null, Operation.NewUser, "2");
 
-            _mockCommunicator.Verify(a => a.SendToServer(It.Is<WBShape>(obj => Utils.CompareBoardServerShapes(obj, expected))), Times.Once);
+            _mockCommunicator.Verify(a => a.SendToServer(It.Is<WBShape>(obj => Utils.CompareBoardServerShapes(obj, expected))), Times.Once());
         }
 
         [TestMethod]
         public void ClientSendToCommunicator()
         {
             _mockCommunicator.Setup(a => a.SendToServer(It.IsAny<WBShape>()));
+            _client.SetUserId("1");
+
 
             Point start = new(1, 1);
             Point end = new(2, 2);
-            ShapeItem boardShape = Utils.CreateShape("EllipseGeometry", start, end, Brushes.Transparent, Brushes.Black, 1, "u0f0");
+            ShapeItem boardShape = Utils.CreateShape("Ellipse", start, end, Brushes.Transparent, Brushes.Black, 1, Guid.NewGuid());
             List<ShapeItem> newShapes = new()
             {
                 boardShape
             };
 
             List<SerializableShapeItem> newSerializedShapes = _serializer.SerializeShapes(newShapes);
-            WBShape expected = new(newSerializedShapes, Operation.Creation);
+            WBShape expected = new(newSerializedShapes, Operation.Deletion, userID: "1");
 
-            _client.OnShapeReceived(boardShape, Operation.Creation);
+            _client.OnShapeReceived(boardShape, Operation.Deletion);
 
             _mockCommunicator.Verify(m => m.SendToServer(It.Is<WBShape>(obj => Utils.CompareBoardServerShapes(obj, expected))), Times.Once());
         }

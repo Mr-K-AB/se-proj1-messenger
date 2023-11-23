@@ -88,5 +88,44 @@ namespace MessengerTests.WhiteboardTests
             Assert.AreEqual(_redoStack.Count, 0);
             Assert.AreEqual(newShape2, popElement.NewShapeItem);
         }
+
+        [TestMethod]
+        public void TestDeleteShape()
+        {
+            _viewModel.ClearScreen();
+            Guid uid = new();
+            ShapeItem newShape = Utils.CreateShape("Rectangle", new Point(0, 0), new Point(10, 10), _viewModel.fillBrush, _viewModel.strokeBrush, 1, uid);
+            UndoStackElement element = new(newShape, newShape, Operation.Creation);
+            _viewModel.InsertIntoStack(element);
+            Assert.AreEqual(_undoStack.Count, 1);
+            Assert.AreEqual(_redoStack.Count, 0);
+
+            UndoStackElement element2 = new(newShape, newShape, Operation.Deletion);
+            _viewModel.InsertIntoStack(element2);
+            Assert.AreEqual(_undoStack.Count, 2);
+            Assert.AreEqual(_redoStack.Count, 0);
+
+            UndoStackElement popElement = _viewModel.Undo();
+            Assert.AreEqual(_undoStack.Count, 1);
+            Assert.AreEqual(_redoStack.Count, 1);
+            Assert.AreEqual(popElement.PreviousShapeItem, newShape);
+
+            popElement = _viewModel.Redo();
+            Assert.AreEqual(_redoStack.Count, 0);
+            Assert.AreEqual(newShape, popElement.NewShapeItem);
+
+        }
+
+        [TestMethod]
+        public void TestReturnNull()
+        {
+            _viewModel.ClearScreen();
+
+            UndoStackElement popElement = _viewModel.Undo();
+            Assert.AreEqual(null, popElement);
+
+            popElement = _viewModel.Redo();
+            Assert.AreEqual(null, popElement);
+        }
     }
 }

@@ -24,13 +24,11 @@ namespace MessengerTests.WhiteboardTests
         private readonly ServerState _server;
         private ServerSnapshotHandler _snapshotHandler;
         private readonly Serializer _serializer;
-        readonly Utils _utils;
         
         public ServerStateTest()
         {
             _server = ServerState.Instance;
             _serializer = new Serializer();
-            _utils = new Utils();
         }
 
         [TestMethod]
@@ -38,14 +36,14 @@ namespace MessengerTests.WhiteboardTests
         {
             ServerState server1 = ServerState.Instance;
             ServerState server2 = ServerState.Instance;
-            Assert.Equals(server1, server2);
+            Assert.AreEqual(server1, server2);
         }
 
         [TestMethod]
         public void ClearServerListWithSizeZero()
         {
             _server.OnShapeReceived(null, Operation.Clear);
-            Assert.Equals(0, _server.GetServerListSize());
+            Assert.AreEqual(0, _server.GetServerListSize());
             _server.ClearServerList();
         }
 
@@ -55,7 +53,7 @@ namespace MessengerTests.WhiteboardTests
             _server.ClearServerList();
             _snapshotHandler = _server.GetSnapshotHandler();
             _server.SetSnapshot("3");
-            Assert.Equals("3", _snapshotHandler.SnapshotId);
+            Assert.AreEqual("3", _snapshotHandler.SnapshotId);
         }
 
         [TestMethod]
@@ -65,17 +63,18 @@ namespace MessengerTests.WhiteboardTests
 
             Point start = new(1, 1);
             Point end = new(2, 2);
+            Guid id1 = Guid.NewGuid();
 
-            _server.OnShapeReceived(_utils.CreateShape("RectangleGeometry", start, end, Brushes.Transparent, Brushes.Black, 1, "u0f1"), Operation.Creation);
-            Assert.Equals(1, _server.GetServerListSize());
+            _server.OnShapeReceived(Utils.CreateShape("Rectangle", start, end, Brushes.Transparent, Brushes.Black, 1, id1), Operation.Creation);
+            Assert.AreEqual(1, _server.GetServerListSize());
 
             // Size remains 1 (removing non existent object)
-            _server.OnShapeReceived(_utils.CreateShape("RectangleGeometry", start, end, Brushes.Transparent, Brushes.Black, 1, "u1f1"), Operation.Deletion);
-            Assert.Equals(1, _server.GetServerListSize());
+            _server.OnShapeReceived(Utils.CreateShape("Rectangle", start, end, Brushes.Transparent, Brushes.Black, 1, Guid.NewGuid()), Operation.Deletion);
+            Assert.AreEqual(1, _server.GetServerListSize());
 
             // Size becomes 0 (removing the initially created object)
-            _server.OnShapeReceived(_utils.CreateShape("RectangleGeometry", start, end, Brushes.Transparent, Brushes.Black, 1, "u0f1"), Operation.Deletion);
-            Assert.Equals(0, _server.GetServerListSize());
+            _server.OnShapeReceived(Utils.CreateShape("Rectangle", start, end, Brushes.Transparent, Brushes.Black, 1, id1), Operation.Deletion);
+            Assert.AreEqual(0, _server.GetServerListSize());
         }
 
         [TestMethod]
@@ -89,10 +88,10 @@ namespace MessengerTests.WhiteboardTests
             Point start2 = new(4, 4);
             Point end2 = new(6, 6);
 
-            _server.OnShapeReceived(_utils.CreateShape("RectangleGeometry", start1, end1, Brushes.Transparent, Brushes.Black, 1, "u0f1"), Operation.Creation);
-            _server.OnShapeReceived(_utils.CreateShape("RectangleGeometry", start2, end2, Brushes.Transparent, Brushes.Black, 1, "u0f2"), Operation.Creation);
+            _server.OnShapeReceived(Utils.CreateShape("Rectangle", start1, end1, Brushes.Transparent, Brushes.Black, 1, Guid.NewGuid()), Operation.Creation);
+            _server.OnShapeReceived(Utils.CreateShape("Rectangle", start2, end2, Brushes.Transparent, Brushes.Black, 1, Guid.NewGuid()), Operation.Creation);
 
-            Assert.Equals(2, _server.GetServerListSize());
+            Assert.AreEqual(2, _server.GetServerListSize());
         }
     }
 }

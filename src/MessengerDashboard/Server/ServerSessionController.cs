@@ -51,9 +51,10 @@ namespace MessengerDashboard.Server
         /// Initializes a new instance of the <see cref="ServerSessionController"/> with the provided <see cref="ICommunicator"/> instance.
         /// </summary>
         /// <param name="communicator">An <see cref="ICommunicator "/> implementation for server communication.</param>
-        public ServerSessionController(ICommunicator communicator)
+        public ServerSessionController(ICommunicator communicator, IContentServer contentServer)
         {
             _communicator = communicator;
+            _contentServer = contentServer;
             SetupServer();
         }
 
@@ -83,6 +84,7 @@ namespace MessengerDashboard.Server
         public SessionInfo SessionInfo = new();
 
         public void BroadcastPayloadToClients(Operation operation, SessionInfo? sessionInfo, TextSummary? summary = null,
+
                                                       Analysis? sessionAnalytics = null, SentimentResult? sentiment = null, UserInfo? user = null)
         {
             Trace.WriteLine("Dashboard Server >>> Broadcasting data");

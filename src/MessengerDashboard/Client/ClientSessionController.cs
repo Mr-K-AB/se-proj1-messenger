@@ -32,11 +32,11 @@ namespace MessengerDashboard.Client
     {
         private readonly ICommunicator _communicator;
 
-        private readonly IContentClient _contentClient = ContentClientFactory.GetInstance();
+        private readonly IContentClient _contentClient;
 
         private readonly string _moduleName = "Dashboard";
 
-        private readonly IScreenshareClient _screenshareClient = ScreenshareFactory.getInstance();
+        private readonly IScreenshareClient _screenshareClient;
 
         private readonly Serializer _serializer = new();
 
@@ -51,20 +51,19 @@ namespace MessengerDashboard.Client
             Trace.WriteLine("Dashboard Client >>> Creating Client Session Manager");
             _communicator = CommunicationFactory.GetCommunicator(true);
             _communicator.Subscribe(_moduleName, this);
+            _contentClient = ContentClientFactory.GetInstance();
+            _screenshareClient = ScreenshareFactory.getInstance();
             Trace.WriteLine("Dashboard Client >>> Created Client Session Manager");
         }
 
-        public ClientSessionController(ICommunicator communicator)
+        public ClientSessionController(ICommunicator communicator, IContentClient contentClient, IScreenshareClient screenshareClient)
         {
-            _communicator = communicator;
-            _communicator.Subscribe(_moduleName, this);
-        }
-
-        public ClientSessionController(ICommunicator communicator, IContentClient contentClient)
-        {
+            Trace.WriteLine("Dashboard Client >>> Creating Client Session Manager");
             _communicator = communicator;
             _communicator.Subscribe(_moduleName, this);
             _contentClient = contentClient;
+            _screenshareClient = screenshareClient;
+            Trace.WriteLine("Dashboard Client >>> Created Client Session Manager");
         }
 
         public event EventHandler<ClientSessionChangedEventArgs>? SessionChanged;

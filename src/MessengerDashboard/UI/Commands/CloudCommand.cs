@@ -12,7 +12,7 @@ using MessengerDashboard.UI.ViewModels;
 
 namespace MessengerDashboard.UI.Commands
 {
-    internal class CloudCommand : ICommand
+    public class CloudCommand : ICommand
     {
         private readonly RestClient _restClient;
 

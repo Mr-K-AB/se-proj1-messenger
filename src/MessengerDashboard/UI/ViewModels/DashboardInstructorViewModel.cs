@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using MessengerCloud;
+using MessengerDashboard.Client;
 using MessengerDashboard.Sentiment;
 using MessengerDashboard.Summarization;
 using MessengerDashboard.Telemetry;
@@ -17,6 +18,12 @@ namespace MessengerDashboard.UI.ViewModels
     public class DashboardInstructorViewModel : DashboardViewModel
     {
         public DashboardInstructorViewModel()
+        {
+            _client.SessionExited += HandleSessionExited;
+            IsCloudSavingEnabled = true;
+        }
+
+        public DashboardInstructorViewModel(IClientSessionController client) : base(client) 
         {
             _client.SessionExited += HandleSessionExited;
             IsCloudSavingEnabled = true;

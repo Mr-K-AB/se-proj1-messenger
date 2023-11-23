@@ -83,8 +83,6 @@ namespace MessengerScreenshare.Server
                 int clientId = packet.Id;
                 string clientName = packet.Name;
                 ClientDataHeader header = Enum.Parse<ClientDataHeader>(packet.Header);
-                int imgCount = packet.ImgCount;
-                int fragmentOffset = packet.Offset;
                 string clientData = packet.Data;
                 Trace.WriteLine(Utils.GetDebugMessage(header.ToString()));
                 switch (header)
@@ -107,7 +105,6 @@ namespace MessengerScreenshare.Server
             }
             catch (Exception e)
             {
-
                 Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the packet: {e.Message}", withTimeStamp: true));
             }
         }
@@ -259,12 +256,12 @@ namespace MessengerScreenshare.Server
             {
                 int product = numRowsColumns.Rows * numRowsColumns.Cols;
 
-                var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), 0, 0, JsonSerializer.Serialize(product));
+                var packet = new DataPacket(1, "Server", serverDataHeader.ToString(), JsonSerializer.Serialize(product));
                 string packedData = JsonSerializer.Serialize(packet);
 
                 foreach (int clientId in clientIds)
                 {
-                    _communicator.Send(packedData, Utils.ClientIdentifier, null);
+                    _communicator.Send(packedData, Utils.ClientIdentifier, clientId.ToString());
                 }
             }
             catch (Exception e)
@@ -281,7 +278,7 @@ namespace MessengerScreenshare.Server
                 {
                     try
                     {
-                        client._timer!.Interval = 20000;
+                        client.UpdateTimer();
                         BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
 
                         Trace.WriteLine(Utils.GetDebugMessage($"Timer updated for the client with Id: {clientId}", withTimeStamp: true));

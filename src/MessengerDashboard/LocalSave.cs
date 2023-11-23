@@ -117,6 +117,27 @@ namespace MessengerDashboard
             // Write the serialized data to the file
             File.WriteAllText(s_path, System.Text.Encoding.UTF8.GetString(stream.ToArray()));
         }
+        /// <summary>
+        /// Deletes the sessionInfo.txt file if it exists.
+        /// </summary>
+        public static void DeleteFile()
+        {
+            // Get the path to the LocalApplicationData folder
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+            // Combine the LocalApplicationData folder with the "Messenger" folder
+            string appDataFolder = Path.Combine(localAppData, "Messenger");
+
+            // Combine the "Messenger" folder with the "sessionInfo.txt" file
+            string path = Path.Combine(appDataFolder, "sessionInfo.txt");
+
+            // Check if the file exists
+            if (File.Exists(path))
+            {
+                // Delete the file if it exists
+                File.Delete(path);
+            }
+        }
     }
 }
 

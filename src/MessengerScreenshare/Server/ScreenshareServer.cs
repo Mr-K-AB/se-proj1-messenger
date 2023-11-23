@@ -74,7 +74,6 @@ namespace MessengerScreenshare.Server
             try
             {
                 DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(packetData);
-
                 if (packet == null)
                 {
                     Trace.WriteLine(Utils.GetDebugMessage($"Not able to deserialize data packet: {packetData}", withTimeStamp: true));
@@ -108,6 +107,7 @@ namespace MessengerScreenshare.Server
             }
             catch (Exception e)
             {
+
                 Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the packet: {e.Message}", withTimeStamp: true));
             }
         }
@@ -214,48 +214,7 @@ namespace MessengerScreenshare.Server
                 {
                     try
                     {
-                        /*// Dictionary to store image fragments for each image
-                        client.ImageFragments ??= new Dictionary<int, StringBuilder>();
-
-                        // If the image fragment container doesn't exist, create it
-                        if (!client.ImageFragments.TryGetValue(imgCount, out StringBuilder imageFragmentContainer))
-                        {
-                            imageFragmentContainer = new StringBuilder();
-                            client.ImageFragments[imgCount] = imageFragmentContainer;
-                        }
-                        if (!imageFragmentContainer.ToString().Contains($"|{fragmentOffset}|"))
-                        {
-                            // Concatenate the received image packet to the StringBuilder for the specific image
-                            imageFragmentContainer.Append($"|{fragmentOffset}|{data}");
-
-                            // Check if all fragments for the current image have been received
-                            if (client.ImageFragments[imgCount].ToString().Split('|').Length - 1 == 500)
-                            {
-                                // Now, imageFragmentContainer contains the complete image as a single string
-                                // You can send or process the complete image here
-
-                                string completeImage = imageFragmentContainer.ToString().Replace($"|{fragmentOffset}|", "");
-
-                                // Clear the StringBuilder for this image
-                                client.PutImage(completeImage, client.TaskId);
-                                client.ImageFragments[imgCount].Clear();
-
-
-                                Trace.WriteLine(Utils.GetDebugMessage($"Successfully received and processed image of the client with Id: {clientId}, Image No: {imgCount}", withTimeStamp: true));
-                            }
-                            
-                            else
-                            {
-                                Trace.WriteLine(Utils.GetDebugMessage($"Received image packet {fragmentOffset} of {imgCount} from the client with Id: {clientId}", withTimeStamp: true));
-                            }
-
-
-                        }
-                        else
-                        {
-                            // Handle the case where the same fragmentOffset comes twice
-                            Trace.WriteLine(Utils.GetDebugMessage($"Duplicate image packet {fragmentOffset} received from the client with Id: {clientId}", withTimeStamp: true));
-                        }*/
+                      
                         client.PutImage(data, client.TaskId);
                         Trace.WriteLine(Utils.GetDebugMessage($"Successfully received image of the client with Id: {clientId}", withTimeStamp: true));
                     }

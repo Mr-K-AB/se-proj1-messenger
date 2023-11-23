@@ -1,4 +1,15 @@
-﻿using System.Text;
+﻿/******************************************************************************
+* Filename    = SentimentAnalyzer.cs
+*
+* Author      = Aradhya Bijalwan
+*
+* Product     = MessengerApp
+* 
+* Project     = MessengerDashboard
+*
+* Description = providing sentiment analysis  for an array of chat messages using the SentimentAnalyzer library.
+*****************************************************************************/
+using System.Text;
 using VaderSharp2;
 
 namespace MessengerDashboard.Sentiment
@@ -10,11 +21,17 @@ namespace MessengerDashboard.Sentiment
     /// Implements <see cref="ISentimentAnalyzer"/>
     /// </remarks>
     public class SentimentAnalyzer : ISentimentAnalyzer
-    {
+     
+    { 
         readonly SentimentIntensityAnalyzer _sentimentAnalyzer = new();
+        /// <summary>
+        /// Analyzes the sentiment of an array of chat messages.
+        /// </summary>
+        /// <Param name="chats">Array of chat messages to analyze.</Param>
+        /// <returns>A <see cref="SentimentResult"/> object containing the analysis results.</returns>
 
         public SentimentResult AnalyzeSentiment(string[] chats) 
-        {
+        {   
             int positiveChatCount = 0;
             int negativeChatCount = 0;
             int neutralChatCount = 0;
@@ -47,6 +64,11 @@ namespace MessengerDashboard.Sentiment
                 OverallSentiment = SentimentFromScore(score) 
             };
         }
+        /// <summary>
+        /// return positive ,negative ,neutral for a string value
+        /// </summary>
+        /// <Param name="scoreq">score of session</Param>
+        /// <returns>A <see cref="SentimentResult"/> object containing the analysis results.</returns>
 
         private static string SentimentFromScore(double score)
         {

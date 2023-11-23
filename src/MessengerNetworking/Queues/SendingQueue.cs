@@ -10,20 +10,20 @@ namespace MessengerNetworking.Queues
         private readonly IQueue _lowPriorityQueue = new Queue();
 
         // A dictionary to map each registered module to a priority value (true means it is of high priority)
-        private Dictionary<string, bool> _modulesToPriorityMap = new Dictionary<string, bool>();
+        private readonly Dictionary<string, bool> _modulesToPriorityMap = new();
 
         // Lock to ensure mutual exclusion while adding to the dictionary
-        private readonly object _lock = new object();
+        private readonly object _lock = new();
 
         // This value is used to determine which queue is going to be dequeued
         private int _priorityValue = 0;
 
         // Stores the ratio of priority of the two queues
-        private readonly static int _highPriorityValue = 2;
-        private readonly static int _lowPriorityValue = 1;
+        private static readonly int s_highPriorityValue = 2;
+        private static readonly int s_lowPriorityValue = 1;
 
         // Stores the sums of priorities, which is used in the 'Dequeue' function
-        private readonly static int _totalRatio = _highPriorityValue + _lowPriorityValue;
+        private static readonly int s_totalRatio = s_highPriorityValue + s_lowPriorityValue;
 
         /// <summary>
         /// Called by the Communicator submodule of each client in order to use queues
@@ -47,9 +47,13 @@ namespace MessengerNetworking.Queues
             {
                 // If the module name is already taken
                 if (_modulesToPriorityMap.ContainsKey(moduleName))
+                {
                     isSuccessful = false;
+                }
                 else
+                {
                     _modulesToPriorityMap.Add(moduleName, isHighPriority);
+                }
             }
 
             Trace.WriteLine("[Networking] SendingQueue.RegisterModule() function returned.");
@@ -89,9 +93,13 @@ namespace MessengerNetworking.Queues
 
             // Checking which queue to enqueue in
             if (isHighPriority)
+            {
                 _highPriorityQueue.Enqueue(packet);
+            }
             else
+            {
                 _lowPriorityQueue.Enqueue(packet);
+            }
 
             // Returning the enqueueing is done
             return true;
@@ -107,10 +115,10 @@ namespace MessengerNetworking.Queues
         {
             Trace.WriteLine("[Networking] SendingQueue.Dequeue() function called.");
 
-            Packet packet = null;
+            Packet packet;
 
             // Dequeueing based on priority
-            if (_priorityValue < _highPriorityValue)
+            if (_priorityValue < s_highPriorityValue)
             {
                 if (!_highPriorityQueue.IsEmpty())
                 {
@@ -118,10 +126,12 @@ namespace MessengerNetworking.Queues
 
                     // Updating the priority value which determines which queue is to be dequeued next
                     _priorityValue++;
-                    _priorityValue %= _totalRatio;
+                    _priorityValue %= s_totalRatio;
                 }
                 else
+                {
                     packet = _lowPriorityQueue.Dequeue();
+                }
             }
             else
             {
@@ -131,10 +141,12 @@ namespace MessengerNetworking.Queues
 
                     // Updating the priority value which determines which queue is to be dequeued next
                     _priorityValue++;
-                    _priorityValue %= _totalRatio;
+                    _priorityValue %= s_totalRatio;
                 }
                 else
+                {
                     packet = _highPriorityQueue.Dequeue();
+                }
             }
 
             return packet;
@@ -182,8 +194,7 @@ namespace MessengerNetworking.Queues
         /// </returns>
         public bool WaitForPacket()
         {
-            bool isEmpty = true;
-
+            bool isEmpty;
             while (true)
             {
                 // Sleeping for some time
@@ -192,7 +203,9 @@ namespace MessengerNetworking.Queues
                 isEmpty = IsEmpty();
 
                 if (!isEmpty)
+                {
                     break;
+                }
             }
 
             return isEmpty;

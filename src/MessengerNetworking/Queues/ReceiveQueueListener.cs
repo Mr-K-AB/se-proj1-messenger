@@ -8,20 +8,20 @@ namespace MessengerNetworking.Queues
     public class ReceiveQueueListener
     {
         // Lock to ensure mutual exclusion while registering a module
-        private readonly object _mapLock = new object();
+        private readonly object _mapLock = new();
 
         // Lock to ensure mutual exclusion while using the variable 'isRunning'
-        private readonly object _isRunningLock = new object();
+        private readonly object _isRunningLock = new();
 
-        private Dictionary<string, INotificationHandler> _modulesToNotificationHandlerMap;
-        private ReceivingQueue _receivingQueue;
+        private readonly Dictionary<string, INotificationHandler> _modulesToNotificationHandlerMap;
+        private readonly ReceivingQueue _receivingQueue;
         private bool _isRunning;
 
         // Constructor which is called by the Communicator
         public ReceiveQueueListener(Dictionary<string, INotificationHandler> modulesToNotificationHandlerMap, ReceivingQueue receivingQueue)
         {
-            this._modulesToNotificationHandlerMap = modulesToNotificationHandlerMap;
-            this._receivingQueue = receivingQueue;
+            _modulesToNotificationHandlerMap = modulesToNotificationHandlerMap;
+            _receivingQueue = receivingQueue;
         }
 
         /// <summary>
@@ -46,9 +46,13 @@ namespace MessengerNetworking.Queues
             {
                 // If the module name is already taken
                 if (_modulesToNotificationHandlerMap.ContainsKey(moduleName))
+                {
                     isSuccessful = false;
+                }
                 else
+                {
                     _modulesToNotificationHandlerMap.Add(moduleName, notificationHandler);
+                }
             }
             Trace.WriteLine("[Networking] ReceiveQueueListener.RegisterModule() function returned.");
             return isSuccessful;
@@ -61,10 +65,10 @@ namespace MessengerNetworking.Queues
         public void Start()
         {
             Trace.WriteLine("[Networking] ReceiveQueueListener.Start() function called.");
-            ThreadStart listeningThreadRef = new ThreadStart(ListenOnQueue);
+            ThreadStart listeningThreadRef = new(ListenOnQueue);
 
             // Creating a thread
-            Thread listeningThread = new Thread(listeningThreadRef);
+            Thread listeningThread = new(listeningThreadRef);
 
             // Declaring that the queue is running
             lock (_isRunningLock)

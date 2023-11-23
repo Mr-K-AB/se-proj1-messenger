@@ -1,9 +1,16 @@
-﻿///<author>Aditya Raj</author>
-///<summary>
-/// Screen stitching functionality is implemented in this file. 
-///This file contains the ScreenStitcher class and used by ScreenshareServer.
-///</summary>
-
+﻿/******************************************************************************
+ * Filename    = ScreenStitcher.cs
+ *
+ * Author      = Aditya Raj
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerScreenshare
+ *
+ * Description = Screen stitching functionality is implemented in this file. 
+                 This file contains the ScreenStitcher class and used by 
+                 ScreenshareServer.
+ *****************************************************************************/
 
 using System;
 using System.Drawing;
@@ -41,7 +48,7 @@ namespace MessengerScreenshare.Server
         /// A count to maintain the number of image stitched. Used in
         /// trace logs.
         /// </summary>
-        //private int _cnt = 0;
+        private int _cnt = 0;
 
         /// <summary>
         /// Constructor for ScreenSticher.
@@ -144,10 +151,10 @@ namespace MessengerScreenshare.Server
         /// </param>
         public void StartStitching(int taskId)
         {
-            /*if (_stitchTask != null)
+            if (_stitchTask != null)
             {
                 return;
-            }*/
+            }
 
             _stitchTask = new Task(() =>
             {
@@ -159,14 +166,14 @@ namespace MessengerScreenshare.Server
                     {
                         break;
                     }
-                    /*if (newFrame == null)
+                    if (newFrame == null)
                     {
                         Trace.WriteLine(Utils.GetDebugMessage("New frame returned by _sharedClientScreen is null.", withTimeStamp: true));
                         continue;
-                    }*/
+                    }
 
                     Bitmap stichedImage = Stitch(_priorImage, newFrame);
-                   // Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
+                    Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
                     _priorImage = stichedImage;
                     _sharedClientScreen.PutFinalImage(stichedImage, taskId);
                 }

@@ -1,10 +1,18 @@
-﻿/// <author>Aditya Raj</author>
-/// <summary>
-/// Tests for methods which is defined in "SharedClientScreen"
-/// </summary>
+﻿/******************************************************************************
+ * Filename    = SharedClientScreenTest.cs
+ *
+ * Author      = Aditya Raj
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerScreenshare
+ *
+ * Description = Contains Tests for SharedClientScreen
+ *****************************************************************************/
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -193,6 +201,39 @@ namespace MessengerTests.ScreenshareTests
             //Assert.IsTrue(client.CurrentImage != null);
 
             // Cleanup.
+            client.Dispose();
+            server.Dispose();
+        }
+
+        [TestMethod]
+        public void TestOnPropertyChanged()
+        {
+            // Arrange.
+            // Create a mock client and the server.
+            var viewmodelMock = new Mock<IDataReceiver>();
+            ScreenshareServer server = ScreenshareServer.GetInstance(viewmodelMock.Object, isDebugging: true);
+            SharedClientScreen client = Utils.GetMockClient(server, isDebugging: true);
+
+            // Add the handler to the property changed event.
+            int invokedCount = 0;
+            PropertyChangedEventHandler handler = new((_, _) => ++invokedCount);
+            client.PropertyChanged += handler;
+
+            // Act.
+            // Update the properties which are supposed to raise on property changed event.
+            int numPropertiesChanged = 4;
+            client.CurrentImage = SSUtils.BitmapToBitmapImage(Utils.GetMockBitmap());
+            client.Pinned = true;
+            client.TileHeight = 100;
+            client.TileWidth = 100;
+
+            // Assert.
+            // Check if the property changed event was raised as many times the properties
+            // of the client was changed.
+            Assert.IsTrue(invokedCount == numPropertiesChanged);
+
+            // Cleanup.
+            client.PropertyChanged -= handler;
             client.Dispose();
             server.Dispose();
         }

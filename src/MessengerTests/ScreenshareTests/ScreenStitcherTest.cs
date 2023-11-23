@@ -1,4 +1,16 @@
-﻿using System;
+﻿/******************************************************************************
+ * Filename    = ScreenStitcher.cs
+ *
+ * Author      = Aditya Raj
+ *
+ * Product     = Messenger
+ * 
+ * Project     = MessengerScreenshare
+ *
+ * Description = Contains Tests for ScreenStitcher
+ *****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Compression;

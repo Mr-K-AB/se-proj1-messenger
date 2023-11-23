@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 * Filename    = ChatBubbleConstructor.cs
 *
 * Author      = M V Nagasurya
@@ -18,8 +18,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using MessengerApp.DataModel;
 
-namespace MessengerApp
+namespace MessengerApp.Views
 {
     public class ChatBubbleConstructor : DataTemplateSelector
     {
@@ -61,19 +62,19 @@ namespace MessengerApp
             var message = item as ChatMessage;
             if (message.isCurrentUser == true)
             {
-                if(message.MessageType == true)
+                if (message.MessageType == true)
                 {
-                    return (message.ReplyMessage != null && message.ReplyMessage != "") ? SentChatMessageTemplate : SentChatMessageNotReplyTemplate;
+                    return message.ReplyMessage != null && message.ReplyMessage != "" ? SentChatMessageTemplate : SentChatMessageNotReplyTemplate;
                 }
-                return (message.ReplyMessage != null && message.ReplyMessage != "") ? SentFileMessageTemplate : SentFileMessageNotReplyTemplate;
+                return message.ReplyMessage != null && message.ReplyMessage != "" ? SentFileMessageTemplate : SentFileMessageNotReplyTemplate;
             }
             else
             {
-                if( message.MessageType == true)
+                if (message.MessageType == true)
                 {
-                    return (message.ReplyMessage != null) ? ReceivedChatMessageTemplate : ReceivedChatMessageNotReplyTemplate;
+                    return message.ReplyMessage != null ? ReceivedChatMessageTemplate : ReceivedChatMessageNotReplyTemplate;
                 }
-                return (message.ReplyMessage != null) ? ReceivedFileMessageTemplate : ReceivedFileMessageNotReplyTemplate;
+                return message.ReplyMessage != null ? ReceivedFileMessageTemplate : ReceivedFileMessageNotReplyTemplate;
             }
         }
     }

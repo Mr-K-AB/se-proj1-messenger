@@ -31,6 +31,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LiveCharts.Maps;
+using MessengerApp.DataModel;
 using MessengerApp.ViewModels;
 using MessengerContent;
 using MessengerContent.DataModels;

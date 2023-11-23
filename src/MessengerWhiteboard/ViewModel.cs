@@ -15,7 +15,7 @@ namespace MessengerWhiteboard
         public ShapeItem? _selectedShape;
         public ShapeItem? _selectedCorner;
 
-        private string _userID = "tempUser";
+        public string _userID = "tempUser";
         public bool isServer = true;
 
         //public string shapeMode = "Rectangle";
@@ -40,8 +40,9 @@ namespace MessengerWhiteboard
         public Brush strokeBrush = Brushes.Black;
         public double StrokeThickness { get; set; }
         //Brush borderBrush;                                 // stores color of the border
-        int _strokeWidth;                                       // thickness of the stroke
+        public int _strokeWidth;                                       // thickness of the stroke
         public IShapeReceiver machine;
+        public bool _testing = false;
 
         public ViewModel()
         {

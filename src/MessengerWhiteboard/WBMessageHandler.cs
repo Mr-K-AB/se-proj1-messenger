@@ -76,10 +76,6 @@ namespace MessengerWhiteboard
                             ClearIncomingShapes();
                             serverState.OnShapeReceived(null, Operation.Clear);
                             break;
-                        case Operation.NewUser:
-                            LoadBoard(shapes);
-                            serverSide.NewUserHandler(deserializedObject);
-                            break;
 
                     }
                 }

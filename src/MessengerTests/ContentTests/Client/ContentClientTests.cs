@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
- * Filename    = ContentTests.cs
+ * Filename    = ContentClientTests.cs
  *
  * Author      = Rapeti Siddhu Neehal
  *
@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerTests
  *
- * Description = tests
+ * Description = ContentClient tests
  *****************************************************************************/
 
 using MessengerContent.Enums;
@@ -188,7 +188,6 @@ namespace MessengerTests.ContentTests.Client
 
             Assert.AreEqual(sendChatData.Type, deserializedData.Type);
             Assert.AreEqual(MessageEvent.New, deserializedData.Event);
-            //Assert.AreEqual(sendChatData.Data, deserializedData.Data);
             Assert.AreEqual(System.Convert.ToBase64String(fileData.Data), System.Convert.ToBase64String(deserializedData.FileData.Data));
             Assert.AreEqual(fileData.Name, deserializedData.FileData.Name);
             Assert.AreEqual(fileData.Size, deserializedData.FileData.Size);
@@ -243,20 +242,7 @@ namespace MessengerTests.ContentTests.Client
 
             Dispose();
         }
-        /*
-        [TestMethod]
-        public void ClientSendData_HistoryType_ReturnsArgumentException()
-        {
-            Setup();
-            SendChatData sendChatData = _mockHelper.GenerateSendChatData();
-            sendChatData.Type = MessageType.HistoryRequest;
-            _contentClient.ClientSendData(sendChatData);
-
-            Assert.AreEquals(_contentClient.chatData,);
-
-            Dispose();
-        }*/
-
+        
         [TestMethod]
         public void ClientSendData_InvalidFilePath_ReturnsFileNotFoundException()
         {
@@ -467,16 +453,6 @@ namespace MessengerTests.ContentTests.Client
         }
 
         [TestMethod]
-        public void ClientStar_StarFile_ReturnsArgumentException()
-        {
-            Setup();
-
-            Assert.ThrowsException<ArgumentException>(() => _contentClient.ClientStar(_fileMessage.MessageID));
-
-            Dispose();
-        }
-
-        [TestMethod]
         public void ClientGetThread_ValidThreadID_ReturnsValidThread()
         {
             Setup();
@@ -568,8 +544,6 @@ namespace MessengerTests.ContentTests.Client
             Dispose();
 
         }
-
-
 
         [TestMethod]
         public void OnReceive_ValidNewReplyMessageExistingThread_StoresMessageAndInformsSubscribers()
@@ -770,6 +744,20 @@ namespace MessengerTests.ContentTests.Client
 
             Dispose();
         }
+
+        [TestMethod]
+        public void OnReceive_DownloadFile()
+        {
+            Setup();
+            ChatData message = _mockHelper.GenerateChatData(type: MessageType.File, @event: MessageEvent.Download, data: _path, messageID: ++_maxValidMessageID);
+            message.FileData = new SendFileData(_path);
+            _contentClient.OnReceive(message);
+
+            Assert.IsTrue(true);
+
+            Dispose();
+        }
+
         [TestMethod]
         public void Getting_And_SettingUserID()
         {
@@ -812,20 +800,6 @@ namespace MessengerTests.ContentTests.Client
             ChatData message = _mockHelper.GenerateChatData(
                 @event: MessageEvent.Star,
                 messageID: ++_maxValidMessageID
-            );
-
-            Assert.ThrowsException<ArgumentException>(() => _contentClient.OnReceive(message));
-
-            Dispose();
-        }
-
-        [TestMethod]
-        public void OnReceive_StarFileMessage_ReturnsArgumentException()
-        {
-            Setup();
-            ChatData message = _mockHelper.GenerateChatData(
-                @event: MessageEvent.Star,
-                messageID: _fileMessage.MessageID
             );
 
             Assert.ThrowsException<ArgumentException>(() => _contentClient.OnReceive(message));

@@ -1,7 +1,7 @@
 ﻿/******************************************************************************
  * Filename    = ReceiveChatData.cs
  *
- * Author      = Manikanta
+ * Author      = Likhitha
  *
  * Product     = Messenger
  * 

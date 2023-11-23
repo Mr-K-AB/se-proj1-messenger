@@ -167,9 +167,75 @@ namespace MessengerApp
                 }
                 Trace.WriteLine($"[ChatBubble] {result.MessageID}'s data has been changed to {result.MsgData}");
             }
+
+            else if (propertyName == "Starred")
+            {
+                int indOfMsg = 0;
+                for (int i = 0; i < _msgCollection.Count; i++) // find the msg which has been triggered
+                {
+                    ChatMessage message = _msgCollection[i];
+                    if (message.MessageID == viewModel.ReceivedMsg.MessageID)
+                    {
+                        indOfMsg = i;
+                    }
+                }
+                ListBoxItem item = (ListBoxItem)MainChat.ItemContainerGenerator.ContainerFromIndex(indOfMsg);
+                if (item != null)
+                {
+                    List<ToggleButton> textBlocks = FindVisualChildren<ToggleButton>(item);
+                    ToggleButton toggleBtn = textBlocks[1];
+                    if (toggleBtn != null)
+                    {
+                        toggleBtn.IsChecked = true;
+                        //MessageBox.Show("here!");
+                    }
+                }
+            }
+            else if(propertyName == "NotStarred")
+            {
+                int indOfMsg = 0;
+                for (int i = 0; i < _msgCollection.Count; i++) // find the msg which has been triggered
+                {
+                    ChatMessage message = _msgCollection[i];
+                    if (message.MessageID == viewModel.ReceivedMsg.MessageID)
+                    {
+                        indOfMsg = i;
+                    }
+                }
+                ListBoxItem item = (ListBoxItem)MainChat.ItemContainerGenerator.ContainerFromIndex(indOfMsg);
+                if (item != null)
+                {
+                    List<ToggleButton> textBlocks = FindVisualChildren<ToggleButton>(item);
+                    ToggleButton toggleBtn = textBlocks[1];
+                    if (toggleBtn != null)
+                    {
+                        toggleBtn.IsChecked = false;
+                        //MessageBox.Show("here!");
+                    }
+                }
+            }
             return;
         }
 
+        // Helper method to find a child of a specified type in the visual tree
+        // Helper method to find all children of a specified type in the visual tree
+        private List<T> FindVisualChildren<T>(DependencyObject parent) where T : DependencyObject
+        {
+            List<T> children = new();
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                if (child is not null and T)
+                {
+                    children.Add((T)child);
+                }
+
+                children.AddRange(FindVisualChildren<T>(child));
+            }
+
+            return children;
+        }
 
         /// <summary>
         ///     Handler for the Send Button

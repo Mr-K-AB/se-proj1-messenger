@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
- * Filename    = ContentClient.cs
+ * Filename    = IContentClient.cs
  *
  * Author      = Rapeti Siddhu Neehal
  *
@@ -69,6 +69,10 @@ namespace MessengerContent.Client
         /// <returns>User ID associated with instance</returns>
         int GetUserID();
 
+        /// <summary>
+        /// Get user name associated with instance
+        /// </summary>
+        /// <returns>User name associated with instance</returns>
         string GetUserName();
     }
 }

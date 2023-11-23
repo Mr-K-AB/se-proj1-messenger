@@ -1,7 +1,7 @@
 ﻿/******************************************************************************
  * Filename    = MessageEvent.cs
  *
- * Author      = Manikanta
+ * Author      = Likhitha
  *
  * Product     = Messenger
  * 

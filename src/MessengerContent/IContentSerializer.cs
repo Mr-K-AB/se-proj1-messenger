@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = ContentServer.cs
+* Filename    = IContentSerializer.cs
 *
 * Author      = Likhitha
 *

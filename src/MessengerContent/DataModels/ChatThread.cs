@@ -168,10 +168,10 @@ namespace MessengerContent.DataModels
         {
             int index = GetMessageIndex(messageID);
             // check if the message type is chat for editing
-            if (MessageList[index].Type != MessageType.Chat)
-            {
-                throw new ArgumentException("Message requested for delete is not chat.");
-            }
+            //if (MessageList[index].Type != MessageType.Chat)
+            //{
+            //    throw new ArgumentException("Message requested for delete is not chat.");
+            //}
             MessageList[index].Data = "Message Deleted.";
         }
 

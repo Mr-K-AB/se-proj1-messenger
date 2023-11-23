@@ -314,11 +314,11 @@ namespace MessengerContent.Client
         {
             // get message and check if it is empty
             ReceiveChatData message = GetMessage(messageID) ?? throw new ArgumentException("Message being replied to does not exist");
-            // check message type
-            if (message.Type != MessageType.Chat)
-            {
-                throw new ArgumentException($"Invalid message type for deleting : {message.Type}");
-            }
+            //// check message type
+            //if (message.Type != MessageType.Chat)
+            //{
+            //    throw new ArgumentException($"Invalid message type for deleting : {message.Type}");
+            //}
             // check if user can delete the message
             if (message.SenderID != _userID)
             {

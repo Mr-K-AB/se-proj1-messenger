@@ -333,13 +333,33 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="70" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
+                            <!--time and star button-->
                             <TextBlock Opacity="0.8" Foreground="#FFFFFF"
-                       Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
-                       Grid.Row="0" Padding="8" Grid.Column="0" />
+                            Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+                            Grid.Row="0" Padding="8" Grid.Column="0" />
+                            <ToggleButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                                Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+
                             <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="Sent"
-                       x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
-                       Grid.Column="2" HorizontalAlignment="Right" />
+                                x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                                Grid.Column="3" HorizontalAlignment="Right" />
+
+                            <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left">
+
+                                <!--edit button--><!--
+                                <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+                                        Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
+                                    <Image Source="../Images/pen.png" />
+                                </Button>-->
+                                <!--delete button-->
+                                <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+                                        Width="30" Height="20" Margin="0,0,0,0" Click="DeleteHandler" ToolTip="Delete">
+                                    <Image Source="../Images/delete-chat.png" />
+                                </Button>
+                            </StackPanel>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -415,21 +435,39 @@
                             </StackPanel>
                         </Grid>
 
-
-
-
                         <Grid Grid.Row="3">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="70" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
+                            <!--time and star button-->
                             <TextBlock Opacity="0.8" Foreground="#FFFFFF"
-           Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
-           Grid.Row="0" Padding="8" Grid.Column="0" />
+       Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
+       Grid.Row="0" Padding="8" Grid.Column="0" />
+                            <ToggleButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+         Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+
                             <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="Sent"
-           x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
-           Grid.Column="2" HorizontalAlignment="Right" />
+       x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+       Grid.Column="3" HorizontalAlignment="Right" />
+
+                            <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left">
+
+                                <!--edit button--><!--
+                                <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+            Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
+                                    <Image Source="../Images/pen.png" />
+                                </Button>-->
+                                <!--delete button-->
+                                <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
+            Width="30" Height="20" Margin="0,0,0,0" Click="DeleteHandler" ToolTip="Delete">
+                                    <Image Source="../Images/delete-chat.png" />
+                                </Button>
+                            </StackPanel>
                         </Grid>
+                        
                     </Grid>
                 </Grid>
             </Border>

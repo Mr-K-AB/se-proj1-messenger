@@ -26,6 +26,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -344,6 +345,7 @@ namespace MessengerApp
         /// <param name="e"> </param>
         private void DownloadHandler(object sender, RoutedEventArgs e)
         {
+            
             if (sender is Button senderBtn)
             {
                 var viewModel = DataContext as ChatPageViewModel;
@@ -353,19 +355,30 @@ namespace MessengerApp
                 // Get the message through the Download button
                 if (senderBtn.DataContext is ChatMessage message)
                 {
-                    // Set the File name and the Extension of the file from the message
-                    dialogFile.FileName = System.IO.Path.GetFileNameWithoutExtension(message.MsgData);
-                    dialogFile.DefaultExt = System.IO.Path.GetExtension(message.MsgData);
-
-                    // Show the Dialog box to let the user choose a destination folder in which the file can be downloaded
-                    bool? isDownloadOk = dialogFile.ShowDialog();
-
-                    if (isDownloadOk == true)
+                    string? messageText = message.MsgData;
+                    if (messageText == "Message Deleted.")
                     {
-                        viewModel.DownloadFile(dialogFile.FileName, message.MessageID);
+                        MessageBox.Show("Can't download deleted files!");
+                        Trace.WriteLine("[ChatBubble] Can't Download file");
+
                     }
+                    else
+                    {
+                        // Set the File name and the Extension of the file from the message
+                        dialogFile.FileName = System.IO.Path.GetFileNameWithoutExtension(message.MsgData);
+                        dialogFile.DefaultExt = System.IO.Path.GetExtension(message.MsgData);
+
+                        // Show the Dialog box to let the user choose a destination folder in which the file can be downloaded
+                        bool? isDownloadOk = dialogFile.ShowDialog();
+
+                        if (isDownloadOk == true)
+                        {
+                            viewModel.DownloadFile(dialogFile.FileName, message.MessageID);
+                        }
+                        Trace.WriteLine("[ChatBubble] Downloading file");
+                    }
+                        
                 }
-                Trace.WriteLine("[ChatBubble] Downloading file");
             }
             return;
         }

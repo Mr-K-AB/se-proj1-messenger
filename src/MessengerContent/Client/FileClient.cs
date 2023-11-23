@@ -78,7 +78,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="sendContent">Instance of the SendChatData class</param>
         /// <exception cref="ArgumentException"></exception>
-        public void SendFile(SendChatData sendContent, string ip, int port)
+        public void SendFile(SendChatData sendContent)
         {
             // check message type
             if (sendContent.Type != MessageType.File)
@@ -90,10 +90,11 @@ namespace MessengerContent.Client
             {
                 throw new FileNotFoundException($"File at {sendContent.Data} not found");
             }
+            string[] path = sendContent.Data.Split(new char[] { '\\' }, StringSplitOptions.None);
             ChatData sendData = new()
             {
                 Type = sendContent.Type,
-                Data = sendContent.Data,
+                Data = path.Last(),
                 MessageID = -1,
                 //ReceiverIDs = sendContent.ReceiverIDs,
                 ReplyThreadID = sendContent.ReplyThreadID,
@@ -113,7 +114,7 @@ namespace MessengerContent.Client
         /// </summary>
         /// <param name="messageID">ID of the message</param>
         /// <param name="savePath">Path to which the file will be downloaded</param>
-        public void DownloadFile(int messageID, string savePath, string ip, int port)
+        public void DownloadFile(int messageID, string savePath)
         {
             // check for savePath
             if (savePath == null || savePath == "")

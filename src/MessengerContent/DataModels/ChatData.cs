@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = data model for chat
  *****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;
@@ -25,6 +25,7 @@ namespace MessengerContent.DataModels
         /// <summary>
         /// Empty constructor to create type without parameters.
         /// </summary>
+        
         public ChatData()
         {
         }

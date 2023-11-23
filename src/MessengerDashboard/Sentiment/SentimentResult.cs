@@ -1,4 +1,16 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = SentimentResult.cs
+*
+* Author      = Aradhya Bijalwan
+*
+* Product     = MessengerApp
+* 
+* Project     = MessengerDashboard
+*
+* Description =  Represents the result of a sentiment analysis for a collection of chat messages.
+* 
+*****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

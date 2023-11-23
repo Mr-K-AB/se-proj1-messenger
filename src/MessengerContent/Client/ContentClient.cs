@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = handles client side of recieving, sending and processing messages
  *****************************************************************************/
 using System;
 using System.Collections.Generic;
@@ -33,7 +33,7 @@ namespace MessengerContent.Client
         /// </summary>
         private readonly INotificationHandler _notificationHandler;
         private ICommunicator _communicator;
-        //private readonly IContentSerializer _serializer;
+        private readonly IContentSerializer _serializer;
 
         /// <summary>
         /// List of subscribers
@@ -53,9 +53,6 @@ namespace MessengerContent.Client
 
         // Name and Id of the current client user
         private string? _name;
-
-        private string _serverIP;
-        private int _serverPort;
 
         /// <summary>
         /// Lock object for locking
@@ -91,7 +88,7 @@ namespace MessengerContent.Client
             // instantiate requried network parameters
             _notificationHandler = new ContentClientNotificationHandler(this);
             _communicator = CommunicationFactory.GetCommunicator();
-            //_serializer = new ContentSerializer();
+            _serializer = new ContentSerializer();
             // subscribe to network module
             try
             {
@@ -148,7 +145,7 @@ namespace MessengerContent.Client
         /// User ID setter functions
         /// </summary>
         /// 
-        public void SetUser(int id, string name, string ip, int port)
+        public void SetUser(int id, string name)
         {
             _userID = id;
             _chatHandler.UserID = id;
@@ -156,11 +153,17 @@ namespace MessengerContent.Client
             _fileHandler.UserID = id;
             _fileHandler.UserName = name;
             _name = name;
-            _serverIP = ip;
-            _serverPort = port;
         }
-           
-
+        public int UserID
+        {
+            get => _userID;
+            set
+            {
+                _userID = value;
+                _chatHandler.UserID = value;
+                _fileHandler.UserID = value;
+            }
+        }
         /// <summary>
         /// Check for valid reply message ID 
         /// </summary>
@@ -207,41 +210,8 @@ namespace MessengerContent.Client
                     return thread.MessageList[messageIndex];
                 }
             }
-
             return null;
         }
-
-        /// <summary>
-        /// Returns the array of intersecting receiver IDs of an existing message and a new reply message 
-        /// </summary>
-        /// <param name="previousReceiverIDs">List of receiver IDs of existing message</param>
-        /// <param name="currentReceiverIDs">List of receiver IDs of the new message</param>
-        /// <param name="previousSenderID">ID of the sender of existing message</param>
-        /// <returns>List of Receiver IDs</returns>
-        /// <exception cref="ArgumentException"></exception>
-        /*private int[] AllReceivers(int[] previousReceiverIDs, int[] currentReceiverIDs, int previousSenderID)
-        {
-            // exisiting message receiver ID array is empty implies message is a broadcast message
-            // final receiver array is simply the receiver array of the new message
-            if (!(previousReceiverIDs?.Length > 0))
-            {
-                return currentReceiverIDs;
-            }
-            // add the sender of existing message to the receiver array
-            _ = previousReceiverIDs.Concat(new[] { previousSenderID }).ToArray();
-            // final receiver array is existing message receiver array if current array is empty 
-            if (!(currentReceiverIDs?.Length > 0))
-            {
-                return previousReceiverIDs;
-            }
-            // get intersecting array of receiver IDs
-            int[] allReceivers = previousReceiverIDs.Intersect(currentReceiverIDs).ToArray();
-            if (allReceivers.Length == 0)
-            {
-                throw new ArgumentException("Invalid array of receivers.");
-            }
-            return allReceivers;
-        }*/
 
         /// <summary>
         /// Function to check if path is accessible and a file can be created
@@ -264,13 +234,8 @@ namespace MessengerContent.Client
         // interface functions
 
         ///<inheritdoc/>
-        public void ClientSendData(SendChatData chatData, string ip, int port)
+        public void ClientSendData(SendChatData chatData)
         {
-            // check if receiver ID list is not null
-            /*if (chatData.ReceiverIDs is null)
-            {
-                throw new ArgumentException("List of receiver IDs given is null");
-            }*/
             // check if message is part of thread
             if (chatData.ReplyThreadID != -1)
             {
@@ -292,11 +257,15 @@ namespace MessengerContent.Client
             {
                 case MessageType.Chat:
                     Trace.WriteLine("[ContentClient] Using chat handler to send event to server");
-                    _chatHandler.NewChat(chatData, ip, port);
+                    _chatHandler.NewChat(chatData);
                     break;
                 case MessageType.File:
                     Trace.WriteLine("[ContentClient] Using file handler to send event to server");
-                    _fileHandler.SendFile(chatData, ip, port);
+                    _fileHandler.SendFile(chatData);
+                    break;
+                case MessageType.HistoryRequest:
+                    Trace.WriteLine("[ContentClient] Requesting server for Message History");
+                    _chatHandler.NewChat(chatData);
                     break;
                 default:
                     throw new ArgumentException($"Invalid Message Field Type : {chatData.Type}");
@@ -315,11 +284,12 @@ namespace MessengerContent.Client
                 // add subscriber to the list of subscribers
                 Trace.WriteLine("[ContentClient] Added new subscriber");
                 _subscribers.Add(subscriber);
+                RequestMessageHistory();
             }
         }
 
         ///<inheritdoc/>
-        public void ClientEdit(int messageID, string newMessage, string ip, int port)
+        public void ClientEdit(int messageID, string newMessage)
         {
             // get message and check if it is empty
             ReceiveChatData? message = GetMessage(messageID) ?? throw new ArgumentException("Message with given message ID does not exist");
@@ -335,30 +305,31 @@ namespace MessengerContent.Client
 
             }
             Trace.WriteLine("[ContentClient] Using chat handler to send edit event to server");
-            _chatHandler.EditChat(messageID, newMessage, message.ReplyThreadID, ip, port);
+            _chatHandler.EditChat(messageID, newMessage, message.ReplyThreadID);
         }
 
         ///<inheritdoc/>
-        public void ClientDelete(int messageID, string ip, int port)
+        public void ClientDelete(int messageID)
         {
             // get message and check if it is empty
             ReceiveChatData message = GetMessage(messageID) ?? throw new ArgumentException("Message being replied to does not exist");
-            // check message type
-            if (message.Type != MessageType.Chat)
-            {
-                throw new ArgumentException($"Invalid message type for deleting : {message.Type}");
-            }
+            //// check message type
+            //if (message.Type != MessageType.Chat)
+            //{
+            //    throw new ArgumentException($"Invalid message type for deleting : {message.Type}");
+            //}
             // check if user can delete the message
             if (message.SenderID != _userID)
             {
+                Debug.Print("{0}, {0}", message.SenderID, _userID);
                 throw new ArgumentException("Delete not allowed for messages from another sender");
             }
             Trace.WriteLine("[ContentClient] Using chat handler to send delete event to server");
-            _chatHandler.DeleteChat(messageID, message.ReplyThreadID, ip, port);
+            _chatHandler.DeleteChat(messageID, message.ReplyThreadID);
         }
 
         /// <inheritdoc/>
-        public void ClientDownload(int messageID, string savePath, string ip, int port)
+        public void ClientDownload(int messageID, string savePath)
         {
             // check save path and message 
             CheckFilePath(savePath);
@@ -374,11 +345,11 @@ namespace MessengerContent.Client
                 throw new ArgumentException($"Invalid message type : {message.Type}");
             }
             Trace.WriteLine("[ContentClient] Using file handler to send download file event to server");
-            _fileHandler.DownloadFile(messageID, savePath, ip, port);
+            _fileHandler.DownloadFile(messageID, savePath);
         }
 
         ///<inheritdoc/>
-        public void ClientStar(int messageID, string ip, int port)
+        public void ClientStar(int messageID)
         {
             // check if message is empty
             ReceiveChatData? message = GetMessage(messageID) ?? throw new ArgumentException("Message with given message ID to does not exist");
@@ -388,7 +359,7 @@ namespace MessengerContent.Client
                 throw new ArgumentException($"Invalid message type : {message.Type}");
             }
             Trace.WriteLine("[ContentClient] Using chat handler to send star chat to server");
-            _chatHandler.StarChat(messageID, message.ReplyThreadID, ip, port);
+            _chatHandler.StarChat(messageID, message.ReplyThreadID);
         }
 
         /// <inheritdoc/>
@@ -416,16 +387,6 @@ namespace MessengerContent.Client
             return _name;
         }
 
-        public string GetIP()
-        {
-            return _serverIP;
-        }
-
-        public int GetPort()
-        {
-            return _serverPort;
-        }
-
         // event handler helper functions
 
         /// <summary>
@@ -442,7 +403,55 @@ namespace MessengerContent.Client
             }
         }
 
-        // event handler functions
+        /// <summary>
+        /// Notify all subscribers of received entire message history
+        /// </summary>
+        /// <param name="allMessages"></param>
+        /// <exception cref="ArgumentException"></exception>
+        private void Notify(List<ChatThread> allMessages)
+        {
+            Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared");
+            foreach (IMessageListener subscriber in _subscribers)
+            {
+                _ = Task.Run(() => { subscriber.OnAllMessagesReceived(allMessages); });
+            }
+        }
+        public void OnReceive(List<ChatThread> allMessages)
+        {
+            if (allMessages is null)
+            {
+                throw new ArgumentException("Received null argument!");
+            }
+            Trace.WriteLine("[ContentClient] Received message history from server");
+            // update the internal data strcutures using the received history
+            SetAllMessages(allMessages);
+            Notify(allMessages);
+        }
+        /// <summary>
+        /// Set all messages of in the internal data strcutures
+        /// </summary>
+        /// <param name="allMessages">List of threads containing all messages</param>
+        private void SetAllMessages(List<ChatThread> allMessages)
+        {
+            // lock before updating data strcutures
+            lock (_lock)
+            {
+                _threadIDMap = new Dictionary<int, int>();
+                _messageIDMap = new Dictionary<int, int>();
+                AllMessages = allMessages;
+                // update the internal data structures
+                for (int i = 0; i < AllMessages.Count; i++)
+                {
+                    ChatThread thread = AllMessages[i];
+                    int threadID = thread.ThreadID;
+                    _threadIDMap.Add(threadID, i);
+                    foreach (ReceiveChatData message in thread.MessageList)
+                    {
+                        _messageIDMap.Add(message.MessageID, threadID);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Handles the new message event - checks the message data and 
@@ -631,6 +640,28 @@ namespace MessengerContent.Client
             }
             Trace.WriteLine("[ContentClient] Received message from server");
             _messageEventHandler[receivedMessage.Event](receivedMessage);
+        }
+        /// <summary>
+        /// Sends a request to server asking for all messages received on server
+        /// </summary>
+        public void RequestMessageHistory()
+        {
+            var message = new ChatData
+            {
+                SenderID = _userID,
+                Type = MessageType.HistoryRequest
+            };
+            try
+            {
+                // serialize message and send to server via network
+                string serializedMessage = _serializer.Serialize(message);
+                Trace.WriteLine($"[ContentClient] Sending request for message history to server for user ID = {_userID}");
+                _communicator.Send(serializedMessage, "Content", null);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[ContentClient] Exception occurred during sending message history request.\n{e.GetType()} : {e.Message}");
+            }
         }
     }
 }

@@ -7,7 +7,7 @@
  * 
  * Project     = MessengerContent
  *
- * Description = 
+ * Description = Types of message events
  *****************************************************************************/
 
 namespace MessengerContent.Enums

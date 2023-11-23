@@ -59,7 +59,7 @@ namespace MessengerTests.WhiteboardTests
             return true;
         }
 
-        public bool CompareBoardServerShapes(WBShape shape1, WBShape shape2)
+        public static bool CompareBoardServerShapes(WBShape shape1, WBShape shape2)
         {
             Serializer serializer = new();
             if (shape1 == null && shape2 == null)
@@ -79,7 +79,7 @@ namespace MessengerTests.WhiteboardTests
         }
 
 
-        public ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, string uid, string textData = "Text")
+        public static ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, string uid, string textData = "Text")
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;

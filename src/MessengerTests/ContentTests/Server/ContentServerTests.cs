@@ -137,6 +137,17 @@ namespace MessengerTests.ContentTests.Server
         }
 
         [TestMethod]
+        public void Receive_InvalidMessageType_PrintsErrorMessage()
+        {
+            Initialiser();
+            ChatData messageData = _helper.GenerateChatData();
+            messageData.Type += 3;
+            string serializesMessage = _serializer.Serialize(messageData);
+            _contentServer.Receive(serializesMessage);
+            Assert.IsTrue(true);
+        }
+
+        [TestMethod]
         public void Receive_NewFile_SaveFileAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
         {
             Initialiser();

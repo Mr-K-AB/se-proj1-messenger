@@ -46,8 +46,6 @@ namespace MessengerTests.ContentTests.Client
             MockCommunicator mockCommunicator = helper.GetMockCommunicator();
             var serializer = new ContentSerializer();
             int userID = 5;
-            string ip = "127.0.0.1";
-            int port = 55000;
             var chatClient = new ChatMessageClient(mockCommunicator)
             {
                 UserID = userID,
@@ -55,7 +53,7 @@ namespace MessengerTests.ContentTests.Client
             };
             ChatData chatData = chatClient.ChatDataFromSendData(sendChatData, MessageEvent.New);
 
-            chatClient.NewChat(sendChatData, ip, port);
+            chatClient.NewChat(sendChatData);
             string serializedData = mockCommunicator.GetSendData();
             ChatData deserializedData = serializer.Deserialize<ChatData>(serializedData);
 
@@ -84,7 +82,7 @@ namespace MessengerTests.ContentTests.Client
                 Communicator = mockCommunicator
             };
 
-            Assert.ThrowsException<ArgumentException>(() => chatClient.NewChat(sendChatData, ip, port));
+            Assert.ThrowsException<ArgumentException>(() => chatClient.NewChat(sendChatData));
         }
         [TestMethod]
         public void NewChat_NullMessageString_ReturnsArgumentException()
@@ -102,7 +100,7 @@ namespace MessengerTests.ContentTests.Client
                 Communicator = mockCommunicator
             };
 
-            Assert.ThrowsException<ArgumentException>(() => chatClient.NewChat(sendChatData, ip, port));
+            Assert.ThrowsException<ArgumentException>(() => chatClient.NewChat(sendChatData));
         }
         [TestMethod]
         public void EditChat_ValidInput_ReturnsValidContentData()
@@ -112,8 +110,6 @@ namespace MessengerTests.ContentTests.Client
             MockCommunicator mockCommunicator = helper.GetMockCommunicator();
             var serializer = new ContentSerializer();
             int userID = 5;
-            string ip = "127.0.0.1";
-            int port = 55000;
             int messageID = 6;
             int threadID = 7;
             var chatClient = new ChatMessageClient(mockCommunicator)
@@ -123,7 +119,7 @@ namespace MessengerTests.ContentTests.Client
             };
             ChatData chatData = chatClient.ChatDataFromSendData(sendChatData, MessageEvent.Edit);
 
-            chatClient.EditChat(messageID, "This is an edited message", threadID, ip, port);
+            chatClient.EditChat(messageID, "This is an edited message", threadID);
             string serializedData = mockCommunicator.GetSendData();
             ChatData deserializedData = serializer.Deserialize<ChatData>(serializedData);
 
@@ -145,8 +141,6 @@ namespace MessengerTests.ContentTests.Client
             MockCommunicator mockCommunicator = helper.GetMockCommunicator();
             var serializer = new ContentSerializer();
             int userID = 5;
-            string ip = "127.0.0.1";
-            int port = 55000;
             int messageID = 6;
             int threadID = 7;
             var chatClient = new ChatMessageClient(mockCommunicator)
@@ -156,7 +150,7 @@ namespace MessengerTests.ContentTests.Client
             };
             ChatData chatData = chatClient.ChatDataFromSendData(sendChatData, MessageEvent.Delete);
 
-            chatClient.DeleteChat(messageID, threadID, ip, port);
+            chatClient.DeleteChat(messageID, threadID);
             string serializedData = mockCommunicator.GetSendData();
             ChatData deserializedData = serializer.Deserialize<ChatData>(serializedData);
 
@@ -178,8 +172,6 @@ namespace MessengerTests.ContentTests.Client
             MockCommunicator mockCommunicator = helper.GetMockCommunicator();
             var serializer = new ContentSerializer();
             int userID = 5;
-            string ip = "127.0.0.1";
-            int port = 55000;
             int messageID = 6;
             int threadID = 7;
             var chatClient = new ChatMessageClient(mockCommunicator)
@@ -189,7 +181,7 @@ namespace MessengerTests.ContentTests.Client
             };
             ChatData chatData = chatClient.ChatDataFromSendData(sendChatData, MessageEvent.Star);
 
-            chatClient.StarChat(messageID, threadID, ip, port);
+            chatClient.StarChat(messageID, threadID);
             string serializedData = mockCommunicator.GetSendData();
             ChatData deserializedData = serializer.Deserialize<ChatData>(serializedData);
 

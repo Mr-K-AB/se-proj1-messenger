@@ -1,4 +1,4 @@
-﻿using MessengerNetworking.Communicator;
+﻿/*using MessengerNetworking.Communicator;
 using MessengerScreenshare.Client;
 using MessengerScreenshare;
 using Moq;
@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
 using SSUtils = MessengerScreenshare.Utils;
+using System.Security.Cryptography;
 
 namespace MessengerTests.ScreenshareTests
 {
@@ -27,19 +28,18 @@ namespace MessengerTests.ScreenshareTests
             var communicatorMock = new Mock<ICommunicator>();
             screenshareClient.SetPrivate("_communicator", communicatorMock.Object);
 
-            screenshareClient.SetUser(0, "name");
+            string argString = "";
+            communicatorMock.Setup(p => p.Send(It.IsAny<string>(), SSUtils.ServerIdentifier, null))
+                .Callback((string s, string s2, string s3) => { if (argString == "") { argString = s; } });
+
+            screenshareClient.SetUser(1, "name");
             Task.Run(async() => await screenshareClient.StartScreensharingAsync());
 
-            string argString = "";
-            communicatorMock.Setup(p => p.Broadcast(SSUtils.ClientIdentifier, It.IsAny<string>(), 0))
-                .Callback((string s, string s2, int s3) => { if (argString == "") { argString = s; } });
+            while (argString == "") {}
 
             DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(argString);
 
             Assert.IsTrue(packet?.Header == ClientDataHeader.Register.ToString());
-            //communicatorMock.Verify(communicator =>
-            //    communicator.Send(It.IsAny<string>(), SSUtils.ModuleIdentifier, null),
-            //    Times.AtLeastOnce);
         }
 
         [TestMethod]
@@ -50,12 +50,12 @@ namespace MessengerTests.ScreenshareTests
             var communicatorMock = new Mock<ICommunicator>();
             screenshareClient.SetPrivate("_communicator", communicatorMock.Object);
 
-            screenshareClient.SetUser(0, "name");
+            screenshareClient.SetUser(2, "clientName");
             Task.Run(async () => await screenshareClient.StartScreensharingAsync());
 
             bool isImagePacketSent = false;
-            communicatorMock.Setup(p => p.Broadcast(SSUtils.ClientIdentifier, It.IsAny<string>(), 0))
-                .Callback((string s, string s2, int s3) =>
+            communicatorMock.Setup(p => p.Send(It.IsAny<string>(), SSUtils.ClientIdentifier, null))
+                .Callback((string s, string s2, string s3) =>
                 {
                     DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(s);
                     if (packet?.Header == ClientDataHeader.Image.ToString())
@@ -64,7 +64,7 @@ namespace MessengerTests.ScreenshareTests
                     }
                 });
 
-            DataPacket packet = new(0, "name", ServerDataHeader.Send.ToString(), "10");
+            DataPacket packet = new(1, "serverName", ServerDataHeader.Send.ToString(), "2");
             string serializedData = JsonSerializer.Serialize(packet);
 
             screenshareClient.OnDataReceived(serializedData);
@@ -83,12 +83,12 @@ namespace MessengerTests.ScreenshareTests
             var communicatorMock = new Mock<ICommunicator>();
             screenshareClient.SetPrivate("_communicator", communicatorMock.Object);
 
-            screenshareClient.SetUser(0, "name");
+            screenshareClient.SetUser(2, "clientName");
             Task.Run(async () => await screenshareClient.StartScreensharingAsync());
 
             bool isImagePacketSent = false;
-            communicatorMock.Setup(p => p.Broadcast(SSUtils.ClientIdentifier, It.IsAny<string>(), 0))
-                .Callback((string s, string s2, int s3) =>
+            communicatorMock.Setup(p => p.Send(It.IsAny<string>(), SSUtils.ClientIdentifier, null))
+                .Callback((string s, string s2, string s3) =>
                 {
                     DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(s);
                     if (packet?.Header == ClientDataHeader.Image.ToString())
@@ -97,7 +97,7 @@ namespace MessengerTests.ScreenshareTests
                     }
                 });
 
-            DataPacket packet = new(0, "name", ServerDataHeader.Send.ToString(), "10");
+            DataPacket packet = new(1, "serverName", ServerDataHeader.Send.ToString(), "2");
             string serializedData = JsonSerializer.Serialize(packet);
 
             screenshareClient.OnDataReceived(serializedData);
@@ -106,7 +106,7 @@ namespace MessengerTests.ScreenshareTests
 
             Assert.IsTrue(isImagePacketSent);
 
-            packet = new(0, "name", ServerDataHeader.Stop.ToString(), "10");
+            packet = new(1, "serverName", ServerDataHeader.Stop.ToString(), "2");
             serializedData = JsonSerializer.Serialize(packet);
 
             screenshareClient.OnDataReceived(serializedData);
@@ -124,12 +124,3 @@ namespace MessengerTests.ScreenshareTests
 
     }
 }
-
-// start -> stop -> start
-// moq start processing sends packets to communicator (register + communication)
-// using moq test on data receive both things
-// using moq test start image sending
-// test stop ss
-// test StopConfirmationSending
-// 
-

@@ -111,9 +111,7 @@ namespace MessengerApp.ViewModels
             }
             UserId = _model.GetUserID();
             UserName = _model.GetUserName();
-            ServerIP = _model.GetIP();
-            ServerPort = _model.GetPort();
-            _model.ClientSendData(MsgToSend, ServerIP, ServerPort);
+            _model.ClientSendData(MsgToSend);
         }
 
         /// <summary>
@@ -123,7 +121,7 @@ namespace MessengerApp.ViewModels
         /// <param name="msgId">  </param>
         public void DownloadFile(string savePath, int msgId)
         {
-            _model.ClientDownload(msgId, savePath, ServerIP, ServerPort);
+            _model.ClientDownload(msgId, savePath);
         }
 
         /// <summary>
@@ -133,7 +131,7 @@ namespace MessengerApp.ViewModels
         /// <param name="newMsg"> The updated Chat Message  </param>
         public void EditChatMsg(int msgID, string newMsg)
         {
-            _model.ClientEdit(msgID, newMsg, ServerIP, ServerPort);
+            _model.ClientEdit(msgID, newMsg);
         }
 
         /// <summary>
@@ -142,7 +140,7 @@ namespace MessengerApp.ViewModels
         /// <param name="msgID"> </param>
         public void DeleteChatMsg(int msgID)
         {
-            _model.ClientDelete(msgID, ServerIP, ServerPort);
+            _model.ClientDelete(msgID);
         }
 
         /// <summary>
@@ -151,7 +149,7 @@ namespace MessengerApp.ViewModels
         /// <param name="msgId"> </param>
         public void StarChatMsg(int msgId)
         {
-            _model.ClientStar(msgId, ServerIP, ServerPort);
+            _model.ClientStar(msgId);
         }
 
 

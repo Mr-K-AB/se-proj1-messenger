@@ -82,7 +82,6 @@ namespace MessengerWhiteboard
 
             List<SerializableShapeItem> serializedShapes = _serializer.SerializeShapes(shapeItems);
             WBShape wBShape = new(serializedShapes, operation);
-            Debug.Print("OnShapeReceived: {0}", shapeItem.ShapeType);
             _communicator.SendToServer(wBShape);
         }
 

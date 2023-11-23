@@ -83,6 +83,10 @@ namespace MessengerWhiteboard
                 if (shape.Id.ToString() == uid)
                 {
                     // Handle resize 
+                    if(shape.ShapeType == "Curve")
+                    {
+                        return;
+                    }
                     _selectedCorner = shape;
                     return;
                 }
@@ -106,6 +110,10 @@ namespace MessengerWhiteboard
                         if (shape.Id.ToString() == uid)
                         {
                             _tempShape = shape;
+                            if(shape.ShapeType == "Curve")
+                            {
+                                break;
+                            }
                             HighlightShape(_tempShape);
                             break;
                         }
@@ -121,6 +129,10 @@ namespace MessengerWhiteboard
                     if (shape.Id.ToString() == uid)
                     {
                         _tempShape = shape;
+                        if (shape.ShapeType == "Curve")
+                        {
+                            break;
+                        }
                         HighlightShape(_tempShape);
                         break;
                     }

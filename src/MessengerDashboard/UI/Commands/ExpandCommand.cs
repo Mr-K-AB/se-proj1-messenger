@@ -1,4 +1,18 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = ExpandCommand.cs
+*
+* Author      = Satish Patidar 
+*
+* Roll number = 112001037
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerDashboard
+*
+* Description = A Command for expanding sessions in the Messenger Dashboard.
+*****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,28 +27,38 @@ using System.Threading;
 
 namespace MessengerDashboard.UI.Commands
 {
+    /// <summary>
+    /// Represents a command for expanding sessions in the Messenger Dashboard.
+    /// </summary>
     public class ExpandCommand : ICommand
     {
-
         private readonly SessionsViewModel _sessionsViewModel;
         private EntityInfoWrapper _entity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExpandCommand"/> class.
+        /// </summary>
+        /// <param name="sessionsViewModel">The view model for sessions.</param>
+        /// <param name="entity">The entity information wrapper.</param>
         public ExpandCommand(SessionsViewModel sessionsViewModel, EntityInfoWrapper entity)
         {
             _sessionsViewModel = sessionsViewModel;
             _entity = entity;
         }
 
+        /// <inheritdoc/>
         public event EventHandler? CanExecuteChanged;
 
+        /// <inheritdoc/>
         public bool CanExecute(object? parameter)
         {
             return true;
         }
 
+        /// <inheritdoc/>
         public void Execute(object? parameter)
         {
-            if(_sessionsViewModel.IsLocalClicked == false)
+            if (_sessionsViewModel.IsLocalClicked == false)
             {
                 Thread something = new(() =>
                 {
@@ -50,7 +74,7 @@ namespace MessengerDashboard.UI.Commands
                         _entity = new EntityInfoWrapper(result.Sentences, result.PositiveChatCount, result.NegativeChatCount,
                             result.NeutralChatCount, result.OverallSentiment, result.SessionId, result.Analysis);
                     }
-                    catch (Exception ex) { }
+                    catch (Exception ex) { /* Handle exceptions */ }
                 })
                 { IsBackground = true };
                 something.Start();
@@ -59,7 +83,7 @@ namespace MessengerDashboard.UI.Commands
             try
             {
                 List<TimeStampUserCountEntry> timeStampUserCountEntries = new();
-                foreach(KeyValuePair<DateTime, int> item in _entity.Analysis.TimeStampToUserCountMap)
+                foreach (KeyValuePair<DateTime, int> item in _entity.Analysis.TimeStampToUserCountMap)
                 {
                     timeStampUserCountEntries.Add(new(item.Key, item.Value));
                 }
@@ -79,7 +103,7 @@ namespace MessengerDashboard.UI.Commands
                 _sessionsViewModel.TimeStampUserCountEntries = timeStampUserCountEntries;
                 _sessionsViewModel.UserActivities = userActivities;
             }
-            catch (Exception ex) { }
+            catch (Exception ex) { /* Handle exceptions */ }
         }
     }
 }

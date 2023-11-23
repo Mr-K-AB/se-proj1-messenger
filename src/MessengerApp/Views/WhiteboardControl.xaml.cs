@@ -71,6 +71,10 @@ namespace MessengerApp.Views
                     //Debug.WriteLine(element.GetValue(UidProperty).ToString());
                     _viewModel.SelectShape(element.GetValue(UidProperty).ToString());
                 }
+                else
+                {
+                    _viewModel.UnselectShape();
+                }
             }
             else if (_viewModel.currentMode == ViewModel.WBModes.DeleteMode)
             {
@@ -396,7 +400,8 @@ namespace MessengerApp.Views
         /// <param name="e"></param>
         private void SaveMode(object sender, RoutedEventArgs e)
         {
-            _viewModel.SaveSnapshot();
+            SaveSessionPopup.IsOpen ^= true;
+            _viewModel.SaveSnapshot(SaveSessionText.Text);
         }
 
     }

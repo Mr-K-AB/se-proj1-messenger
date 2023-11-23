@@ -66,8 +66,7 @@ namespace MessengerScreenshare.Client
         /// Gives Captured Frame Queue Size
         /// </summary>
         /// <returns>Captured Frame Queue Count </returns>
-        public int GetCapturedFrameLength()
-        {
+        public int GetCapturedFrameLength() {
             return _capturedFrameQueue.Count;
         }
 

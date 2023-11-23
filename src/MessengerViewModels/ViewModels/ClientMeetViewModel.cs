@@ -53,6 +53,7 @@ namespace MessengerViewModels.ViewModels
             NavigateClientDashboardCommand = new NavigateClientDashboardCommand(navigationStore, _dashboardViewModel);
             NavigateClientScreenshareCommand = new NavigateClientScreenshareCommand(navigationStore, _screenshareViewModel);
             NavigateServerWhiteboardCommand = new NavigateServerWhiteboardCommand(navigationStore, _whiteboardViewModel);
+            _navigationStore.SubViewModel = _dashboardViewModel;
 
         }
 

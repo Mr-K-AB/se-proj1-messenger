@@ -1,7 +1,14 @@
-﻿/// <author> Likhith Reddy </author>
-/// <summary>
-/// Contains view model for screenshare client.
-/// </summary>
+﻿/************************************************************
+* Filename    = ScreenshareServerViewModel.cs
+*
+* Author      = Likhith Reddy
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = Contains view model for screenshare client.
+************************************************************/
 
 using System;
 using System.ComponentModel;

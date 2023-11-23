@@ -126,6 +126,17 @@ namespace MessengerWhiteboard
             }
         }
 
+        public void LoadBoard(List<ShapeItem> shapeItems)
+        {
+            if (shapeItems != null)
+            {
+                foreach (ShapeItem shapeItem in shapeItems)
+                {
+                    CreateIncomingShape(shapeItem);
+                }
+            }
+        }
+
         public void OnClientJoined(string ipAddr, int port)
         {
             throw new NotImplementedException();

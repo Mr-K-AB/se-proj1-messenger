@@ -1,4 +1,19 @@
-﻿<UserControl x:Class="MessengerApp.Views.SessionControl"
+﻿<!--
+ /******************************************************************************
+* Filename    = SessionControl.xaml
+*
+* Author      = Satish Patidar 
+*
+* Roll number = 112001037
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerApp
+*
+* Description = A UserControl representing a view of session for the members or students 
+*****************************************************************************/
+-->
+    <UserControl x:Class="MessengerApp.Views.SessionControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

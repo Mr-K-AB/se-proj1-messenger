@@ -101,6 +101,16 @@ namespace MessengerTests.ContentTests.Server
         }
 
         [TestMethod]
+        public void Receive_InvalidMessageEvent_ReturnsNull()
+        {
+            Setup();
+            ChatData msg1 = _helper.GenerateChatData(data: "Test Message", senderID: 1);
+            msg1.Event += 6;
+            ReceiveChatData receivedMsg = ChatServer.Receive(msg1);
+            Assert.IsNull(receivedMsg);
+        }
+
+        [TestMethod]
         public void Receive_UpdatingMessageDoesntExist_ReturnsNull()
         {
             Setup();

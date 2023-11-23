@@ -280,6 +280,29 @@ namespace MessengerApp.ViewModels
 
                         OnPropertyChanged("Edited/Deleted"); // Raise PropertChangedEvent
                     }
+                    else if (contentData.Event == MessengerContent.Enums.MessageEvent.Star)
+                    {
+                        Trace.WriteLine("[ChatPageViewModel] Starred Message has been received");
+                        ReceivedMsg = new()
+                        {
+                            MessageID = contentData.MessageID,
+                            MessageType = contentData.Type == MessageType.Chat,
+                            MsgData = contentData.Data,
+                            Time = contentData.SentTime.ToString("hh:mm tt"),
+                            Sender = senderName,
+                            isCurrentUser = UserId == contentData.SenderID,
+                            ReplyMessage = contentData.ReplyMessageID == -1 ? null : Messages[contentData.ReplyMessageID],
+                        };
+                        Messages[contentData.MessageID] = ReceivedMsg.MsgData;
+                        if(contentData.Starred)
+                        {
+                            OnPropertyChanged("Starred"); // Raise PropertChangedEvent
+                        }
+                        else
+                        {
+                            OnPropertyChanged("NotStarred"); // Raise PropertChangedEvent
+                        }
+                    }
                 }
             }),
             contentData);

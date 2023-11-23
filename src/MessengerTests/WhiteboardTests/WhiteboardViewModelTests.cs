@@ -14,7 +14,7 @@ using System.Reflection.PortableExecutable;
 using MessengerWhiteboard.Interfaces;
 using Moq;
 
-namespace MessengerTests
+namespace MessengerTests.WhiteboardTests
 {
     [TestClass]
     public class WhiteboardViewModelTests
@@ -23,7 +23,7 @@ namespace MessengerTests
         public void AddShapeTest()
         {
             ViewModel _viewModel = new();
-            
+
             Point start = new(0, 0);
             Point end = new(100, 100);
             ShapeItem s = _viewModel.CreateShape("Rectangle", start, end, Brushes.Yellow, Brushes.Black, 1, "tempShape");
@@ -93,7 +93,7 @@ namespace MessengerTests
         public void ChangeToolTest()
         {
             ViewModel _viewModel = new();
-            
+
             string newTool = "Rectangle";
 
             _viewModel.ChangeTool(newTool);
@@ -185,7 +185,7 @@ namespace MessengerTests
             // Assert
             Assert.AreEqual(userId.ToString(), _viewModel._userID);
             Assert.IsFalse(_viewModel.isServer);
-            Assert.IsInstanceOfType(_viewModel.machine, typeof(ClientState)); 
+            Assert.IsInstanceOfType(_viewModel.machine, typeof(ClientState));
         }
 
         [TestMethod]
@@ -201,7 +201,7 @@ namespace MessengerTests
             // Assert
             Assert.AreEqual(userId.ToString(), _viewModel._userID);
             Assert.IsTrue(_viewModel.isServer);
-            Assert.IsInstanceOfType(_viewModel.machine, typeof(ServerState)); 
+            Assert.IsInstanceOfType(_viewModel.machine, typeof(ServerState));
         }
 
 

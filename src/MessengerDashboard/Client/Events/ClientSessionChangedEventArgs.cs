@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = ClientSessionController.cs
+* Filename    = ClientSessionChangedEventArgs.cs
 *
 * Author      = Shailab Chauhan 
 *
@@ -9,7 +9,7 @@
 * 
 * Project     = MessengerDashboard
 *
-* Description = A class that controls the session for the client.
+* Description = Provides data for the event when the client session changes
 *****************************************************************************/
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 namespace MessengerDashboard.Client.Events
 {
     /// <summary>
-    /// Provides data for the event when the client session changes in the Messenger Dashboard project.
+    /// Provides data for the event when the client session changes.
     /// </summary>
     public class ClientSessionChangedEventArgs : EventArgs
     {

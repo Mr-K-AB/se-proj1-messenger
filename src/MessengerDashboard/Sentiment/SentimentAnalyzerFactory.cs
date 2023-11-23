@@ -1,4 +1,16 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = SentimentAnalyzerFactory.cs
+*
+* Author      = Aradhya Bijalwan
+*
+* Product     = MessengerApp
+* 
+* Project     = MessengerDashboard
+*
+* Description =  Provides a factory for creating and obtaining an instance
+*        
+*****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

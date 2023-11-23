@@ -99,19 +99,13 @@ namespace MessengerScreenshare.Client
                                 _capturedFrameQueue.Enqueue(img);
                             }
                         }
-                        catch (Exception e)
-                        {
-                            // Log an error message if capturing a screenshot fails
+                        catch (Exception e){ // Log an error message if capturing a screenshot fails
                             Trace.WriteLine($"[Screenshare] Could not capture screenshot: {e.Message}");
                         }
                     }
-                    else
-                    {
-                        // Reduce the queue size by dequeuing frames if it exceeds half of the maximum length
-                        while (_capturedFrameQueue.Count > MaxQueueLength / 2)
-                        {
-                            if (_capturedFrameQueue.TryDequeue(out Bitmap? _))
-                            {
+                    else { // Reduce the queue size by dequeuing frames if it exceeds half of the maximum length
+                        while (_capturedFrameQueue.Count > MaxQueueLength / 2) {
+                            if (_capturedFrameQueue.TryDequeue(out Bitmap? _)) {
                                 await Task.Delay(1); // Introduce a small delay to avoid busy waiting
                             }
                         }
@@ -131,9 +125,7 @@ namespace MessengerScreenshare.Client
                 // Attempt to cancel the capture task using the CancellationTokenSource
                 _cancellationTokenSource?.Cancel();
             }
-            catch (Exception e)
-            {
-                // Log an error message if stopping capture encounters an exception
+            catch (Exception e){ // Log an error message if stopping capture encounters an exception
                 Trace.WriteLine(Utils.GetDebugMessage($"Unable to stop capture: {e.Message}", withTimeStamp: true));
             }
 

@@ -7,7 +7,7 @@
 * 
 * Project     = Messenger
 *
-* Description = 
+* Description =  Represents the ScreenshareServer responsible for managing shared client screens and handling communication with clients.
 *****************************************************************************/
 using System;
 using System.Collections.Generic;
@@ -33,20 +33,23 @@ namespace MessengerScreenshare.Server
         private bool _disposedValue;
         private static readonly object s_lockObject = new ();
         private readonly Dictionary<int, SharedClientScreen> _subscribers;
-        private readonly bool _disposed;
+        
         private readonly IDataReceiver _receiver;
-        private readonly ICommunicator _communicator;
+        private readonly ICommunicator? _communicator;
         private static ScreenshareServer? s_instance;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScreenshareServer"/> class.
+        /// </summary>
+        /// <param name="receiver">The data receiver implementation.</param>
+        /// <param name="isDebugging">A flag indicating whether the application is in debugging mode.</param>
         protected ScreenshareServer(IDataReceiver receiver,bool isDebugging)
         {
             if (!isDebugging)
             {
-                // Get an instance of a communicator object.
+                
                 _communicator = CommunicationFactory.GetCommunicator(false);
-
-                // Subscribe to the networking module for packets.
-               _communicator.Subscribe(Utils.ServerIdentifier, this);
+                _communicator.Subscribe(Utils.ServerIdentifier, this);
             }
 
             // Initialize the rest of the fields.
@@ -55,14 +58,21 @@ namespace MessengerScreenshare.Server
             _receiver = receiver;
             Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance of ScreenshareServer", withTimeStamp: true));
         }
+        
+        /// <summary>
+        /// Finalizes an instance of the <see cref="ScreenshareServer"/> class.
+        /// </summary>
         ~ScreenshareServer()
         {
-            // Do not re-create Dispose clean-up code here.
-            // Calling Dispose(disposing: false) is optimal in terms of
-            // readability and maintainability.
             Dispose(disposing: false);
         }
 
+        /// <summary>
+        /// Gets the singleton instance of the ScreenshareServer.
+        /// </summary>
+        /// <param name="receiver">The data receiver implementation.</param>
+        /// <param name="isDebugging">A flag indicating whether the application is in debugging mode.</param>
+        /// <returns>The singleton instance of the ScreenshareServer.</returns>
         public static ScreenshareServer GetInstance(IDataReceiver receiver, bool isDebugging = false)
         {
             Debug.Assert(receiver != null, Utils.GetDebugMessage("receiver is found null"));
@@ -79,33 +89,48 @@ namespace MessengerScreenshare.Server
             return s_instance;
         }
 
+        /// <summary>
+        /// Handles the data received event.
+        /// </summary>
+        /// <param name="packetData">The data received in the packet.</param>
         public void OnDataReceived(string packetData)
         {
             try
             {
                 DataPacket? packet = JsonSerializer.Deserialize<DataPacket>(packetData);
 
-                int clientId = packet.Id;
-                string clientName = packet.Name;
-                ClientDataHeader header = Enum.Parse<ClientDataHeader>(packet.Header);
-                string clientData = packet.Data;
-                Trace.WriteLine(Utils.GetDebugMessage(header.ToString()));
-                switch (header)
+                if (packet != null)
                 {
-                    case ClientDataHeader.Register:
-                        RegisterClient(clientId, clientName);
-                        break;
-                    case ClientDataHeader.Deregister:
-                        DeregisterClient(clientId);
-                        break;
-                    case ClientDataHeader.Image:
-                        PutImage(clientId, clientData);
-                        break;
-                    case ClientDataHeader.Confirmation:
-                        UpdateTimer(clientId);
-                        break;
-                    default:
-                        throw new Exception($"Unknown header {packet.Header}");
+                    int clientId = packet.Id;
+                    string clientName = packet.Name;
+                    ClientDataHeader header = Enum.Parse<ClientDataHeader>(packet.Header);
+                    string clientData = packet.Data;
+
+
+                        if (header == ClientDataHeader.Register)
+                        {
+                            RegisterClient(clientId, clientName);
+                        }
+                        else if (header == ClientDataHeader.Deregister)
+                        {
+                            DeregisterClient(clientId);
+                        }
+                        else if (header == ClientDataHeader.Image)
+                        {
+                            PutImage(clientId, clientData);
+                        }
+                        else if (header == ClientDataHeader.Confirmation)
+                        {
+                            UpdateTimer(clientId);
+                        }
+                        else
+                        {
+                            Trace.WriteLine(Utils.GetDebugMessage($"Unknown header {packet.Header}", withTimeStamp: true));
+                        }
+                }
+                else
+                {
+                    Trace.WriteLine(Utils.GetDebugMessage("Failed to deserialize packet.", withTimeStamp: true));
                 }
             }
             catch (Exception e)
@@ -114,10 +139,11 @@ namespace MessengerScreenshare.Server
             }
         }
 
-
-      
-
-
+        /// <summary>
+        /// Registers a client with the specified ID and name.
+        /// </summary>
+        /// <param name="clientId">The ID of the client to register.</param>
+        /// <param name="clientName">The name of the client to register.</param>
         private void RegisterClient(int clientId, string clientName)
         {
             Debug.Assert(_subscribers != null, Utils.GetDebugMessage("_subscribers is found null"));
@@ -137,6 +163,10 @@ namespace MessengerScreenshare.Server
             Trace.WriteLine(Utils.GetDebugMessage($"Successfully registered the client - Id: {clientId}, Name: {clientName}", withTimeStamp: true));
         }
 
+        /// <summary>
+        /// Deregisters a client with the specified ID.
+        /// </summary>
+        /// <param name="clientId">The ID of the client to deregister.</param>
         private void DeregisterClient(int clientId)
         {
 
@@ -173,6 +203,12 @@ namespace MessengerScreenshare.Server
                 }
             }
         }
+
+        /// <summary>
+        /// checks if  client is present or not.if present sends the image data to SharedClientScreen.
+        /// </summary>
+        /// <param name="clientId">The ID of the client.</param>
+        /// <param name="data">The image data received from the client.</param>
         private void PutImage(int clientId, string data)
         {
             lock (_subscribers)
@@ -195,6 +231,13 @@ namespace MessengerScreenshare.Server
                 }
             }
         }
+
+        /// <summary>
+        /// Broadcasts a message to multiple clients present in clientIds list.
+        /// </summary>
+        /// <param name="clientIds">The IDs of the clients to broadcast to.</param>
+        /// <param name="headerVal">The header value for the broadcast.</param>
+        /// <param name="numRowsColumns">The number of rows and columns in the broadcast.</param>
         public void BroadcastClients(List<int> clientIds, string headerVal, (int Rows, int Cols) numRowsColumns)
         {
             if (_communicator == null)
@@ -232,6 +275,10 @@ namespace MessengerScreenshare.Server
             }
         }
 
+        /// <summary>
+        /// Updates the timer for a specific client and broadcasts the confirmation packet to client.
+        /// </summary>
+        /// <param name="clientId">The ID of the client.</param>
         private void UpdateTimer(int clientId)
         {
             lock (_subscribers)
@@ -252,17 +299,22 @@ namespace MessengerScreenshare.Server
                 }
                 else
                 {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Client with id {clientId} is not present in subscribers list", withTimeStamp: true));
+                    Trace.WriteLine(Utils.GetDebugMessage($"Client with id {clientId} is not there in the subscribers list", withTimeStamp: true));
                 }
             }
         }
 
-
+        /// <summary>
+        /// Handles the timeout event for a client, If timeout occurs it deregister the client.
+        /// </summary>
+        /// <param name="source">The event source.</param>
+        /// <param name="clientId">The ID of the client.</param>
+        /// <param name="e">The ElapsedEventArgs.</param>
         public void OnTimeOut(object? source, int clientId, ElapsedEventArgs e)
         {
 
             DeregisterClient(clientId);
-            Trace.WriteLine(Utils.GetDebugMessage($"Timeout occurred for the client with id: {clientId}", withTimeStamp: true));
+            Trace.WriteLine(Utils.GetDebugMessage($"Timeout occurred for the client with id: {clientId} and deregistered", withTimeStamp: true));
         }
 
         protected virtual void Dispose(bool disposing)

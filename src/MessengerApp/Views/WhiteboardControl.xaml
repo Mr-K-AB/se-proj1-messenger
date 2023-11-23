@@ -58,9 +58,9 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Border Height="30" Width="30"
-                        Cursor="Hand"
-						Background="{TemplateBinding Background}" 
-						Margin="5">
+                            Cursor="Hand"
+						    Background="{TemplateBinding Background}" 
+						    Margin="5">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
@@ -202,12 +202,13 @@
                                     <Image Source="../Images/save.png" Style="{StaticResource ImageStyle}" />
                                 </ToggleButton>
                                 <Popup IsOpen="{Binding IsChecked, ElementName=Save}" 
-                                PlacementTarget="{Binding ElementName=Save}"
-                                Placement="Bottom"
-                                StaysOpen="False" AllowsTransparency="True" 
-                                PopupAnimation="Fade"
-                                HorizontalOffset="0"
-                                VerticalOffset="5">
+                                    PlacementTarget="{Binding ElementName=Save}"
+                                    x:Name="SaveSessionPopup"
+                                    Placement="Bottom"
+                                    StaysOpen="False" AllowsTransparency="True" 
+                                    PopupAnimation="Fade"
+                                    HorizontalOffset="0"
+                                    VerticalOffset="5">
                                     <Border Background="Gray" Height="auto" Width="auto" Padding="5">
                                         <StackPanel Orientation="Vertical">
                                             <TextBox x:Name="SaveSessionText" Width="150" Height="30" FontSize="16"/>

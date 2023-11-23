@@ -400,6 +400,7 @@ namespace MessengerApp.Views
         /// <param name="e"></param>
         private void SaveMode(object sender, RoutedEventArgs e)
         {
+            SaveSessionPopup.IsOpen ^= true;
             _viewModel.SaveSnapshot(SaveSessionText.Text);
         }
 

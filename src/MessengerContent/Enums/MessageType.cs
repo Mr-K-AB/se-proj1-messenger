@@ -1,7 +1,7 @@
 ﻿/******************************************************************************
  * Filename    = MessageType.cs
  *
- * Author      = Manikanta
+ * Author      = Likhitha
  *
  * Product     = Messanger
  * 

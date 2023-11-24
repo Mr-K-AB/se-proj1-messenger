@@ -1,4 +1,18 @@
-﻿using MessengerViewModels.Stores;
+﻿/******************************************************************************
+* Filename    = HomeViewModel.cs
+*
+* Author      = Vinay Ingle
+*
+* Roll Number = 112001050
+*
+* Product     = Messenger 
+* 
+* Project     = ViewModels
+*
+* Description = ViewModel for Home View after authentication.
+* *****************************************************************************/
+
+using MessengerViewModels.Stores;
 using MessengerViewModels.Commands;
 using System;
 using System.Collections.Generic;

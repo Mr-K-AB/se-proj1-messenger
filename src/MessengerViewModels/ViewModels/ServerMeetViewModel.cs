@@ -1,4 +1,18 @@
-﻿using MessengerViewModels.Stores;
+﻿/******************************************************************************
+* Filename    = ServerMeetViewModel.cs
+*
+* Author      = Vinay Ingle
+*
+* Roll Number = 112001050
+*
+* Product     = Messenger 
+* 
+* Project     = ViewModels
+*
+* Description = ViewModel for Server Meet View.
+* *****************************************************************************/
+
+using MessengerViewModels.Stores;
 using MessengerViewModels.Commands;
 using System;
 using System.Collections.Generic;

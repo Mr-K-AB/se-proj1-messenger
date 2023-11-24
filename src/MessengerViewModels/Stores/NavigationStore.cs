@@ -1,4 +1,18 @@
-﻿using MessengerViewModels.ViewModels;
+﻿/******************************************************************************
+* Filename    = NavigateStore.cs
+*
+* Author      = Vinay Ingle
+*
+* Roll Number = 112001050
+*
+* Product     = Messenger 
+* 
+* Project     = ViewModels
+*
+* Description = Store to enable switching the viewmodels and subviewmodels.
+* *****************************************************************************/
+
+using MessengerViewModels.ViewModels;
 using MessengerDashboard;
 using MessengerDashboard.UI.ViewModels;
 using System;

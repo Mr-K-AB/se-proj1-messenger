@@ -1,4 +1,17 @@
-﻿    using System;
+﻿/******************************************************************************
+* Filename    = ClientMeetingView.xaml.cs
+*
+* Author      = Geddam Gowtham
+*
+* Roll Number = 112001011
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerApp
+*
+* Description = Interaction logic for Meeting View for client .
+* *****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +25,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MessengerDashboard;
+using MessengerDashboard.Client;
+using MessengerDashboard.Client.Events;
 
 namespace MessengerApp.Views
 {
@@ -20,9 +36,42 @@ namespace MessengerApp.Views
     /// </summary>
     public partial class ClientMeetingView : UserControl
     {
+        private IClientSessionController _dashboard => DashboardFactory.GetClientSessionController();
+
         public ClientMeetingView()
         {
             InitializeComponent();
+            ChatBubble chatBubbleControl = new();
+            OverlayContent.Content = chatBubbleControl;
+            if (_dashboard.SessionInfo.SessionMode == SessionMode.Exam)
+            {
+                OverlayContent.Visibility = Visibility.Collapsed;
+            }
+            _dashboard.SessionChanged += HandleSessionViewChange;
+
+        }
+
+        private void HandleSessionViewChange(object? sender, ClientSessionChangedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (e.Session.SessionMode == SessionMode.Exam)
+                {
+                    ChatPanel.Width = new GridLength(0);
+
+                    OverlayPanel.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    OverlayPanel.Visibility = Visibility.Visible;
+                    OverlayContent.Visibility = Visibility.Visible;
+                }
+
+            });
+
+
+
+
         }
 
         //private void Dashboard_Click(object sender, RoutedEventArgs e)
@@ -45,9 +94,22 @@ namespace MessengerApp.Views
 
         private void Chat_Click(object sender, RoutedEventArgs e)
         {
-            ChatBubble chatBubbleControl = new();
-            OverlayContent.Content = chatBubbleControl;
-            OverlayPanel.Visibility = OverlayPanel.IsVisible ? Visibility.Collapsed : Visibility.Visible;
+            if (_dashboard.SessionInfo.SessionMode == SessionMode.Lab)
+            {
+                OverlayPanel.Visibility = Visibility.Visible;
+                OverlayContent.Visibility = Visibility.Visible;
+                if (ChatPanel.Width == new GridLength(0))
+                {
+                    ChatPanel.Width = new GridLength(300);
+                }
+                else
+                {
+                    ChatPanel.Width = new GridLength(0);
+                }
+            }
+            //OverlayPanel.Visibility = OverlayPanel.IsVisible ? Visibility.Collapsed : Visibility.Visible;
         }
+
+
     }
 }

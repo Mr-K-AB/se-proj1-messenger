@@ -1,4 +1,18 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = NavigateClientMeetCommand.cs
+*
+* Author      = Vinay Ingle
+*
+* Roll Number = 112001050
+*
+* Product     = Messenger 
+* 
+* Project     = ViewModels
+*
+* Description = Command to switch SubViewModel to Server Whiteboard.
+* *****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

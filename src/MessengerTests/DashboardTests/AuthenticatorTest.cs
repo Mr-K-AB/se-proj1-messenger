@@ -33,10 +33,24 @@ namespace MessengerTests.DashboardTests
             Task<AuthenticationResult> task = Authenticator.Authenticate();
             task.Wait();
             AuthenticationResult result = task.Result;
+            Assert.IsNotNull(result);
             if (!result.IsAuthenticated)
             {
                 Assert.Fail("Authentication Failed");
             }
+            Assert.IsNotNull(result.UserName);
+            Assert.IsNotNull(result.UserImage);
+            Assert.IsNotNull(result.UserEmail);
+        }
+
+        [TestMethod]
+        public void AuthenticationFailTest()
+        {
+            Task<AuthenticationResult> task = Authenticator.Authenticate(0);
+            task.Wait();
+            AuthenticationResult result = task.Result;
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.IsAuthenticated);
         }
     }
 }

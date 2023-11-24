@@ -1,4 +1,19 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = CommandBase.cs
+*
+* Author      = Vinay Ingle
+*
+* Roll Number = 112001050
+*
+* Product     = Messenger
+* 
+* Project     = ViewModels
+*
+* Description = Base Class for commands.
+* *****************************************************************************/
+
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Input;

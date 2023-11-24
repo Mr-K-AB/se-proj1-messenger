@@ -1,4 +1,17 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = OldSessionsView.xaml.cs
+*
+* Author      = Geddam Gowtham
+*
+* Roll Number = 112001011
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerApp
+*
+* Description = Interaction Loigc for View for Old sessions.
+* *****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

@@ -26,9 +26,6 @@ namespace MessengerDashboard.UI.DataModels
     /// </summary>
     public class SessionEntry
     {
-        private int _v1;
-        private int _v2;
-
         /// <summary>
         /// Gets or sets the name of the session.
         /// </summary>
@@ -48,17 +45,6 @@ namespace MessengerDashboard.UI.DataModels
         {
             SessionName = sessionName;
             ExpandCommand = expandCommand;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SessionEntry"/> class with the specified values.
-        /// </summary>
-        /// <param name="v1">The value of the first parameter.</param>
-        /// <param name="v2">The value of the second parameter.</param>
-        public SessionEntry(int v1, int v2)
-        {
-            _v1 = v1;
-            _v2 = v2;
         }
     }
 }

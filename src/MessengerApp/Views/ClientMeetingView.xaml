@@ -1,4 +1,20 @@
-﻿<UserControl x:Class="MessengerApp.Views.ClientMeetingView"
+﻿<!--
+ /******************************************************************************
+* Filename    = ClientMeetingView.xaml
+*
+* Author      = Geddam Gowtham
+*
+* Roll number = 112001011
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerApp
+*
+* Description = Meeting View for client that shows Dashboard, Whiteboard, Screenshare and Chat. 
+*****************************************************************************/
+-->
+
+<UserControl x:Class="MessengerApp.Views.ClientMeetingView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -23,24 +39,49 @@
                 <views:ScreenshareClientControl/>
             </DataTemplate>
         </Grid.Resources>
-        <Menu>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="9*"/>
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Column="0">
+            <Menu.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <DockPanel />
+                </ItemsPanelTemplate>
+            </Menu.ItemsPanel>
             <MenuItem Header="Dashboard" Command="{Binding NavigateClientDashboardCommand}"/>
             <MenuItem Header="Whiteboard" Command="{Binding NavigateServerWhiteboardCommand}"/>
             <MenuItem Header="Screenshare" Command="{Binding NavigateClientScreenshareCommand}"/>
             <!--MenuItem Header="Participants"/-->
-            <MenuItem Header="Chat" Click="Chat_Click"/>
+            <MenuItem Header="Chat" Click="Chat_Click" HorizontalAlignment="Left" Margin="20 0"/>
             <!--<TextBlock Text="{Binding IP}"></TextBlock>
             <TextBlock Text="{Binding Port}"></TextBlock>-->
         </Menu>
-        <Grid x:Name="OverlayPanel" Panel.ZIndex="1000" Visibility="Collapsed" HorizontalAlignment="Right" Width="300" Background="AliceBlue">
-            <ContentControl x:Name="OverlayContent"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.6*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition x:Name="ChatPanel" Width="0"/>
+            </Grid.ColumnDefinitions>
+
+            <ContentControl Content="{Binding SubViewModel}" Grid.Column ="0" Grid.Row="1" />
+
+            <GridSplitter Width="10" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"/>
+            <Grid x:Name="OverlayPanel" Grid.Column="2" Grid.Row="1" Background="AliceBlue">
+                <ContentControl x:Name="OverlayContent" Grid.Row="1" Grid.Column="2"  Width="300"   />
+            </Grid>
         </Grid>
 
+
+
         <!-- Profile Information -->
-        <Button Content="Leave Meeting" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0"/>
+        <!--<Button Content="Home" HorizontalAlignment="Right" Command="{Binding NavigateHomeCommand}" VerticalAlignment="Top" Margin="0,5,10,0"/>-->
 
         <!-- Content Control for Dynamic Content -->
-        <ContentControl Content="{Binding SubViewModel}" Margin="0,25,0,0"/>
+
 
     </Grid>
 </UserControl>

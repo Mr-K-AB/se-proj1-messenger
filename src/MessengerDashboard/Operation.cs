@@ -1,4 +1,19 @@
-﻿namespace MessengerDashboard
+﻿/******************************************************************************
+* Filename    = Operation.cs
+*
+* Author      = Pratham Ravindra Nagpure 
+*
+* Roll number = 112001054
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerDashboard
+*
+* Description = Enum for the operations between client and server.
+*****************************************************************************/
+
+
+namespace MessengerDashboard
 {
     public enum Operation
     {

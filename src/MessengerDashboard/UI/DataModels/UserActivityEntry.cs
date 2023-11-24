@@ -53,7 +53,7 @@ namespace MessengerDashboard.UI.DataModels
         /// <summary>
         /// Gets the exit time of the user activity.
         /// </summary>
-        public DateTime ExitTime { get; }
+        public DateTime? ExitTime { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserActivityEntry"/> class.
@@ -64,7 +64,7 @@ namespace MessengerDashboard.UI.DataModels
         /// <param name="userEmail">The email of the user.</param>
         /// <param name="entryTime">The entry time of the user activity.</param>
         /// <param name="exitTime">The exit time of the user activity.</param>
-        public UserActivityEntry(int userId, int userChatCount, string? userName, string? userEmail, DateTime entryTime, DateTime exitTime)
+        public UserActivityEntry(int userId, int userChatCount, string? userName, string? userEmail, DateTime entryTime, DateTime? exitTime)
         {
             UserId = userId;
             UserChatCount = userChatCount;

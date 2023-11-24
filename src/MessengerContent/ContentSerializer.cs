@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = ContentServer.cs
+* Filename    = ContentSerializer.cs
 *
 * Author      = Likhitha
 *
@@ -7,7 +7,7 @@
 * 
 * Project     = MessengerContent
 *
-* Description = serealizer for message serealizing
+* Description = serealizer for messages
 *****************************************************************************/
 using System;
 using System.Diagnostics;

@@ -1,4 +1,18 @@
-﻿using MessengerViewModels.Stores;
+﻿/******************************************************************************
+* Filename    = ServerMeetViewModel.cs
+*
+* Author      = Vinay Ingle
+*
+* Roll Number = 112001050
+*
+* Product     = Messenger 
+* 
+* Project     = ViewModels
+*
+* Description = ViewModel for Server Meet View.
+* *****************************************************************************/
+
+using MessengerViewModels.Stores;
 using MessengerViewModels.Commands;
 using System;
 using System.Collections.Generic;
@@ -57,7 +71,7 @@ namespace MessengerViewModels.ViewModels
             NavigateServerDashboardCommand = new NavigateServerDashboardCommand(navigationStore, _dashboardViewModel);
             NavigateServerWhiteboardCommand = new NavigateServerWhiteboardCommand(navigationStore, _whiteboardViewModel);
             NavigateServerScreenshareCommand = new NavigateServerScreenshareCommand(navigationStore, _screenshareServerViewModel);
-
+            _navigationStore.SubViewModel = _dashboardViewModel;
         }
 
         private void NavigationStore_SubViewModelChanged()

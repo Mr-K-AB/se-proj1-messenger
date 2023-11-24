@@ -1,9 +1,28 @@
-﻿using System.Windows;
+﻿/***************************
+* Filename    = ShapeItem.cs
+*
+* Author      = Sanjh Maheshwari
+*
+* Product     = Messenger
+* 
+* Project     = White-Board
+*
+* Description = This file defines the ShapeItem class, which is fundamental to Whiteboard. The 
+                class represents a drawable shape with various properties such as type, geometry,
+                boundary, color, and appearance attributes like fill and stroke. It provides 
+                methods to edit, move, resize, and clone shapes,catering to diverse shapes like 
+                rectangles, ellipses, curves, and lines. 
+***************************/
+
+using System.Windows;
 using System.Windows.Media;
 
 
 namespace MessengerWhiteboard.Models
 {
+    /// <summary>
+    /// Represents a drawable shape item with various properties like type, geometry, and appearance.
+    /// </summary>
     public class ShapeItem
     {
         public string ShapeType { get; set; }
@@ -36,6 +55,11 @@ namespace MessengerWhiteboard.Models
         //    ZIndex = zIndex;
         //}
 
+        /// <summary>
+        /// Edits the shape based on two points. The behavior depends on the shape type.
+        /// </summary>
+        /// <param name="a">The starting point (topleft) for editing the shape.</param>
+        /// <param name="b">The ending point (bottomright) for editing the shape.</param>
         public void EditShape(Point a, Point b)
         {
             //Debug.WriteLine(ShapeType);
@@ -66,20 +90,16 @@ namespace MessengerWhiteboard.Models
             }
         }
 
+        /// <summary>
+        /// Moves the shape to a new location defined by two points.
+        /// </summary>
+        /// <param name="a">The new top-left point of the shape's bounding box.</param>
+        /// <param name="b">The new bottom-right point of the shape's bounding box.</param>
+        /// <remarks>
+        /// This method is applicable for Rectangle and Ellipse shapes, updating their position.
+        /// </remarks>
         public void MoveShape(Point a, Point b)
         {
-            //Rect boundingBox = new(a, b);
-            //double dX = boundingBox.X - boundary.X;
-            //double dY = boundingBox.Y - boundary.Y;
-            //if (Geometry.Transform is TranslateTransform)
-            //{
-            //    dX = (Geometry.Transform as TranslateTransform).X + boundingBox.X - boundary.X;
-            //    dY = (Geometry.Transform as TranslateTransform).Y + boundingBox.Y - boundary.Y;
-            //}
-            //Geometry.Transform = new TranslateTransform(dX, dY);
-            //// Geometry.Transform.SetValue(TranslateTransform.XProperty, dX);
-            //// Geometry.Transform.SetValue(TranslateTransform.YProperty, dY);
-            //boundary = boundingBox;
 
             if (ShapeType == "Rectangle" || ShapeType == "Ellipse")
             {
@@ -91,10 +111,6 @@ namespace MessengerWhiteboard.Models
                 }
                 else if (ShapeType == "Ellipse")
                 {
-                    //Geometry geometry = new EllipseGeometry(newBoundingBox);
-                    //Geometry = geometry;
-                    //boundary = newBoundingBox;
-
                     Point center = new(newBoundingBox.X + newBoundingBox.Width / 2, newBoundingBox.Y + newBoundingBox.Height / 2);
                     double radiusX = newBoundingBox.Width / 2;
                     double radiusY = newBoundingBox.Height / 2;
@@ -108,6 +124,11 @@ namespace MessengerWhiteboard.Models
             }
         }
 
+        /// <summary>
+        /// Resizes the shape based on new top-left and bottom-right points.
+        /// </summary>
+        /// <param name="newTopLeft">The new top-left point of the shape's bounding box.</param>
+        /// <param name="newBottomRight">The new bottom-right point of the shape's bounding box.</param>
         public void ResizeShape(Point newTopLeft, Point newBottomRight)
         {
             if (ShapeType == "Rectangle" || ShapeType == "Ellipse")
@@ -120,10 +141,6 @@ namespace MessengerWhiteboard.Models
                 }
                 else if (ShapeType == "Ellipse")
                 {
-                    //Geometry geometry = new EllipseGeometry(newBoundingBox);
-                    //Geometry = geometry;
-                    //boundary = newBoundingBox;
-
                     Point center = new(newBoundingBox.X + newBoundingBox.Width / 2, newBoundingBox.Y + newBoundingBox.Height / 2);
                     double radiusX = newBoundingBox.Width / 2;
                     double radiusY = newBoundingBox.Height / 2;
@@ -137,11 +154,20 @@ namespace MessengerWhiteboard.Models
             }
         }
 
+        /// <summary>
+        /// Provides a string representation of the shape item.
+        /// </summary>
+        /// <returns>A string that represents the shape type.</returns>
         public override string ToString()
         {
             return $"{ShapeType}";
         }
 
+        /// <summary>
+        /// Determines whether the specified object is equal to the current shape item.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current shape item based on Guid.</param>
+        /// <returns>true if the specified object is equal to the current shape item; otherwise, false.</returns>
         public override bool Equals(object? obj)
         {
             if (obj == null)
@@ -156,6 +182,10 @@ namespace MessengerWhiteboard.Models
             return false;
         }
 
+        /// <summary>
+        /// Creates a new ShapeItem that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
         public ShapeItem Clone()
         {
             ShapeItem newShape = new()

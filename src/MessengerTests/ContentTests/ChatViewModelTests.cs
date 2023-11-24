@@ -316,6 +316,69 @@ namespace MessengerTests.ContentTests
             Assert.IsTrue(_viewModel.ReceivedMsg.MessageType);
         }
 
+        [TestMethod]
+        public void TestOnStarMessageReceived()
+        {
+            _viewModel = new ChatPageViewModel();
+
+            var session = new SessionInfo();
+            // Add two users into the session
+            var user1 = new UserInfo("surya", 1);
+            var user2 = new UserInfo("M V Nagasurya", 2);
+            session.Users.Add(user1);
+            session.Users.Add(user2);
+
+            // Create a received chat message
+            ReceiveChatData receivedChat = new()
+            {
+                Type = MessengerContent.MessageType.Chat,
+                Event = MessageEvent.Star,
+                Data = "Yo! Surya",
+                MessageID = 1,
+                ReplyMessageID = -1,
+                SenderID = 1,
+                SenderName = "surya",
+                SentTime = DateTime.Now,
+                Starred = false
+            };
+
+            _viewModel.OnUserSessionChange(session);
+
+            UiDispatcherHelper.ProcessUiEvents();
+            _viewModel.OnMessageReceived(receivedChat);
+            UiDispatcherHelper.ProcessUiEvents();
+
+            Assert.AreEqual("surya", _viewModel.ReceivedMsg.Sender);
+            Assert.AreEqual(1, _viewModel.ReceivedMsg.MessageID);
+            Assert.AreEqual("Yo! Surya", _viewModel.ReceivedMsg.MsgData);
+
+            // star the message with MessageID = 1
+            ReceiveChatData starredChat = new()
+            {
+                Type = MessengerContent.MessageType.Chat,
+                Event = MessageEvent.Star,
+                Data = "Message",
+                MessageID = 1,
+                ReplyMessageID = -1,
+                SenderID = 1,
+                SenderName = "surya",
+                SentTime = DateTime.Now,
+                Starred = true
+            };
+
+            UiDispatcherHelper.ProcessUiEvents();
+            // process the starred message
+            _viewModel.OnMessageReceived(starredChat);
+            UiDispatcherHelper.ProcessUiEvents();
+
+            // Validation of the deleted message
+            Assert.AreEqual("surya", _viewModel.ReceivedMsg.Sender);
+            Assert.AreEqual(1, _viewModel.ReceivedMsg.MessageID);
+            Assert.AreEqual("Message", _viewModel.ReceivedMsg.MsgData);
+            Assert.AreEqual(null, _viewModel.ReceivedMsg.ReplyMessage);
+            Assert.IsTrue(_viewModel.ReceivedMsg.MessageType);
+        }
+
         /// <summary>
         /// Validating that the propertyChangedEvent is triggered whenever a property is changed
         /// </summary>

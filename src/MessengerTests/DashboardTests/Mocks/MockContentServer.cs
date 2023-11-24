@@ -1,4 +1,18 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = MockContentServer.cs
+*
+* Author      = Pratham Ravindra Nagpure 
+*
+* Roll number = 112001054
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerTests
+*
+* Description = A class for mocking the content server.
+*****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,10 +31,6 @@ namespace MessengerTests.DashboardTests.Mocks
         public List<ChatThread> GetAllMessages()
         {
             return _chatThreads;
-        }
-
-        public void ServerSubscribe(IMessageListener subscriber)
-        {
         }
 
         public void SetChats(List<ChatThread> chatThreads)

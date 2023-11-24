@@ -1,4 +1,19 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = MockCommunicator.cs
+*
+* Author      = Pratham Ravindra Nagpure 
+*
+* Roll number = 112001054
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerTests
+*
+* Description = A class for mocking the networking communicator.
+*****************************************************************************/
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;

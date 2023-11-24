@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = RestClient.cs
+* Filename    = CloudTests.cs
 *
 * Author      = Shubh Pareek
 *
@@ -7,9 +7,9 @@
 *
 * Product     = Messenger 
 * 
-* Project     = MessengerCloud
+* Project     = MessengerTests
 *
-* Description =  tests for messenger cloud .
+* Description =  Tests for messenger cloud .
 * *****************************************************************************/
 using System;
 using System.Collections.Generic;

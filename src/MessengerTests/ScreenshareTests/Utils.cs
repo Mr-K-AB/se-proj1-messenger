@@ -1,8 +1,15 @@
-﻿/// <author>Likhith Reddy</author>
-/// <summary>
-/// Defines the static "Utils" class which defines
-/// general utilities required for unit tests.
-/// </summary>
+﻿/*************************************************************
+* Filename    = Utils.cs
+*
+* Author      = Likhith Reddy
+*
+* Product     = ScreenShare
+* 
+* Project     = Messenger
+*
+* Description = Defines the static "Utils" class which defines
+*               general utilities required for unit tests.
+**************************************************************/
 
 using System.Drawing;
 using System.Drawing.Imaging;

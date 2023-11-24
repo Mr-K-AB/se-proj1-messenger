@@ -1,4 +1,17 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = HomeView.xaml.cs
+*
+* Author      = Geddam Gowtham
+*
+* Roll Number = 112001011
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerApp
+*
+* Description = Interaction logic for View after authentication - HomeView.
+* *****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

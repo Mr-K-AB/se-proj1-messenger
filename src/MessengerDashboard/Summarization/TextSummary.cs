@@ -1,4 +1,19 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = TextSummary.cs
+*
+* Author      = Pratham Ravindra Nagpure
+*
+* Roll number = 112001054
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerDashboard
+*
+* Description = This file contains a class for storing the text summary.
+*****************************************************************************/
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

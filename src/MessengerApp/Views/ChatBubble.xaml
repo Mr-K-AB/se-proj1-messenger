@@ -349,7 +349,8 @@
 
                             <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left">
 
-                                <!--edit button--><!--
+                                <!--edit button-->
+                                <!--
                                 <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
                                         Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
                                     <Image Source="../Images/pen.png" />
@@ -455,7 +456,8 @@
 
                             <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left">
 
-                                <!--edit button--><!--
+                                <!--edit button-->
+                                <!--
                                 <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
             Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
                                     <Image Source="../Images/pen.png" />
@@ -467,7 +469,7 @@
                                 </Button>
                             </StackPanel>
                         </Grid>
-                        
+
                     </Grid>
                 </Grid>
             </Border>
@@ -667,12 +669,13 @@
                                 <ColumnDefinition Width="70" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Opacity="0.8" Foreground="#FFFFFF"
-                                Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
-                                Grid.Row="0" Padding="8" Grid.Column="0" />
-                            <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="Sent"
-                                x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
-                                Grid.Column="2" HorizontalAlignment="Right" />
+                            <!--time-->
+                            <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}"
+                               x:Name="timeText" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
+                               Grid.Column="0" />
+                            <!--star button-->
+                            <ToggleButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                            Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
                         </Grid>
                     </Grid>
                 </Grid>
@@ -755,9 +758,9 @@
                             <TextBlock Opacity="0.8" Foreground="#FFFFFF"
                             Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
                             Grid.Row="0" Padding="8" Grid.Column="0" />
-                            <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="Sent"
-                            x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
-                            Grid.Column="2" HorizontalAlignment="Right" />
+                            <ToggleButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
+                                Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+                            
                         </Grid>
                     </Grid>
                 </Grid>

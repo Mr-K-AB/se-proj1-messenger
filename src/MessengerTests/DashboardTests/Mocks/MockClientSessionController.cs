@@ -1,4 +1,19 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = MockClientSessionController.cs
+*
+* Author      = Pratham Ravindra Nagpure 
+*
+* Roll number = 112001054
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerTests
+*
+* Description = A class for mocking the client session controller.
+*****************************************************************************/
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.Xml;
@@ -28,7 +43,7 @@ namespace MessengerTests.DashboardTests.Mocks
         public event EventHandler<RefreshedEventArgs> Refreshed;
         public event EventHandler<ClientSessionChangedEventArgs> SessionChanged;
         public event EventHandler<SessionExitedEventArgs> SessionExited;
-
+        public event EventHandler<SessionModeChangedEventArgs> SessionModeChanged;
 
         public bool ConnectToServer(string serverIpAddress, int serverPort, string clientUsername, string clientEmail, string clientPhotoUrl)
         {

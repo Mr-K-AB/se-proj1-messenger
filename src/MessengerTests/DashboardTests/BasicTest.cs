@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = RestClient.cs
+* Filename    = BasicTest.cs
 *
 * Author      = Shubh Pareek
 *
@@ -22,7 +22,7 @@ using MessengerDashboard;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 
-namespace MessengerTests.DashboardTests.DashboardTests
+namespace MessengerTests.DashboardTests
 {
     /// <summary>
     /// Basic tests for small methods .

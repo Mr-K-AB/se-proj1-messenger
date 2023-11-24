@@ -40,6 +40,11 @@ namespace MessengerDashboard.Client
         event EventHandler<SessionExitedEventArgs> SessionExited;
 
         /// <summary>
+        /// Event triggered when the client session mode changes
+        /// </summary>
+        event EventHandler<SessionModeChangedEventArgs> SessionModeChanged;
+
+        /// <summary>
         /// Gets the analysis results related to the client session.
         /// </summary>
         Analysis? AnalysisResults { get; }

@@ -3,6 +3,8 @@
 *
 * Author      = Aradhya Bijalwan
 *
+* Roll Number = 112001006
+*
 * Product     = MessengerApp
 * 
 * Project     = MessengerDashboard
@@ -151,7 +153,7 @@ namespace MessengerDashboard.Telemetry
             foreach (int userId in _userIdToUserActivityMap.Keys)
             {
                 
-                if (!SessionContainsUserId(sessionData, userId) && _userIdToUserActivityMap[userId].ExitTime != DateTime.MinValue)
+                if (!SessionContainsUserId(sessionData, userId) && _userIdToUserActivityMap[userId].ExitTime == DateTime.MinValue)
                 {
                     _userIdToUserActivityMap[userId].ExitTime = currentTime;
                 }

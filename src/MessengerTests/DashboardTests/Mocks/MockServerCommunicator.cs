@@ -1,4 +1,18 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = MockServerCommunicator.cs
+*
+* Author      = Pratham Ravindra Nagpure 
+*
+* Roll number = 112001054
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerTests
+*
+* Description = A class for mocking the server communicator.
+*****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -34,6 +48,15 @@ namespace MessengerTests.DashboardTests.Mocks
             {
                 INotificationHandler handler = keyValuePair.Value;
                 handler.OnClientJoined(new TcpClient());
+            }
+        }
+
+        public void OnClientLeft(string id)
+        {
+            foreach(KeyValuePair<string, INotificationHandler> keyValuePair in _moduleNameToNotificationHandlerMap)
+            {
+                INotificationHandler handler = keyValuePair.Value;
+                handler.OnClientLeft(id);
             }
         }
 

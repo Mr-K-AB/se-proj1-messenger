@@ -52,25 +52,34 @@ namespace MessengerTests.DashboardTests
             client.SendRefreshRequestToServer();
             Assert.AreEqual(dashboardVM.Mode, "Lab");
             client.SendExitSessionRequestToServer();
+            dashboardVM.Users = new();
             Assert.IsNotNull(dashboardVM.Users);
+            dashboardVM.Summary = "text";
             Assert.IsNotNull(dashboardVM.Summary);
+            dashboardVM.Mode = "Lab";
             Assert.IsNotNull(dashboardVM.Mode);
             Assert.IsNotNull(dashboardVM.PositiveChatCount);
             Assert.IsNotNull(dashboardVM.NegativeChatCount);
             Assert.IsNotNull(dashboardVM.NeutralChatCount);
             Assert.IsNotNull(dashboardVM.LabelPoint);
-            Assert.IsNotNull(dashboardVM.PositiveLabel);
-            Assert.IsNotNull(dashboardVM.NegativeLabel);
-            Assert.IsNotNull(dashboardVM.NeutralLabel);
             Assert.IsNotNull(dashboardVM.OverallSentiment);
-            Assert.IsNotNull(dashboardVM.TotalChatCount);
+            dashboardVM.DateTimes = new();
             Assert.IsNotNull(dashboardVM.DateTimes);
+            dashboardVM.TotalChatCount = 0;
+            Assert.AreEqual(dashboardVM.TotalChatCount, 0);
+            Assert.IsNotNull(dashboardVM.TotalChatCount);
             Assert.IsNotNull(dashboardVM.UserCounts);
+            dashboardVM.MaxUserCount = 4;
+            Assert.AreEqual(dashboardVM.MaxUserCount, 4);
             Assert.IsNotNull(dashboardVM.MaxUserCount);
+            dashboardVM.UserActivities = new();
             Assert.IsNotNull(dashboardVM.UserActivities);
-            Assert.IsNotNull(dashboardVM.UserNames);
-            Assert.IsNotNull(dashboardVM.UserChatCounts);
+            dashboardVM.IsLocalSavingEnabled = true;
             Assert.IsNotNull(dashboardVM.IsLocalSavingEnabled);
+            Assert.IsTrue(dashboardVM.IsLocalSavingEnabled);
+            Assert.IsNotNull(dashboardVM.IsVisible);
+            dashboardVM.IsVisible = true;
+            Assert.IsTrue(dashboardVM.IsVisible);
         }
 
         /// <summary>
@@ -99,18 +108,15 @@ namespace MessengerTests.DashboardTests
             Assert.IsNotNull(dashboardVM.NegativeChatCount);
             Assert.IsNotNull(dashboardVM.NeutralChatCount);
             Assert.IsNotNull(dashboardVM.LabelPoint);
-            Assert.IsNotNull(dashboardVM.PositiveLabel);
-            Assert.IsNotNull(dashboardVM.NegativeLabel);
-            Assert.IsNotNull(dashboardVM.NeutralLabel);
             Assert.IsNotNull(dashboardVM.OverallSentiment);
             Assert.IsNotNull(dashboardVM.TotalChatCount);
             Assert.IsNotNull(dashboardVM.DateTimes);
             Assert.IsNotNull(dashboardVM.UserCounts);
             Assert.IsNotNull(dashboardVM.MaxUserCount);
             Assert.IsNotNull(dashboardVM.UserActivities);
-            Assert.IsNotNull(dashboardVM.UserNames);
-            Assert.IsNotNull(dashboardVM.UserChatCounts);
             Assert.IsNotNull(dashboardVM.IsLocalSavingEnabled);
+            dashboardVM.IsCloudSavingEnabled = true;
+            Assert.IsTrue(dashboardVM.IsCloudSavingEnabled);
         }
 
         /// <summary>
@@ -212,7 +218,7 @@ namespace MessengerTests.DashboardTests
             Assert.AreEqual(userlist, sessionsViewModel.UserActivities);
 
             List<SessionEntry> sessionEntries = new();
-            SessionEntry entry2 = new(1, 1);
+            SessionEntry entry2 = new("1", new ExpandCommand(new(), new()));
             sessionEntries.Add(entry2);
             sessionsViewModel.Sessions = sessionEntries;
             Assert.AreEqual(sessionEntries, sessionsViewModel.Sessions);

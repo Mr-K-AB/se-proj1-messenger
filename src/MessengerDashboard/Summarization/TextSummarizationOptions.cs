@@ -1,4 +1,18 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = TextSummarizationOptions.cs
+*
+* Author      = Pratham Ravindra Nagpure
+*
+* Roll number = 112001054
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerDashboard
+*
+* Description = This file contains options for summarization.
+*****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,11 +28,11 @@ namespace MessengerDashboard.Summarization
         /// <summary>
         /// Gets or sets the maximum number of sentences in the summary.
         /// </summary>
-        public int MaxSummarySentences { get; set; } = 15;
+        public int MaxSummarySentences { get; set; } = 20;
 
         /// <summary>
         /// Gets or sets the maximum percentage of the original text length for the summary.
         /// </summary>
-        public int MaxSummaryPercentage { get; set; } = 10;
+        public int MaxSummaryPercentage { get; set; } = 80;
     }
 }

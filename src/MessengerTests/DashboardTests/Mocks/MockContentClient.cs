@@ -1,4 +1,19 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = MockContentClient.cs
+*
+* Author      = Pratham Ravindra Nagpure 
+*
+* Roll number = 112001054
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerTests
+*
+* Description = A class for mocking the content client.
+*****************************************************************************/
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,15 +26,15 @@ namespace MessengerTests.DashboardTests.Mocks
 {
     internal class MockContentClient : IContentClient
     {
-        public void ClientDelete(int messageID, string ip, int port)
+        public void ClientDelete(int messageID)
         {
         }
 
-        public void ClientDownload(int messageID, string savePath, string ip, int port)
+        public void ClientDownload(int messageID, string savePath)
         {
         }
 
-        public void ClientEdit(int messageID, string newMessage, string ip, int port)
+        public void ClientEdit(int messageID, string newMessage)
         {
         }
 
@@ -28,11 +43,11 @@ namespace MessengerTests.DashboardTests.Mocks
             return new ChatThread();
         }
 
-        public void ClientSendData(SendChatData chatData, string ip, int port)
+        public void ClientSendData(SendChatData chatData)
         {
         }
 
-        public void ClientStar(int messageID, string ip, int port)
+        public void ClientStar(int messageID)
         {
         }
 
@@ -60,7 +75,7 @@ namespace MessengerTests.DashboardTests.Mocks
             return "Name";
         }
 
-        public void SetUser(int id, string name, string ip, int port)
+        public void SetUser(int id, string name)
         {
         }
     }

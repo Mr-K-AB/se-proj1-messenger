@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = RestClient.cs
+* Filename    = Authenticator.cs
 *
 * Author      = Shubh Pareek
 *

@@ -37,6 +37,7 @@ namespace MessengerDashboard.UI.ViewModels
         public DashboardMemberViewModel()
         {
             _client.SessionExited += HandleSessionExited;
+            _client.SessionModeChanged += HandleSessionModeChanged;
         }
 
         /// <summary>
@@ -46,6 +47,19 @@ namespace MessengerDashboard.UI.ViewModels
         public DashboardMemberViewModel(IClientSessionController clientSessionController) : base(clientSessionController)
         {
             _client.SessionExited += HandleSessionExited;
+            _client.SessionModeChanged += HandleSessionModeChanged;
+        }
+
+        private void HandleSessionModeChanged(object? sender, Client.Events.SessionModeChangedEventArgs e)
+        {
+            if (e.SessionMode == SessionMode.Lab)
+            {
+                IsVisible = true;
+            }
+            else
+            {
+                IsVisible = false;
+            }
         }
 
         /// <summary>
@@ -63,6 +77,14 @@ namespace MessengerDashboard.UI.ViewModels
                     SaveSessionToLocalStorage(entity);
                 }
             }
+        }
+
+        protected bool _isVisible = true;
+
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set => SetProperty(ref _isVisible, value);
         }
     }
 }

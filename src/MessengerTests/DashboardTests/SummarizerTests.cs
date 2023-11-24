@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = SentimentAndSummarizerTests.cs
+* Filename    = SummarizerTests.cs
 *
 * Author      = Pratham Ravindra Nagpure 
 *
@@ -9,7 +9,7 @@
 * 
 * Project     = MessengerTests
 *
-* Description = A class to test the sentiment and the summarizer.
+* Description = A class to test the summarizer.
 *****************************************************************************/
 
 using System.Diagnostics;
@@ -21,10 +21,10 @@ using MessengerDashboard.Sentiment;
 namespace MessengerTests.DashboardTests
 {
     [TestClass]
-    public class SentimentAndSummarizerTests
+    public class SummarizerTests
     {
         [TestMethod]
-        public void TextSummarizerFactoryTest()
+        public void TextSummarizerTest()
         {
             ITextSummarizer summarizer = TextSummarizerFactory.GetTextSummarizer();
             if (summarizer is null)
@@ -35,31 +35,35 @@ namespace MessengerTests.DashboardTests
             {
                 TextSummarizationOptions request = new()
                 {
-                    MaxSummaryPercentage = 100
+                    MaxSummaryPercentage = 100,
+                    MaxSummarySentences = 3
                 };
                 TextSummary summary = summarizer.Summarize(new string[] { "America is a country", "I am OK", "India is a country", }, request);
-                if (summary is null || summary.Sentences[2] != "I am OK")
-                {
-                    Assert.Fail();
-                }
+                Assert.IsNotNull(summary);
+                Assert.AreEqual(summary.Sentences[2], "I am OK");
             }
+            Assert.IsNotNull(new TextSummary());
         }
 
         [TestMethod]
-        public void SentimentAnalyzerTest()
+        public void TextSummarizerTest2()
         {
-            ISentimentAnalyzer sentimentAnalyzer = SentimentAnalyzerFactory.GetSentimentAnalyzer();
-            if (sentimentAnalyzer is null)
+            ITextSummarizer summarizer = TextSummarizerFactory.GetTextSummarizer();
+            if (summarizer is null)
             {
                 Assert.Fail();
             }
             else
             {
-                SentimentResult result = sentimentAnalyzer.AnalyzeSentiment(new string[] { "Very good man", "I don't like that", "Never go there" });
-                if (result.PositiveChatCount != 1 || result.NegativeChatCount != 1 || result.NeutralChatCount != 1 || result.OverallSentiment != "Positive")
-                {
-                    Assert.Fail();
-                }
+                TextSummarizationOptions request = new();
+                TextSummary summary = summarizer.Summarize(new string[] { 
+                    "Food is good",
+                    "Food is the most important part of life",
+                    "There are nine balls", 
+                }, request);
+                Assert.IsNotNull(summary);
+                Assert.AreEqual(summary.Sentences[0], "Food is good");
+                Assert.AreEqual(summary.Sentences[1], "Food is the most important part of life");
             }
         }
 

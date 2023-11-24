@@ -384,8 +384,8 @@ namespace MessengerDashboard.Server
                 CalculateSentiment();
                 CalculateTelemetryAnalysis();
                 SendPayloadToClient(Operation.EndSession, userId, SessionInfo, null, _textSummary, _telemetryAnalysis, _sentiment);
-                _communicator.RemoveClient(userId.ToString());
                 BroadcastPayloadToClients(Operation.SessionUpdated, SessionInfo);
+                _communicator.RemoveClient(userId.ToString());
                 Trace.WriteLine("Dashboard Server >>> Removed Client");
             }
         }

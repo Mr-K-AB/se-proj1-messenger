@@ -9,7 +9,7 @@
 * 
 * Project     = MessengerTests
 *
-* Description = A class to test dashboard's integration with other modules.
+* Description = A class to test dashboard using mock objects.
 *****************************************************************************/
 
 using MessengerDashboard.Server;
@@ -20,15 +20,17 @@ using MessengerContent.DataModels;
 
 namespace MessengerTests.DashboardTests
 {
+
     [TestClass]
     public class DashboardMockObjectsIntegrationTests
     {
         ServerSessionController _server;
         ClientSessionController _client1;
         ClientSessionController _client2;
+        int _count = 0;
 
         [TestMethod]
-        public void SessionJoinAndLeaveTest()
+        public void FullSessionTest()
         {
             MockServerCommunicator serverCommunicator = new ();
             MockClientCommunicator clientCommunicator1 = new ();
@@ -111,10 +113,12 @@ namespace MessengerTests.DashboardTests
 
         private void HandleClient1SessionExited(object? sender, MessengerDashboard.Client.Events.SessionExitedEventArgs e)
         {
+            Assert.IsNotNull(e);
         }
 
         private void HandleClient2SessionExited(object? sender, MessengerDashboard.Client.Events.SessionExitedEventArgs e)
         {
+            Assert.IsNotNull(e);
         }
 
         private void HandleClient1SessionModeChanged(object? sender, MessengerDashboard.Client.Events.SessionModeChangedEventArgs e)
@@ -145,16 +149,18 @@ namespace MessengerTests.DashboardTests
 
         private void HandleClient1Refreshed(object? sender, MessengerDashboard.Client.Events.RefreshedEventArgs e)
         {
+            Assert.IsNotNull(e);
         }
 
         private void HandleClient2Refreshed(object? sender, MessengerDashboard.Client.Events.RefreshedEventArgs e)
         {
+            Assert.IsNotNull(e);
         }
 
 
         private void HandleServerSessionUpdated(object? sender, MessengerDashboard.Server.Events.SessionUpdatedEventArgs e)
         {
-
+            Assert.IsNotNull(e);
         }
 
         private bool AreEqualUsers(UserInfo userInfo1, UserInfo userInfo2)
@@ -184,6 +190,47 @@ namespace MessengerTests.DashboardTests
         private bool AreSessionEqual(SessionInfo s1, SessionInfo s2)
         {
            return s1.SessionMode == s2.SessionMode && AreUserListsEqual(s1.Users, s2.Users);
+        }
+
+        [TestMethod]
+        public void EdgeCasesTests()
+        {
+            try
+            {
+                MockServerCommunicator serverCommunicator = new ();
+                MockClientCommunicator clientCommunicator1 = new ();
+                ClientSessionController clientSessionController = new(clientCommunicator1, new MockContentClient(), new MockScreenShareClient());
+                serverCommunicator.AddClient("1", new());
+                serverCommunicator.AddClientCommunicator("Dashboard", clientCommunicator1);
+                _server = new(serverCommunicator, new MockContentServer());
+                clientCommunicator1.SetServer(serverCommunicator);
+                clientCommunicator1.Send("", "Dashboard", null);
+                ClientPayload clientPayload = new(Operation.GiveUserDetails, null);
+                Serializer serializer = new();
+                clientCommunicator1.Send(serializer.Serialize(clientPayload), "Dashboard", null);
+                clientCommunicator1.Send(null, "Dashboard", null);
+                clientCommunicator1.Send("fake", "Dashboard", null);
+                clientPayload = new(Operation.TakeUserDetails, new());
+                clientCommunicator1.Send(serializer.Serialize(clientPayload), "Dashboard", null);
+                clientPayload = new(Operation.TakeUserDetails, new("",1,"",""));
+                clientCommunicator1.Send(serializer.Serialize(clientPayload), "Dashboard", null);
+                clientPayload = new(Operation.RemoveClient, new("a",-1,"a","a"));
+                clientCommunicator1.Send(serializer.Serialize(clientPayload), "Dashboard", null);
+                clientPayload = new(Operation.GiveUserDetails, new("a",1,"a","a"));
+                clientCommunicator1.Send(serializer.Serialize(clientPayload), "Dashboard", null);
+                clientSessionController.SessionExited += ClientSessionController_SessionExited;
+                serverCommunicator.OnClientLeft("1");
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            Assert.AreEqual(_count, 1);
+        }
+
+        private void ClientSessionController_SessionExited(object? sender, MessengerDashboard.Client.Events.SessionExitedEventArgs e)
+        {
+            _count++;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = DashboardIntegrationTests.cs
+* Filename    = SessionTestsWIthCommunicator.cs
 *
 * Author      = Pratham Ravindra Nagpure 
 *

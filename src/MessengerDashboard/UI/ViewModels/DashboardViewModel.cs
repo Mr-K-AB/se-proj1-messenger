@@ -145,33 +145,10 @@ namespace MessengerDashboard.UI.ViewModels
         public ChartValues<int> NeutralChatCount
         {
             get => _neutralChatCount;
-            protected set => SetProperty(ref _negativeChatCount, value);
+            protected set => SetProperty(ref _neutralChatCount, value);
         }
 
         public Func<ChartPoint, string> LabelPoint => chartPoint => string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
-
-        protected string _positiveLabel = "Hello";
-        public string PositiveLabel
-        {
-            get =>  _positiveLabel;
-            set => SetProperty(ref  _positiveLabel, value);
-        }
-
-        protected string  _negativeLabel = "Hello";
-
-        public string NegativeLabel
-        {
-            get => _negativeLabel;
-            protected set => SetProperty(ref _negativeLabel, value);
-        }
-
-        protected string _neutralLabel = "Hello";
-
-        public string NeutralLabel 
-        {
-            get => _neutralLabel;
-            protected set => SetProperty(ref _neutralLabel, value);
-        }
 
         protected string _overallSentiment;
 
@@ -217,22 +194,6 @@ namespace MessengerDashboard.UI.ViewModels
         {
             get => _userActivities;
             set => SetProperty(ref _userActivities, value);
-        }
-
-        protected List<string> _userNames;
-
-        public List<string> UserNames
-        {
-            get => _userNames;
-            set => SetProperty(ref _userNames, value);
-        }
-
-        protected ChartValues<int> _userChatCounts;
-
-        public ChartValues<int> UserChatCounts
-        {
-            get => _userChatCounts;
-            set => SetProperty(ref _userChatCounts, value);
         }
 
         protected bool _isLocalSavingEnabled;
@@ -283,13 +244,16 @@ namespace MessengerDashboard.UI.ViewModels
                     userNames.Add(item.Value.UserName);
                     userChatCounts.Add(item.Value.UserChatCount);
 
+                    DateTime? exitTime = null;
+                    if (item.Value.ExitTime != DateTime.MinValue)
+                    {
+                        exitTime = item.Value.ExitTime;
+                    }
                     userActivities.Add(new(item.Key, item.Value.UserChatCount, item.Value.UserName, item.Value.UserEmail,
-                                    item.Value.EntryTime, item.Value.ExitTime));
+                                    item.Value.EntryTime, exitTime));
                 }
 
                 UserActivities = userActivities;
-                UserNames = userNames;
-                UserChatCounts = userChatCounts;
 
                 Summary = string.Join(Environment.NewLine, e.Summary.Sentences);
 
@@ -298,9 +262,6 @@ namespace MessengerDashboard.UI.ViewModels
                 NegativeChatCount = new () { e.Sentiment.NegativeChatCount };
                 NeutralChatCount = new () { e.Sentiment.NeutralChatCount };
                 double total = e.Sentiment.PositiveChatCount + e.Sentiment.NegativeChatCount + e.Sentiment.NeutralChatCount;
-                PositiveLabel = e.Sentiment.PositiveChatCount.ToString() + " " + (e.Sentiment.PositiveChatCount / total).ToString(".0");
-                NegativeLabel = e.Sentiment.NegativeChatCount.ToString() + " " + (e.Sentiment.NegativeChatCount / total).ToString(".0");
-                NeutralLabel = e.Sentiment.NeutralChatCount.ToString() + " " + (e.Sentiment.NeutralChatCount / total).ToString(".0");
 
                 List<User> users = new();
                 e.SessionInfo.Users.ForEach(user => { users.Add(new User(user.UserName, user.UserPhotoUrl)); });

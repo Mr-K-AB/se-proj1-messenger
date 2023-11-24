@@ -1,4 +1,17 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = HostMeetingView.xaml.cs
+*
+* Author      = Geddam Gowtham
+*
+* Roll Number = 112001011
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerApp
+*
+* Description = Interaction logic for Meeting View for host .
+* *****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

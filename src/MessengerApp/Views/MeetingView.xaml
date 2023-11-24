@@ -1,4 +1,20 @@
-﻿<UserControl x:Class="MessengerApp.Views.MeetingView"
+﻿<!--
+ /******************************************************************************
+* Filename    = MeetingView.xaml
+*
+* Author      = Geddam Gowtham
+*
+* Roll number = 112001011
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerApp
+*
+* Description = UserControl to show start meeting and join meeting menu. 
+*****************************************************************************/
+-->
+
+<UserControl x:Class="MessengerApp.Views.MeetingView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

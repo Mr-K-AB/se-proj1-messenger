@@ -1,4 +1,16 @@
-﻿
+﻿/******************************************************************************
+* Filename    = NavigateClientMeetCommand.cs
+*
+* Author      = Vinay Ingle
+*
+* Roll Number = 112001050
+*
+* Product     = Messenger 
+* 
+* Project     = ViewModels
+*
+* Description = Command to switch ViewModel to Client.
+* *****************************************************************************/
 
 using System;
 using System.Collections.Generic;

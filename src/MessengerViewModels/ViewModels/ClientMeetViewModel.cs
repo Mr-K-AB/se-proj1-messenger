@@ -1,4 +1,18 @@
-﻿using System;
+﻿/******************************************************************************
+* Filename    = ClientMeetViewModel.cs
+*
+* Author      = Vinay Ingle
+*
+* Roll Number = 112001050
+*
+* Product     = Messenger 
+* 
+* Project     = ViewModels
+*
+* Description = ViewModel for Client Meet View.
+* *****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,21 +53,21 @@ namespace MessengerViewModels.ViewModels
 
         public ClientMeetViewModel(NavigationStore navigationStore)
         {
+            
+            _navigationStore = navigationStore;
+            navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
+
             _dashboardViewModel = new DashboardMemberViewModel();
             _screenshareViewModel = new ScreenshareClientViewModel();
-            _whiteboardViewModel = new MessengerWhiteboard.ViewModel();
-
-
             _whiteboardViewModel = MessengerWhiteboard.ViewModel.Instance;
             _whiteboardViewModel.SetUserID(1);
 
-            _navigationStore = navigationStore;
-            navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
+            _navigationStore.SubViewModel = _dashboardViewModel;
+
             NavigateHomeCommand = new NavigateHomeCommand(navigationStore);
             NavigateClientDashboardCommand = new NavigateClientDashboardCommand(navigationStore, _dashboardViewModel);
             NavigateClientScreenshareCommand = new NavigateClientScreenshareCommand(navigationStore, _screenshareViewModel);
             NavigateServerWhiteboardCommand = new NavigateServerWhiteboardCommand(navigationStore, _whiteboardViewModel);
-            _navigationStore.SubViewModel = _dashboardViewModel;
 
         }
 

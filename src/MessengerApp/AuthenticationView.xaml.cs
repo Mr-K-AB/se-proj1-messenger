@@ -1,4 +1,19 @@
-﻿using MessengerApp.ViewModels;
+﻿/******************************************************************************
+* Filename    = AuthenticationView.xaml
+*
+* Author      = Vinay Ingle
+*
+* Roll Number = 112001050
+*
+* Product     = Messenger 
+* 
+* Project     = MessengerApp
+*
+* Description = View Corresponding to AuthenticationViewModel.
+* *****************************************************************************/
+
+
+using MessengerApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

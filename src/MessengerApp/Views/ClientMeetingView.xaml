@@ -30,6 +30,11 @@
         </Grid.RowDefinitions>
 
         <Menu Grid.Column="0">
+            <Menu.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <DockPanel HorizontalAlignment="Stretch"/>
+                </ItemsPanelTemplate>
+            </Menu.ItemsPanel>
             <MenuItem Header="Dashboard" Command="{Binding NavigateClientDashboardCommand}"/>
             <MenuItem Header="Whiteboard" Command="{Binding NavigateServerWhiteboardCommand}"/>
             <MenuItem Header="Screenshare" Command="{Binding NavigateClientScreenshareCommand}"/>

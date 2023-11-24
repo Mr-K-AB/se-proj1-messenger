@@ -40,7 +40,7 @@ namespace MessengerApp.Views
 
         private void HandleSessionViewChange(object? sender, ClientSessionChangedEventArgs e)
         {
-            this.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
                 if (e.Session.SessionMode == SessionMode.Exam)
                 {

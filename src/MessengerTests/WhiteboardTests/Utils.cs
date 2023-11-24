@@ -23,7 +23,7 @@ namespace MessengerTests.WhiteboardTests
 
             return shape1.Id == shape2.Id &&
                 shape1.ShapeType == shape2.ShapeType &&
-                shape1.Geometry == shape2.Geometry &&
+                shape1.Geometry.ToString() == shape2.Geometry.ToString() &&
                 shape1.StrokeThickness == shape2.StrokeThickness &&
                 shape1.ZIndex == shape2.ZIndex &&
                 shape1.Fill == shape2.Fill &&
@@ -79,7 +79,7 @@ namespace MessengerTests.WhiteboardTests
         }
 
 
-        public static ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, string uid, string textData = "Text")
+        public static ShapeItem CreateShape(string shapeType, Point start, Point end, Brush fillBrush, Brush borderBrush, double strokeThickness, Guid uid, string textData = "Text")
         {
             Rect boundingBox = new(start, end);
             Geometry geometry;
@@ -138,8 +138,8 @@ namespace MessengerTests.WhiteboardTests
             Random random = new();
             Dictionary<int, string> shapeTypes = new()
             {
-                {0,"RectangleGeometry"},
-                {1,"EllipseGeometry" }
+                {0,"Rectangle"},
+                {1,"Ellipse" }
             };
             Point start = new(random.Next(0, 100), random.Next(0, 100));
             Point end = new(random.Next(0, 100), random.Next(0, 100));

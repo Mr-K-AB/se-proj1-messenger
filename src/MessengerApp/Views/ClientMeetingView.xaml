@@ -48,14 +48,14 @@
         <Menu Grid.Column="0">
             <Menu.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <DockPanel HorizontalAlignment="Stretch"/>
+                    <DockPanel />
                 </ItemsPanelTemplate>
             </Menu.ItemsPanel>
             <MenuItem Header="Dashboard" Command="{Binding NavigateClientDashboardCommand}"/>
             <MenuItem Header="Whiteboard" Command="{Binding NavigateServerWhiteboardCommand}"/>
             <MenuItem Header="Screenshare" Command="{Binding NavigateClientScreenshareCommand}"/>
             <!--MenuItem Header="Participants"/-->
-            <MenuItem Header="Chat" Click="Chat_Click"/>
+            <MenuItem Header="Chat" Click="Chat_Click" HorizontalAlignment="Left" Margin="20 0"/>
             <!--<TextBlock Text="{Binding IP}"></TextBlock>
             <TextBlock Text="{Binding Port}"></TextBlock>-->
         </Menu>

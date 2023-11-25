@@ -314,7 +314,7 @@ node_modules/
 _Pvt_Extensions
 
 # Paket dependency manager
-.paket/paket.exe
+
 paket-files/
 
 # FAKE - F# Make
@@ -388,11 +388,7 @@ FodyWeavers.xsd
 .history/
 
 # Windows Installer files from build outputs
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
+
 
 # JetBrains Rider
 *.sln.iml

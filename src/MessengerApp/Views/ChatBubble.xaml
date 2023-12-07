@@ -109,17 +109,12 @@
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="0" />
                         </Grid.RowDefinitions>
-                        <Grid Margin="5,10,5,5"  Background="Transparent"  Grid.Row="0">
+                        <Grid Margin="5,3,5,5"  Background="Transparent"  Grid.Row="0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0" HorizontalAlignment="Right">
-                                <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
-                   Width="230" FontSize="14" TextAlignment="Right" Padding="2, 2, 5, 2" FontWeight="Bold" />
-                            </Grid>
 
                             <Grid Grid.Row="1">
                                 <Grid.ColumnDefinitions>
@@ -128,7 +123,7 @@
                                 </Grid.ColumnDefinitions>
                                 <emoji:TextBlock Foreground="#FFFFFF" Text="{Binding MsgData, UpdateSourceTrigger=PropertyChanged}"
                                x:Name="MainText" TextWrapping="Wrap" Grid.Row="0"  FontSize="16"
-                               Padding="8,5,8,5" Grid.Column="0" />
+                               Padding="8,5,2,5" Grid.Column="0" />
 
                                 <!--buttons-->
                                 <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
@@ -142,7 +137,7 @@
                             </Grid>
                             <Grid Grid.Row="2">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="70" />
+                                    <ColumnDefinition Width="65" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
@@ -150,13 +145,13 @@
                                 <!--time and star button-->
                                 <TextBlock Opacity="0.8" Foreground="#FFFFFF"
                        Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" x:Name="timeText" Margin="0" TextWrapping="Wrap"
-                       Grid.Row="0" Padding="8" Grid.Column="0" />
-                                <ToggleButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left"
-                         Template="{DynamicResource StarToggleButton}" Click="StarHandler" />
+                       Grid.Row="0" Padding="8,0, 5, 2" Grid.Column="0" VerticalAlignment="Bottom" />
+                                <ToggleButton Grid.Column="1" Content="All" Padding="2, 0, 2, 2" HorizontalAlignment="Left"
+                         Template="{DynamicResource StarToggleButton}" Click="StarHandler" VerticalAlignment="Center" />
 
                                 <TextBlock Opacity="0.8" Foreground="#FFFFFF" Text="Sent"
-                       x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8"
-                       Grid.Column="3" HorizontalAlignment="Right" />
+                       x:Name="sentStatus" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="0,0,8,2"
+                       Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
 
                                 <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left">
 
@@ -180,8 +175,6 @@
 
         </DataTemplate>
 
-
-
         <!--Template for the msg bubble sent by current user-->
         <DataTemplate x:Key="MsgFromUserTemplate">
             <Border CornerRadius="20, 20, 0, 20" Background="Teal" Margin="0,0,3,5" MaxWidth="257" HorizontalAlignment="Right">
@@ -199,7 +192,7 @@
                         </Grid.RowDefinitions>
 
 
-                        <Grid Grid.Row="1" HorizontalAlignment="Left">
+                        <Grid Grid.Row="1" HorizontalAlignment="Left" Margin="0,5,0,0">
                             <!--reply text block-->
                             <Border Grid.Column="0" CornerRadius="8" BorderBrush="Transparent"
                             BorderThickness="5" Background="White" Opacity="0.5">
@@ -207,12 +200,6 @@
                                     Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}"
                                    TextWrapping="Wrap" Width="230" FontSize="14" Padding="8,5,8,5" FontStyle="Italic" HorizontalAlignment="Center"/>
                             </Border>
-                        </Grid>
-
-                        <!--sender name-->
-                        <Grid Grid.Row="0" HorizontalAlignment="Right">
-                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
-                           Width="230" FontSize="14" TextAlignment="Right" Padding="8,2,8,2" FontWeight="Bold" />
                         </Grid>
 
                         <!--message data-->
@@ -288,12 +275,6 @@
                             <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
 
-                        <!--sender-->
-                        <Grid Grid.Row="0" HorizontalAlignment="Right">
-                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
-                        Width="230" FontSize="14" TextAlignment="Right" Padding="8,2,8,2" FontWeight="Bold" />
-                        </Grid>
-
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*" />
@@ -348,13 +329,6 @@
                                 Grid.Column="3" HorizontalAlignment="Right" />
 
                             <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left">
-
-                                <!--edit button-->
-                                <!--
-                                <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
-                                        Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
-                                    <Image Source="../Images/pen.png" />
-                                </Button>-->
                                 <!--delete button-->
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
                                         Width="30" Height="20" Margin="0,0,0,0" Click="DeleteHandler" ToolTip="Delete">
@@ -393,12 +367,6 @@
                                  Text="{Binding ReplyMessage, UpdateSourceTrigger=PropertyChanged}"
                                 TextWrapping="Wrap" Width="230" FontSize="14" Padding="8,5,8,5" FontStyle="Italic" HorizontalAlignment="Center"/>
                             </Border>
-                        </Grid>
-
-                        <!--sender-->
-                        <Grid Grid.Row="0" HorizontalAlignment="Right">
-                            <TextBlock Foreground="White" Text="{Binding Sender}" x:Name="SenderName" TextWrapping="Wrap"
-                            Width="230" FontSize="14" TextAlignment="Right" Padding="8,2,8,2" FontWeight="Bold" />
                         </Grid>
 
                         <Grid Grid.Row="2">
@@ -456,12 +424,6 @@
 
                             <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left">
 
-                                <!--edit button-->
-                                <!--
-                                <Button  Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
-            Width="30" Height="20" Margin="0,0,0,0" Click="EditHandler" ToolTip="Edit">
-                                    <Image Source="../Images/pen.png" />
-                                </Button>-->
                                 <!--delete button-->
                                 <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Left"
             Width="30" Height="20" Margin="0,0,0,0" Click="DeleteHandler" ToolTip="Delete">

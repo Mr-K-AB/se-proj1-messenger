@@ -12,18 +12,14 @@
 * Description = View Model for the Authentication page.
 * *****************************************************************************/
 
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using MessengerViewModels.Stores;
-using MessengerApp.Views;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MessengerDashboard;
+using MessengerViewModels.Stores;
 using MessengerViewModels.ViewModels;
 using TraceLogger;
 namespace MessengerApp.ViewModels
@@ -51,16 +47,18 @@ namespace MessengerApp.ViewModels
 
             if (authResult.IsAuthenticated == false)
             {
-                Logger.Warn($"[Authentication] Google Authentication failed. AuthenticationResult isAuthenticated={authResult.IsAuthenticated}");
+                Logger.Warn($"{DateTime.Now:s}[AuthenticationViewModel] Google Authentication failed. AuthenticationResult isAuthenticated={authResult.IsAuthenticated}");
                 return;
             }
+            Logger.Inform($"{DateTime.Now:s}[AuthenticationViewModel] Authentication successful. AuthenticationResult isAuthenticated={authResult.IsAuthenticated}");
 
             NavigationStore navigationStore = new()
             {
                 AuthResult = authResult
             };
             navigationStore.CurrentViewModel = new HomeViewModel(navigationStore);
-            
+            Logger.Inform($"[AuthenticationViewModel]Current ViewModel changed to {navigationStore.CurrentViewModel}");
+
             var newWindow = new MainWindow
             {
                 DataContext = new MainViewModel(navigationStore)

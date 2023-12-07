@@ -12,16 +12,12 @@
 * Description = Command to switch ViewModel to Client.
 * *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessengerViewModels.Stores;
-using MessengerViewModels.ViewModels;
+using System.Windows;
 using MessengerDashboard;
 using MessengerDashboard.Client;
-using System.Windows;
+using MessengerViewModels.Stores;
+using MessengerViewModels.ViewModels;
+using TraceLogger;
 
 namespace MessengerViewModels.Commands
 {
@@ -51,6 +47,7 @@ namespace MessengerViewModels.Commands
 
             if (_connected)
             {
+                Logger.Inform($"Client is connected to server. _connected={_connected}");
                 _navigationStore.CurrentViewModel = new ClientMeetViewModel(_navigationStore);
 
             }

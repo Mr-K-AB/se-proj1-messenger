@@ -12,11 +12,6 @@
 * Description = The ViewModel in which the other ViewModels will be changes.
 * *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MessengerViewModels.Stores;
 
 namespace MessengerViewModels.ViewModels

@@ -12,17 +12,9 @@
 * Description = Command to switch the SubViewModel to Server Dashboard.
 * *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessengerViewModels.Stores;
-using MessengerViewModels.ViewModels;
-using MessengerDashboard.UI;
-using System.Diagnostics;
-using MessengerDashboard.Client;
 using MessengerDashboard.UI.ViewModels;
+using MessengerViewModels.Stores;
+using TraceLogger;
 
 namespace MessengerViewModels.Commands
 {
@@ -43,6 +35,7 @@ namespace MessengerViewModels.Commands
         public override void Execute(object parameter)
         {
             _navigationStore.SubViewModel = _dashboardViewModel;
+            Logger.Debug("[NavigateServerDashboardCommand] change subviewmodel to dashboardViewModel");
         }
     }
 }

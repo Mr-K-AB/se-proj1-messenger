@@ -12,16 +12,12 @@
 * Description = Command to switch ViewModel to Server.
 * *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessengerViewModels.Stores;
-using MessengerViewModels.ViewModels;
 using MessengerDashboard;
 using MessengerDashboard.Client;
 using MessengerDashboard.Server;
+using MessengerViewModels.Stores;
+using MessengerViewModels.ViewModels;
+using TraceLogger;
 
 namespace MessengerViewModels.Commands
 {
@@ -55,6 +51,7 @@ namespace MessengerViewModels.Commands
             if (_connected)
             {
                 _navigationStore.CurrentViewModel = new ServerMeetViewModel(_navigationStore);
+                Logger.Debug("[NavigateServerMeetCommand] change current viewmodel to ServerMeetViewModel");
             }
         }
     }

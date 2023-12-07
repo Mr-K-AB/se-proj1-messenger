@@ -12,18 +12,9 @@
 * Description = Command to switch SubViewModel to ScreenShare.
 * *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessengerViewModels.Stores;
-using MessengerViewModels.ViewModels;
-using MessengerDashboard.UI;
-using System.Diagnostics;
-//using MessengerDashboard.Client;
-//using MessengerDashboard.UI.ViewModels;
 using MessengerScreenshare.Server;
+using MessengerViewModels.Stores;
+using TraceLogger;
 
 namespace MessengerViewModels.Commands
 {
@@ -44,6 +35,7 @@ namespace MessengerViewModels.Commands
         public override void Execute(object parameter)
         {
             _navigationStore.SubViewModel = _screenshareViewModel;
+            Logger.Debug("[NavigateServerScreenshareCommand] change subviewmodel to screenshareViewModel");
         }
     }
 }

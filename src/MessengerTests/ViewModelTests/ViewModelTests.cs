@@ -1,20 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessengerCloud;
-using MessengerDashboard.Client;
-using MessengerDashboard.UI.Commands;
+﻿using MessengerDashboard;
 using MessengerDashboard.UI.ViewModels;
-using MessengerDashboard;
-using Moq;
-using MessengerApp;
+using MessengerScreenshare.Server;
 using MessengerViewModels.Stores;
 using MessengerViewModels.ViewModels;
-using MessengerScreenshare.Client;
-using System.Windows.Navigation;
-using MessengerScreenshare.Server;
 
 namespace MessengerTests.ViewModelTests
 {

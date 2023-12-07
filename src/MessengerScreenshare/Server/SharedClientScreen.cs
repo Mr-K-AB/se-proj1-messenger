@@ -19,7 +19,9 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Media.Imaging;
+using TraceLogger;
 
 // The Timer class object.
 using Timer = System.Timers.Timer;
@@ -35,7 +37,7 @@ namespace MessengerScreenshare.Server
         /// received from the client and tells that the client is still
         /// presenting the screen.
         /// </summary>
-        private readonly Timer? _timer;
+        public readonly Timer? _timer;
 
         /// <summary>
         /// The data model defining the callback for the timeout.
@@ -140,31 +142,31 @@ namespace MessengerScreenshare.Server
             _tileHeight = 0;
             _tileWidth = 0;
 
-            try
-            {
-                if (!isDebug)
-                {
-                    // Create the timer for this client.
-                    _timer = new Timer();
-                    _timer.Elapsed += new((sender, e) => _serverTimeout.OnTimeOut(sender, Id, e));
+            //try
+            //{
+                //if (!isDebug)
+                //{
+            // Create the timer for this client.
+            _timer = new Timer();
+            _timer.Elapsed += new((sender, e) => _serverTimeout.OnTimeOut(sender, Id, e));
 
-                    // The timer should be invoked only once.
-                    _timer.AutoReset = false;
+            // The timer should be invoked only once.
+            _timer.AutoReset = false;
 
-                    // Set the time interval for the timer.
-                    UpdateTimer();
+            // Set the time interval for the timer.
+            UpdateTimer(_timer);
 
-                    // Start the timer.
-                    _timer.Enabled = true;
-                }
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(Utils.GetDebugMessage($"Failed to create the timer: {e.Message}", withTimeStamp: true));
-                throw new Exception("Failed to create the timer", e);
-            }
+            // Start the timer.
+            _timer.Enabled = true;
+                //}
+            //}
+            //catch (Exception e)
+            //{
+                //Logger.Log($"Failed to create the timer: {e.Message}", LogLevel.INFO);
+                //throw new Exception("Failed to create the timer", e);
+            //}
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created client with id: {Id} and name: {Name}", withTimeStamp: true));
+            Logger.Log($"Successfully created client with id: {Id} and name: {Name}", LogLevel.INFO);
         }
 
 
@@ -336,7 +338,7 @@ namespace MessengerScreenshare.Server
                 }
                 catch (InvalidOperationException e)
                 {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Dequeue failed: {e.Message}", withTimeStamp: true));
+                    Logger.Log($"Dequeue failed: {e.Message}", LogLevel.INFO);
                     return null;
                 }
             }
@@ -411,7 +413,7 @@ namespace MessengerScreenshare.Server
                 }
                 catch (InvalidOperationException e)
                 {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Dequeue failed: {e.Message}", withTimeStamp: true));
+                    Logger.Log($"Dequeue failed: {e.Message}", LogLevel.INFO);
                     return null;
                 }
             }
@@ -456,7 +458,7 @@ namespace MessengerScreenshare.Server
 
             if (_screenImageSendTask != null)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Trying to start an already started task for the client with Id {Id}", withTimeStamp: true));
+                Logger.Log($"Trying to start an already started task for the client with Id {Id}", LogLevel.INFO);
                 return;
             }
 
@@ -477,11 +479,11 @@ namespace MessengerScreenshare.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Failed to start the task: {e.Message}", withTimeStamp: true));
+                Logger.Log($"Failed to start the task: {e.Message}", LogLevel.INFO);
                 throw new Exception("Failed to start the task", e);
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created the processing task with id {TaskId} for the client with id {Id}", withTimeStamp: true));
+            Logger.Log($"Successfully created the processing task with id {TaskId} for the client with id {Id}", LogLevel.INFO);
         }
 
         /// <summary>
@@ -500,7 +502,7 @@ namespace MessengerScreenshare.Server
             // Check if the task was started before.
             if (_screenImageSendTask == null)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Client with {Id} Id has never started their task", withTimeStamp: true));
+                Logger.Log($"Client with {Id} Id has never started their task", LogLevel.INFO);
                 return;
             }
 
@@ -545,18 +547,18 @@ namespace MessengerScreenshare.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Failed to cancel the task: {e.Message}", withTimeStamp: true));
+                Logger.Log($"Failed to cancel the task: {e.Message}", LogLevel.INFO);
                 throw new Exception("Failed to start the task", e);
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Task with {TaskId} has stopped successfully for the client with id {Id}", withTimeStamp: true));
+            Logger.Log($"Task with {TaskId} has stopped successfully for the client with id {Id}", LogLevel.INFO);
         }
 
         /// <summary>
         /// Resets the time of the timer object.
         /// </summary>
         /// <exception cref="Exception"></exception>
-        public void UpdateTimer()
+        public void UpdateTimer(Timer _timer)
         {
             Debug.Assert(_timer != null, Utils.GetDebugMessage("_timer is found null"));
 
@@ -567,7 +569,7 @@ namespace MessengerScreenshare.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Failed to reset the timer: {e.Message}", withTimeStamp: true));
+                Logger.Log($"Failed to reset the timer: {e.Message}", LogLevel.INFO);
                 throw new Exception("Failed to reset the timer", e);
             }
         }

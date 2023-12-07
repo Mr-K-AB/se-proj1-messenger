@@ -14,6 +14,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Controls;
+using TraceLogger;
 
 namespace MessengerScreenshare.Client
 {
@@ -99,7 +100,7 @@ namespace MessengerScreenshare.Client
                     }
                     catch (Exception e)
                     {
-                        Trace.WriteLine($"[Screenshare] Could not capture screenshot: {e.Message}");
+                        Logger.Log($"[Screenshare] Could not capture screenshot: {e.Message}", LogLevel.ERROR);
                     }
                 }
             });
@@ -125,7 +126,7 @@ namespace MessengerScreenshare.Client
         private int GetServerLoad()
         {
             // Example: Return the number of connected clients or any other metric indicating server load
-            return ConnectedClients.Count; // Assuming ConnectedClients is a collection of connected clients
+            return 0; // Assuming ConnectedClients is a collection of connected clients
         }
 
         /// <summary>

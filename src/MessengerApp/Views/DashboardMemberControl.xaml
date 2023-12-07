@@ -29,7 +29,9 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
     </UserControl.Resources>
-    <Grid Background="LightGray">
+    <Grid Background="LightGray"
+          Visibility="{Binding Path=IsDashboardVisible, 
+          Converter={StaticResource booleanToVisibilityConverter}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
             <RowDefinition Height="10*" />

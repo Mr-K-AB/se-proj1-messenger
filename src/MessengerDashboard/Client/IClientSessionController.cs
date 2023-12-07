@@ -69,6 +69,8 @@ namespace MessengerDashboard.Client
         /// </summary>
         SentimentResult SentimentResult { get; }
 
+        UserInfo UserInfo { get; }
+
         /// <summary>
         /// Attempts to connect the client to the server.
         /// </summary>

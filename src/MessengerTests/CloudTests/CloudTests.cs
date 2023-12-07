@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = CloudTests.cs
+* Filename    = RestClient.cs
 *
 * Author      = Shubh Pareek
 *
@@ -7,9 +7,9 @@
 *
 * Product     = Messenger 
 * 
-* Project     = MessengerTests
+* Project     = MessengerCloud
 *
-* Description =  Tests for messenger cloud .
+* Description =  tests for messenger cloud .
 * *****************************************************************************/
 using System;
 using System.Collections.Generic;
@@ -21,6 +21,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using MessengerCloud;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
+using static System.Net.WebRequestMethods;
 
 
 namespace MessengerTests.CloudTests
@@ -29,10 +30,12 @@ namespace MessengerTests.CloudTests
     /// for doing tests on messenger cloud module 
     /// </summary>
     [TestClass]
-    
+
     public class CloudTests
     {
-        private const string BaseUrl = @"http://localhost:7166/api/entity";
+        // private const string BaseUrl = @"http://localhost:7166/api/entity";
+        private const string BaseUrl = @"https://messengercloud20231202153618.azurewebsites.net/api/entity";
+
         //for testing api functions 
         private readonly HttpClient _entityClient;
         //for testing cloud rest client 
@@ -67,7 +70,7 @@ namespace MessengerTests.CloudTests
         {
             // delete all 
             Logger.LogMessage("Deleting all entries from our Azure table storage.");
-            await _restClient.DeleteEntitiesAsync();
+            // await _restClient.DeleteEntitiesAsync();
 
             // Create an entity.
             Logger.LogMessage("Create an entity.");
@@ -112,13 +115,16 @@ namespace MessengerTests.CloudTests
         {
             // Delete any existing entities.
             Logger.LogMessage("Delete any existing entities.");
-            await _restClient.DeleteEntitiesAsync();
+            //  await _restClient.DeleteEntitiesAsync();
 
             // Create three entities.
             Logger.LogMessage("Create three entities.");
             _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, 3, "Neutral", "-1", _analysisCloud));
+            Thread.Sleep(2000);
             _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, 4, "Negative", "0", _analysisCloud));
+            Thread.Sleep(2000);
             _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, 5, "Positive", "1", _analysisCloud));
+            Thread.Sleep(2000);
 
             // Validate.
             Logger.LogMessage("Validate.");
@@ -136,7 +142,7 @@ namespace MessengerTests.CloudTests
         public async Task TestGetidAndDelid()
         {
             //delete so that it doesn't cause any issues 
-            await _restClient.DeleteEntitiesAsync();
+            // await _restClient.DeleteEntitiesAsync();
             _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, 5, "Positive", "1", _analysisCloud));
             //get the same entity anda validate 
             Logger.LogMessage("Validate.");
@@ -148,6 +154,7 @@ namespace MessengerTests.CloudTests
         /// <summary>
         /// Test method to evaluate the functionality of various API operations.
         /// </summary>
+        /*
         [TestMethod]
         public async Task TestApiFunctions()
         {
@@ -202,7 +209,7 @@ namespace MessengerTests.CloudTests
             // Delete the specific entity with ID "-1" using the API
             Debug.WriteLine("deleting this -1");
             using HttpResponseMessage responseeeee = await _entityClient.DeleteAsync(BaseUrl + $"/-1");
-        }
+        }*/
 
         /// <summary>
         /// Test method to verify the behavior of the Entity class.

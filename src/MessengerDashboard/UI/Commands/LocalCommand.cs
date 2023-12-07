@@ -62,6 +62,16 @@ namespace MessengerDashboard.UI.Commands
         {
             // Set the flag indicating that the local button is clicked.
             _sessionsViewModel.IsLocalClicked = true;
+            _sessionsViewModel.SelectedSession = "Selected: Local";
+            _sessionsViewModel.PositiveChatCount = 0; 
+            _sessionsViewModel.NegativeChatCount = 0;
+            _sessionsViewModel.NeutralChatCount = 0;
+            _sessionsViewModel.OverallSentiment = "";
+            _sessionsViewModel.TotalUserCount = 0;
+            _sessionsViewModel.SessionSummary = "";
+            _sessionsViewModel.TimeStampUserCountEntries = new();
+            _sessionsViewModel.UserActivities = new();
+            _sessionsViewModel.Sessions = new();
 
             // Read entities from the local file.
             List<EntityInfoWrapper> entities = LocalSave.ReadFromFile();

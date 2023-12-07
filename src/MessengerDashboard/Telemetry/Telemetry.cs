@@ -127,7 +127,14 @@ namespace MessengerDashboard.Telemetry
 
         private void UpdateUserCountHistory(SessionInfo sessionData, DateTime currentTime)
         {
-            _timeStampToUserCountMap[currentTime] = sessionData.Users.Count;
+            if (_timeStampToUserCountMap.ContainsKey(currentTime))
+            {
+                _timeStampToUserCountMap[currentTime] = sessionData.Users.Count;
+            }
+            else
+            {
+                _timeStampToUserCountMap.Add(currentTime, sessionData.Users.Count);
+            }
         }
         ///<summary>
         ///adding user if not present
@@ -155,7 +162,10 @@ namespace MessengerDashboard.Telemetry
                 
                 if (!SessionContainsUserId(sessionData, userId) && _userIdToUserActivityMap[userId].ExitTime == DateTime.MinValue)
                 {
-                    _userIdToUserActivityMap[userId].ExitTime = currentTime;
+                    if (_userIdToUserActivityMap.ContainsKey(userId))
+                    {
+                        _userIdToUserActivityMap[userId].ExitTime = currentTime;
+                    }
                 }
             }
         }

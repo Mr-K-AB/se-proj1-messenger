@@ -341,17 +341,16 @@ namespace MessengerNetworking.Communicator
             {
                 // stop listening to this client and remove the client
                 // socket listener from the respective map
-                SocketListener socketListener =
-                    _clientIdToSocketListener[clientId];
-                socketListener.Stop();
+                SocketListener socketListener = _clientIdToSocketListener[clientId];
                 _clientIdToSocketListener.Remove(clientId);
+                TcpClient socket = _clientIdToClientSocket[clientId];
+                _clientIdToClientSocket.Remove(clientId);
+                socketListener.Stop();
 
                 // close the connection to the client and remove the
                 // client socket from the respective map
-                TcpClient socket = _clientIdToClientSocket[clientId];
                 socket.GetStream().Close();
                 socket.Close();
-                _clientIdToClientSocket.Remove(clientId);
                 Trace.WriteLine("[Networking] Client removed with " +
                     "clientID: " + clientId);
             }

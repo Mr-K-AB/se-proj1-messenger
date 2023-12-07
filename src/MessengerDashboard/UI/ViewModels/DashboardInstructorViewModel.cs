@@ -105,6 +105,7 @@ namespace MessengerDashboard.UI.ViewModels
                     SaveSessionToLocalStorage(entity);
                 }
             }
+            IsDashboardVisible = false;
         }
     }
 }

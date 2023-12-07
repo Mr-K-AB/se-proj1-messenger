@@ -19,6 +19,7 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Media.Imaging;
 using TraceLogger;
 
@@ -36,7 +37,7 @@ namespace MessengerScreenshare.Server
         /// received from the client and tells that the client is still
         /// presenting the screen.
         /// </summary>
-        private readonly Timer? _timer;
+        public readonly Timer? _timer;
 
         /// <summary>
         /// The data model defining the callback for the timeout.
@@ -141,29 +142,29 @@ namespace MessengerScreenshare.Server
             _tileHeight = 0;
             _tileWidth = 0;
 
-            try
-            {
-                if (!isDebug)
-                {
-                    // Create the timer for this client.
-                    _timer = new Timer();
-                    _timer.Elapsed += new((sender, e) => _serverTimeout.OnTimeOut(sender, Id, e));
+            //try
+            //{
+                //if (!isDebug)
+                //{
+            // Create the timer for this client.
+            _timer = new Timer();
+            _timer.Elapsed += new((sender, e) => _serverTimeout.OnTimeOut(sender, Id, e));
 
-                    // The timer should be invoked only once.
-                    _timer.AutoReset = false;
+            // The timer should be invoked only once.
+            _timer.AutoReset = false;
 
-                    // Set the time interval for the timer.
-                    UpdateTimer();
+            // Set the time interval for the timer.
+            UpdateTimer(_timer);
 
-                    // Start the timer.
-                    _timer.Enabled = true;
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Log($"Failed to create the timer: {e.Message}", LogLevel.INFO);
-                throw new Exception("Failed to create the timer", e);
-            }
+            // Start the timer.
+            _timer.Enabled = true;
+                //}
+            //}
+            //catch (Exception e)
+            //{
+                //Logger.Log($"Failed to create the timer: {e.Message}", LogLevel.INFO);
+                //throw new Exception("Failed to create the timer", e);
+            //}
 
             Logger.Log($"Successfully created client with id: {Id} and name: {Name}", LogLevel.INFO);
         }
@@ -557,7 +558,7 @@ namespace MessengerScreenshare.Server
         /// Resets the time of the timer object.
         /// </summary>
         /// <exception cref="Exception"></exception>
-        public void UpdateTimer()
+        public void UpdateTimer(Timer _timer)
         {
             Debug.Assert(_timer != null, Utils.GetDebugMessage("_timer is found null"));
 

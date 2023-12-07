@@ -33,7 +33,17 @@ namespace MessengerScreenshare.Client
         // Property changed event raised when a property is changed on a component.
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private DispatcherOperation? _sharingScreenOp;
+        private DispatcherOperation? _sharingScreenOp, _displayPopupOperation;
+
+        /// <summary>
+        /// Whether the popup is open or not.
+        /// </summary>
+        private bool _isPopupOpen;
+
+        /// <summary>
+        /// The text to be displayed on the popup.
+        /// </summary>
+        private string _popupText;
 
         /// <summary>
         /// Gets the dispatcher to the main thread. In case it is not available (such as during
@@ -43,6 +53,43 @@ namespace MessengerScreenshare.Client
             (Application.Current?.Dispatcher != null) ?
                     Application.Current.Dispatcher :
                     Dispatcher.CurrentDispatcher;
+
+
+        /// <summary>
+        /// Gets whether the popup is open or not.
+        /// </summary>
+        public bool IsPopupOpen
+        {
+            get => _isPopupOpen;
+
+            // Don't keep the setter private, as it is bind using two-way binding.
+            set
+            {
+                if (_isPopupOpen != value)
+                {
+                    _isPopupOpen = value;
+                    OnPropertyChanged(nameof(IsPopupOpen));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the text to be displayed on the popup.
+        /// </summary>
+        public string PopupText
+        {
+            get => _popupText;
+
+            private set
+            {
+                if (_popupText != value)
+                {
+                    _popupText = value;
+                    OnPropertyChanged(nameof(PopupText));
+                }
+            }
+        }
+
 
         /// <summary>
         /// Boolean to store whether the screen is currently being stored or not.
@@ -78,6 +125,33 @@ namespace MessengerScreenshare.Client
             }
         }
 
+        /// <summary>
+        /// Used to display the popup on the UI with the given message.
+        /// </summary>
+        /// <param name="message">
+        /// Message to be displayed on the popup.
+        /// </param>
+        public void DisplayPopup(string message)
+        {
+            _displayPopupOperation = ApplicationMainThreadDispatcher.BeginInvoke(
+                DispatcherPriority.Normal,
+                new Action<string>((text) =>
+                {
+                    lock (this)
+                    {
+                        // Close the popup if it was already opened before.
+                        if (IsPopupOpen)
+                        {
+                            IsPopupOpen = false;
+                        }
+
+                        PopupText = text;
+                        IsPopupOpen = true;
+                    }
+                }),
+                message
+            );
+        }
 
         /// <summary>
         /// Constructor for the ScreenshareClientViewModel.
@@ -86,6 +160,8 @@ namespace MessengerScreenshare.Client
         {
             _model = ScreenshareFactory.ScreenshareFactory.getClientInstance(this);
             _sharingScreen = false;
+            _isPopupOpen = false;
+            _popupText = "";
         }
 
         /// <summary>

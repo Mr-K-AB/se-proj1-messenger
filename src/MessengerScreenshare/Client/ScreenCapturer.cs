@@ -24,7 +24,7 @@ namespace MessengerScreenshare.Client
         /// The maximum allowed length of the captured frame queue.
         /// </summary>
         public const int MaxQueueLength = 20;
-
+        private int _clientnumber = 1;
         private CancellationTokenSource? _cancellationTokenSource;
         private readonly ConcurrentQueue<Bitmap> _capturedFrameQueue;
         private readonly Screenshot _screenshot;
@@ -59,7 +59,10 @@ namespace MessengerScreenshare.Client
                 {
                     return null;
                 }
-                await Task.Delay(100);
+                int serverLoad = GetServerLoad(); // You need to implement this method
+                int dynamicDelay = CalculateDynamicDelay(GetCapturedFrameLength(), serverLoad, 100);
+
+                await Task.Delay(dynamicDelay);
             }
         }
 
@@ -87,7 +90,7 @@ namespace MessengerScreenshare.Client
 
                     // Calculate dynamic delay based on the number of connected clients or server load
                     int serverLoad = GetServerLoad(); // You need to implement this method
-                    int dynamicDelay = CalculateDynamicDelay(currentQueueLength, serverLoad);
+                    int dynamicDelay = CalculateDynamicDelay(currentQueueLength, serverLoad, 150);
 
                     try
                     {
@@ -107,12 +110,8 @@ namespace MessengerScreenshare.Client
         }
 
         // Calculate dynamic delay based on the current queue length and server load
-        private int CalculateDynamicDelay(int currentQueueLength, int serverLoad)
+        private int CalculateDynamicDelay(int currentQueueLength, int serverLoad, int maxDelay)
         {
-            // You can customize the logic based on your requirements.
-            // Here, we are using a simple linear relationship between queue length and delay.
-            int maxDelay = 150; // milliseconds
-
             // Adjust the multiplier based on the server load
             int dynamicDelay = currentQueueLength * serverLoad;
 
@@ -125,8 +124,7 @@ namespace MessengerScreenshare.Client
         // Get an estimate of server load (you need to implement this based on your server logic)
         private int GetServerLoad()
         {
-            // Example: Return the number of connected clients or any other metric indicating server load
-            return 0; // Assuming ConnectedClients is a collection of connected clients
+            return _clientnumber; // Assuming ConnectedClients is a collection of connected clients
         }
 
         /// <summary>
@@ -139,12 +137,18 @@ namespace MessengerScreenshare.Client
                 // Attempt to cancel the capture task using the CancellationTokenSource
                 _cancellationTokenSource?.Cancel();
             }
-            catch (Exception e){ // Log an error message if stopping capture encounters an exception
-                Trace.WriteLine(Utils.GetDebugMessage($"Unable to stop capture: {e.Message}", withTimeStamp: true));
+            catch (Exception e)
+            { // Log an error message if stopping capture encounters an exception
+                Logger.Log($"Unable to stop capture: {e.Message}", LogLevel.ERROR);
             }
 
             // Clear the captured frame queue to reset the capture process
             _capturedFrameQueue.Clear();
+        }
+
+        public void SetNoofClients(int noofClients)
+        {
+            _clientnumber = noofClients;
         }
     }
 }

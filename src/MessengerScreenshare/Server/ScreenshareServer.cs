@@ -144,12 +144,12 @@ namespace MessengerScreenshare.Server
 
             lock (_subscribers)
             {
-                if (_subscribers.Count > 4) 
+                if (_subscribers.Count > 0) 
                 {
                     BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Stop), (1, 1));
                     return; 
                 }
-                if (!_subscribers.TryAdd(clientId, new (clientId, clientName, this)))
+                else if (!_subscribers.TryAdd(clientId, new (clientId, clientName, this)))
                 {
                     // If TryAdd fails, the client is already registered.
                     Logger.Log($"Trying to register an already registered client with id {clientId}", LogLevel.INFO);
@@ -284,7 +284,7 @@ namespace MessengerScreenshare.Server
                 {
                     try
                     {
-                        client.UpdateTimer();
+                        client.UpdateTimer(client._timer!);
                         BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
 
                         Logger.Log($"Timer updated for the client with Id: {clientId}", LogLevel.INFO);

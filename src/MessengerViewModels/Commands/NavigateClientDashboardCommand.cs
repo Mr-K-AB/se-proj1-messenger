@@ -43,6 +43,7 @@ namespace MessengerViewModels.Commands
         public override void Execute(object parameter)
         {
             _navigationStore.SubViewModel = _dashboardMemberViewModel;
+            TraceLogger.Logger.Debug("[NavigateClientMeetCommand] In client, on dashboard click, SubViewModel changed to DashboardMemberViewModel");
         }
     }
 }

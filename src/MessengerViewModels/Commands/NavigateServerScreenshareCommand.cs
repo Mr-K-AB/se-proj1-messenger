@@ -44,6 +44,7 @@ namespace MessengerViewModels.Commands
         public override void Execute(object parameter)
         {
             _navigationStore.SubViewModel = _screenshareViewModel;
+            Logger.Debug("[NavigateServerScreenshareCommand] change subviewmodel to screenshareViewModel");
         }
     }
 }

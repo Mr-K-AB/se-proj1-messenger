@@ -56,6 +56,16 @@ namespace MessengerDashboard.UI.Commands
         {
             // Set the local clicked property to false
             _sessionsViewModel.IsLocalClicked = false;
+            _sessionsViewModel.SelectedSession = "Selected: Cloud";
+            _sessionsViewModel.PositiveChatCount = 0; 
+            _sessionsViewModel.NegativeChatCount = 0;
+            _sessionsViewModel.NeutralChatCount = 0;
+            _sessionsViewModel.OverallSentiment = "";
+            _sessionsViewModel.TotalUserCount = 0;
+            _sessionsViewModel.SessionSummary = "";
+            _sessionsViewModel.TimeStampUserCountEntries = new();
+            _sessionsViewModel.UserActivities = new();
+            _sessionsViewModel.Sessions = new();
 
             // Start a new thread to perform the asynchronous cloud data retrieval
             Thread cloudDataRetrievalThread = new(() =>

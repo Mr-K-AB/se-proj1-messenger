@@ -1,4 +1,4 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -26,11 +26,14 @@ namespace MessengerApp.Views
     public partial class SessionControl : UserControl
     {
         private readonly RestClient _restClient;
-        private const string BaseUrl = @"http://localhost:7166/api/entity";
-        public SessionControl()
+        private const string BaseUrl = @"https://messengercloud20231202153618.azurewebsites.net/api/entity";
+        public SessionControl(string? userEmail)
         {
             InitializeComponent();
-            SessionsViewModel viewModel = new();
+            SessionsViewModel viewModel = new()
+            {
+                UserEmail = userEmail
+            };
             DataContext = viewModel;
             _restClient = new(BaseUrl);
         }

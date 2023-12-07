@@ -77,6 +77,7 @@ namespace MessengerDashboard.UI.ViewModels
                     SaveSessionToLocalStorage(entity);
                 }
             }
+            IsDashboardVisible = false;
         }
 
         protected bool _isVisible = true;

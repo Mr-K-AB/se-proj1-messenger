@@ -47,7 +47,7 @@ namespace MessengerDashboard.Client
 
         private int _serverPort;
 
-        private readonly UserInfo _userInfo = new();
+        public UserInfo UserInfo { get; private set; } = new();
 
         // Constructors
         /// <summary>
@@ -161,10 +161,10 @@ namespace MessengerDashboard.Client
                 // Log the connection attempt
                 Trace.WriteLine("Dashboard Client >>> Connecting to server");
                 // Initialize user information
-                _userInfo.UserId = -1;
-                _userInfo.UserName = userName;
-                _userInfo.UserEmail = userEmail;
-                _userInfo.UserPhotoUrl = userPhotoUrl;
+                UserInfo.UserId = -1;
+                UserInfo.UserName = userName;
+                UserInfo.UserEmail = userEmail;
+                UserInfo.UserPhotoUrl = userPhotoUrl;
 
                 // Attempt to start communication with the server
                 string connected = _communicator.Start(serverIp, serverPort.ToString());
@@ -288,9 +288,9 @@ namespace MessengerDashboard.Client
             }
             int userId = serverPayload.UserInfo.UserId;
             Trace.WriteLine("Dashboard Client >>> Setting user info.");
-            _userInfo.UserId = userId;
-            _screenshareClient.SetUser(_userInfo.UserId, _userInfo.UserName);
-            _contentClient.SetUser(_userInfo.UserId, _userInfo.UserName);
+            UserInfo.UserId = userId;
+            _screenshareClient.SetUser(UserInfo.UserId, UserInfo.UserName);
+            _contentClient.SetUser(UserInfo.UserId, UserInfo.UserName);
             Trace.WriteLine("Dashboard Client >>> User info set.");
             SendPayloadToServer(Operation.TakeUserDetails);
         }
@@ -352,7 +352,7 @@ namespace MessengerDashboard.Client
             Trace.WriteLine("Dashboard Client >>> Sending data to server.");
             lock (this)
             {
-                ClientPayload clientPayload = new(operation, _userInfo);
+                ClientPayload clientPayload = new(operation, UserInfo);
                 string serializedData = _serializer.Serialize(clientPayload);
                 _communicator.Send(serializedData, _moduleName, null);
             }
@@ -365,10 +365,10 @@ namespace MessengerDashboard.Client
         private void ExitSession()
         {
             Trace.WriteLine("Dashboard Client >>> Exiting session");
-            _communicator.Stop();
             IsConnectedToServer = false;
-            SessionExited?.Invoke(this, new(ChatSummary, SentimentResult, AnalysisResults));
+            SendPayloadToServer(Operation.CloseConnection);
             Trace.WriteLine("Dashboard Client >>> Exited session");
+            SessionExited?.Invoke(this, new(ChatSummary, SentimentResult, AnalysisResults));
         }
 
         /// <summary>

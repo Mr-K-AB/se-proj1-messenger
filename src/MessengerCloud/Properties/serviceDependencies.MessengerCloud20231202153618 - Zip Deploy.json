@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "appInsights1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/microsoft.insights/components/MessengerCloud",
+      "type": "appInsights.azure",
+      "connectionId": "APPLICATIONINSIGHTS_CONNECTION_STRING"
+    },
+    "storage1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/MessengerCloud20231202153618/providers/Microsoft.ServiceLinker/linkers/AzureWebJobsStorage_9BEA399230, /subscriptions/90a11be9-cc0f-4861-a172-76730a5b875a/resourcegroups/MessengerCloud20231202153618ResourceGroup/providers/Microsoft.Web/sites/MessengerCloud20231202153618/providers/Microsoft.ServiceLinker/linkers/AzureWebJobsStorage_9CEF2D07CB",
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/messengercloud2023120215",
+      "type": "storage.azure",
+      "connectionId": "AzureWebJobsStorage",
+      "dynamicId": null
+    }
+  }
+}

@@ -54,6 +54,14 @@ namespace MessengerDashboard.UI.Commands
         /// <inheritdoc/>
         public void Execute(object? parameter)
         {
+            _sessionsViewModel.PositiveChatCount = 0; 
+            _sessionsViewModel.NegativeChatCount = 0;
+            _sessionsViewModel.NeutralChatCount = 0;
+            _sessionsViewModel.OverallSentiment = "";
+            _sessionsViewModel.TotalUserCount = 0;
+            _sessionsViewModel.SessionSummary = "";
+            _sessionsViewModel.TimeStampUserCountEntries = new();
+            _sessionsViewModel.UserActivities = new();
             if (_sessionsViewModel.IsLocalClicked == true)
             {
                 string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -63,22 +71,32 @@ namespace MessengerDashboard.UI.Commands
                 {
                     File.Delete(path);
                 }
+                _sessionsViewModel.LocalCommand.Execute(null);
             }
             else if (_sessionsViewModel.IsLocalClicked == false)
             {
-                Thread something = new(() =>
+                foreach (DataModels.SessionEntry session in _sessionsViewModel.Sessions)
                 {
-                    try
+                    string[] ids = session.SessionName.Split(";");
+                    if (ids.Length > 1 && ids[1].Trim() != _sessionsViewModel.UserEmail)
                     {
-                        Task task = _restClient.DeleteEntitiesAsync();
-                        task.Wait();
-                        _sessionsViewModel.Sessions = new();
+                        return;
                     }
-                    catch (Exception e) { /* Log or handle the exception */ }
-                })
-                { IsBackground = true };
-                something.Start();
-                something.Join();
+                    Thread something = new(() =>
+                    {
+                        try
+                        {
+                            Task task = _restClient.DeleteEntityAsync(session.SessionName);
+                            task.Wait();
+                            _sessionsViewModel.Sessions = new();
+                        }
+                        catch (Exception e) { /* Log or handle the exception */ }
+                    })
+                    { IsBackground = true };
+                    something.Start();
+                    something.Join();
+                }
+                _sessionsViewModel.CloudCommand.Execute(null);
             }
         }
     }

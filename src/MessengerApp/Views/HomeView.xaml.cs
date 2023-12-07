@@ -25,6 +25,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MessengerViewModels.ViewModels;
 
 namespace MessengerApp.Views
 {
@@ -46,7 +47,10 @@ namespace MessengerApp.Views
 
         private void Session_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new SessionControl();
+            if (DataContext is HomeViewModel homeViewModel)
+            {
+                MainContent.Content = new SessionControl(homeViewModel.UserEmail);
+            }
         }
     }
 }

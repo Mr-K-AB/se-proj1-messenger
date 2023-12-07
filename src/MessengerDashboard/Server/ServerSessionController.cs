@@ -140,45 +140,59 @@ namespace MessengerDashboard.Server
 
         private void CalculateSentiment()
         {
-            Trace.WriteLine("Dashboard Server >>> Getting chats for sentiment");
-            List<ChatThread> chatThreads = _contentServer.GetAllMessages();
-            Trace.WriteLine("Dashboard Server >>> Got chats for summary");
-            List<string> chats = new();
-            foreach (ChatThread chatThread in chatThreads)
+            try
             {
-                foreach (ReceiveChatData receiveChatData in chatThread.MessageList)
+                Trace.WriteLine("Dashboard Server >>> Getting chats for sentiment");
+                List<ChatThread> chatThreads = _contentServer.GetAllMessages();
+                Trace.WriteLine("Dashboard Server >>> Got chats for summary");
+                List<string> chats = new();
+                foreach (ChatThread chatThread in chatThreads)
                 {
-                    if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                    foreach (ReceiveChatData receiveChatData in chatThread.MessageList)
                     {
-                        chats.Add(receiveChatData.Data);
+                        if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                        {
+                            chats.Add(receiveChatData.Data);
+                        }
                     }
                 }
+                Trace.WriteLine("Dashboard Server >>> Received " + chats.Count + " chat(s).");
+                _sentiment = _sentimentAnalyzer.AnalyzeSentiment(chats.ToArray());
+                Trace.WriteLine("Dashboard Server >>> Calculated sentiment");
             }
-            Trace.WriteLine("Dashboard Server >>> Received " + chats.Count + " chat(s).");
-            _sentiment = _sentimentAnalyzer.AnalyzeSentiment(chats.ToArray());
-            Trace.WriteLine("Dashboard Server >>> Calculated sentiment");
+            catch (Exception e)
+            {
+                Trace.WriteLine("Dashboard Server >>> " + e.Message);
+            }
         }
 
         private void CalculateSummary()
         {
-            Trace.WriteLine("Dashboard Server >>> Getting chats for summary");
-            List<ChatThread> chatThreads = _contentServer.GetAllMessages();
-            Trace.WriteLine("Dashboard Server >>> Got chats for summary");
-            List<string> chats = new();
-            foreach (ChatThread chatThread in chatThreads)
+            try
             {
-                foreach (ReceiveChatData receiveChatData in chatThread.MessageList)
+                Trace.WriteLine("Dashboard Server >>> Getting chats for summary");
+                List<ChatThread> chatThreads = _contentServer.GetAllMessages();
+                Trace.WriteLine("Dashboard Server >>> Got chats for summary");
+                List<string> chats = new();
+                foreach (ChatThread chatThread in chatThreads)
                 {
-                    if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                    foreach (ReceiveChatData receiveChatData in chatThread.MessageList)
                     {
-                        chats.Add(receiveChatData.Data);
+                        if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                        {
+                            chats.Add(receiveChatData.Data);
+                        }
                     }
                 }
+                Trace.WriteLine("Dashboard Server >>> Received " + chats.Count + "chats.");
+                TextSummarizationOptions options = new();
+                _textSummary = _textSummarizer.Summarize(chats.ToArray(), options);
+                Trace.WriteLine("Dashboard Server >>> Created Summary");
             }
-            Trace.WriteLine("Dashboard Server >>> Received " + chats.Count + "chats.");
-            TextSummarizationOptions options = new();
-            _textSummary = _textSummarizer.Summarize(chats.ToArray(), options);
-            Trace.WriteLine("Dashboard Server >>> Created Summary");
+            catch (Exception e)
+            {
+                Trace.WriteLine("Dashboard Server >>> " + e.Message);
+            }
         }
 
        private void SendPayloadToClient(Operation operation, int userId, SessionInfo? sessionInfo, UserInfo? userInfo = null,
@@ -220,7 +234,19 @@ namespace MessengerDashboard.Server
         public void OnClientLeft(string clientId)
         {
             int userId = int.Parse(clientId);
-            RemoveClient(userId);
+            bool contains = false;
+            foreach (UserInfo userInfo in SessionInfo.Users)
+            {
+                if (userInfo.UserId == userId)
+                {
+                    contains = true;
+                }
+            }
+            if (contains)
+            {
+                RemoveClient(userId);
+                _communicator.RemoveClient(clientId.ToString());
+            }
         }
 
         /// <summary>
@@ -279,7 +305,9 @@ namespace MessengerDashboard.Server
                     case Operation.Refresh:
                         Refresh();
                         return;
-
+                    case Operation.CloseConnection:
+                        _communicator.RemoveClient(clientPayload.UserInfo.UserId.ToString());
+                        return;
                     default:
                         return;
                 }
@@ -319,6 +347,10 @@ namespace MessengerDashboard.Server
 
         private void ChangeSessionMode(ClientPayload clientPayload)
         {
+            if (!_userIdToUserInfoMap.ContainsKey(clientPayload.UserInfo.UserId))
+            {
+                return;
+            }
             if (clientPayload.UserInfo.UserId == 1) // The leader or instructor
             {
                 Trace.WriteLine("Dashboard Server >>> Changing session mode");
@@ -331,25 +363,33 @@ namespace MessengerDashboard.Server
 
         private void CalculateTelemetryAnalysis()
         {
-            Trace.WriteLine("Dashboard Server >>> Calculating telemetry analysis.");
-            List<ChatThread> chatThreads = _contentServer.GetAllMessages();
-            Dictionary<int, Tuple<UserInfo, List<string>>> userIdToUserInfoAndChatMap = new();
-            foreach (ChatThread chatThread in chatThreads)
+            try
             {
-                foreach (ReceiveChatData receiveChatData in chatThread.MessageList)
+                Trace.WriteLine("Dashboard Server >>> Calculating telemetry analysis.");
+                List<ChatThread> chatThreads = _contentServer.GetAllMessages();
+                Dictionary<int, Tuple<UserInfo, List<string>>> userIdToUserInfoAndChatMap = new();
+                foreach (ChatThread chatThread in chatThreads)
                 {
-                    if (receiveChatData.Type == MessengerContent.MessageType.Chat)
+                    foreach (ReceiveChatData receiveChatData in chatThread.MessageList)
                     {
-                        if (!userIdToUserInfoAndChatMap.ContainsKey(receiveChatData.SenderID))
+                        if (receiveChatData.Type == MessengerContent.MessageType.Chat)
                         {
-                            userIdToUserInfoAndChatMap[receiveChatData.SenderID] = new(_userIdToUserInfoMap[receiveChatData.SenderID], new());
-                            userIdToUserInfoAndChatMap[receiveChatData.SenderID].Item2.Add(receiveChatData.Data);
+                            if (!userIdToUserInfoAndChatMap.ContainsKey(receiveChatData.SenderID) && 
+                                _userIdToUserInfoMap.ContainsKey(receiveChatData.SenderID))
+                            {
+                                userIdToUserInfoAndChatMap.Add(receiveChatData.SenderID, new(_userIdToUserInfoMap[receiveChatData.SenderID], new()));
+                                userIdToUserInfoAndChatMap[receiveChatData.SenderID].Item2.Add(receiveChatData.Data);
+                            }
                         }
                     }
                 }
+                _telemetryAnalysis = _telemetry.UpdateAnalysis(userIdToUserInfoAndChatMap);
+                Trace.WriteLine("Dashboard Server >>> Calculated telemetry analysis.");
             }
-            _telemetryAnalysis = _telemetry.UpdateAnalysis(userIdToUserInfoAndChatMap);
-            Trace.WriteLine("Dashboard Server >>> Calculated telemetry analysis.");
+            catch (Exception e)
+            {
+                Trace.WriteLine("Dashboard Server >>> " + e.Message);
+            }
         }
 
         /// <summary>
@@ -358,6 +398,11 @@ namespace MessengerDashboard.Server
         /// <param name="userId"></param>
         private void RemoveClient(int userId)
         {
+
+            if (!_userIdToUserInfoMap.ContainsKey(userId))
+            {
+                return;
+            }
             if (userId == 1) // The leader or instructor has id 1
             {
                 Trace.WriteLine("Dashboard Server >>> Ending the session");
@@ -367,9 +412,6 @@ namespace MessengerDashboard.Server
                 CalculateSentiment();
                 CalculateTelemetryAnalysis();
                 BroadcastPayloadToClients(Operation.EndSession, SessionInfo, _textSummary, _telemetryAnalysis, _sentiment);
-                Thread.Sleep(4000);
-                _communicator.RemoveClient(userId.ToString());
-                _communicator.Stop();
                 Trace.WriteLine("Dashboard Server >>> Ended the session");
             }
             else // The member or student 
@@ -385,7 +427,6 @@ namespace MessengerDashboard.Server
                 CalculateTelemetryAnalysis();
                 SendPayloadToClient(Operation.EndSession, userId, SessionInfo, null, _textSummary, _telemetryAnalysis, _sentiment);
                 BroadcastPayloadToClients(Operation.SessionUpdated, SessionInfo);
-                _communicator.RemoveClient(userId.ToString());
                 Trace.WriteLine("Dashboard Server >>> Removed Client");
             }
         }

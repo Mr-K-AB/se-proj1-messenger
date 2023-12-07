@@ -1,7 +1,7 @@
 {
     "IsEncrypted": false,
     "Values": {
-        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=messengercloud2023120215;AccountKey=wu6DOq8eG2DUtopdW+dFNuJqRb/Eafrug+97GdpmkuziF9POwK7zXEjRxne5eOhrhNFOwqeB9fd3+AStw9jAXw==;EndpointSuffix=core.windows.net",
         "FUNCTIONS_WORKER_RUNTIME": "dotnet"
     }
 }

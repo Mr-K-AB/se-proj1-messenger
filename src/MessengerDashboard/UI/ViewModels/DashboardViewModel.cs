@@ -35,7 +35,7 @@ namespace MessengerDashboard.UI.ViewModels
     {
         protected readonly IClientSessionController _client = DashboardFactory.GetClientSessionController();
 
-        protected readonly string _cloudUrl = @"http://localhost:7166/api/entity";
+        protected readonly string _cloudUrl = @"https://messengercloud20231202153618.azurewebsites.net/api/entity";
 
         /// <summary>
         /// Default constructor for DashboardViewModel.
@@ -205,6 +205,14 @@ namespace MessengerDashboard.UI.ViewModels
             set => SetProperty(ref _isLocalSavingEnabled, value);
         }
 
+        protected bool _isDashboardVisible = true;
+        public bool IsDashboardVisible
+        {
+            get =>  _isDashboardVisible;
+            set => SetProperty(ref _isDashboardVisible, value);
+        }
+
+
         /// <summary>
         /// Command to end the meeting.
         /// </summary>
@@ -305,9 +313,10 @@ namespace MessengerDashboard.UI.ViewModels
                     x.Value.ExitTime = DateTime.Now;
                 }
             }
+            string session_id = DateTime.Now.ToString("HH:mm:ss") + " ; " + _client.UserInfo.UserEmail + " ; " + Guid.NewGuid().ToString("n");
             EntityInfoWrapper entityInfo = new(textSummary.Sentences, sentimentResult.PositiveChatCount,
                                                sentimentResult.NegativeChatCount, sentimentResult.NeutralChatCount, sentimentResult.OverallSentiment,
-                                               Guid.NewGuid().ToString(), ConvertToCloudObject(analysis));
+                                               session_id, ConvertToCloudObject(analysis));
             return entityInfo;
         }
 

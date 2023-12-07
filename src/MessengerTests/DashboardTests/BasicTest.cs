@@ -1,5 +1,5 @@
 ﻿/******************************************************************************
-* Filename    = BasicTest.cs
+* Filename    = RestClient.cs
 *
 * Author      = Shubh Pareek
 *
@@ -22,7 +22,7 @@ using MessengerDashboard;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 
-namespace MessengerTests.DashboardTests
+namespace MessengerTests.DashboardTests.DashboardTests
 {
     /// <summary>
     /// Basic tests for small methods .
@@ -72,6 +72,27 @@ namespace MessengerTests.DashboardTests
 
 
         }
+        [TestMethod]
+        public void localSaveDeleteTesting()
+        {
+            Logger.LogMessage("Deleting all entries from our local table storage.");
+
+
+            LocalSave.DeleteFile();
+            // Get the local application data folder
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appDataFolder = Path.Combine(localAppData, "Messenger");
+
+            // Combine the "Messenger" folder with the "sessionInfo.txt" file
+            string path = Path.Combine(appDataFolder, "sessionInfo.txt");
+
+            // Check if the file exists
+            if (File.Exists(path))
+            {
+                Assert.Fail("file exists ");
+            }
+
+        }
 
 
 
@@ -93,27 +114,6 @@ namespace MessengerTests.DashboardTests
             LocalSave.AddEntity(info);
             List<EntityInfoWrapper> res = LocalSave.ReadFromFile();
             Assert.AreEqual(JsonSerializer.Serialize(infos[0].Sentences), JsonSerializer.Serialize(res[0].Sentences));
-        }
-        [TestMethod]
-        public void localSaveDeleteTesting()
-        {
-            Logger.LogMessage("Deleting all entries from our local table storage.");
-
-
-            LocalSave.DeleteFile();
-            // Get the local application data folder
-            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string appDataFolder = Path.Combine(localAppData, "Messenger");
-
-            // Combine the "Messenger" folder with the "sessionInfo.txt" file
-            string path = Path.Combine(appDataFolder, "sessionInfo.txt");
-
-            // Check if the file exists
-            if (File.Exists(path))
-            {
-                Assert.Fail("file exists ");
-            }
-
         }
 
 

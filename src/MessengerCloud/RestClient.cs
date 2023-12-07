@@ -12,11 +12,13 @@
 * Description = A rest client class for interacting with entitiy api functions.
 *****************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using MessengerCloud;
 
@@ -26,6 +28,8 @@ namespace MessengerCloud
     {
         private readonly HttpClient _entityClient;
         private readonly string _url;
+       // private const string Extra = "?clientId=blobs_extension";
+        private const string Extra = "";
 
         /// <summary>
         /// Creates an instance of the RestClient class.
@@ -34,6 +38,10 @@ namespace MessengerCloud
         public RestClient(string url)
         {
             _entityClient = new();
+            _entityClient.Timeout = TimeSpan.FromSeconds(300);
+            Trace.WriteLine("[RestClient]: giving timeout"+_entityClient.Timeout.ToString());
+            
+
             _url = url;
             Trace.WriteLine("[RestClient]: new client created ");
         }
@@ -46,7 +54,8 @@ namespace MessengerCloud
         public async Task<Entity?> GetEntityAsync(string? id)
         {
             Trace.WriteLine("[RestClient]: get entity async called ");
-            HttpResponseMessage response = await _entityClient.GetAsync(_url + $"/{id}");
+            HttpResponseMessage response = await _entityClient.GetAsync(_url + $"/{id}"+Extra);
+            Thread.Sleep(2000);
             response.EnsureSuccessStatusCode();
             string result = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
@@ -67,7 +76,8 @@ namespace MessengerCloud
         public async Task<IReadOnlyList<Entity>?> GetEntitiesAsync()
         {
             Trace.WriteLine("[RestClient]: get entities called ");
-            HttpResponseMessage response = await _entityClient.GetAsync(_url);
+            HttpResponseMessage response = await _entityClient.GetAsync(_url+Extra);
+            Thread.Sleep(2000);
             response.EnsureSuccessStatusCode();
             string result = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
@@ -95,7 +105,8 @@ namespace MessengerCloud
             // Convert the JSON string to a ByteArrayContent
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            using HttpResponseMessage response = await _entityClient.PostAsync(_url, content);
+            using HttpResponseMessage response = await _entityClient.PostAsync(_url+Extra, content);
+            Thread.Sleep(2000);
             response.EnsureSuccessStatusCode();
             string result = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
@@ -118,7 +129,8 @@ namespace MessengerCloud
         {
             Trace.WriteLine("[RestClient]: Delete entity called ");
             Debug.WriteLine("deleting this ", id);
-            using HttpResponseMessage response = await _entityClient.DeleteAsync(_url + $"/{id}");
+            using HttpResponseMessage response = await _entityClient.DeleteAsync(_url + $"/{id}" + Extra);
+            Thread.Sleep(2000);
             Trace.WriteLine("[RestClient]: Delete entity Done ");
             response.EnsureSuccessStatusCode();
         }
@@ -131,7 +143,8 @@ namespace MessengerCloud
         {
             Trace.WriteLine("[RestClient]: Delete entities called ");
             Debug.WriteLine("deleting all ");
-            using HttpResponseMessage response = await _entityClient.DeleteAsync(_url);
+            using HttpResponseMessage response = await _entityClient.DeleteAsync(_url + Extra);
+            Thread.Sleep(2000);
             Trace.WriteLine("[RestClient]: Delete entities done ");
             response.EnsureSuccessStatusCode();
         }

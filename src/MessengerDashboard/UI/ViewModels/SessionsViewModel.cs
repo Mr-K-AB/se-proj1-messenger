@@ -40,7 +40,7 @@ namespace MessengerDashboard.UI.ViewModels
             CloudCommand = new CloudCommand(RestClient, this);
             DeleteAllCommand = new DeleteAllCommand(RestClient, this);
         }
-        public RestClient RestClient { get; set; } = new(@"http://localhost:7166/api/entity");
+        public RestClient RestClient { get; set; } = new(@"https://messengercloud20231202153618.azurewebsites.net/api/entity");
 
         private List<TimeStampUserCountEntry> _timeStampChatCountEntries;
 
@@ -113,6 +113,13 @@ namespace MessengerDashboard.UI.ViewModels
             set => SetProperty(ref _overallSentiment, value);
         }
 
+        private string _selectedSession = "Select Session";
+        public string SelectedSession
+        {
+            get =>  _selectedSession;
+            set => SetProperty(ref _selectedSession, value);
+        }
+
         public bool? IsLocalClicked { get; set; } = null;
 
         public ICommand LocalCommand { get; set; }
@@ -120,5 +127,7 @@ namespace MessengerDashboard.UI.ViewModels
         public ICommand CloudCommand { get; set; }
 
         public ICommand DeleteAllCommand { get; set; }
+
+        public string UserEmail { get; set; }
     }
 }

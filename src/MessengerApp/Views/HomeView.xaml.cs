@@ -34,15 +34,16 @@ namespace MessengerApp.Views
     /// </summary>
     public partial class HomeView : UserControl
     {
+        private readonly MeetingView _meetingView = new();
         public HomeView()
         {
             InitializeComponent();
+            MainContent.Content = _meetingView;
         }
 
         private void Meeting_Click(object sender, RoutedEventArgs e)
         {
-            MeetingView meetingView = new();
-            MainContent.Content = meetingView;
+            MainContent.Content = _meetingView;
         }
 
         private void Session_Click(object sender, RoutedEventArgs e)

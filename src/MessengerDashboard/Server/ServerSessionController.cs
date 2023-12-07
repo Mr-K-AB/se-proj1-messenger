@@ -28,6 +28,7 @@ using MessengerContent.DataModels;
 using System.Net.Sockets;
 using MessengerNetworking.NotificationHandler;
 using System.Threading;
+using TraceLogger;
 
 namespace MessengerDashboard.Server
 {
@@ -126,7 +127,7 @@ namespace MessengerDashboard.Server
 
                                                       Analysis? sessionAnalytics = null, SentimentResult? sentiment = null, UserInfo? user = null)
         {
-            Trace.WriteLine("Dashboard Server >>> Broadcasting data");
+            CreateLog("Dashboard Server >>> Broadcasting data");
             ServerPayload serverPayload;
             lock (this)
             {
@@ -134,7 +135,7 @@ namespace MessengerDashboard.Server
                 string serializedData = _serializer.Serialize(serverPayload);
                 _communicator.Send(serializedData, _moduleName, null);
             }
-            Trace.WriteLine("Dashboard Server >>> Broadcasted data");
+            CreateLog("Dashboard Server >>> Broadcasted data");
         }
 
 
@@ -142,9 +143,9 @@ namespace MessengerDashboard.Server
         {
             try
             {
-                Trace.WriteLine("Dashboard Server >>> Getting chats for sentiment");
+                CreateLog("Dashboard Server >>> Getting chats for sentiment");
                 List<ChatThread> chatThreads = _contentServer.GetAllMessages();
-                Trace.WriteLine("Dashboard Server >>> Got chats for summary");
+                CreateLog("Dashboard Server >>> Got chats for summary");
                 List<string> chats = new();
                 foreach (ChatThread chatThread in chatThreads)
                 {
@@ -156,13 +157,13 @@ namespace MessengerDashboard.Server
                         }
                     }
                 }
-                Trace.WriteLine("Dashboard Server >>> Received " + chats.Count + " chat(s).");
+                CreateLog("Dashboard Server >>> Received " + chats.Count + " chat(s).");
                 _sentiment = _sentimentAnalyzer.AnalyzeSentiment(chats.ToArray());
-                Trace.WriteLine("Dashboard Server >>> Calculated sentiment");
+                CreateLog("Dashboard Server >>> Calculated sentiment");
             }
             catch (Exception e)
             {
-                Trace.WriteLine("Dashboard Server >>> " + e.Message);
+                CreateLog("Dashboard Server >>> " + e.Message, LogLevel.ERROR);
             }
         }
 
@@ -170,9 +171,9 @@ namespace MessengerDashboard.Server
         {
             try
             {
-                Trace.WriteLine("Dashboard Server >>> Getting chats for summary");
+                CreateLog("Dashboard Server >>> Getting chats for summary");
                 List<ChatThread> chatThreads = _contentServer.GetAllMessages();
-                Trace.WriteLine("Dashboard Server >>> Got chats for summary");
+                CreateLog("Dashboard Server >>> Got chats for summary");
                 List<string> chats = new();
                 foreach (ChatThread chatThread in chatThreads)
                 {
@@ -184,14 +185,14 @@ namespace MessengerDashboard.Server
                         }
                     }
                 }
-                Trace.WriteLine("Dashboard Server >>> Received " + chats.Count + "chats.");
+                CreateLog("Dashboard Server >>> Received " + chats.Count + "chats.");
                 TextSummarizationOptions options = new();
                 _textSummary = _textSummarizer.Summarize(chats.ToArray(), options);
-                Trace.WriteLine("Dashboard Server >>> Created Summary");
+                CreateLog("Dashboard Server >>> Created Summary");
             }
             catch (Exception e)
             {
-                Trace.WriteLine("Dashboard Server >>> " + e.Message);
+                CreateLog("Dashboard Server >>> " + e.Message, LogLevel.ERROR);
             }
         }
 
@@ -206,7 +207,7 @@ namespace MessengerDashboard.Server
                 string serializedData = _serializer.Serialize(serverPayload);
                 _communicator.Send(serializedData, _moduleName, userId.ToString());
             }
-            Trace.WriteLine("Dashboard Server >>> Data sent to client");
+            CreateLog("Dashboard Server >>> Data sent to client");
         }
 
         /// <summary>
@@ -215,7 +216,7 @@ namespace MessengerDashboard.Server
         /// <param name="socketObject"></param>
         public void OnClientJoined(TcpClient socketObject)
         {
-            Trace.WriteLine("Dashboard Server >>> Adding Client to session");
+            CreateLog("Dashboard Server >>> Adding Client to session");
             _clientCount += 1;
 
             // The unique id for a client.
@@ -258,7 +259,7 @@ namespace MessengerDashboard.Server
         {
             if (string.IsNullOrEmpty(serializedData))
             {
-                Trace.WriteLine("Dashboard Server >>> Null data received from communicator");
+                CreateLog("Dashboard Server >>> Null data received from communicator", LogLevel.WARNING);
                 return null;
             }
             ClientPayload? clientPayload = _serializer.Deserialize<ClientPayload>(serializedData);
@@ -266,7 +267,7 @@ namespace MessengerDashboard.Server
                 clientPayload.UserInfo == null ||
                 string.IsNullOrEmpty(clientPayload.UserInfo.UserName))
             {
-                Trace.WriteLine("Dashboard Server >>> Null user received from communicator");
+                CreateLog("Dashboard Server >>> Null user received from communicator", LogLevel.WARNING);
                 clientPayload = null;
             }
             return clientPayload;
@@ -280,7 +281,7 @@ namespace MessengerDashboard.Server
         {
             try
             {
-                Trace.WriteLine("Dashboard Server >>> Data received from communicator");
+                CreateLog("Dashboard Server >>> Data received from communicator");
                 ClientPayload? clientPayload = DeserializeData(serializedData);
                 if (clientPayload == null)
                 {
@@ -314,7 +315,7 @@ namespace MessengerDashboard.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine("Dashboard Server >>> Exception: " + e.Message);
+                CreateLog("Dashboard Server >>> Exception: " + e.Message, LogLevel.ERROR);
             }
         }
 
@@ -323,12 +324,12 @@ namespace MessengerDashboard.Server
         /// </summary>
         private void Refresh()
         {
-            Trace.WriteLine("Dashboard Server >>> Started refresh");
+            CreateLog("Dashboard Server >>> Started refresh");
             CalculateSummary();
             CalculateTelemetryAnalysis();
             CalculateSentiment();
             BroadcastPayloadToClients(Operation.Refresh, SessionInfo, _textSummary, _telemetryAnalysis, _sentiment);
-            Trace.WriteLine("Dashboard Server >>> Done refresh");
+            CreateLog("Dashboard Server >>> Done refresh");
         }
 
         /// <summary>
@@ -337,12 +338,12 @@ namespace MessengerDashboard.Server
         /// <param name="userInfo"></param>
         private void IncludeClientInSession(UserInfo userInfo)
         {
-            Trace.WriteLine("Dashboard Server >>> Adding Client to session");
+            CreateLog("Dashboard Server >>> Adding Client to session");
             SessionInfo.Users.Add(userInfo);
             _userIdToUserInfoMap[userInfo.UserId] = userInfo;
             SessionUpdated?.Invoke(this, new (SessionInfo));
             Refresh();
-            Trace.WriteLine("Dashboard Server >>> Added Client to session");
+            CreateLog("Dashboard Server >>> Added Client to session");
         }
 
         private void ChangeSessionMode(ClientPayload clientPayload)
@@ -353,11 +354,11 @@ namespace MessengerDashboard.Server
             }
             if (clientPayload.UserInfo.UserId == 1) // The leader or instructor
             {
-                Trace.WriteLine("Dashboard Server >>> Changing session mode");
+                CreateLog("Dashboard Server >>> Changing session mode");
                 SessionInfo.SessionMode = (clientPayload.Operation == Operation.ExamMode) ? SessionMode.Exam : SessionMode.Lab;
                 SessionUpdated?.Invoke(this, new (SessionInfo));
                 BroadcastPayloadToClients(Operation.SessionUpdated, SessionInfo);
-                Trace.WriteLine("Dashboard Server >>> Changed session mode");
+                CreateLog("Dashboard Server >>> Changed session mode");
             }
         }
 
@@ -365,7 +366,7 @@ namespace MessengerDashboard.Server
         {
             try
             {
-                Trace.WriteLine("Dashboard Server >>> Calculating telemetry analysis.");
+                CreateLog("Dashboard Server >>> Calculating telemetry analysis.");
                 List<ChatThread> chatThreads = _contentServer.GetAllMessages();
                 Dictionary<int, Tuple<UserInfo, List<string>>> userIdToUserInfoAndChatMap = new();
                 foreach (ChatThread chatThread in chatThreads)
@@ -384,11 +385,11 @@ namespace MessengerDashboard.Server
                     }
                 }
                 _telemetryAnalysis = _telemetry.UpdateAnalysis(userIdToUserInfoAndChatMap);
-                Trace.WriteLine("Dashboard Server >>> Calculated telemetry analysis.");
+                CreateLog("Dashboard Server >>> Calculated telemetry analysis.");
             }
             catch (Exception e)
             {
-                Trace.WriteLine("Dashboard Server >>> " + e.Message);
+                CreateLog("Dashboard Server >>> " + e.Message, LogLevel.ERROR);
             }
         }
 
@@ -405,18 +406,18 @@ namespace MessengerDashboard.Server
             }
             if (userId == 1) // The leader or instructor has id 1
             {
-                Trace.WriteLine("Dashboard Server >>> Ending the session");
+                CreateLog("Dashboard Server >>> Ending the session");
                 SessionInfo.Users.Clear();
                 SessionUpdated?.Invoke(this, new(SessionInfo));
                 CalculateSummary();
                 CalculateSentiment();
                 CalculateTelemetryAnalysis();
                 BroadcastPayloadToClients(Operation.EndSession, SessionInfo, _textSummary, _telemetryAnalysis, _sentiment);
-                Trace.WriteLine("Dashboard Server >>> Ended the session");
+                CreateLog("Dashboard Server >>> Ended the session");
             }
             else // The member or student 
             {
-                Trace.WriteLine("Dashboard Server >>> Removing Client");
+                CreateLog("Dashboard Server >>> Removing Client");
                 int removedCount = SessionInfo.Users.RemoveAll(user => user.UserId == userId);
                 if (removedCount != 0)
                 {
@@ -427,8 +428,14 @@ namespace MessengerDashboard.Server
                 CalculateTelemetryAnalysis();
                 SendPayloadToClient(Operation.EndSession, userId, SessionInfo, null, _textSummary, _telemetryAnalysis, _sentiment);
                 BroadcastPayloadToClients(Operation.SessionUpdated, SessionInfo);
-                Trace.WriteLine("Dashboard Server >>> Removed Client");
+                CreateLog("Dashboard Server >>> Removed Client");
             }
+        }
+
+        private void CreateLog(string message, TraceLogger.LogLevel level = LogLevel.INFO)
+        {
+            Trace.WriteLine(message);
+            Logger.Log(message, level);
         }
     }
 }

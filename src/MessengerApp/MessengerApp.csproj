@@ -75,6 +75,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Logger\Logger.csproj" />
     <ProjectReference Include="..\MessengerDashboard\MessengerDashboard.csproj" />
     <ProjectReference Include="..\MessengerScreenshare\MessengerScreenshare.csproj" />
     <ProjectReference Include="..\MessengerViewModels\MessengerViewModels.csproj" />

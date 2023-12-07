@@ -19,6 +19,7 @@
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Logger\Logger.csproj" />
     <ProjectReference Include="..\MessengerNetworking\MessengerNetworking.csproj" />
   </ItemGroup>
 </Project>

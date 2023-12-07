@@ -20,6 +20,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using TraceLogger;
 
 namespace MessengerScreenshare.Server
 {
@@ -108,7 +109,7 @@ namespace MessengerScreenshare.Server
             _isPopupOpen = false;
             _popupText = "";
 
-            Trace.WriteLine(Utils.GetDebugMessage("Successfully created an instance for the view model", withTimeStamp: true));
+            Logger.Log("Successfully created an instance for the view model", LogLevel.INFO);
         }
 
         /// <summary>
@@ -151,7 +152,7 @@ namespace MessengerScreenshare.Server
             // Recompute the current  clients to notify the UX.
             RecomputeCurrentClients();
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully updated the subscribers list", withTimeStamp: true));
+            Logger.Log($"Successfully updated the subscribers list", LogLevel.INFO);
         }
 
         /// <summary>
@@ -170,7 +171,7 @@ namespace MessengerScreenshare.Server
                 return;
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage($"{clientName} with Id {clientId} has started screen sharing", withTimeStamp: true));
+            Logger.Log($"{clientName} with Id {clientId} has started screen sharing", LogLevel.INFO);
             DisplayPopup($"{clientName} has started screen sharing");
         }
 
@@ -190,7 +191,7 @@ namespace MessengerScreenshare.Server
                 return;
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage($"{clientName} with Id {clientId} has stopped screen sharing", withTimeStamp: true));
+            Logger.Log($"{clientName} with Id {clientId} has stopped screen sharing", LogLevel.INFO);
             DisplayPopup($"{clientName} has stopped screen sharing");
         }
 
@@ -406,7 +407,7 @@ namespace MessengerScreenshare.Server
             // Notifies the new clients about the status of sending image packets.
             NotifySubscribers(newClients, (newNumRows, newNumCols));
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully recomputed current clients", withTimeStamp: true));
+            Logger.Log($"Successfully recomputed current clients", LogLevel.INFO);
         }
 
         /// <summary>
@@ -432,7 +433,7 @@ namespace MessengerScreenshare.Server
                 // If client not found.
                 if (pinnedScreenIdx == -1)
                 {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Client Id: {clientId} not found in the subscribers list", withTimeStamp: true));
+                    Logger.Log($"Client Id: {clientId} not found in the subscribers list", LogLevel.INFO);
                     return;
                 }
 
@@ -448,7 +449,7 @@ namespace MessengerScreenshare.Server
             // Switch to the view of the client.
             RecomputeCurrentClients();
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully pinned the client with id: {clientId}", withTimeStamp: true));
+            Logger.Log($"Successfully pinned the client with id: {clientId}", LogLevel.INFO);
         }
 
         /// <summary>
@@ -474,7 +475,7 @@ namespace MessengerScreenshare.Server
                 // If client not found.
                 if (unpinnedScreenIdx == -1)
                 {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Client Id: {clientId} not found in the subscribers list", withTimeStamp: true));
+                    Logger.Log($"Client Id: {clientId} not found in the subscribers list", LogLevel.INFO);
                     return;
                 }
 
@@ -490,7 +491,7 @@ namespace MessengerScreenshare.Server
             //  Switch to the previous view.
             RecomputeCurrentClients();
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully unpinned the client with id: {clientId}", withTimeStamp: true));
+            Logger.Log($"Successfully unpinned the client with id: {clientId}", LogLevel.INFO);
         }
 
         /// <summary>
@@ -671,7 +672,7 @@ namespace MessengerScreenshare.Server
                             }
                             catch (Exception e)
                             {
-                                Trace.WriteLine(Utils.GetDebugMessage($"Failed to update the view: {e.Message}", withTimeStamp: true));
+                                Logger.Log($"Failed to update the view: {e.Message}", LogLevel.INFO);
                             }
 
                         }
@@ -680,7 +681,7 @@ namespace MessengerScreenshare.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Failed to start the processing: {e.Message}", withTimeStamp: true));
+                Logger.Log($"Failed to start the processing: {e.Message}", LogLevel.INFO);
             }
         }
 
@@ -707,7 +708,7 @@ namespace MessengerScreenshare.Server
             // Start processing for the current  clients.
             StartProcessingForClients(currentClients);
 
-            Trace.WriteLine(Utils.GetDebugMessage("Successfully notified the new current  clients", withTimeStamp: true));
+            Logger.Log("Successfully notified the new current  clients", LogLevel.INFO);
         }
 
         /// <summary>

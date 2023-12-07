@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.IO.Compression;
 using System.Diagnostics;
+using TraceLogger;
 
 namespace MessengerScreenshare.Server
 {
@@ -168,12 +169,12 @@ namespace MessengerScreenshare.Server
                     }
                     if (newFrame == null)
                     {
-                        Trace.WriteLine(Utils.GetDebugMessage("New frame returned by _sharedClientScreen is null.", withTimeStamp: true));
+                        Logger.Log("New frame returned by _sharedClientScreen is null.", LogLevel.INFO);
                         continue;
                     }
 
                     Bitmap stichedImage = Stitch(_priorImage, newFrame);
-                    Trace.WriteLine(Utils.GetDebugMessage($"STITCHED image from client {_cnt++}", withTimeStamp: true));
+                    Logger.Log($"STITCHED image from client {_cnt++}", LogLevel.INFO);
                     _priorImage = stichedImage;
                     _sharedClientScreen.PutFinalImage(stichedImage, taskId);
                 }
@@ -181,7 +182,7 @@ namespace MessengerScreenshare.Server
 
             _stitchTask?.Start();
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully created the stitching task with id {taskId} for the client with id {_sharedClientScreen.Id}", withTimeStamp: true));
+            Logger.Log($"Successfully created the stitching task with id {taskId} for the client with id {_sharedClientScreen.Id}", LogLevel.INFO);
         }
 
         /// <summary>
@@ -203,10 +204,10 @@ namespace MessengerScreenshare.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Failed to start the stitching: {e.Message}", withTimeStamp: true));
+                Logger.Log($"Failed to start the stitching: {e.Message}", LogLevel.INFO);
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully stopped the processing task for the client with id {_sharedClientScreen.Id}", withTimeStamp: true));
+            Logger.Log($"Successfully stopped the processing task for the client with id {_sharedClientScreen.Id}", LogLevel.INFO);
 
         }
 

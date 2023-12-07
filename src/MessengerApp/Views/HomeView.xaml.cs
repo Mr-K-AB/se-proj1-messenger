@@ -26,6 +26,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MessengerViewModels.ViewModels;
+using TraceLogger;
 
 namespace MessengerApp.Views
 {
@@ -44,6 +45,7 @@ namespace MessengerApp.Views
         private void Meeting_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = _meetingView;
+            Logger.Debug("[HomeView] On Meeting_Click, main content changed to meetingview usercontrol");
         }
 
         private void Session_Click(object sender, RoutedEventArgs e)

@@ -24,6 +24,7 @@ using System.Diagnostics;
 //using MessengerDashboard.Client;
 //using MessengerDashboard.UI.ViewModels;
 using MessengerScreenshare.Client;
+using TraceLogger;
 
 namespace MessengerViewModels.Commands
 {
@@ -44,6 +45,7 @@ namespace MessengerViewModels.Commands
         public override void Execute(object parameter)
         {
             _navigationStore.SubViewModel = _screenshareViewModel;
+            Logger.Debug("[NavigateClientScreenshareCommand] change subviewmodel to screenshareViewModel");
         }
     }
 }

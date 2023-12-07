@@ -51,15 +51,17 @@ namespace MessengerApp.ViewModels
 
             if (authResult.IsAuthenticated == false)
             {
-                Logger.Warn($"[Authentication] Google Authentication failed. AuthenticationResult isAuthenticated={authResult.IsAuthenticated}");
+                Logger.Warn($"{DateTime.Now:s}[AuthenticationViewModel] Google Authentication failed. AuthenticationResult isAuthenticated={authResult.IsAuthenticated}");
                 return;
             }
+            Logger.Inform($"{DateTime.Now:s}[AuthenticationViewModel] Authentication successful. AuthenticationResult isAuthenticated={authResult.IsAuthenticated}");
 
             NavigationStore navigationStore = new()
             {
                 AuthResult = authResult
             };
             navigationStore.CurrentViewModel = new HomeViewModel(navigationStore);
+            Logger.Inform($"[AuthenticationViewModel]Current ViewModel changed to {navigationStore.CurrentViewModel}");
             
             var newWindow = new MainWindow
             {

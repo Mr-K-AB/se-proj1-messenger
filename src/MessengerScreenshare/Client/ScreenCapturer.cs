@@ -75,44 +75,58 @@ namespace MessengerScreenshare.Client
         /// </summary>
         public void StartCapture()
         {
-            // Initialize a new CancellationTokenSource for managing the capture task
             _cancellationTokenSource = new CancellationTokenSource();
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
-            // Start a new asynchronous task to perform screen capture
             Task.Run(async () =>
             {
-                // Continue capturing frames until cancellation is requested
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    // Check if the captured frame queue is below the maximum allowed length
-                    if (_capturedFrameQueue.Count < MaxQueueLength)
+                    int currentQueueLength = GetCapturedFrameLength();
+
+                    // Calculate dynamic delay based on the number of connected clients or server load
+                    int serverLoad = GetServerLoad(); // You need to implement this method
+                    int dynamicDelay = CalculateDynamicDelay(currentQueueLength, serverLoad);
+
+                    try
                     {
-                        try
+                        Bitmap? img = _screenshot.MakeScreenshot();
+                        if (img != null)
                         {
-                            // Capture a screenshot and add it to the queue after a delay
-                            Bitmap? img = _screenshot.MakeScreenshot();
-                            if (img != null)
-                            {
-                                await Task.Delay(150);
-                                _capturedFrameQueue.Enqueue(img);
-                            }
-                        }
-                        catch (Exception e){ // Log an error message if capturing a screenshot fails
-                            Trace.WriteLine($"[Screenshare] Could not capture screenshot: {e.Message}");
+                            await Task.Delay(dynamicDelay);
+                            _capturedFrameQueue.Enqueue(img);
                         }
                     }
-                    else { // Reduce the queue size by dequeuing frames if it exceeds half of the maximum length
-                        while (_capturedFrameQueue.Count > MaxQueueLength / 2) {
-                            if (_capturedFrameQueue.TryDequeue(out Bitmap? _)) {
-                                await Task.Delay(1); // Introduce a small delay to avoid busy waiting
-                            }
-                        }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine($"[Screenshare] Could not capture screenshot: {e.Message}");
                     }
                 }
             });
         }
 
+        // Calculate dynamic delay based on the current queue length and server load
+        private int CalculateDynamicDelay(int currentQueueLength, int serverLoad)
+        {
+            // You can customize the logic based on your requirements.
+            // Here, we are using a simple linear relationship between queue length and delay.
+            int maxDelay = 150; // milliseconds
+
+            // Adjust the multiplier based on the server load
+            int dynamicDelay = currentQueueLength * serverLoad;
+
+            // Ensure that the dynamic delay does not exceed the maximum allowed delay
+            dynamicDelay = Math.Min(dynamicDelay, maxDelay);
+
+            return dynamicDelay;
+        }
+
+        // Get an estimate of server load (you need to implement this based on your server logic)
+        private int GetServerLoad()
+        {
+            // Example: Return the number of connected clients or any other metric indicating server load
+            return ConnectedClients.Count; // Assuming ConnectedClients is a collection of connected clients
+        }
 
         /// <summary>
         /// Stops the screen capture process and clears the captured frame queue.

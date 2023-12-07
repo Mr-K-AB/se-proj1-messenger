@@ -144,7 +144,7 @@ namespace MessengerScreenshare.Server
 
             lock (_subscribers)
             {
-                if (_subscribers.Count > 0) 
+                if (_subscribers.Count > 3) 
                 {
                     BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Stop), (1, 1));
                     return; 

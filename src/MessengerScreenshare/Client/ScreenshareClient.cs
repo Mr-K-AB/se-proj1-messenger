@@ -337,7 +337,7 @@ namespace MessengerScreenshare.Client
                 {
                     _communicator.Send(serializedConfirmationPacket, Utils.ServerIdentifier, null);
                     Logger.Log($"Sent cofirmation packet to server", LogLevel.INFO);
-                    await Task.Delay(5000);
+                    await Task.Delay(3950);
                 }
             });
 

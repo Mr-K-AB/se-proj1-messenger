@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Logger\Logger.csproj" />
     <ProjectReference Include="..\MessengerCloud\MessengerCloud.csproj" />
     <ProjectReference Include="..\MessengerContent\MessengerContent.csproj" />
     <ProjectReference Include="..\MessengerNetworking\MessengerNetworking.csproj" />

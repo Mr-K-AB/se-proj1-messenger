@@ -25,6 +25,8 @@ using MessengerScreenshare.Client;
 using MessengerContent.Client;
 using MessengerDashboard.Sentiment;
 using MessengerNetworking.NotificationHandler;
+using Microsoft.Extensions.Logging;
+using TraceLogger;
 
 namespace MessengerDashboard.Client
 {
@@ -55,12 +57,12 @@ namespace MessengerDashboard.Client
         /// </summary>
         public ClientSessionController()
         {
-            Trace.WriteLine("Dashboard Client >>> Creating Client Session Manager");
+            CreateLog("Dashboard Client >>> Creating Client Session Manager");
             _communicator = CommunicationFactory.GetCommunicator(true);
             _communicator.Subscribe(_moduleName, this);
             _contentClient = ContentClientFactory.GetInstance();
             _screenshareClient = ScreenshareFactory.getInstance();
-            Trace.WriteLine("Dashboard Client >>> Created Client Session Manager");
+            CreateLog("Dashboard Client >>> Created Client Session Manager");
         }
 
 
@@ -72,12 +74,12 @@ namespace MessengerDashboard.Client
         /// <param name="screenshareClient">The screenshare client instance</param>
         public ClientSessionController(ICommunicator communicator, IContentClient contentClient, IScreenshareClient screenshareClient)
         {
-            Trace.WriteLine("Dashboard Client >>> Creating Client Session Manager");
+            CreateLog("Dashboard Client >>> Creating Client Session Manager");
             _communicator = communicator;
             _communicator.Subscribe(_moduleName, this);
             _contentClient = contentClient;
             _screenshareClient = screenshareClient;
-            Trace.WriteLine("Dashboard Client >>> Created Client Session Manager");
+            CreateLog("Dashboard Client >>> Created Client Session Manager");
         }
 
       
@@ -146,20 +148,20 @@ namespace MessengerDashboard.Client
             _serverIp = serverIp;
             _serverPort = serverPort;
             // Log connection attempt
-            Trace.WriteLine("Dashboard Client >>> Connecting to server at IP: " +
+            CreateLog("Dashboard Client >>> Connecting to server at IP: " +
                              serverIp + " Port: " + serverPort);
 
             // Check if the username is not empty or whitespace
             if (string.IsNullOrWhiteSpace(userName))
             {
-                Trace.WriteLine("Dashboard Client >>> Null username received");
+                CreateLog("Dashboard Client >>> Null username received", TraceLogger.LogLevel.WARNING);
                 return false;
             }
             // Lock to ensure thread safety during connection attempt
             lock (this)
             {
                 // Log the connection attempt
-                Trace.WriteLine("Dashboard Client >>> Connecting to server");
+                CreateLog("Dashboard Client >>> Connecting to server");
                 // Initialize user information
                 UserInfo.UserId = -1;
                 UserInfo.UserName = userName;
@@ -172,12 +174,12 @@ namespace MessengerDashboard.Client
                 // Check if the connection was successful
                 if (connected == "failure")
                 {
-                    Trace.WriteLine("Dashboard Client >>> Connection failed");
+                    CreateLog("Dashboard Client >>> Connection failed", TraceLogger.LogLevel.WARNING);
                 }
                 else
                 {
                     IsConnectedToServer = true;
-                    Trace.WriteLine("Dashboard Client >>> Connection succeeded");
+                    CreateLog("Dashboard Client >>> Connection succeeded");
                 }
             }
 
@@ -191,13 +193,13 @@ namespace MessengerDashboard.Client
         public void SendRefreshRequestToServer()
         {
             // Log the refresh request
-            Trace.WriteLine("Dashboard Client >>> Requesting server for any updates");
+            CreateLog("Dashboard Client >>> Requesting server for any updates");
 
             // Send a refresh payload to the server
             SendPayloadToServer(Operation.Refresh);
 
             // Log that the request has been made
-            Trace.WriteLine("Dashboard Client >>> Requested server for any updates");
+            CreateLog("Dashboard Client >>> Requested server for any updates");
         }
 
         /// <summary>
@@ -209,12 +211,12 @@ namespace MessengerDashboard.Client
             // Check if the received serialized data is null
             if (serializedData == null)
             {
-                Trace.WriteLine("Dashboard Server >>> Received null serialized data from network");
+                CreateLog("Dashboard Server >>> Received null serialized data from network", TraceLogger.LogLevel.WARNING);
                 return;
             }
 
             // Log that data has been received from the network
-            Trace.WriteLine("Dashboard Server >>> Data received from network");
+            CreateLog("Dashboard Server >>> Data received from network");
             try
             {
                 // Deserialize the received data into a ServerPayload
@@ -226,7 +228,7 @@ namespace MessengerDashboard.Client
             catch (Exception e)
             {
                 // Log any exceptions that occur during data handling
-                Trace.WriteLine("Dashboard Client >>> Exception " + e);
+                CreateLog("Dashboard Client >>> Exception " + e, TraceLogger.LogLevel.ERROR);
             }
         }
 
@@ -267,7 +269,7 @@ namespace MessengerDashboard.Client
             // Check if the received session info is null
             if (serverPayload.SessionInfo == null) 
             { 
-                Trace.WriteLine("Dashboard Client >>> Null session info received");
+                CreateLog("Dashboard Client >>> Null session info received", TraceLogger.LogLevel.WARNING);
                 return;
             }
 
@@ -283,15 +285,15 @@ namespace MessengerDashboard.Client
         {
             if (serverPayload.UserInfo == null)
             {
-                Trace.WriteLine("Dashboard Client >>> Received null user info in GiveUser operation.");
+                CreateLog("Dashboard Client >>> Received null user info in GiveUser operation.", TraceLogger.LogLevel.WARNING);
                 return;
             }
             int userId = serverPayload.UserInfo.UserId;
-            Trace.WriteLine("Dashboard Client >>> Setting user info.");
+            CreateLog("Dashboard Client >>> Setting user info.");
             UserInfo.UserId = userId;
             _screenshareClient.SetUser(UserInfo.UserId, UserInfo.UserName);
             _contentClient.SetUser(UserInfo.UserId, UserInfo.UserName);
-            Trace.WriteLine("Dashboard Client >>> User info set.");
+            CreateLog("Dashboard Client >>> User info set.");
             SendPayloadToServer(Operation.TakeUserDetails);
         }
 
@@ -302,13 +304,13 @@ namespace MessengerDashboard.Client
         private void Refresh(ServerPayload serverPayload)
         {
 
-            Trace.WriteLine("Dashboard Client >>> Refreshing");
+            CreateLog("Dashboard Client >>> Refreshing");
             UpdateSummary(serverPayload.Summary);
             UpdateTelemetryAnalysis(serverPayload.SessionAnalysis);
             UpdateSentiment(serverPayload.Sentiment);
             UpdateSessionData(serverPayload.SessionInfo);
             Refreshed?.Invoke(this, new(AnalysisResults, SentimentResult, ChatSummary, SessionInfo));
-            Trace.WriteLine("Dashboard Client >>> Refreshed");
+            CreateLog("Dashboard Client >>> Refreshed");
         }
 
         /// <summary>
@@ -316,9 +318,9 @@ namespace MessengerDashboard.Client
         /// </summary>
         public void SendExitSessionRequestToServer()
         {
-            Trace.WriteLine("Dashboard Client >>> Requesting server to let client exit.");
+            CreateLog("Dashboard Client >>> Requesting server to let client exit.");
             SendPayloadToServer(Operation.RemoveClient);
-            Trace.WriteLine("Dashboard Client >>> Requested server to let client exit.");
+            CreateLog("Dashboard Client >>> Requested server to let client exit.");
         }
 
         /// <summary>
@@ -327,9 +329,9 @@ namespace MessengerDashboard.Client
         public void SendLabModeRequestToServer()
         {
 
-            Trace.WriteLine("Dashboard Client >>> Requesting server for lab mode.");
+            CreateLog("Dashboard Client >>> Requesting server for lab mode.");
             SendPayloadToServer(Operation.LabMode);
-            Trace.WriteLine("Dashboard Client >>> Requested server for lab mode.");
+            CreateLog("Dashboard Client >>> Requested server for lab mode.");
         }
 
         /// <summary>
@@ -337,9 +339,9 @@ namespace MessengerDashboard.Client
         /// </summary>
         public void SendExamModeRequestToServer()
         {
-            Trace.WriteLine("Dashboard Client >>> Requesting server for lab mode.");
+            CreateLog("Dashboard Client >>> Requesting server for lab mode.");
             SendPayloadToServer(Operation.ExamMode);
-            Trace.WriteLine("Dashboard Client >>> Requested server for lab mode.");
+            CreateLog("Dashboard Client >>> Requested server for lab mode.");
         }
 
         /// <summary>
@@ -349,14 +351,14 @@ namespace MessengerDashboard.Client
 
         private void SendPayloadToServer(Operation operation)
         {
-            Trace.WriteLine("Dashboard Client >>> Sending data to server.");
+            CreateLog("Dashboard Client >>> Sending data to server.");
             lock (this)
             {
                 ClientPayload clientPayload = new(operation, UserInfo);
                 string serializedData = _serializer.Serialize(clientPayload);
                 _communicator.Send(serializedData, _moduleName, null);
             }
-            Trace.WriteLine("Dashboard Client >>> Data sent to server.");
+            CreateLog("Dashboard Client >>> Data sent to server.");
         }
 
         /// <summary>
@@ -364,10 +366,10 @@ namespace MessengerDashboard.Client
         /// </summary>
         private void ExitSession()
         {
-            Trace.WriteLine("Dashboard Client >>> Exiting session");
+            CreateLog("Dashboard Client >>> Exiting session");
             IsConnectedToServer = false;
             SendPayloadToServer(Operation.CloseConnection);
-            Trace.WriteLine("Dashboard Client >>> Exited session");
+            CreateLog("Dashboard Client >>> Exited session");
             SessionExited?.Invoke(this, new(ChatSummary, SentimentResult, AnalysisResults));
         }
 
@@ -377,17 +379,17 @@ namespace MessengerDashboard.Client
         /// <param name="analysis">The telemetry analysis data to be updated.</param>
         private void UpdateTelemetryAnalysis(Analysis? analysis)
         {
-            Trace.WriteLine("Dashboard Client >>> Updating telemetry analysis");
+            CreateLog("Dashboard Client >>> Updating telemetry analysis");
             if (analysis == null)
             {
-                Trace.WriteLine("Dashboard Client >>> Received null telemetry");
+                CreateLog("Dashboard Client >>> Received null telemetry", TraceLogger.LogLevel.WARNING);
                 return;
             }
             lock (this)
             {
                 AnalysisResults = analysis;
             }
-            Trace.WriteLine("Dashboard Client >>> Updated telemetry analysis");
+            CreateLog("Dashboard Client >>> Updated telemetry analysis");
         }
 
         /// <summary>
@@ -396,17 +398,17 @@ namespace MessengerDashboard.Client
         /// <param name="sentiment">The sentiment result data to be updated.</param>
         private void UpdateSentiment(SentimentResult? sentiment)
         {
-            Trace.WriteLine("Dashboard Client >>> Updating Sentiment");
+            CreateLog("Dashboard Client >>> Updating Sentiment");
             if (sentiment == null)
             {
-                Trace.WriteLine("Dashboard Client >>> Received null summary");
+                CreateLog("Dashboard Client >>> Received null summary", TraceLogger.LogLevel.WARNING);
                 return;
             }
             lock (this)
             {
                 SentimentResult = sentiment;
             }
-            Trace.WriteLine("Dashboard Client >>> Updated Sentiment");
+            CreateLog("Dashboard Client >>> Updated Sentiment");
         }
 
         /// <summary>
@@ -415,17 +417,17 @@ namespace MessengerDashboard.Client
         /// <param name="textSummary">The text summary data to be updated.</param>
         private void UpdateSummary(TextSummary? textSummary)
         {
-            Trace.WriteLine("Dashboard Client >>> Updating Summary");
+            CreateLog("Dashboard Client >>> Updating Summary");
             if (textSummary == null)
             {
-                Trace.WriteLine("Dashboard Client >>> Received null summary");
+                CreateLog("Dashboard Client >>> Received null summary", TraceLogger.LogLevel.WARNING);
                 return;
             }
             lock (this)
             {
                 ChatSummary = textSummary;
             }
-            Trace.WriteLine("Dashboard Client >>> Updated Summary");
+            CreateLog("Dashboard Client >>> Updated Summary");
         }
 
         /// <summary>
@@ -436,10 +438,10 @@ namespace MessengerDashboard.Client
         {
             if (sessionInfo == null)
             {
-                Trace.WriteLine("Dashboard Client >>> Received null session info.");
+                CreateLog("Dashboard Client >>> Received null session info.", TraceLogger.LogLevel.ERROR);
                 return;
             }
-            Trace.WriteLine("Dashboard Client >>> Updating Session information.");
+            CreateLog("Dashboard Client >>> Updating Session information.");
             bool modeChanged = false;
             lock (this)
             {
@@ -451,7 +453,13 @@ namespace MessengerDashboard.Client
             {
                 SessionModeChanged?.Invoke(this, new SessionModeChangedEventArgs(SessionInfo.SessionMode));
             }
-            Trace.WriteLine("Dashboard Client >>> Updated Session information.");
+            CreateLog("Dashboard Client >>> Updated Session information.");
+        }
+
+        private void CreateLog(string message, TraceLogger.LogLevel level = TraceLogger.LogLevel.INFO)
+        {
+            Trace.WriteLine(message);
+            Logger.Log(message, level);
         }
     }
 }

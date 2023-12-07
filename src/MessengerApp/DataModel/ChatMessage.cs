@@ -56,6 +56,8 @@ namespace MessengerApp.DataModel
         /// If the message sent by the current user, then value is True. Else it is False
         /// </summary>
         public bool isCurrentUser { get; set; }
+
+        public int ReplyMessageId { get; set; }
         public ChatMessage()
         {
             MessageID = -1;
@@ -65,6 +67,7 @@ namespace MessengerApp.DataModel
             ReplyMessage = null;
             MsgData = null;
             isCurrentUser = false;
+            ReplyMessageId = -1;
         }
     }
 }

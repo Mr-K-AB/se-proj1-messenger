@@ -38,6 +38,7 @@ using MessengerContent;
 using MessengerContent.DataModels;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
+using TraceLogger;
 
 namespace MessengerApp
 {
@@ -100,7 +101,11 @@ namespace MessengerApp
                 {
                     viewModel.ReceivedMsg.ReplyMessage = null;
                 }
-                Trace.WriteLine("[ChatBubble] New message received");
+                Logger.Log("[ChatBubble] New message received", LogLevel.INFO);
+                if(viewModel.ReceivedMsg.ReplyMessage != null)
+                {
+                    viewModel.ReceivedMsg.ReplyMessage = "@ "+ viewModel.ReceivedMsg.Sender + ": " + viewModel.ReceivedMsg.ReplyMessage;
+                }
                 _msgCollection.Add(viewModel.ReceivedMsg); // Adding the received message into the collection (_msgCollection)
                 UpdateScrollBar(MainChat);
             }
@@ -111,13 +116,13 @@ namespace MessengerApp
                 {
                     viewModel.ReceivedMsg.ReplyMessage = null;
                 }
-                Trace.WriteLine("[ChatBubble] Chat History received");
+                Logger.Log("[ChatBubble] Chat History received", LogLevel.INFO);
                 _msgCollection.Add(viewModel.ReceivedMsg);
                 UpdateScrollBar(MainChat);
             }
             else if (propertyName == "Edited/Deleted")
             {
-                string replyMsg = "";
+                
                 string replyMsgUpd = ""; // for storing the edited message
                 ChatMessage? result = null;
 
@@ -126,7 +131,7 @@ namespace MessengerApp
                     ChatMessage message = _msgCollection[i];
                     if (message.MessageID == viewModel.ReceivedMsg.MessageID)
                     {
-                        replyMsg = message.MsgData;
+                        
                         replyMsgUpd = viewModel.ReceivedMsg.MsgData;
                         ChatMessage updatedMessage = new()
                         {
@@ -136,7 +141,8 @@ namespace MessengerApp
                             Time = message.Time,
                             MessageID = message.MessageID,
                             MessageType = message.MessageType,
-                            MsgData = replyMsgUpd
+                            MsgData = replyMsgUpd,
+                            ReplyMessageId = message.ReplyMessageId,
                         };
 
                         _msgCollection[i] = updatedMessage; // Updating the messageCollection to automatically update in the UI
@@ -148,24 +154,26 @@ namespace MessengerApp
                 for (int i = 0; i < _msgCollection.Count; i++)
                 {
                     ChatMessage message = _msgCollection[i];
-                    if (message.ReplyMessage == replyMsg)
+                    
+                    if (message.ReplyMessageId == result.MessageID)
                     {
+                        
                         ChatMessage updatedMessage = new()
                         {
                             isCurrentUser = message.isCurrentUser,
-                            ReplyMessage = replyMsgUpd,
+                            ReplyMessage = "@ " + message.Sender + ": " + replyMsgUpd,
                             Sender = message.Sender,
                             Time = message.Time,
                             MessageID = message.MessageID,
                             MessageType = message.MessageType,
-                            MsgData = message.MsgData
+                            MsgData = message.MsgData,
+                            ReplyMessageId = message.ReplyMessageId,
                         };
 
                         _msgCollection[i] = updatedMessage; // updating all the messages which replied to the message which is modified
-                        result = _msgCollection[i];
                     }
                 }
-                Trace.WriteLine($"[ChatBubble] {result.MessageID}'s data has been changed to {result.MsgData}");
+                Logger.Log($"[ChatBubble] {result.MessageID}'s data has been changed to {result.MsgData}", LogLevel.INFO);
             }
 
             else if (propertyName == "Starred")
@@ -187,7 +195,7 @@ namespace MessengerApp
                     if (toggleBtn != null)
                     {
                         toggleBtn.IsChecked = true;
-                        //MessageBox.Show("here!");
+                        
                     }
                 }
             }
@@ -210,7 +218,6 @@ namespace MessengerApp
                     if (toggleBtn != null)
                     {
                         toggleBtn.IsChecked = false;
-                        //MessageBox.Show("here!");
                     }
                 }
             }
@@ -245,14 +252,13 @@ namespace MessengerApp
         private void SendHandler(object sender, RoutedEventArgs e)
         {
             string msg = SendTextBox.Text;
-            //MessageBox.Show("hello");
             msg = msg.Trim();
 
             if (!string.IsNullOrEmpty(msg)) // Character Limit in the TextBox
             {
                 if (msg.Length > 300)
                 {
-                    MessageBox.Show("Please enter less than 300 characters!");
+                    Logger.Log("Please enter less than 300 characters!", LogLevel.WARNING);
                     return;
                 }
                 var viewModel = DataContext as ChatPageViewModel;
@@ -269,7 +275,7 @@ namespace MessengerApp
                 }
                 SendTextBox.Text = string.Empty; // clear the textbox
                 ReplyTextBox.Text = string.Empty;
-                Trace.WriteLine("[ChatBubble] Sending Message");
+                Logger.Log("[ChatBubble] Sending Message", LogLevel.INFO);
             }
             return;
         }
@@ -291,12 +297,13 @@ namespace MessengerApp
                         message = message.Substring(0, 10);
                         message += "...";
                     }
+                    // Displaying the Reply Message and it's sender in the ReplyTextBox
                     string senderBox = "@" + msg.Sender + ": " + message;
                     ReplyTextBox.Text = senderBox;
                     ReplyMsgId = msg.MessageID;
                     ReplyObject = senderButton;
                 }
-                Trace.WriteLine("[ChatBubble] Replying to Message");
+                Logger.Log("[ChatBubble] Replying to Message", LogLevel.INFO);
             }
             return;
         }
@@ -320,7 +327,7 @@ namespace MessengerApp
                         SendTextBox.Text = string.Empty;
                     }
                 }
-                Trace.WriteLine("[ChatBubble] Editing Message");
+                Logger.Log("[ChatBubble] Editing Message", LogLevel.INFO);
             }
             return;
         }
@@ -337,7 +344,7 @@ namespace MessengerApp
 
                 var viewModel = DataContext as ChatPageViewModel;
                 viewModel.DeleteChatMsg(msg.MessageID);
-                Trace.WriteLine("[ChatBubble] Deleting Message");
+                Logger.Log("[ChatBubble] Deleting Message", LogLevel.INFO);
             }
             return;
         }
@@ -352,7 +359,7 @@ namespace MessengerApp
             if (sender is ToggleButton)
             {
                 ReplyTextBox.Text = null;
-                Trace.WriteLine("[ChatBubble] Undo reply Message");
+                Logger.Log("[ChatBubble] Undo reply Message", LogLevel.INFO);
             }
             return;
         }
@@ -377,15 +384,16 @@ namespace MessengerApp
             }
             catch // If the user didnt select any file
             {
-                MessageBox.Show("Choose a File!");
+                Logger.Log("File not selected!", LogLevel.WARNING);
                 return;
             }
 
             if (isFileSelected == true)
             {
+                // Cannot upload files greater than 2MB
                 if (size > 2048000)
                 {
-                    MessageBox.Show("File size is greater than 2MB!");
+                    Logger.Log("File size greater than 2MB!", LogLevel.WARNING);
                     return;
                 }
 
@@ -401,7 +409,7 @@ namespace MessengerApp
                 SendTextBox.Text = string.Empty;  // After the message has been sent, clearing the textbox
                 ReplyTextBox.Text = string.Empty; // and the ReplyTextBox
             }
-            Trace.WriteLine("[ChatBubble] Uploading file");
+            Logger.Log("[ChatBubble] Uploading file", LogLevel.INFO);
         }
 
         /// <summary>
@@ -424,8 +432,8 @@ namespace MessengerApp
                     string? messageText = message.MsgData;
                     if (messageText == "Message Deleted.")
                     {
-                        MessageBox.Show("Can't download deleted files!");
-                        Trace.WriteLine("[ChatBubble] Can't Download file");
+                        // Cannot download deleted files
+                        Logger.Log("[ChatBubble] Can't Download Deleted file", LogLevel.WARNING);
 
                     }
                     else
@@ -441,14 +449,14 @@ namespace MessengerApp
                         {
                             viewModel.DownloadFile(dialogFile.FileName, message.MessageID);
                         }
-                        Trace.WriteLine("[ChatBubble] Downloading file");
+                        Logger.Log("[ChatBubble] Downloading file", LogLevel.INFO);
                     }
                         
                 }
             }
             return;
         }
-
+         
         /// <summary>
         ///     Handler for Star Radio Button
         /// </summary>
@@ -460,7 +468,7 @@ namespace MessengerApp
             if ((sender is ToggleButton senderRadioBtn) && (senderRadioBtn.DataContext is ChatMessage msg))
             {
                 viewModel.StarChatMsg(msg.MessageID);
-                Trace.WriteLine("[ChatBubble] Starring Message");
+                Logger.Log("[ChatBubble] Starring Message", LogLevel.INFO);
             }
             return;
         }
@@ -478,11 +486,9 @@ namespace MessengerApp
                 var border = (Border)VisualTreeHelper.GetChild(messages, 0);
                 var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
                 scrollViewer.ScrollToBottom();
-                Trace.WriteLine("[ChatBubble] Scrollbar Updated");
+                Logger.Log("[ChatBubble] Scrollbar Updated", LogLevel.INFO);
             }
             return;
         }
-
-
     }
 }

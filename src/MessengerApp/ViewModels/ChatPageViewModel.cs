@@ -31,6 +31,7 @@ using System.Windows;
 using MessengerDashboard.Client;
 using SharpDX.Direct3D11;
 using MessengerApp.DataModel;
+using TraceLogger;
 
 namespace MessengerApp.ViewModels
 {
@@ -117,7 +118,7 @@ namespace MessengerApp.ViewModels
         /// <param name="messageType"> Type of message </param>
         public void SendMessage(string message, int replyMsgId, string messageType)
         {
-            Trace.WriteLine("[ChatPageViewModel] Message to be sent, received");
+            Logger.Log("[ChatPageViewModel] Message to be sent, received", LogLevel.INFO);
             MsgToSend = new SendChatData();
 
             if (messageType == "File")
@@ -148,11 +149,11 @@ namespace MessengerApp.ViewModels
         /// <summary>
         ///     Download a file at the required location in the client's machine using Path
         /// </summary>
-        /// <param name="savePath"> </param>
-        /// <param name="msgId">  </param>
+        /// <param name="savePath"> Path of File </param>
+        /// <param name="msgId"> Message ID  </param>
         public void DownloadFile(string savePath, int msgId)
         {
-            Trace.WriteLine("[ChatPageViewModel] Message need to be downloaded received");
+            Logger.Log("[ChatPageViewModel] Message need to be downloaded received", LogLevel.INFO);
             _model.ClientDownload(msgId, savePath);
         }
 
@@ -163,27 +164,27 @@ namespace MessengerApp.ViewModels
         /// <param name="newMsg"> The updated Chat Message  </param>
         public void EditChatMsg(int msgID, string newMsg)
         {
-            Trace.WriteLine("[ChatPageViewModel] Edited Message received");
+            Logger.Log("[ChatPageViewModel] Edited Message received", LogLevel.INFO);
             _model.ClientEdit(msgID, newMsg);
         }
 
         /// <summary>
         ///     Delete Messages using msgID
         /// </summary>
-        /// <param name="msgID"> </param>
+        /// <param name="msgID"> Message ID </param>
         public void DeleteChatMsg(int msgID)
         {
-            Trace.WriteLine("[ChatPageViewModel] Delete Message received");
+            Logger.Log("[ChatPageViewModel] Delete Message received", LogLevel.INFO);
             _model.ClientDelete(msgID);
         }
 
         /// <summary>
         ///     Star Messages
         /// </summary>
-        /// <param name="msgId"> </param>
+        /// <param name="msgId"> The Starred Message ID </param>
         public void StarChatMsg(int msgId)
         {
-            Trace.WriteLine("[ChatPageViewModel] Starred Message received");
+            Logger.Log("[ChatPageViewModel] Starred Message received", LogLevel.INFO);
             _model.ClientStar(msgId);
         }
 
@@ -202,7 +203,7 @@ namespace MessengerApp.ViewModels
                 {
                     if (currentSession != null)
                     {
-                        Trace.WriteLine("[ChatPageViewModel] Users List Received.");
+                        Logger.Log("[ChatPageViewModel] Users List Received.", LogLevel.INFO);
                         UserIdToNames.Clear();
                         foreach (UserInfo user in currentSession.Users)
                         {
@@ -232,21 +233,28 @@ namespace MessengerApp.ViewModels
                 {
                     if (contentData.Event == MessengerContent.Enums.MessageEvent.New)
                     {
-                        Trace.WriteLine("[ChatPageViewModel] New Message has been received");
+                        Logger.Log("[ChatPageViewModel] New Message has been received", LogLevel.INFO);
                         Messages.Add(contentData.MessageID, contentData.Data);
                         ThreadIds.Add(contentData.MessageID, contentData.ReplyThreadID);
 
                         // Create a new ChatMessage Instance for the new Received Msg
+                        //if(contentData.ReplyMessageID != -1)
+                        //{
+                        //    if (Messages[contentData.ReplyMessageID] == null) 
+                        //    {
+                        //        Messages[contentData.ReplyMessageID] = "Message does not exist";
+                        //    }
+                        //}
                         ReceivedMsg = new()
                         {
-
                             MessageID = contentData.MessageID,
                             MessageType = contentData.Type == MessageType.Chat,
                             MsgData = Path.GetFileName(contentData.Data),
                             Time = contentData.SentTime.ToString("hh:mm tt"),
                             Sender = senderName,
                             isCurrentUser = UserId == contentData.SenderID,
-                            ReplyMessage = contentData.ReplyMessageID == -1 ? null : Messages[contentData.ReplyMessageID]
+                            ReplyMessage = contentData.ReplyMessageID == -1 ? null : Messages[contentData.ReplyMessageID],
+                            ReplyMessageId = contentData.ReplyMessageID
                         };
 
                         OnPropertyChanged("NewReceivedMsg"); // Raise PropertChangedEvent
@@ -260,11 +268,11 @@ namespace MessengerApp.ViewModels
                         // The Edited Messages will have MsgData as some text given by the user in the TextBox.
                         if (contentData.Event == MessengerContent.Enums.MessageEvent.Edit)
                         {
-                            Trace.WriteLine("[ChatPageViewModel] Edited Message has been received");
+                            Logger.Log("[ChatPageViewModel] Edited Message has been received", LogLevel.INFO);
                         }
                         else if (contentData.Event == MessengerContent.Enums.MessageEvent.Delete)
                         {
-                            Trace.WriteLine("[ChatPageViewModel] Deleted Message has been received");
+                            Logger.Log("[ChatPageViewModel] Deleted Message has been received", LogLevel.INFO);
                         }
                         ReceivedMsg = new()
                         {
@@ -275,6 +283,7 @@ namespace MessengerApp.ViewModels
                             Sender = senderName,
                             isCurrentUser = UserId == contentData.SenderID,
                             ReplyMessage = contentData.ReplyMessageID == -1 ? null : Messages[contentData.ReplyMessageID],
+                            ReplyMessageId = contentData.ReplyMessageID
                         };
                         Messages[contentData.MessageID] = ReceivedMsg.MsgData;
 
@@ -282,7 +291,7 @@ namespace MessengerApp.ViewModels
                     }
                     else if (contentData.Event == MessengerContent.Enums.MessageEvent.Star)
                     {
-                        Trace.WriteLine("[ChatPageViewModel] Starred Message has been received");
+                        Logger.Log("[ChatPageViewModel] Starred Message has been received", LogLevel.INFO);
                         ReceivedMsg = new()
                         {
                             MessageID = contentData.MessageID,
@@ -292,6 +301,7 @@ namespace MessengerApp.ViewModels
                             Sender = senderName,
                             isCurrentUser = UserId == contentData.SenderID,
                             ReplyMessage = contentData.ReplyMessageID == -1 ? null : Messages[contentData.ReplyMessageID],
+                            ReplyMessageId = contentData.ReplyMessageID
                         };
                         Messages[contentData.MessageID] = ReceivedMsg.MsgData;
                         if(contentData.Starred)
@@ -323,7 +333,7 @@ namespace MessengerApp.ViewModels
                     Messages.Clear();
                     ThreadIds.Clear();
                     // updating the Threads and Messages dictionary and displaying the chat upto now in the listbox in view
-                    Trace.WriteLine("[ChatPageViewModel] Received All Messages");
+                    Logger.Log("[ChatPageViewModel] Received All Messages", LogLevel.INFO);
                     foreach (ChatThread messageList in chatHistory)
                     {
                         foreach (ReceiveChatData message in messageList.MessageList)
@@ -346,7 +356,8 @@ namespace MessengerApp.ViewModels
                                 Time = message.SentTime.ToString("hh:mm tt"),
                                 Sender = message.SenderName,
                                 isCurrentUser = UserId == message.SenderID,
-                                ReplyMessage = message.ReplyMessageID == -1 ? null : Messages[message.ReplyMessageID]
+                                ReplyMessage = message.ReplyMessageID == -1 ? null : Messages[message.ReplyMessageID],
+                                ReplyMessageId = message.ReplyMessageID
                             };
                             if (testingMode)
                             {

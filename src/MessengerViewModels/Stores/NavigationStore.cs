@@ -12,12 +12,8 @@
 * Description = Store to enable switching the viewmodels and subviewmodels.
 * *****************************************************************************/
 
-using MessengerViewModels.ViewModels;
 using MessengerDashboard;
-using MessengerDashboard.UI.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using MessengerViewModels.ViewModels;
 
 namespace MessengerViewModels.Stores
 {

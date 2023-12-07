@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using MessengerDashboard;
 using MessengerViewModels.ViewModels;
+using TraceLogger;
 namespace MessengerApp.ViewModels
 {
 
@@ -50,6 +51,7 @@ namespace MessengerApp.ViewModels
 
             if (authResult.IsAuthenticated == false)
             {
+                Logger.Warn($"[Authentication] Google Authentication failed. AuthenticationResult isAuthenticated={authResult.IsAuthenticated}");
                 return;
             }
 

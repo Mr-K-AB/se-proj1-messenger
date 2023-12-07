@@ -28,6 +28,7 @@ using System.Windows.Shapes;
 using MessengerDashboard;
 using MessengerDashboard.Client;
 using MessengerDashboard.Client.Events;
+using TraceLogger;
 
 namespace MessengerApp.Views
 {
@@ -60,6 +61,7 @@ namespace MessengerApp.Views
                     ChatPanel.Width = new GridLength(0);
 
                     OverlayPanel.Visibility = Visibility.Collapsed;
+                    Logger.Debug("[ClientMeetingView] Exam mode, chat grid visibility is collapsed");
                 }
                 else
                 {
@@ -101,10 +103,12 @@ namespace MessengerApp.Views
                 if (ChatPanel.Width == new GridLength(0))
                 {
                     ChatPanel.Width = new GridLength(300);
+                    Logger.Debug($"[ClientMeetingView] Chat clicked. In Lab mode, chatpanel expanded.");
                 }
                 else
                 {
                     ChatPanel.Width = new GridLength(0);
+                    Logger.Debug($"[ClientMeetingView] Chat clicked. In Lab mode, chatpanel collapsed.");
                 }
             }
             //OverlayPanel.Visibility = OverlayPanel.IsVisible ? Visibility.Collapsed : Visibility.Visible;

@@ -22,6 +22,7 @@ using MessengerViewModels.ViewModels;
 using MessengerDashboard;
 using MessengerDashboard.Client;
 using System.Windows;
+using TraceLogger;
 
 namespace MessengerViewModels.Commands
 {
@@ -51,6 +52,7 @@ namespace MessengerViewModels.Commands
 
             if (_connected)
             {
+                Logger.Inform($"Client is connected to server. _connected={_connected}");
                 _navigationStore.CurrentViewModel = new ClientMeetViewModel(_navigationStore);
 
             }

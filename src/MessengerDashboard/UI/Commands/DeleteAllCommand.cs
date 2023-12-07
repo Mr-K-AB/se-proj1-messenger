@@ -80,7 +80,7 @@ namespace MessengerDashboard.UI.Commands
                     string[] ids = session.SessionName.Split(";");
                     if (ids.Length > 1 && ids[1].Trim() != _sessionsViewModel.UserEmail)
                     {
-                        return;
+                        continue;
                     }
                     Thread something = new(() =>
                     {

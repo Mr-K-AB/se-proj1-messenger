@@ -23,6 +23,7 @@ using MessengerDashboard.UI;
 using System.Diagnostics;
 using MessengerDashboard.Client;
 using MessengerWhiteboard;
+using TraceLogger;
 
 namespace MessengerViewModels.Commands
 {
@@ -43,6 +44,7 @@ namespace MessengerViewModels.Commands
         public override void Execute(object parameter)
         {
             _navigationStore.SubViewModel = _whiteboardViewModel;
+            Logger.Debug("[NavigateWhiteboardCommand] change subviewmodel to whiteboardViewModel");
         }
     }
 }

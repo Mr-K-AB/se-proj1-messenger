@@ -26,6 +26,7 @@ using MessengerDashboard;
 using MessengerDashboard.UI.ViewModels;
 using MessengerScreenshare.Client;
 using MessengerWhiteboard;
+using TraceLogger;
 
 namespace MessengerViewModels.ViewModels
 {
@@ -53,7 +54,7 @@ namespace MessengerViewModels.ViewModels
 
         public ClientMeetViewModel(NavigationStore navigationStore)
         {
-            
+            Logger.Inform($"[ClientMeetViewModel] IP: {IP}, Port: {Port}");
             _navigationStore = navigationStore;
             navigationStore.SubViewModelChanged += NavigationStore_SubViewModelChanged;
 

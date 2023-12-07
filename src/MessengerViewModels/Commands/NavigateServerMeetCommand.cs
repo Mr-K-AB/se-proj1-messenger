@@ -22,6 +22,7 @@ using MessengerViewModels.ViewModels;
 using MessengerDashboard;
 using MessengerDashboard.Client;
 using MessengerDashboard.Server;
+using TraceLogger;
 
 namespace MessengerViewModels.Commands
 {
@@ -55,6 +56,7 @@ namespace MessengerViewModels.Commands
             if (_connected)
             {
                 _navigationStore.CurrentViewModel = new ServerMeetViewModel(_navigationStore);
+                Logger.Debug("[NavigateServerMeetCommand] change current viewmodel to ServerMeetViewModel");
             }
         }
     }

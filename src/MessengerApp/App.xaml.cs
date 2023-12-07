@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using MessengerNetworking.Communicator;
+using TraceLogger;
 
 namespace MessengerApp
 {
@@ -16,6 +17,7 @@ namespace MessengerApp
     {
         private void Application_Exit(object sender, ExitEventArgs e)
         {
+            Logger.Warn(DateTime.Now.ToString("s") +"Application EXIT");
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
     }

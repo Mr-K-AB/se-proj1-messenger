@@ -12,20 +12,13 @@
 * Description = ViewModel for Client Meet View.
 * *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessengerDashboard.Server;
-using MessengerViewModels.Commands;
-using MessengerViewModels.Stores;
 using System.Windows.Input;
-using MessengerDashboard.Client;
 using MessengerDashboard;
+using MessengerDashboard.Client;
 using MessengerDashboard.UI.ViewModels;
 using MessengerScreenshare.Client;
-using MessengerWhiteboard;
+using MessengerViewModels.Commands;
+using MessengerViewModels.Stores;
 using TraceLogger;
 
 namespace MessengerViewModels.ViewModels

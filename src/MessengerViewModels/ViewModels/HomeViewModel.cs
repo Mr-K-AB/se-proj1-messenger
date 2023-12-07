@@ -12,15 +12,9 @@
 * Description = ViewModel for Home View after authentication.
 * *****************************************************************************/
 
-using MessengerViewModels.Stores;
-using MessengerViewModels.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using MessengerDashboard;
+using MessengerViewModels.Commands;
+using MessengerViewModels.Stores;
 
 namespace MessengerViewModels.ViewModels
 {

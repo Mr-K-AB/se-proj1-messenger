@@ -12,17 +12,8 @@
 * Description = Command to navigate to Client Dashboard Instance and change View.
 * *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessengerViewModels.Stores;
-using MessengerViewModels.ViewModels;
-using MessengerDashboard.UI;
-using MessengerDashboard;
-using System.Diagnostics;
 using MessengerDashboard.UI.ViewModels;
+using MessengerViewModels.Stores;
 
 namespace MessengerViewModels.Commands
 {

@@ -12,14 +12,8 @@
 * Description = Command to switch Current ViewModel to HomeViewModel.
 * *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MessengerViewModels.Stores;
 using MessengerViewModels.ViewModels;
-using MessengerDashboard;
 
 namespace MessengerViewModels.Commands
 {

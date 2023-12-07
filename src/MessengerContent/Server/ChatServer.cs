@@ -15,6 +15,7 @@ using MessengerContent.Enums;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using TraceLogger;
 
 namespace MessengerContent.Server
 {
@@ -46,32 +47,32 @@ namespace MessengerContent.Server
         public ChatData? Receive(ChatData msg)
         {
             ReceiveChatData receivedMsg;
-            Trace.WriteLine("[ChatServer] Message received from ContentServer");
+            Logger.Log("[ChatServer] Message received from ContentServer", LogLevel.INFO);
             if (msg.Event == MessageEvent.New)
             {
-                Trace.WriteLine("[ChatServer] MessageEvent is NewMessage, Adding message to existing Thread");
+                Logger.Log("[ChatServer] MessageEvent is NewMessage, Adding message to existing Thread", LogLevel.INFO);
                 return _contentDataBase.MessageStore(msg);
             }
             else if (msg.Event == MessageEvent.Star)
             {
-                Trace.WriteLine("[ChatServer] MessageEvent is Star, Starring message in existing Thread");
+                Logger.Log("[ChatServer] MessageEvent is Star, Starring message in existing Thread", LogLevel.INFO);
                 receivedMsg = StarMessage(msg.ReplyThreadID, msg.MessageID);
             }
             else if (msg.Event == MessageEvent.Edit)
             {
-                Trace.WriteLine("[ChatServer] MessageEvent is Update, Updating message in existing Thread");
+                Logger.Log("[ChatServer] MessageEvent is Update, Updating message in existing Thread", LogLevel.INFO);
                 receivedMsg = UpdateMessage(msg.ReplyThreadID, msg.MessageID,
                     msg.Data);
             }
             else if (msg.Event == MessageEvent.Delete)
             {
-                Trace.WriteLine("[ChatServer] MessageEvent is Update, Updating message in existing Thread");
+                Logger.Log("[ChatServer] MessageEvent is Update, Updating message in existing Thread", LogLevel.INFO);
                 receivedMsg = DeleteMessage(msg.ReplyThreadID, msg.MessageID);
             }
             //If messageevent is corrupted
             else
             {
-                Trace.WriteLine($"[ChatServer] Invalid MessageEvent");
+                Logger.Log($"[ChatServer] Invalid MessageEvent", LogLevel.WARNING);
                 return null;
             }
             if (receivedMsg == null)
@@ -96,7 +97,7 @@ namespace MessengerContent.Server
             //if message doesn't exists in database, return null
             if (message == null)
             {
-                Trace.WriteLine($"[ChatServer] Message not found in the given replyThreadID: {replyId}, messageId: {_msgId}.");
+                Logger.Log($"[ChatServer] Message not found in the given replyThreadID: {replyId}, messageId: {_msgId}.", LogLevel.INFO);
                 return null;
             }
 
@@ -115,7 +116,7 @@ namespace MessengerContent.Server
             //if message doesn't exists in database, return null
             if (msg == null)
             {
-                Trace.WriteLine($"[ChatServer] Message not found in the given replyThreadID: {replyId}, messageId: {_msgId}.");
+                Logger.Log($"[ChatServer] Message not found in the given replyThreadID: {replyId}, messageId: {_msgId}.", LogLevel.INFO);
                 return null;
             }
 
@@ -134,7 +135,7 @@ namespace MessengerContent.Server
             // if Message doesn't exists in database, return null
             if (message == null)
             {
-                Trace.WriteLine($"[ChatServer] Message not found in the given replyThreadID: {replyId}, messageId: {_msgId}.");
+                Logger.Log($"[ChatServer] Message not found in the given replyThreadID: {replyId}, messageId: {_msgId}.", LogLevel.INFO);
                 return null;
             }
 

@@ -15,6 +15,7 @@ using System;
 using System.IO;
 using MessengerContent.Enums;
 using MessengerNetworking.Communicator;
+using TraceLogger;
 
 namespace MessengerContent.Client
 {
@@ -64,12 +65,12 @@ namespace MessengerContent.Client
             try
             {
                 string xml = _serializer.Serialize(chatData);
-                Trace.WriteLine($"[File Client] Setting event as '{eventType}' and sending object to server.");
+                Logger.Log($"[File Client] Setting event as '{eventType}' and sending object to server.", LogLevel.INFO);
                 _communicator.Send(xml, _moduleIdentifier, null);
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[File Client] Exception occurred while sending object.\n{e.GetType().Name} : {e.Message}");
+                Logger.Log($"[File Client] Exception occurred while sending object.\n{e.GetType().Name} : {e.Message}", LogLevel.WARNING);
             }
         }
 

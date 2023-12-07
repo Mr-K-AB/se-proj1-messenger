@@ -24,6 +24,7 @@ using MessengerNetworking.Communicator;
 using MessengerNetworking.NotificationHandler;
 using MessengerNetworking.Serializer;
 using MessengerNetworking.Factory;
+using TraceLogger;
 
 namespace MessengerContent.Server
 {
@@ -92,12 +93,12 @@ namespace MessengerContent.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[ContentServer] Exception occured while deserialsing data, Exception: {e}");
+                Logger.Log($"[ContentServer] Exception occured while deserialsing data, Exception: {e}", LogLevel.WARNING);
                 return;
             }
 
             ChatData receivedMessageData;
-            Trace.WriteLine("[ContentServer] Received MessageData from ContentServerNotificationHandler");
+            Logger.Log("[ContentServer] Received MessageData from ContentServerNotificationHandler", LogLevel.INFO);
 
             // lock to prevent multiple threads from modifying the messages at once
             lock (s_lock)
@@ -105,22 +106,22 @@ namespace MessengerContent.Server
                 switch (messageData.Type)
                 {
                     case MessageType.Chat:
-                        Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
+                        Logger.Log("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()", LogLevel.INFO);
                         receivedMessageData = _chatServer.Receive(messageData);
                         break;
 
                     case MessageType.File:
-                        Trace.WriteLine("[ContentServer] MessageType is File, Calling FileServer.Receive()");
+                        Logger.Log("[ContentServer] MessageType is File, Calling FileServer.Receive()", LogLevel.INFO);
                         receivedMessageData = _fileServer.Receive(messageData);
                         break;
 
                     case MessageType.HistoryRequest:
-                        Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SendAllMessagesToClient");
+                        Logger.Log("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SendAllMessagesToClient", LogLevel.INFO);
                         SendAllMessagesToClient(messageData.SenderID);
                         return;
 
                     default:
-                        Trace.WriteLine("[ContentServer] MessageType is Unknown");
+                        Logger.Log("[ContentServer] MessageType is Unknown", LogLevel.INFO);
                         return;
                 }
             }
@@ -128,7 +129,7 @@ namespace MessengerContent.Server
             // If this is null then something went wrong, probably message was not found.
             if (receivedMessageData == null)
             {
-                Trace.WriteLine("[ContentServer] Null Message received");
+                Logger.Log("[ContentServer] Null Message received", LogLevel.WARNING);
                 return;
             }
 
@@ -137,24 +138,24 @@ namespace MessengerContent.Server
                 // If Event is Download then send the file to client
                 if (messageData.Event == MessageEvent.Download)
                 {
-                    Trace.WriteLine("[ContentServer] MesseageEvent is Download, Sending File to client");
+                    Logger.Log("[ContentServer] MesseageEvent is Download, Sending File to client", LogLevel.INFO);
                     SendFile(receivedMessageData);
                 }
                 // Else send the message to all the receivers and notify the subscribers
                 else
                 {
-                    Trace.WriteLine("[ContentServer] Message received, Notifying subscribers");
+                    Logger.Log("[ContentServer] Message received, Notifying subscribers", LogLevel.INFO);
                     Notify(receivedMessageData);
-                    Trace.WriteLine("[ContentServer] Sending message to clients");
+                    Logger.Log("[ContentServer] Sending message to clients", LogLevel.INFO);
                     Send(receivedMessageData);
                 }
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[ContentServer] Something went wrong while sending message. Exception {e}");
+                Logger.Log($"[ContentServer] Something went wrong while sending message. Exception {e}", LogLevel.WARNING);
                 return;
             }
-            Trace.WriteLine("[ContentServer] Message sent successfully");
+            Logger.Log("[ContentServer] Message sent successfully", LogLevel.INFO);
         }
 
         /// <summary>

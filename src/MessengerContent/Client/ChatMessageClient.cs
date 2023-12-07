@@ -21,6 +21,7 @@ using MessengerContent.DataModels;
 using MessengerContent.Enums;
 using MessengerNetworking.Communicator;
 using System.Runtime.CompilerServices;
+using TraceLogger;
 
 namespace MessengerContent.Client
 {
@@ -82,7 +83,7 @@ namespace MessengerContent.Client
                 Starred = false,
                 Event = eventType
             };
-            Trace.WriteLine("[ChatClient] Converting 'SendChatData' to 'ChatData' object");
+            Logger.Log("[ChatClient] Converting 'SendChatData' to 'ChatData' object", LogLevel.INFO);
             return convertedData;
         }
 
@@ -96,13 +97,13 @@ namespace MessengerContent.Client
             try
             {
                 string serializedStr = _serializer.Serialize(chatData);
-                Trace.WriteLine($"[Chat Client] Setting event as '{eventType}' and sending object to server.");
+                Logger.Log($"[Chat Client] Setting event as '{eventType}' and sending object to server.", LogLevel.INFO);
                 Debug.Assert(1 == 1, "debugg");
                 _communicator.Send(serializedStr, _moduleIdentifier, null);
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[Chat Client] Exception occurred while sending object.\n{e.GetType().Name} : {e.Message}");
+                Logger.Log($"[Chat Client] Exception occurred while sending object.\n{e.GetType().Name} : {e.Message}", LogLevel.WARNING);
             }
         }
 

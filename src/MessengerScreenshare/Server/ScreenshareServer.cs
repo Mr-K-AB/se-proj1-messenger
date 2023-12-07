@@ -23,6 +23,7 @@ using MessengerNetworking.Communicator;
 using MessengerNetworking.Factory;
 using System.Drawing.Printing;
 using System.Security.Cryptography;
+using TraceLogger;
 
 namespace MessengerScreenshare.Server
 {
@@ -56,7 +57,7 @@ namespace MessengerScreenshare.Server
             _subscribers = new Dictionary<int, SharedClientScreen>();
             _disposedValue = false;
             _receiver = receiver;
-            Trace.WriteLine(Utils.GetDebugMessage("created the instance for ScreenshareServer", withTimeStamp: true));
+            Logger.Log("created the instance for ScreenshareServer", LogLevel.INFO);
         }
         
         /// <summary>
@@ -128,7 +129,7 @@ namespace MessengerScreenshare.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the packet: {e.Message}", withTimeStamp: true));
+                Logger.Log($"Exception while processing the packet: {e.Message}", LogLevel.INFO);
             }
         }
 
@@ -143,22 +144,22 @@ namespace MessengerScreenshare.Server
 
             lock (_subscribers)
             {
-                if (_subscribers.Count > 4) 
+                if (_subscribers.Count > 3) 
                 {
                     BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Stop), (1, 1));
                     return; 
                 }
-                if (!_subscribers.TryAdd(clientId, new (clientId, clientName, this)))
+                else if (!_subscribers.TryAdd(clientId, new (clientId, clientName, this)))
                 {
                     // If TryAdd fails, the client is already registered.
-                    Trace.WriteLine(Utils.GetDebugMessage($"Trying to register an already registered client with id {clientId}", withTimeStamp: true));
+                    Logger.Log($"Trying to register an already registered client with id {clientId}", LogLevel.INFO);
                     return; 
                 }
             }
             NotifyUX();
             NotifyUX(clientId, clientName, start: true);
 
-            Trace.WriteLine(Utils.GetDebugMessage($"Successfully registered the client - Id: {clientId}, Name: {clientName}", withTimeStamp: true));
+            Logger.Log($"Successfully registered the client - Id: {clientId}, Name: {clientName}", LogLevel.INFO);
         }
 
         /// <summary>
@@ -182,22 +183,22 @@ namespace MessengerScreenshare.Server
                     }
                     catch (OperationCanceledException e)
                     {
-                        Trace.WriteLine(Utils.GetDebugMessage($"Task canceled for the client with id {clientId}: {e.Message}", withTimeStamp: true));
+                        Logger.Log($"Task canceled for the client with id {clientId}: {e.Message}", LogLevel.INFO);
                     }
                     catch (Exception e)
                     {
-                        Trace.WriteLine(Utils.GetDebugMessage($"Failed to stop the task for the removed client with id {clientId}: {e.Message}", withTimeStamp: true));
+                        Logger.Log($"Failed to stop the task for the removed client with id {clientId}: {e.Message}", LogLevel.INFO);
                     }
                     finally
                     {
                         client.Dispose(); // Dispose of the client's resources.
                     }
 
-                    Trace.WriteLine(Utils.GetDebugMessage($"Successfully removed the client with Id {clientId}", withTimeStamp: true));
+                    Logger.Log($"Successfully removed the client with Id {clientId}", LogLevel.INFO);
                 }
                 else
                 {
-                    Trace.WriteLine(Utils.GetDebugMessage($"This client with id {clientId} which is not present in subscribers list", withTimeStamp: true));
+                    Logger.Log($"This client with id {clientId} which is not present in subscribers list", LogLevel.INFO);
                 }
             }
         }
@@ -216,16 +217,16 @@ namespace MessengerScreenshare.Server
                     try
                     {
                         client.PutImage(data, client.TaskId);
-                        Trace.WriteLine(Utils.GetDebugMessage($"Successfully received image of the client with Id: {clientId}", withTimeStamp: true));
+                        Logger.Log($"Successfully received image of the client with Id: {clientId}", LogLevel.INFO);
                     }
                     catch (Exception e)
                     {
-                        Trace.WriteLine(Utils.GetDebugMessage($"Exception while processing the received image: {e.Message}", withTimeStamp: true));
+                        Logger.Log($"Exception while processing the received image: {e.Message}", LogLevel.INFO);
                     }
                 }
                 else
                 {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Client with id {clientId} is not present in subscribers list", withTimeStamp: true));
+                    Logger.Log($"Client with id {clientId} is not present in subscribers list", LogLevel.INFO);
                 }
             }
         }
@@ -240,7 +241,7 @@ namespace MessengerScreenshare.Server
         {
             if (_communicator == null)
             {
-                Trace.WriteLine(Utils.GetDebugMessage("_communicator is found null", withTimeStamp: true));
+                Logger.Log("_communicator is found null", LogLevel.INFO);
                 return;
             }
             // If there are no clients to broadcast to, return early.
@@ -250,7 +251,7 @@ namespace MessengerScreenshare.Server
             }
             if (!Enum.TryParse(headerVal, out ServerDataHeader serverDataHeader))
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Failed to parse the header {headerVal}", withTimeStamp: true));
+                Logger.Log($"Failed to parse the header {headerVal}", LogLevel.INFO);
                 return;
             }
             try
@@ -267,7 +268,7 @@ namespace MessengerScreenshare.Server
             }
             catch (Exception e)
             {
-                Trace.WriteLine(Utils.GetDebugMessage($"Exception while sending the packet to the client: {e.Message}", withTimeStamp: true));
+                Logger.Log($"Exception while sending the packet to the client: {e.Message}", LogLevel.INFO);
             }
         }
 
@@ -283,19 +284,19 @@ namespace MessengerScreenshare.Server
                 {
                     try
                     {
-                        client.UpdateTimer();
+                        client.UpdateTimer(client._timer!);
                         BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Confirmation), (0, 0));
 
-                        Trace.WriteLine(Utils.GetDebugMessage($"Timer updated for the client with Id: {clientId}", withTimeStamp: true));
+                        Logger.Log($"Timer updated for the client with Id: {clientId}", LogLevel.INFO);
                     }
                     catch (Exception e)
                     {
-                        Trace.WriteLine(Utils.GetDebugMessage($"Failed to update the timer for the client with id {clientId}: {e.Message}", withTimeStamp: true));
+                        Logger.Log($"Failed to update the timer for the client with id {clientId}: {e.Message}", LogLevel.INFO);
                     }
                 }
                 else
                 {
-                    Trace.WriteLine(Utils.GetDebugMessage($"Client with id {clientId} is not there in the subscribers list", withTimeStamp: true));
+                    Logger.Log($"Client with id {clientId} is not there in the subscribers list", LogLevel.INFO);
                 }
             }
         }
@@ -310,7 +311,7 @@ namespace MessengerScreenshare.Server
         {
 
             DeregisterClient(clientId);
-            Trace.WriteLine(Utils.GetDebugMessage($"Timeout occurred for the client with id: {clientId} and deregistered", withTimeStamp: true));
+            Logger.Log($"Timeout occurred for the client with id: {clientId} and deregistered", LogLevel.INFO);
         }
 
         protected virtual void Dispose(bool disposing)

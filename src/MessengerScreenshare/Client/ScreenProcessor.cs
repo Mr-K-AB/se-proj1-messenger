@@ -19,7 +19,7 @@ using System.Drawing.Imaging;
 using System.Drawing;
 using System.IO.Compression;
 using System.IO;
-
+using TraceLogger;
 namespace MessengerScreenshare.Client
 {
     public class ScreenProcessor
@@ -36,7 +36,7 @@ namespace MessengerScreenshare.Client
         private readonly bool _cancellationToken;
         private Bitmap? _prevImage;
         private int _first_xor;
-
+        private int _clientnumber = 1;
         /// <summary>
         /// Initializes a new instance of the ScreenProcessor class with a specified capturer.
         /// </summary>
@@ -73,9 +73,10 @@ namespace MessengerScreenshare.Client
                     // Return an empty string to signal cancellation
                     return "";
                 }
-
+                int serverLoad = GetServerLoad(); // You need to implement this method
+                int dynamicDelay = CalculateDynamicDelay(_processedFrameQueue.Count, serverLoad, 100);
                 // Introduce a delay to avoid busy waiting and reduce resource consumption
-                await Task.Delay(100);
+                await Task.Delay(dynamicDelay);
             }
         }
 
@@ -146,7 +147,7 @@ namespace MessengerScreenshare.Client
                 _cancellationTokenSource?.Cancel();
             }
             catch (Exception e) { // Log an error message if stopping processing encounters an exception
-                Trace.WriteLine(Utils.GetDebugMessage($"Failed to cancel processor task: {e.Message}", withTimeStamp: true));
+                Logger.Log($"Failed to cancel processor task: {e.Message}", LogLevel.ERROR);
             }
 
             // Clear the processed frame queue to reset the processing task
@@ -294,6 +295,27 @@ namespace MessengerScreenshare.Client
             prev.UnlockBits(prevData);
             newBmp.UnlockBits(bmpData);
             return newBmp;
+        }
+        private int CalculateDynamicDelay(int currentQueueLength, int serverLoad, int maxDelay)
+        {
+            // Adjust the multiplier based on the server load
+            int dynamicDelay = currentQueueLength * serverLoad;
+
+            // Ensure that the dynamic delay does not exceed the maximum allowed delay
+            dynamicDelay = Math.Min(dynamicDelay, maxDelay);
+
+            return dynamicDelay;
+        }
+
+        // Get an estimate of server load (you need to implement this based on your server logic)
+        private int GetServerLoad()
+        {
+            return _clientnumber; // Assuming ConnectedClients is a collection of connected clients
+        }
+
+        public void SetNoofClients(int noofClients)
+        {
+            _clientnumber = noofClients;
         }
     }
 }

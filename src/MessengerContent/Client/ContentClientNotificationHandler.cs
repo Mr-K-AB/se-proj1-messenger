@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using MessengerNetworking.NotificationHandler;
 using System.Net.Sockets;
+using TraceLogger;
 
 namespace MessengerContent.Client
 {
@@ -41,7 +42,7 @@ namespace MessengerContent.Client
 
         public void OnDataReceived(string data)
         {
-            Trace.WriteLine("[ContentClientNotificationHandler] Deserializing data received from network");
+            Logger.Log("[ContentClientNotificationHandler] Deserializing data received from network", LogLevel.INFO);
             try
             {
                 // get type of serialized data
@@ -51,14 +52,14 @@ namespace MessengerContent.Client
                 {
                     _receivedMessage = _serialzer.Deserialize<ChatData>(data);
                     _messageHandler.OnReceive(_receivedMessage);
-                    Trace.WriteLine($"[ContentClientNotificationHandler] Deserialized data and sending it to content client");
+                    Logger.Log($"[ContentClientNotificationHandler] Deserialized data and sending it to content client", LogLevel.INFO);
                 }
                 // if data is a List<ChatThread>
                 else if (string.Equals(deserializedType, typeof(List<ChatThread>).ToString()))
                 {
                     _allMessages = _serialzer.Deserialize<List<ChatThread>>(data);
                     _messageHandler.OnReceive(_allMessages);
-                    Trace.WriteLine($"[ContentClientNotificationHandler] Deserialized data and sending it to content client");
+                    Logger.Log($"[ContentClientNotificationHandler] Deserialized data and sending it to content client", LogLevel.INFO);
                 }
                 else
                 {
@@ -71,7 +72,7 @@ namespace MessengerContent.Client
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[ContentClientNotificationHandler] Error during deserialization of received data.\n{e.GetType().Name} : {e.Message}");
+                Logger.Log($"[ContentClientNotificationHandler] Error during deserialization of received data.\n{e.GetType().Name} : {e.Message}", LogLevel.WARNING);
             }
         }
 

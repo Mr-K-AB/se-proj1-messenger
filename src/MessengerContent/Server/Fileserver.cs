@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TraceLogger;
 
 namespace MessengerContent.Server
 {
@@ -40,20 +41,20 @@ namespace MessengerContent.Server
         /// <returns>Returns the new message</returns>
         public ChatData? Receive(ChatData msg)
         {
-            Trace.WriteLine("[FileServer] Message received from ContentServer");
+            Logger.Log("[FileServer] Message received from ContentServer", LogLevel.INFO);
             if (msg.Event == MessageEvent.New)
             {
-                Trace.WriteLine("[FileServer] MessageEvent is New, Saving File");
+                Logger.Log("[FileServer] MessageEvent is New, Saving File", LogLevel.INFO);
                 return StoreFile(msg);
             }
             else if (msg.Event == MessageEvent.Download)
             {
-                Trace.WriteLine("[FileServer] MessageEvent is Download, Proceeding to download");
+                Logger.Log("[FileServer] MessageEvent is Download, Proceeding to download", LogLevel.INFO);
                 return FileDownload(msg);
             }
             else
             {
-                Trace.WriteLine($"[ChatServer] Invalid MessageEvent");
+                Logger.Log($"[ChatServer] Invalid MessageEvent", LogLevel.WARNING);
                 return null;
             }
         }
@@ -80,7 +81,7 @@ namespace MessengerContent.Server
             // if doesn't exist on database, return null
             if (receivedMsg == null)
             {
-                Trace.WriteLine($"[FileServer] No File found with given messageId: {msg.MessageID}.");
+                Logger.Log($"[FileServer] No File found with given messageId: {msg.MessageID}.", LogLevel.WARNING);
                 return null;
             }
             // Clone the object and add the required fields

@@ -27,6 +27,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MessengerScreenshare;
 using MessengerScreenshare.Client;
+using TraceLogger;
 
 
 namespace MessengerApp.Views
@@ -61,7 +62,7 @@ namespace MessengerApp.Views
                 viewModel.SharingScreen = true;
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage("Start Share Button Clicked", withTimeStamp: true));
+            Logger.Log("Start Share Button Clicked", LogLevel.INFO);
         }
 
         /// <summary>
@@ -77,7 +78,7 @@ namespace MessengerApp.Views
                 viewModel.SharingScreen = false;
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage("Stop Share Button Clicked", withTimeStamp: true));
+            Logger.Log("Stop Share Button Clicked", LogLevel.INFO);
         }
     }
 }

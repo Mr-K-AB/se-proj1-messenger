@@ -154,6 +154,10 @@ namespace MessengerContent.Client
             _fileHandler.UserID = id;
             _fileHandler.UserName = name;
             _name = name;
+            if(_subscribers != null)
+            {
+                RequestMessageHistory();
+            }
         }
         public int UserID
         {
@@ -285,7 +289,10 @@ namespace MessengerContent.Client
                 // add subscriber to the list of subscribers
                 Logger.Log("[ContentClient] Added new subscriber", LogLevel.INFO);
                 _subscribers.Add(subscriber);
-                RequestMessageHistory();
+                if (_userID != -1)
+                {
+                    RequestMessageHistory();
+                }
             }
         }
 

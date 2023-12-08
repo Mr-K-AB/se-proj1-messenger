@@ -154,7 +154,7 @@ namespace MessengerContent.Client
             _fileHandler.UserID = id;
             _fileHandler.UserName = name;
             _name = name;
-            if(_subscribers != null)
+            if(_subscribers.Count != 0)
             {
                 RequestMessageHistory();
             }

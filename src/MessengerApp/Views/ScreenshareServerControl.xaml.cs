@@ -27,6 +27,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MessengerScreenshare;
 using MessengerScreenshare.Server;
+using TraceLogger;
 
 namespace MessengerApp.Views
 {
@@ -46,7 +47,7 @@ namespace MessengerApp.Views
             ScreenshareServerViewModel viewModel = ScreenshareServerViewModel.GetInstance();
             DataContext = viewModel;
 
-            Trace.WriteLine(Utils.GetDebugMessage("Created the ScreenshareServerView Component", withTimeStamp: true));
+            Logger.Log("Created the ScreenshareServerView Component", LogLevel.INFO);
 
             Debug.WriteLine(viewModel.CurrentClients.Count);
         }
@@ -70,7 +71,7 @@ namespace MessengerApp.Views
                 viewModel.OnPin((int)pinButton.CommandParameter!);
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage("Pin Button Clicked", withTimeStamp: true));
+            Logger.Log("Pin Button Clicked", LogLevel.INFO);
         }
 
         /// <summary>
@@ -92,7 +93,7 @@ namespace MessengerApp.Views
                 viewModel.OnUnpin((int)someButton.CommandParameter!);
             }
 
-            Trace.WriteLine(Utils.GetDebugMessage("Unpin Button Clicked", withTimeStamp: true));
+            Logger.Log("Unpin Button Clicked", LogLevel.INFO);
         }
     }
 }

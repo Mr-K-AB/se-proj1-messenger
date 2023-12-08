@@ -12,10 +12,6 @@
 * Description = Represents a wrapper for serialized data along with it's type information.
 *****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MessengerDashboard
 {

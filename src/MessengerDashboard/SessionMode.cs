@@ -11,12 +11,6 @@
 *
 * Description =  Enumeration representing different modes for a client session.
 *****************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace MessengerDashboard
 {
     /// <summary>

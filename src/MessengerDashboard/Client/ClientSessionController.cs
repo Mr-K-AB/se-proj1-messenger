@@ -25,7 +25,6 @@ using MessengerScreenshare.Client;
 using MessengerContent.Client;
 using MessengerDashboard.Sentiment;
 using MessengerNetworking.NotificationHandler;
-using Microsoft.Extensions.Logging;
 using TraceLogger;
 
 namespace MessengerDashboard.Client

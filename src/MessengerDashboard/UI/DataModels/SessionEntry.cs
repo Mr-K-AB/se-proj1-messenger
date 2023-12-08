@@ -12,11 +12,6 @@
 // Description = Represents a session entry in the Session
 //*****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace MessengerDashboard.UI.DataModels

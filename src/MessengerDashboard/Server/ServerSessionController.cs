@@ -27,7 +27,6 @@ using MessengerContent.Server;
 using MessengerContent.DataModels;
 using System.Net.Sockets;
 using MessengerNetworking.NotificationHandler;
-using System.Threading;
 using TraceLogger;
 
 namespace MessengerDashboard.Server

@@ -22,7 +22,6 @@ using MessengerCloud;
 using MessengerDashboard.Client;
 using MessengerDashboard.Sentiment;
 using MessengerDashboard.Summarization;
-using MessengerDashboard.Telemetry;
 using MessengerDashboard.UI.Commands;
 using MessengerDashboard.UI.DataModels;
 

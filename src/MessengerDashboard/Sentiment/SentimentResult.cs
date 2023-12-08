@@ -12,12 +12,6 @@
 * Description =  Represents the result of a sentiment analysis for a collection of chat messages.
 * 
 *****************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 /// <summary>
 /// Represents the result of a sentiment analysis for a collection of chat messages.
 /// </summary>

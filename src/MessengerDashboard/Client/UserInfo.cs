@@ -12,8 +12,6 @@
 * Description = Represents information about a user.
 *****************************************************************************/
 
-using System;
-
 namespace MessengerDashboard.Client
 {
     /// <summary>

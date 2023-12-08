@@ -13,10 +13,6 @@
 *****************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 /// <summary>
 /// Provides a factory for creating and obtaining an instance of an <see cref="ITextSummarizer"/> implementation.

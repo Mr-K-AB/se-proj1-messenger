@@ -12,13 +12,6 @@
  * Description = A class that stores the Payload sent  from the client.
  *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessengerDashboard.Sentiment;
-
 namespace MessengerDashboard.Client
 {
     /// <summary>

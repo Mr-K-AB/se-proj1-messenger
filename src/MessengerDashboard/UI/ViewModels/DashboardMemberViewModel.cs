@@ -12,17 +12,8 @@
 * Description = This file contains the implementation of the DashboardMemberViewModel class, which is a view model for the MessengerDashboard UI. It handles client sessions and provides functionality to save session data locally.
 *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Windows.Input;
 using MessengerCloud;
 using MessengerDashboard.Client;
-using MessengerDashboard.Sentiment;
-using MessengerDashboard.Summarization;
-using MessengerDashboard.Telemetry;
-using MessengerDashboard.UI.Commands;
-using MessengerDashboard.UI.DataModels;
 
 namespace MessengerDashboard.UI.ViewModels
 {

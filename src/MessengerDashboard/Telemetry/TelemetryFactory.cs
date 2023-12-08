@@ -11,11 +11,9 @@
 *
 * Description = Factory class providing a method to obtain a new instance of TelemetryManager.
 *****************************************************************************/
-using System;
-using System.Collections.Generic;
 namespace MessengerDashboard.Telemetry
 
-{   
+{
     /// <summary>
     /// Factory class responsible for creating instances of telemetry-related components.
     /// </summary>

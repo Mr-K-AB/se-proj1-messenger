@@ -40,6 +40,8 @@ namespace MessengerTests.DashboardTests.Mocks
 
         public SentimentResult SentimentResult { get; set; } = new ();
 
+        public UserInfo UserInfo => new ("a", 1, "b", "c");
+
         public event EventHandler<RefreshedEventArgs> Refreshed;
         public event EventHandler<ClientSessionChangedEventArgs> SessionChanged;
         public event EventHandler<SessionExitedEventArgs> SessionExited;

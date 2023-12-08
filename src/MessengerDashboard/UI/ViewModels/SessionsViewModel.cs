@@ -17,11 +17,7 @@
 *               a RestClient to interact with the Messenger API.
 *****************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Windows.Input;
 using MessengerDashboard.UI.DataModels;
 using MessengerDashboard.UI.Commands;

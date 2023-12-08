@@ -12,10 +12,6 @@
 * Description = Provides data for the event when the client session is exited.
 *****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MessengerDashboard.Sentiment;
 using MessengerDashboard.Summarization;
 using MessengerDashboard.Telemetry;

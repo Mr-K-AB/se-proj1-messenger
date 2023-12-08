@@ -12,12 +12,6 @@
 * Description = This file contains options for summarization.
 *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace MessengerDashboard.Summarization
 {
     /// <summary>

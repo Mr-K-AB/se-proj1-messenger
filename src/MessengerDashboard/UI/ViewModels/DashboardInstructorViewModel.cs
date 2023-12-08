@@ -13,19 +13,11 @@
 *****************************************************************************/
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using MessengerCloud;
 using MessengerDashboard.Client;
-using MessengerDashboard.Sentiment;
-using MessengerDashboard.Summarization;
-using MessengerDashboard.Telemetry;
 using MessengerDashboard.UI.Commands;
-using MessengerDashboard.UI.DataModels;
 
 namespace MessengerDashboard.UI.ViewModels
 {
@@ -42,7 +34,7 @@ namespace MessengerDashboard.UI.ViewModels
         public DashboardInstructorViewModel()
         {
             _client.SessionExited += HandleSessionExited;
-            IsCloudSavingEnabled = true;
+            IsCloudSavingEnabled = false;
         }
 
         /// <summary>
@@ -52,7 +44,7 @@ namespace MessengerDashboard.UI.ViewModels
         public DashboardInstructorViewModel(IClientSessionController client) : base(client)
         {
             _client.SessionExited += HandleSessionExited;
-            IsCloudSavingEnabled = true;
+            IsCloudSavingEnabled = false;
         }
 
         /// <summary>

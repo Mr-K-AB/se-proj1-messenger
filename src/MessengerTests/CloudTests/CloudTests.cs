@@ -114,9 +114,6 @@ namespace MessengerTests.CloudTests
         public async Task TestDeleteAllAndGetAll()
         {
             // Delete any existing entities.
-            Logger.LogMessage("Delete any existing entities.");
-            //  await _restClient.DeleteEntitiesAsync();
-
             // Create three entities.
             Logger.LogMessage("Create three entities.");
             _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, 3, "Neutral", "-1", _analysisCloud));
@@ -126,13 +123,13 @@ namespace MessengerTests.CloudTests
             _ = await _restClient.PostEntityAsync(new EntityInfoWrapper(_sentences, 1, 2, 5, "Positive", "1", _analysisCloud));
             Thread.Sleep(2000);
 
-            // Validate.
-            Logger.LogMessage("Validate.");
             IReadOnlyList<Entity>? entities = await _restClient.GetEntitiesAsync();
-            Assert.AreEqual(entities?.Count, 3);
             // Delete any existing entities.
             Logger.LogMessage("Delete any existing entities.");
             await _restClient.DeleteEntitiesAsync();
+            // Validate.
+            Logger.LogMessage("Validate.");
+            Assert.AreEqual(entities?.Count, 3);
         }
         /// <summary>
         /// for deleting by id and getting by id .

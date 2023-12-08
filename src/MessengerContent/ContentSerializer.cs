@@ -13,6 +13,7 @@ using System;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Formatting = Newtonsoft.Json.Formatting;
+using TraceLogger;
 
 namespace MessengerContent
 {
@@ -54,7 +55,7 @@ namespace MessengerContent
             }
             catch (Exception ex)
             {
-                Trace.WriteLine($" Error while serializing: {ex.Message}");
+                Logger.Log($" Error while serializing: {ex.Message}", LogLevel.WARNING);
                 throw;
             }
         }
@@ -77,7 +78,7 @@ namespace MessengerContent
             }
             catch (Exception ex)
             {
-                Trace.WriteLine($" Error while deserializing: {ex.Message}");
+                Logger.Log($" Error while deserializing: {ex.Message}", LogLevel.WARNING);
                 throw;
             }
         }

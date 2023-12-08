@@ -23,6 +23,7 @@ using MessengerNetworking.Communicator;
 using System.Security.Cryptography;
 using MessengerNetworking.Factory;
 using System.Security.Cryptography.X509Certificates;
+using TraceLogger;
 
 namespace MessengerContent.Client
 {
@@ -96,7 +97,7 @@ namespace MessengerContent.Client
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[ContentClient] Error subscribing to networking module.\n{e.GetType().Name} : {e.Message}");
+                Logger.Log($"[ContentClient] Error subscribing to networking module.\n{e.GetType().Name} : {e.Message}", LogLevel.WARNING);
             }
             // instantiate subscribers list
             _subscribers = new List<IMessageListener>();
@@ -135,7 +136,7 @@ namespace MessengerContent.Client
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine($"[ContentClient] Exception occured while subscribing to networking module.\n{e.GetType().Name} : {e.Message}");
+                    Logger.Log($"[ContentClient] Exception occured while subscribing to networking module.\n{e.GetType().Name} : {e.Message}", LogLevel.WARNING);
                 }
                 _chatHandler.Communicator = value;
                 _fileHandler.Communicator = value;
@@ -153,6 +154,10 @@ namespace MessengerContent.Client
             _fileHandler.UserID = id;
             _fileHandler.UserName = name;
             _name = name;
+            if(_subscribers != null)
+            {
+                RequestMessageHistory();
+            }
         }
         public int UserID
         {
@@ -256,15 +261,15 @@ namespace MessengerContent.Client
             switch (chatData.Type)
             {
                 case MessageType.Chat:
-                    Trace.WriteLine("[ContentClient] Using chat handler to send event to server");
+                    Logger.Log("[ContentClient] Using chat handler to send event to server", LogLevel.INFO);
                     _chatHandler.NewChat(chatData);
                     break;
                 case MessageType.File:
-                    Trace.WriteLine("[ContentClient] Using file handler to send event to server");
+                    Logger.Log("[ContentClient] Using file handler to send event to server", LogLevel.INFO);
                     _fileHandler.SendFile(chatData);
                     break;
                 case MessageType.HistoryRequest:
-                    Trace.WriteLine("[ContentClient] Requesting server for Message History");
+                    Logger.Log("[ContentClient] Requesting server for Message History", LogLevel.INFO);
                     _chatHandler.NewChat(chatData);
                     break;
                 default:
@@ -282,9 +287,12 @@ namespace MessengerContent.Client
             else
             {
                 // add subscriber to the list of subscribers
-                Trace.WriteLine("[ContentClient] Added new subscriber");
+                Logger.Log("[ContentClient] Added new subscriber", LogLevel.INFO);
                 _subscribers.Add(subscriber);
-                RequestMessageHistory();
+                if (_userID != -1)
+                {
+                    RequestMessageHistory();
+                }
             }
         }
 
@@ -304,7 +312,7 @@ namespace MessengerContent.Client
                 throw new ArgumentException("Edit not allowed for messages from another sender");
 
             }
-            Trace.WriteLine("[ContentClient] Using chat handler to send edit event to server");
+            Logger.Log("[ContentClient] Using chat handler to send edit event to server", LogLevel.INFO);
             _chatHandler.EditChat(messageID, newMessage, message.ReplyThreadID);
         }
 
@@ -324,7 +332,7 @@ namespace MessengerContent.Client
                 Debug.Print("{0}, {0}", message.SenderID, _userID);
                 throw new ArgumentException("Delete not allowed for messages from another sender");
             }
-            Trace.WriteLine("[ContentClient] Using chat handler to send delete event to server");
+            Logger.Log("[ContentClient] Using chat handler to send delete event to server", LogLevel.INFO);
             _chatHandler.DeleteChat(messageID, message.ReplyThreadID);
         }
 
@@ -336,7 +344,7 @@ namespace MessengerContent.Client
             ReceiveChatData? message = GetMessage(messageID);
             if (message is null)
             {
-                Trace.WriteLine("[ContentClient] File requested for download not found");
+                Logger.Log("[ContentClient] File requested for download not found", LogLevel.WARNING);
                 throw new ArgumentException("File requested for download does not exist");
             }
             // check message type
@@ -344,7 +352,7 @@ namespace MessengerContent.Client
             {
                 throw new ArgumentException($"Invalid message type : {message.Type}");
             }
-            Trace.WriteLine("[ContentClient] Using file handler to send download file event to server");
+            Logger.Log("[ContentClient] Using file handler to send download file event to server", LogLevel.INFO);
             _fileHandler.DownloadFile(messageID, savePath);
         }
 
@@ -358,7 +366,7 @@ namespace MessengerContent.Client
             //{
             //    throw new ArgumentException($"Invalid message type : {message.Type}");
             //}
-            Trace.WriteLine("[ContentClient] Using chat handler to send star chat to server");
+            Logger.Log("[ContentClient] Using chat handler to send star chat to server", LogLevel.INFO);
             _chatHandler.StarChat(messageID, message.ReplyThreadID);
         }
 
@@ -372,7 +380,7 @@ namespace MessengerContent.Client
 
             }
             int index = _threadIDMap[threadID];
-            Trace.WriteLine($"[ContentClient] Returning thread with ID = {threadID}");
+            Logger.Log($"[ContentClient] Returning thread with ID = {threadID}", LogLevel.INFO);
             return AllMessages[index];
         }
 
@@ -396,7 +404,7 @@ namespace MessengerContent.Client
         /// <exception cref="ArgumentException"></exception>
         private void Notify(ReceiveChatData message)
         {
-            Trace.WriteLine("[ContentClient] Notifying subscribers of new received message");
+            Logger.Log("[ContentClient] Notifying subscribers of new received message", LogLevel.INFO);
             foreach (IMessageListener subscriber in _subscribers)
             {
                 _ = Task.Run(() => { subscriber.OnMessageReceived(message); });
@@ -410,7 +418,7 @@ namespace MessengerContent.Client
         /// <exception cref="ArgumentException"></exception>
         private void Notify(List<ChatThread> allMessages)
         {
-            Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared");
+            Logger.Log("[ContentClient] Notifying subscribers of all messages shared", LogLevel.INFO);
             foreach (IMessageListener subscriber in _subscribers)
             {
                 _ = Task.Run(() => { subscriber.OnAllMessagesReceived(allMessages); });
@@ -422,7 +430,7 @@ namespace MessengerContent.Client
             {
                 throw new ArgumentException("Received null argument!");
             }
-            Trace.WriteLine("[ContentClient] Received message history from server");
+            Logger.Log("[ContentClient] Received message history from server", LogLevel.INFO);
             // update the internal data strcutures using the received history
             SetAllMessages(allMessages);
             Notify(allMessages);
@@ -462,7 +470,7 @@ namespace MessengerContent.Client
         /// <exception cref="ArgumentException"></exception>
         private void NewMessageHandler(ChatData message)
         {
-            Trace.WriteLine("[ContentClient] Received message from server");
+            Logger.Log("[ContentClient] Received message from server", LogLevel.INFO);
             // ensure file data is null
             message.FileData = null;
             ReceiveChatData receivedMessage = message;
@@ -511,7 +519,7 @@ namespace MessengerContent.Client
         /// <exception cref="ArgumentException"></exception>
         private void EditMessageHandler(ChatData message)
         {
-            Trace.WriteLine("[ContentClient] Received edited message from server");
+            Logger.Log("[ContentClient] Received edited message from server", LogLevel.INFO);
             // ensure file data is null
             message.FileData = null;
             ReceiveChatData receivedMessage = message;
@@ -544,7 +552,7 @@ namespace MessengerContent.Client
         /// <exception cref="ArgumentException"></exception>
         private void DeleteMessageHandler(ChatData message)
         {
-            Trace.WriteLine("[ContentClient] Received deleted message from server");
+            Logger.Log("[ContentClient] Received deleted message from server", LogLevel.INFO);
             // ensure file data is null
             message.FileData = null;
             ReceiveChatData receivedMessage = message;
@@ -577,7 +585,7 @@ namespace MessengerContent.Client
         /// <exception cref="ArgumentException"></exception>
         private void StarMessageHandler(ChatData message)
         {
-            Trace.WriteLine("[ContentClient] Received starred message from server");
+            Logger.Log("[ContentClient] Received starred message from server", LogLevel.INFO);
             // ensure file data is null
             message.FileData = null;
             ReceiveChatData receivedMessage = message;
@@ -607,9 +615,9 @@ namespace MessengerContent.Client
         /// <param name="message">Received message object from server</param>
         private void DownloadMessageHandler(ChatData message)
         {
-            Trace.WriteLine("[ContentClient] Received requested file from server");
+            Logger.Log("[ContentClient] Received requested file from server", LogLevel.INFO);
             string savePath = message.Data;
-            Trace.WriteLine($"[ContentClient] Saving file to path : {savePath}");
+            Logger.Log($"[ContentClient] Saving file to path : {savePath}", LogLevel.INFO);
             File.WriteAllBytes(savePath, message.FileData.Data);
         }
 
@@ -638,7 +646,7 @@ namespace MessengerContent.Client
             {
                 throw new ArgumentException("Received null message!");
             }
-            Trace.WriteLine("[ContentClient] Received message from server");
+            Logger.Log("[ContentClient] Received message from server", LogLevel.INFO);
             _messageEventHandler[receivedMessage.Event](receivedMessage);
         }
         /// <summary>
@@ -655,12 +663,12 @@ namespace MessengerContent.Client
             {
                 // serialize message and send to server via network
                 string serializedMessage = _serializer.Serialize(message);
-                Trace.WriteLine($"[ContentClient] Sending request for message history to server for user ID = {_userID}");
+                Logger.Log($"[ContentClient] Sending request for message history to server for user ID = {_userID}", LogLevel.INFO);
                 _communicator.Send(serializedMessage, "Content", null);
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[ContentClient] Exception occurred during sending message history request.\n{e.GetType()} : {e.Message}");
+                Logger.Log($"[ContentClient] Exception occurred during sending message history request.\n{e.GetType()} : {e.Message}", LogLevel.WARNING);
             }
         }
     }

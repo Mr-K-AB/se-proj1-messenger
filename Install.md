@@ -4,45 +4,32 @@ Download the [MSIX Package of the MessengerApp](https://github.com/Mr-K-AB/se-pr
 
 1\. Right click on the MSIX package, click on Properties and then go to "Digital Signature" tab. Select the certificate from "Signature list" and then click "Details"
 
-![Signed msix](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/signed-msix.png "Signed msix")
+![Signed msix](https://github.com/Mr-K-AB/se-proj1-messenger/blob/migrate-tcp/images/1.png)
 
-![Signed msix](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/signed-msix.png "Signed msix")
+![Signed msix](https://github.com/Mr-K-AB/se-proj1-messenger/blob/migrate-tcp/images/1.png)
 
 2\. Click "View certificate"
 
-![View certificate](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/view-certificate.png "View certificate")
 
-![View certificate](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/view-certificate.png "View certificate")
 
 3\. Click "Install certificate"
 
-![Install certificate](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/install-certificate.png "Install certificate")
-
-![Install certificate](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/install-certificate.png "Install certificate")
+![Install certificate](https://github.com/Mr-K-AB/se-proj1-messenger/blob/migrate-tcp/images/2.png)
 
 4\. Select "Local Machine" and then click "Next"
 
-![Install local machine](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/install-local-machine.png "Install local machine")
-
-![Install local machine](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/install-local-machine.png "Install local machine")
+![Install local machine](https://github.com/Mr-K-AB/se-proj1-messenger/blob/migrate-tcp/images/3.png)
 
 5\. Select "Place all certificates in the following store" and then click "Browse"
 
-![Place certificate in store](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/place-certificate-in-store.png "Place certificate in store")
-
-![Place certificate in store](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/place-certificate-in-store.png "Place certificate in store")
+![Place certificate in store](https://github.com/Mr-K-AB/se-proj1-messenger/blob/migrate-tcp/images/4.png)
 
 6\. Browse to "Trusted people" and then click "OK"
 
-![Select certificate store](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/select-certificate-store.png "Select certificate store")
-
-![Select certificate store](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/select-certificate-store.png "Select certificate store")
-
+![Select certificate store](https://github.com/Mr-K-AB/se-proj1-messenger/blob/migrate-tcp/images/5.png)
 7\. Click "Next"
 
-![Selected certificate](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/selected-certificate.png "Selected certificate")
-
-![Selected certificate](https://cdn.advancedinstaller.com/img/install-test-certificate-from-msix/selected-certificate.png "Selected certificate")
+![Selected certificate](https://github.com/Mr-K-AB/se-proj1-messenger/blob/migrate-tcp/images/6.png)
 
 8\. Click "Finish"
 

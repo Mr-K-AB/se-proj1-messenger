@@ -47,7 +47,7 @@ namespace MessengerScreenshare.Server
         /// <summary>
         /// It will store the image receiving from the clients.
         /// </summary>
-        private readonly Queue<string> _screenImageQueue;
+        public readonly Queue<string> _screenImageQueue;
 
         /// <summary>
         /// The screen stitcher associated with this client.
@@ -58,7 +58,7 @@ namespace MessengerScreenshare.Server
         /// It store the Images which are going to display, i.e., the
         /// final image after stitching the image received from the client.
         /// </summary>
-        private readonly Queue<Bitmap> _finalScreenImageQueue;
+        public readonly Queue<Bitmap> _finalScreenImageQueue;
 
         /// <summary>
         /// Task which will continuously pick the image from the "_finalImageQueue"
@@ -208,7 +208,7 @@ namespace MessengerScreenshare.Server
         /// the timeout for the arrival of the packet from the client with 
         /// the confirmation header.
         /// </summary>
-        public static double Timeout { get; } = 20 * 1000;
+        public static double Timeout { get; } = 200 * 1000;
 
         /// <summary>
         /// Gets the id of the current image sending task.

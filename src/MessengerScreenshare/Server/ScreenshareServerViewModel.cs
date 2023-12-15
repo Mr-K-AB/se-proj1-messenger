@@ -218,7 +218,7 @@ namespace MessengerScreenshare.Server
         /// Gets the maximum number of tiles of the shared screens
         /// on a single screen that will be shown to the server.
         /// </summary>
-        public static int MaxTiles { get; } = 9;
+        public static int MaxTiles { get; } = 20;
 
         /// <summary>
         /// Acts as a map from the number of screens on the current  to
@@ -235,7 +235,18 @@ namespace MessengerScreenshare.Server
             (2, 3),  // 6 Total Screens.
             (3, 3),  // 7 Total Screens.
             (3, 3),  // 8 Total Screens.
-            (3, 3)   // 9 Total Screens.
+            (3, 3),   // 9 Total Screens.
+            (3, 4),
+            (3, 4),
+            (3, 4),
+            (3, 5),
+            (3, 5),
+            (3, 5),
+            (3, 6),
+            (3, 6),
+            (3, 6),
+            (3, 7),
+            (3, 7)
         };
 
         /// <summary>

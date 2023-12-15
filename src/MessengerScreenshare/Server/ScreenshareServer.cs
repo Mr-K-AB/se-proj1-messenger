@@ -144,7 +144,7 @@ namespace MessengerScreenshare.Server
 
             lock (_subscribers)
             {
-                if (_subscribers.Count > 3) 
+                if (_subscribers.Count > 19) 
                 {
                     BroadcastClients(new List<int> { clientId }, nameof(ServerDataHeader.Stop), (1, 1));
                     return; 
@@ -216,6 +216,10 @@ namespace MessengerScreenshare.Server
                 {
                     try
                     {
+                        if (client._finalScreenImageQueue.Count > (60/_subscribers.Count) || client._screenImageQueue.Count > (60/_subscribers.Count))
+                        {
+                            return;
+                        }
                         client.PutImage(data, client.TaskId);
                         Logger.Log($"Successfully received image of the client with Id: {clientId}", LogLevel.INFO);
                     }

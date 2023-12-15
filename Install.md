@@ -1,4 +1,4 @@
-Download the [MSIX Package of the MessengerApp](https://github.com/Mr-K-AB/se-proj1-messenger/blob/migrate-tcp/Install/MessengerApp2.0.msixbundle) and follow the instruction below to install the app certificates and then install the MessengerAPP.
+Download the [MSIX Package of the MessengerApp](https://github.com/Mr-K-AB/se-proj1-messenger/raw/6cf1333d795f2a9b27c5584aac24e53218bb3343/Install/MessengerApp2.0.msixbundle) and follow the instruction below to install the app certificates and then install the MessengerAPP.
 
 
 
